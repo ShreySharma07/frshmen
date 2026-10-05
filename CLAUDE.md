@@ -30,23 +30,24 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 3. **Normalize** to one schema (see below). Dedupe.
 4. **Extract** experience, batch year, location type, visa sponsorship, skills via rules first, LLM only for ambiguous cases (see `skills.md`).
 5. **Classify** into `fresher` / `maybe` / `experienced` with confidence + evidence.
-6. **Publish** a static JSON the web page reads. New postings are flagged with first-seen time.
+6. **Publish** classified jobs to D1; the web page reads them through the Python API (see `docs/decisions.md`). New postings are flagged with first-seen time.
 
 ## Core schema (starting point; propose changes via decisions.md)
 `id`, `source`, `company`, `title`, `url`, `location_raw`, `location_type` (remote/hybrid/onsite), `countries`, `posted_at` (if the source gives it), `first_seen_at`, `description_text`, `yoe_min`, `yoe_max`, `yoe_evidence`, `batch_years`, `level` (fresher/maybe/experienced), `level_confidence`, `visa_sponsorship` (yes/no/unknown), `skills`, `match_score`, `status` (open/closed), `content_hash`.
 
-## Open architecture decisions (Shrey decides, do not assume)
-- Scheduler: GitHub Actions cron vs Cloudflare Workers cron vs other free option
-- Storage: committed SQLite/JSON in repo vs Cloudflare D1 vs Supabase free tier
-- Frontend: plain static HTML/JS vs a small framework; hosting on GitHub Pages vs Cloudflare Pages
-- LLM for ambiguous cases: Gemini free tier vs Groq free tier vs a local small model; or rules-only at first
-- Language for the pipeline: Python (default suggestion) vs TypeScript
-- Company discovery: hand-curated seed list vs auto-discovery from YC / funding lists
+## Architecture (decided; full rationale in `docs/decisions.md`)
+- Pipeline: Python, run by GitHub Actions cron
+- Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows)
+- Backend API: FastAPI on Cloudflare Python Workers, D1 binding
+- Frontend: React (Vite + TypeScript) on Cloudflare Pages
+- LLM fallback: none yet (rules-only); revisit at build step 5
+- Companies: curated ~200 incl. YC AI startups, in `config/`
+- Any change to the above is a new decision: present options, let Shrey choose, log it.
 
 ## Suggested build order
-1. Seed list of ~50 companies + Greenhouse/Lever/Ashby fetchers → normalized JSON
+1. Curated list of ~200 companies (incl. YC) + Greenhouse/Lever/Ashby fetchers → normalized JSON
 2. Rule-based YoE and batch-year extractor with a test suite built from real postings
-3. Static web page with filters (level, location type, visa, skills) and a "new in last 24h" view
+3. FastAPI backend + React page with filters (level, location type, visa, skills) and a "new in last 24h" view
 4. Scheduler + publish loop
 5. LLM fallback for `maybe` cases, with an eval set to measure it
 6. More sources (YC, HN, company career pages), match scoring, optional alerts
