@@ -56,6 +56,7 @@ jobs:
               # Darwinbox answers 403 to GitHub's runners (docs/decisions.md), so it isn't checked here.
               ("Jupiter", "keka", "jupiter/b5279857-cf81-4dde-a215-fc48957ee2b5"),
               ("Wadhwani AI", "zoho_recruit", "wadhwaniai.zohorecruit.in"),
+              ("NVIDIA", "workday", "nvidia/wd5/NVIDIAExternalCareerSite"),  # sitemap stops at 100; search must page
               ("Amazon", "amazon", "IND"),
               ("NetApp", "eightfold", "netapp.eightfold.ai/netapp.com"),  # v2 tenant
               ("Qualcomm", "eightfold", "careers.qualcomm.com/qualcomm.com"),  # PCSX tenant
@@ -74,5 +75,13 @@ jobs:
               # Every fetched job must carry text, or the YoE rules have nothing to check.
               if titles is None or (titles and not jobs) or any(not j.description_text for j in jobs):
                   failed.append(ats)
+          # Workday search: the India facet must be found and must page past the sitemap's 100.
+          first = http.post_json(workday.search_url("nvidia/wd5/NVIDIAExternalCareerSite"), workday._search_body(0, {}))
+          india = workday.india_facet((first or {}).get("facets") or [])
+          india_postings = workday.search(http, "nvidia/wd5/NVIDIAExternalCareerSite", india_only=True, max_pages=10)
+          print("workday search: total", (first or {}).get("total"), "india facet", india,
+                "india postings (10 pages max)", None if india_postings is None else len(india_postings))
+          if india is None or not india_postings:
+              failed.append("workday-search")
           assert not failed, f"adapters returned nothing: {failed}"
           EOF

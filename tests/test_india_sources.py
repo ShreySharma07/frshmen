@@ -33,6 +33,12 @@ class FakeHttp:
         self.requested.append(url)
         return self.routes.get(url)
 
+    def post_json(self, url, body):
+        # POST routes are keyed by (url, offset, facets); unknown ones answer None (search unusable).
+        key = (url, body.get("offset"), json.dumps(body.get("appliedFacets"), sort_keys=True))
+        self.requested.append(("POST",) + key)
+        return self.routes.get(key)
+
 
 def text(name):
     return (FIX / name).read_text()
@@ -199,3 +205,41 @@ def test_workday_india_only_board_screens_paths_by_location():
     # Dublin's engineering role is never requested; India Remote's is.
     assert not any("Dublin" in u for u in http.requested)
     assert any("India-Remote" in u for u in http.requested)
+
+
+def _posting(title, path):
+    return {"title": title, "externalPath": path, "locationsText": "Bengaluru"}
+
+
+def test_workday_search_pages_india_facet_and_skips_sitemap():
+    url = workday.search_url(BS.slug)
+    facets = [{"facetParameter": "locationMainGroup", "values": [
+        {"facetParameter": "locationCountry", "values": [
+            {"descriptor": "India", "id": workday.INDIA_COUNTRY_ID, "count": 3},
+            {"descriptor": "Ireland", "id": "ie", "count": 9}]}]}]
+    india = json.dumps({"locationCountry": [workday.INDIA_COUNTRY_ID]}, sort_keys=True)
+    detail = workday.detail_url(BS.slug, "/job/India-Remote/Engineering-Manager_JR103661")
+    http = FakeHttp({
+        (url, 0, "{}"): {"total": 12, "jobPostings": [], "facets": facets},
+        (url, 0, india): {"total": 21, "jobPostings": [_posting("Engineering Manager", "/job/India-Remote/Engineering-Manager_JR103661")]
+                          + [_posting("Account Executive", f"/job/x/AE_{i}") for i in range(19)]},
+        (url, 20, india): {"total": 0, "jobPostings": [_posting("Sales Lead", "/job/x/SL_1")]},
+        detail: text("workday_browserstack_detail.json"),
+    })
+    jobs = workday.fetch(http, Company("BrowserStack", "workday", BS.slug, india_only=True))
+    assert [j.title for j in jobs] == ["Engineering Manager"]
+    assert ("POST", url, 20, india) in http.requested  # second page fetched: total came from page one
+    assert workday.sitemap_url(BS.slug) not in http.requested
+
+
+def test_workday_india_facet_lookup():
+    assert workday.india_facet([{"facetParameter": "Location_Country", "values": [{"descriptor": "India", "id": "abc"}]}]) == ("Location_Country", "abc")
+    assert workday.india_facet([{"facetParameter": "jobFamilyGroup", "values": [{"descriptor": "Engineering", "id": "e"}]}]) is None
+
+
+def test_workday_board_without_india_facet_falls_back_to_sitemap():
+    url = workday.search_url(BS.slug)
+    http = FakeHttp({(url, 0, "{}"): {"total": 1, "jobPostings": [], "facets": []},
+                     workday.sitemap_url(BS.slug): text("workday_browserstack_sitemap.xml")})
+    workday.fetch(http, Company("BrowserStack", "workday", BS.slug, india_only=True))
+    assert workday.sitemap_url(BS.slug) in http.requested
