@@ -104,6 +104,9 @@ def main() -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        # Boards that answered: publish_d1.py only closes missing jobs from these.
+        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company],
+        "errors": errors,
         "jobs": records,
     }
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
