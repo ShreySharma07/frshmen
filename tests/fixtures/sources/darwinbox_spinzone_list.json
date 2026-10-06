@@ -1,0 +1,40 @@
+{
+ "status": "success",
+ "message": {
+  "jobscount": 2,
+  "jobs": [
+   {
+    "id": "a6a97a7e3dfb6f",
+    "designation_display_name": "City Supply Head",
+    "experience_from_num": "",
+    "experience_to_num": "",
+    "created_on": "2026-09-02T04:36:51.000Z",
+    "officelocation_show_arr": "Kolkata, West Bengal, India",
+    "job_posting_on": 1788287400,
+    "department": "Lead",
+    "emp_type": "Permanent",
+    "title": "City Supply Head",
+    "tool_tip_locations": [
+     "Kolkata, West Bengal, India"
+    ],
+    "timezone": "Asia/Kolkata"
+   },
+   {
+    "id": "a6abcb9fe0cca8",
+    "designation_display_name": "",
+    "experience_from_num": "2",
+    "experience_to_num": "5",
+    "created_on": "2026-09-30T07:27:58.000Z",
+    "officelocation_show_arr": "Bengaluru, Karnataka, India",
+    "job_posting_on": 1791138600,
+    "department": "Data Science",
+    "emp_type": "Full-Time",
+    "title": "Data Scientist II",
+    "tool_tip_locations": [
+     "Bengaluru, Karnataka, India"
+    ],
+    "timezone": "Asia/Kolkata"
+   }
+  ]
+ }
+}

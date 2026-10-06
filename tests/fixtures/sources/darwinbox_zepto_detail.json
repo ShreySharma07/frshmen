@@ -1,0 +1,30 @@
+{
+ "status": "success",
+ "message": {
+  "job": [
+   {
+    "id": "a6abcb9fe0cca8",
+    "internal_job_code": "JID477",
+    "experience": "2 - 5 Years",
+    "experience_from_num": 24,
+    "experience_to_num": 60,
+    "jd": "<p>Build demand forecasting models in <b>Python</b>.</p>",
+    "officelocations_area": [
+     "Bengaluru, Karnataka\r, India"
+    ],
+    "created_on": "2026-09-30T07:27:58.000Z",
+    "is_remote": 0,
+    "designation_name": "Data Scientist II",
+    "officelocation_show_arr_list": [
+     "Bengaluru, Karnataka, India"
+    ],
+    "posted_on": 1791138600,
+    "locations": "Bengaluru, Karnataka\r, India",
+    "department": "Data Science",
+    "emp_type": "Full-Time",
+    "title": "Data Scientist II"
+   }
+  ],
+  "isSaved": false
+ }
+}

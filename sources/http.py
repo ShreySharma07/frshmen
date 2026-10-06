@@ -15,7 +15,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import urlparse
 
 USER_AGENT = "frshmen-jobboard/0.1 (personal job board; +https://github.com/ShreySharma07/frshmen)"
@@ -40,9 +40,16 @@ class HttpClient:
 
     def get_json(self, url: str) -> Any | None:
         """Parsed JSON, or None if the resource doesn't exist. Raises FetchError otherwise."""
+        return self._get(url, "application/json", json.loads)
+
+    def get_text(self, url: str, accept: str = "text/html,application/xml;q=0.9,*/*;q=0.8") -> str | None:
+        """Body as text (careers pages, sitemaps), or None if it doesn't exist."""
+        return self._get(url, accept, lambda raw: raw)
+
+    def _get(self, url: str, accept: str, decode: Callable[[str], Any]) -> Any | None:
         host = urlparse(url).netloc
         cached = self._cache_read(url)
-        headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
+        headers = {"User-Agent": USER_AGENT, "Accept": accept, "Accept-Language": "en-US,en;q=0.8"}
         if cached:
             if cached.get("etag"):
                 headers["If-None-Match"] = cached["etag"]
@@ -54,7 +61,8 @@ class HttpClient:
             self._pace(host)
             try:
                 with urllib.request.urlopen(req, timeout=30) as resp:
-                    body = json.load(resp)
+                    raw = resp.read().decode("utf-8", errors="replace")
+                    body = decode(raw)
                     self._cache_write(url, resp.headers.get("ETag"), resp.headers.get("Last-Modified"), body)
                     return body
             except urllib.error.HTTPError as e:

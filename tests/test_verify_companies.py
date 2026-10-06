@@ -125,3 +125,18 @@ def test_workable_only_probed_when_guessed():
 
     get, calls = fake_get({"https://apply.workable.com/api/v1/widget/accounts/acme": {"name": "Acme", "jobs": [{"title": "ML", "url": "u"}]}})
     assert vc.find_board(get, {"name": "Acme", "ats": "workable", "slug": "acme"}).ats == "workable"
+
+
+def test_careers_site_systems_use_the_exact_slug_only():
+    class Http:
+        requested = []
+
+        def get_text(self, url):
+            self.requested.append(url)
+            return ('<urlset><url><loc>https://acme.wd1.myworkdayjobs.com/Careers/job/Pune/ML-Engineer_R1</loc>'
+                    '</url></urlset>')
+
+    http = Http()
+    board = vc.find_board(lambda url: None, {"name": "Acme", "ats": "workday", "slug": "acme/wd1/Careers"}, http)
+    assert (board.ats, board.slug, board.titles) == ("workday", "acme/wd1/Careers", ["ML Engineer"])
+    assert http.requested == ["https://acme.wd1.myworkdayjobs.com/Careers/siteMap.xml"]
