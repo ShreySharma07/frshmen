@@ -5,7 +5,10 @@
 #   category  lab | infra | applied | devtools | robotics | india | yc
 #   hq        in | us | eu | uk | ca | global   (pruning hint only; job location is read per posting)
 #   ats       greenhouse | lever | ashby | workable | smartrecruiters   (guess until verified)
-#   slug      board token on that ATS (guess until verified)
+#             | workday | darwinbox | keka | zoho_recruit   (careers-site systems: set by hand, never guessed)
+#   slug      board token on that ATS (guess until verified). Careers-site systems:
+#             workday "tenant/wdN/site", darwinbox subdomain or full host, keka "sub[/portal-guid]",
+#             zoho_recruit careers host (e.g. "acme.zohorecruit.in")
 #   verified, jobs, ai_jobs   written by scripts/verify_companies.py; don't edit by hand
 #
 # Shrey: delete lines you don't want, add any you do. ats/slug can be left as a guess;
@@ -144,7 +147,7 @@ companies:
   - {name: Replit, category: devtools, hq: us, ats: ashby, slug: replit, verified: true, jobs: 70, ai_jobs: 3}
   - {name: Sourcegraph, category: devtools, hq: global, ats: greenhouse, slug: sourcegraph91, verified: true, jobs: 10, ai_jobs: 1}
   - {name: GitLab, category: devtools, hq: global, ats: greenhouse, slug: gitlab, verified: true, jobs: 210, ai_jobs: 14}
-  - {name: Postman, category: devtools, hq: in, ats: workable, slug: postman, verified: false}
+  - {name: Postman, category: devtools, hq: in, ats: workday, slug: postman/wd108/careers, verified: false}
   - {name: Warp, category: devtools, hq: us, ats: ashby, slug: warp, verified: true, jobs: 22, ai_jobs: 1}
   - {name: Factory, category: devtools, hq: us, ats: ashby, slug: factory, verified: true, jobs: 53, ai_jobs: 4}
   - {name: Augment Code, category: devtools, hq: us, ats: ashby, slug: augmentcode, verified: false}
@@ -171,22 +174,22 @@ companies:
   # --- India: AI-first and strong ML teams ---
   - {name: Sarvam AI, category: india, hq: in, ats: ashby, slug: sarvam, verified: true, jobs: 59, ai_jobs: 10}
   - {name: Krutrim, category: india, hq: in, ats: lever, slug: krutrim, verified: false}
-  - {name: Uniphore, category: india, hq: in, ats: lever, slug: uniphore, verified: false}
-  - {name: Yellow.ai, category: india, hq: in, ats: lever, slug: yellowai, verified: false}
+  - {name: Uniphore, category: india, hq: in, ats: workday, slug: uniphore/wd503/Uniphore, verified: false}
+  - {name: Yellow.ai, category: india, hq: in, ats: zoho_recruit, slug: yellow.zohorecruit.in, verified: false}
   - {name: Haptik, category: india, hq: in, ats: lever, slug: haptik, verified: false}
   - {name: Gupshup, category: india, hq: in, ats: workable, slug: gupshup, verified: false}
-  - {name: Vue.ai (Mad Street Den), category: india, hq: in, ats: lever, slug: madstreetden, verified: false}
-  - {name: Qure.ai, category: india, hq: in, ats: lever, slug: qure, verified: false}
+  - {name: Vue.ai (Mad Street Den), category: india, hq: in, ats: darwinbox, slug: msd, verified: false}
+  - {name: Qure.ai, category: india, hq: in, ats: zoho_recruit, slug: career.qure.ai, verified: false}
   - {name: SigTuple, category: india, hq: in, ats: lever, slug: sigtuple, verified: false}
-  - {name: Wadhwani AI, category: india, hq: in, ats: lever, slug: wadhwaniai, verified: false}
+  - {name: Wadhwani AI, category: india, hq: in, ats: zoho_recruit, slug: wadhwaniai.zohorecruit.in, verified: false}
   - {name: Simplismart, category: india, hq: in, ats: ashby, slug: simplismart, verified: false}
   - {name: Atlan, category: india, hq: in, ats: ashby, slug: atlan, verified: true, jobs: 6, ai_jobs: 0}
-  - {name: Razorpay, category: india, hq: in, ats: lever, slug: razorpay, verified: false}
+  - {name: Razorpay, category: india, hq: in, ats: greenhouse, slug: razorpaysoftwareprivatelimited, verified: false}
   - {name: CRED, category: india, hq: in, ats: lever, slug: cred, verified: true, jobs: 8, ai_jobs: 0}
   - {name: Meesho, category: india, hq: in, ats: lever, slug: meesho, verified: true, jobs: 59, ai_jobs: 7}
-  - {name: PhonePe, category: india, hq: in, ats: greenhouse, slug: phonepe, verified: false}
+  - {name: PhonePe, category: india, hq: in, ats: smartrecruiters, slug: PHONEPELIMITED, verified: false}
   - {name: Groww, category: india, hq: in, ats: greenhouse, slug: groww, verified: true, jobs: 7, ai_jobs: 0}
-  - {name: Zepto, category: india, hq: in, ats: lever, slug: zepto, verified: false}
+  - {name: Zepto, category: india, hq: in, ats: darwinbox, slug: zepto, verified: false}
   - {name: InMobi, category: india, hq: in, ats: greenhouse, slug: inmobi, verified: true, jobs: 72, ai_jobs: 9}
   - {name: Glance, category: india, hq: in, ats: greenhouse, slug: glance, verified: true, jobs: 37, ai_jobs: 7}
   - {name: ShareChat, category: india, hq: in, ats: lever, slug: sharechat, verified: false}
@@ -194,41 +197,40 @@ companies:
   - {name: Unacademy, category: india, hq: in, ats: smartrecruiters, slug: unacademy, verified: true, jobs: 3, ai_jobs: 0}
   - {name: upGrad, category: india, hq: in, ats: lever, slug: upgrad, verified: false}
   - {name: Freshworks, category: india, hq: in, ats: smartrecruiters, slug: freshworks, verified: true, jobs: 100, ai_jobs: 6}
-  - {name: BrowserStack, category: india, hq: in, ats: lever, slug: browserstack, verified: false}
+  - {name: BrowserStack, category: india, hq: in, ats: workday, slug: browserstack/wd3/External, verified: false}
   - {name: Hasura, category: india, hq: in, ats: lever, slug: hasura, verified: false}
   - {name: Juspay, category: india, hq: in, ats: lever, slug: juspay, verified: false}
   - {name: Zeta, category: india, hq: in, ats: lever, slug: zeta, verified: true, jobs: 25, ai_jobs: 1}
   - {name: slice, category: india, hq: in, ats: greenhouse, slug: slice, verified: true, jobs: 28, ai_jobs: 0}
   - {name: Jar, category: india, hq: in, ats: workable, slug: jar, verified: false}
-  - {name: Sprinto, category: india, hq: in, ats: workable, slug: sprinto, verified: false}
+  - {name: Sprinto, category: india, hq: in, ats: lever, slug: Sprinto, verified: false}
   - {name: Whatfix, category: india, hq: in, ats: smartrecruiters, slug: whatfix, verified: true, jobs: 1, ai_jobs: 0}
-  - {name: Locus, category: india, hq: in, ats: workable, slug: locus, verified: false}
-  - {name: Innovaccer, category: india, hq: in, ats: workable, slug: innovaccer, verified: false}
-  - {name: HealthifyMe, category: india, hq: in, ats: workable, slug: healthifyme, verified: false}
-  - {name: Pixxel, category: india, hq: in, ats: lever, slug: pixxel, verified: false}
+  - {name: Locus, category: india, hq: in, ats: darwinbox, slug: locus, verified: false}
+  - {name: Innovaccer, category: india, hq: in, ats: workable, slug: innovaccer-analytics, verified: false}
+  - {name: HealthifyMe, category: india, hq: in, ats: darwinbox, slug: healthify, verified: false}
+  - {name: Pixxel, category: india, hq: in, ats: darwinbox, slug: pixxel, verified: false}
   - {name: Mindtickle, category: india, hq: in, ats: lever, slug: mindtickle, verified: true, jobs: 17, ai_jobs: 1}
   - {name: Chargebee, category: india, hq: in, ats: lever, slug: chargebee, verified: false}
   - {name: Exotel, category: india, hq: in, ats: lever, slug: exotel, verified: false}
   - {name: Verloop.io, category: india, hq: in, ats: lever, slug: verloop, verified: false}
   - {name: Neysa, category: india, hq: in, ats: lever, slug: neysa, verified: false}
   - {name: Setu, category: india, hq: in, ats: lever, slug: setu, verified: false}
-  - {name: Fractal Analytics, category: india, hq: in, ats: lever, slug: fractal, verified: false}
+  - {name: Fractal Analytics, category: india, hq: in, ats: workday, slug: fractal/wd1/Careers, verified: false}
   - {name: Tredence, category: india, hq: in, ats: workable, slug: tredence, verified: false}
   - {name: Sigmoid, category: india, hq: in, ats: greenhouse, slug: sigmoid, verified: true, jobs: 36, ai_jobs: 4}
-  - {name: Gramener, category: india, hq: in, ats: lever, slug: gramener, verified: false}
+  - {name: Gramener, category: india, hq: in, ats: darwinbox, slug: straive.darwinbox.com, verified: false}
   - {name: Ema, category: india, hq: us, ats: ashby, slug: ema, verified: true, jobs: 41, ai_jobs: 10}
   - {name: Lyzr AI, category: india, hq: in, ats: ashby, slug: lyzr, verified: true, jobs: 0, ai_jobs: 0}
-  - {name: Rephrase.ai, category: india, hq: in, ats: lever, slug: rephrase, verified: false}
   - {name: Smallest.ai, category: india, hq: in, ats: ashby, slug: smallest, verified: true, jobs: 2, ai_jobs: 0}
   - {name: Gnani.ai, category: india, hq: in, ats: lever, slug: gnani, verified: false}
-  - {name: Nference, category: india, hq: in, ats: lever, slug: nference, verified: false}
+  - {name: Nference, category: india, hq: in, ats: keka, slug: nference, verified: false}
   - {name: Swiggy, category: india, hq: in, ats: smartrecruiters, slug: swiggy, verified: true, jobs: 100, ai_jobs: 0}
   - {name: Zomato (Eternal), category: india, hq: in, ats: lever, slug: eternal, verified: true, jobs: 4, ai_jobs: 0}
   - {name: Flipkart, category: india, hq: in, ats: lever, slug: flipkart, verified: false}
   - {name: Ola, category: india, hq: in, ats: workable, slug: olacabs, verified: false}
   - {name: Nykaa, category: india, hq: in, ats: workable, slug: nykaa, verified: false}
   - {name: Urban Company, category: india, hq: in, ats: lever, slug: urbancompany, verified: false}
-  - {name: Spinny, category: india, hq: in, ats: lever, slug: spinny, verified: false}
+  - {name: Spinny, category: india, hq: in, ats: darwinbox, slug: spinzone, verified: false}
 
   # --- YC AI startups ---
   - {name: Langfuse, category: yc, hq: eu, ats: ashby, slug: langfuse, verified: true, jobs: 0, ai_jobs: 0}
@@ -285,6 +287,29 @@ companies:
   - {name: Persana AI, category: yc, hq: us, ats: ashby, slug: persana, verified: false}
   - {name: Openmart, category: yc, hq: us, ats: ashby, slug: openmart, verified: false}
   - {name: Simple AI, category: yc, hq: us, ats: ashby, slug: simple-ai, verified: true, jobs: 9, ai_jobs: 1}
+
+  # --- More India (careers systems surveyed 2026-10-06; see docs/decisions.md) ---
+  - {name: Jupiter, category: india, hq: in, ats: keka, slug: jupiter/b5279857-cf81-4dde-a215-fc48957ee2b5, verified: false}
+  - {name: Signzy, category: india, hq: in, ats: keka, slug: signzy, verified: false}
+  - {name: Karya, category: india, hq: in, ats: greenhouse, slug: karya, verified: false}
+  - {name: HackerRank, category: india, hq: in, ats: greenhouse, slug: hackerrank, verified: false}
+  - {name: DoorDash India, category: india, hq: in, ats: greenhouse, slug: doordashindia, verified: false}
+  - {name: Paytm, category: india, hq: in, ats: lever, slug: paytm, verified: false}
+  - {name: Hevo Data, category: india, hq: in, ats: lever, slug: hevodata, verified: false}
+  - {name: Level AI, category: india, hq: in, ats: lever, slug: levelai, verified: false}
+  - {name: Netomi, category: india, hq: in, ats: lever, slug: netomi, verified: false}
+  - {name: Dozee, category: india, hq: in, ats: lever, slug: dozee, verified: false}
+  - {name: 100ms, category: india, hq: in, ats: lever, slug: 100ms, verified: false}
+  - {name: Stable Money, category: india, hq: in, ats: lever, slug: stable-money1, verified: false}
+  - {name: Gushwork, category: india, hq: in, ats: lever, slug: gushwork, verified: false}
+  - {name: AiPrise, category: india, hq: in, ats: ashby, slug: aiprise, verified: false}
+  - {name: Altimate AI, category: india, hq: in, ats: ashby, slug: altimate, verified: false}
+  - {name: Sprinklr, category: india, hq: in, ats: workday, slug: sprinklr/wd1/careers, verified: false}
+  - {name: Quantiphi, category: india, hq: in, ats: workday, slug: quantiphi/wd1/Careers_at_Quantiphi, verified: false}
+  - {name: Games24x7, category: india, hq: in, ats: darwinbox, slug: games24x7, verified: false}
+  - {name: LatentView, category: india, hq: in, ats: darwinbox, slug: latentview, verified: false}
+  - {name: Perfios, category: india, hq: in, ats: darwinbox, slug: perfios, verified: false}
+  - {name: Darwinbox, category: india, hq: in, ats: darwinbox, slug: dbx, verified: false}
 
   # --- YC AI startups imported from yc-oss on 2026-10-06 (scripts/import_yc.py) ---
   - {name: Hub, category: yc, hq: us, ats: ashby, slug: hub, verified: false}

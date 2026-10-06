@@ -33,3 +33,35 @@ jobs:
           empty = [j["id"] for j in jobs if not j["description_text"]]
           assert not empty, f"empty descriptions: {empty}"
           EOF
+
+      # Careers-site systems (docs/decisions.md): one known board each, called through the adapters.
+      - name: Check careers-site adapters live
+        run: |
+          python - <<'EOF'
+          import sys
+          sys.path.insert(0, ".")
+          from sources import ADAPTERS
+          from sources.http import HttpClient
+          from sources.models import Company
+
+          http = HttpClient()
+          failed = []
+          for name, ats, slug in [
+              ("BrowserStack", "workday", "browserstack/wd3/External"),
+              ("Spinny", "darwinbox", "spinzone"),
+              ("Jupiter", "keka", "jupiter"),
+              ("Wadhwani AI", "zoho_recruit", "wadhwaniai.zohorecruit.in"),
+          ]:
+              titles = ADAPTERS[ats].list_titles(http, slug)
+              jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug)) if titles else []
+              print(f"{ats} {slug}: {len(titles or [])} listed, {len(jobs)} fetched")
+              for j in jobs[:2]:
+                  print(f"  {j.title} | {j.location_raw} | {j.posted_at} | {j.description_text[:120]!r}")
+              if titles is None or (titles and not jobs and ats in ("keka", "zoho_recruit")):
+                  failed.append(ats)
+              if ats == "zoho_recruit" and titles is None:
+                  page = http.get_text(f"https://{slug}/jobs/Careers") or ""
+                  i = page.find('id="jobs"')
+                  print("  zoho page length", len(page), "jobs input at", i, repr(page[max(0, i - 200):i + 300]))
+          assert not failed, f"adapters returned nothing: {failed}"
+          EOF
