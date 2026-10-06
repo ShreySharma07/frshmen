@@ -21,12 +21,17 @@ target_roles:
     - data scientist
     - llm engineer
     - genai engineer
-    - generative ai
+    - generative ai engineer
     - mlops
+    - ml ops
     - ml platform
     - ml infrastructure
     - nlp engineer
     - computer vision engineer
+    - inference engineer
+    - deep learning
+    - research scientist
+    - researcher
     # Python backend (added 2026-10-06, see docs/decisions.md)
     - backend engineer
     - backend developer
@@ -54,9 +59,21 @@ target_roles:
     - account executive
     - marketing
     - recruiter
+    - ux
+    - user research
+    - designer
 
 # Python backend roles are only a fit when the stack is Python; checked against the description.
 backend_requires_any: [python, fastapi, django, flask]
+
+# Plain "Software Engineer" titles (e.g. Scale's "Software Engineer - New Grad") count only when
+# the description shows Python AND AI/ML work. Set enabled: false to drop them.
+generic_swe:
+  enabled: true
+  titles: [software engineer, software developer, sde, swe, forward deployed engineer]
+  requires_all_groups:
+    - [python]
+    - [llm, llms, machine learning, ml, ai, deep learning, pytorch, agentic, agents, inference, evaluations, nlp]
 
 skills:
   - python

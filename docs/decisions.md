@@ -4,6 +4,11 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-06 — Count plain "Software Engineer" titles when the work is Python + AI (pending Shrey's confirmation)
+- **Options:** only AI/ML and backend titles · also plain SWE titles whose description shows Python and AI/ML work
+- **Choice (proposed by Claude, toggle in `config/profile.yaml` → `generic_swe.enabled`):** include them.
+- **Why:** New-grad postings at AI companies are often titled just "Software Engineer - New Grad" (e.g. Scale AI) while asking for Python, LLMs and evals. Without this they'd never show. Cost: more generic SWE roles at AI companies, since "AI" appears in most of their boilerplate.
+
 ## 2026-10-06 — Add junior Python backend roles to targets
 - **Options:** AI/ML roles only · AI/ML + Python backend
 - **Choice:** AI/ML + junior Python backend (Python stack only: FastAPI/Django/Flask).
