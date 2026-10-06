@@ -1,0 +1,14 @@
+[project]
+name = "frshmen-api"
+version = "0.1.0"
+description = "FastAPI backend for the frshmen job board, deployed as a Cloudflare Python Worker"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+]
+
+[dependency-groups]
+dev = [
+    "workers-py",
+    "workers-runtime-sdk",
+]

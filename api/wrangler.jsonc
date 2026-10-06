@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "frshmen",
+  "main": "src/worker.py",
+  "compatibility_date": "2026-10-06",
+  "compatibility_flags": ["python_workers"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "frshmen",
+      // Not a secret. Paste the ID from Cloudflare dashboard -> D1 -> frshmen.
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "../db/migrations"
+    }
+  ],
+  "assets": {
+    // The React build. Served without running Python, so page loads don't use Worker requests.
+    "directory": "../web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  }
+}
