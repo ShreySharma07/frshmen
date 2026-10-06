@@ -1,7 +1,7 @@
 name: Fetch smoke test
 
 # Fetches one live board per ATS to catch payload changes the fixtures can't.
-# Three small requests; the full fetch is scheduled separately (build step 4).
+# Three small requests; the full fetch runs on a schedule in pipeline.yml.
 on:
   pull_request:
     paths:

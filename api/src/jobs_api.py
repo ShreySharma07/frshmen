@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse
 from storage import D1Database, Database
 
 LIST_COLUMNS = (
-    "id, company, title, url, location_raw, location_type, countries, posted_at, first_seen_at, "
+    "id, company, title, url, location_raw, location_type, countries, cities, posted_at, first_seen_at, "
     "level, level_confidence, level_reason, yoe_min, yoe_max, yoe_evidence, batch_years, role_family, "
     "visa_sponsorship, evidence"
 )
@@ -29,7 +29,7 @@ HIGHLIGHT_KINDS = {
     "experienced": ("yoe_required", "senior_title"),
 }
 HIGHLIGHT_MAX = 280
-JSON_COLUMNS = ("countries", "batch_years", "evidence", "skills")
+JSON_COLUMNS = ("countries", "cities", "batch_years", "evidence", "skills")
 # D1 rejects LIKE patterns over 50 bytes.
 MAX_QUERY_CHARS = 40
 
@@ -94,6 +94,7 @@ def create_app() -> FastAPI:
         company: str | None = None,
         location_type: Literal["remote", "hybrid", "onsite"] | None = None,
         country: str | None = Query(None, max_length=60),
+        city: str | None = Query(None, max_length=60),
         limit: int = Query(50, ge=1, le=100),
         offset: int = Query(0, ge=0, le=5000),
         db: Database = Depends(get_db),
@@ -119,6 +120,9 @@ def create_app() -> FastAPI:
             # countries is a JSON array; json_each matches whole names ("India", not "Indiana").
             where.append("EXISTS (SELECT 1 FROM json_each(jobs.countries) AS c WHERE c.value = ?)")
             params.append(country)
+        if city:
+            where.append("EXISTS (SELECT 1 FROM json_each(jobs.cities) AS c WHERE c.value = ?)")
+            params.append(city)
         if q and q.strip():
             pattern = f"%{q.strip()[:MAX_QUERY_CHARS]}%"
             where.append("(title LIKE ? OR company LIKE ?)")
@@ -159,6 +163,11 @@ def create_app() -> FastAPI:
             "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.level IN ('fresher', 'maybe') "
             "GROUP BY c.value ORDER BY n DESC, c.value"
         )
+        cities = await db.all(
+            "SELECT c.value AS city, COUNT(*) AS n FROM jobs, json_each(jobs.cities) AS c "
+            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.level IN ('fresher', 'maybe') "
+            "GROUP BY c.value ORDER BY n DESC, c.value"
+        )
         last_run = await db.all("SELECT * FROM runs ORDER BY id DESC LIMIT 1")
         by_level = {r["level"]: r["n"] for r in counts}
         return {
@@ -170,6 +179,7 @@ def create_app() -> FastAPI:
             },
             "companies": companies,
             "countries": countries,
+            "cities": cities,
             "last_run": _decode(last_run[0]) if last_run else None,
         }
 

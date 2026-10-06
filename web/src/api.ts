@@ -16,6 +16,7 @@ export interface JobSummary {
   location_raw: string | null;
   location_type: "remote" | "hybrid" | "onsite" | null;
   countries: string[];
+  cities: string[];
   posted_at: string | null;
   first_seen_at: string;
   level: Level;
@@ -50,6 +51,7 @@ export interface Meta {
   counts: Record<Level | "new", number>;
   companies: { company: string; n: number }[];
   countries: { country: string; n: number }[];
+  cities: { city: string; n: number }[];
   last_run: { finished_at: string; companies_ok: number; companies_failed: number } | null;
 }
 
@@ -58,6 +60,7 @@ export interface Filters {
   q: string;
   company: string;
   country: string;
+  city: string;
   location: "" | "remote" | "hybrid" | "onsite";
 }
 
@@ -74,6 +77,7 @@ export function fetchJobs(filters: Filters, offset: number, signal?: AbortSignal
   if (filters.q.trim()) params.set("q", filters.q.trim());
   if (filters.company) params.set("company", filters.company);
   if (filters.country) params.set("country", filters.country);
+  if (filters.city) params.set("city", filters.city);
   if (filters.location) params.set("location_type", filters.location);
   return get<JobPage>(`/api/jobs?${params}`, signal);
 }

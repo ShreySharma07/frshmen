@@ -1,8 +1,9 @@
 """Map a posting's free-text location (plus any ATS country code) to countries.
 
 "Bangalore, Karnataka", "San Francisco, CA; New York, NY" and "Remote - US" all
-become a clean country list for the page's country filter. Remote with no
-country stays visible as "Remote (unspecified)" rather than being dropped.
+become a clean country list for the page's country filter, and Indian cities
+("Bangalore" -> Bengaluru) for its City filter. Remote with no country stays
+visible as "Remote (unspecified)" rather than being dropped.
 Aliases live in config/locations.yaml.
 """
 
@@ -27,12 +28,14 @@ _US_UPPER = re.compile(r"(?<![\w.])US(?![\w])")
 class Location:
     countries: list[str]
     remote: bool
+    cities: list[str] = field(default_factory=list)  # Indian cities only, canonical names
     evidence: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
 class _Aliases:
     patterns: tuple[tuple[re.Pattern[str], str], ...]
+    city_patterns: tuple[tuple[re.Pattern[str], str], ...]
     us_states: frozenset[str]
     iso: dict[str, str]
 
@@ -40,11 +43,17 @@ class _Aliases:
 @lru_cache(maxsize=2)
 def _load(path: Path = CONFIG) -> _Aliases:
     raw = yaml.safe_load(Path(path).read_text())
+    cities = [(alias.lower(), city) for city, aliases in raw.get("india_cities", {}).items() for alias in aliases]
     pairs = [(alias.lower(), country) for country, aliases in raw["countries"].items() for alias in aliases]
-    # Longest first so "new york city" wins over "new york", "delhi ncr" over "delhi".
-    pairs.sort(key=lambda p: -len(p[0]))
-    patterns = tuple((re.compile(rf"(?<![\w.]){re.escape(a)}(?![\w])", re.I), c) for a, c in pairs)
-    return _Aliases(patterns, frozenset(raw["us_states"]), {k.upper(): v for k, v in raw["iso_codes"].items()})
+    pairs += [(alias, "India") for alias, _ in cities]
+    return _Aliases(_compile(pairs), _compile(cities), frozenset(raw["us_states"]),
+                    {k.upper(): v for k, v in raw["iso_codes"].items()})
+
+
+def _compile(pairs: list[tuple[str, str]]) -> tuple[tuple[re.Pattern[str], str], ...]:
+    # Longest first so "new york city" wins over "new york", "navi mumbai" over "mumbai".
+    pairs = sorted(pairs, key=lambda p: -len(p[0]))
+    return tuple((re.compile(rf"(?<![\w.]){re.escape(a)}(?![\w])", re.I), name) for a, name in pairs)
 
 
 def extract_location(location_raw: str | None, ats_countries: list[str] | None = None,
@@ -77,9 +86,18 @@ def extract_location(location_raw: str | None, ats_countries: list[str] | None =
             add(country, m.start())
 
     found = sorted(hits, key=hits.__getitem__)
+    city_hits: dict[str, int] = {}
+    taken: list[tuple[int, int]] = []  # a longer alias owns its span: "Delhi NCR" is not also "Delhi"
+    for pattern, city in aliases.city_patterns:
+        for m in pattern.finditer(text):
+            if any(s < m.end() and m.start() < e for s, e in taken):
+                continue
+            taken.append(m.span())
+            city_hits[city] = min(m.start(), city_hits.get(city, m.start()))
+    cities = sorted(city_hits, key=city_hits.__getitem__)
     remote = bool(_REMOTE.search(text))
     countries = found or ([REMOTE_UNSPECIFIED] if remote else [])
     evidence = [{"kind": "location", "snippet": text}] if text else []
     if ats_countries:
         evidence.append({"kind": "ats_country", "snippet": ", ".join(ats_countries)})
-    return Location(countries=countries, remote=remote, evidence=evidence)
+    return Location(countries=countries, remote=remote, cities=cities, evidence=evidence)

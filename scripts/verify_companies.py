@@ -14,6 +14,7 @@ import argparse
 import re
 import sys
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Any, Callable
 
@@ -31,7 +32,9 @@ ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters"]
 # Probed only when it is the company's guessed ATS: Workable throttles hard and
 # few of our companies use it, so trying it for everyone mostly bought 429s.
 GUESS_ONLY_ATS = {"workable"}
-KEY_ORDER = ["name", "category", "hq", "ats", "slug", "verified", "jobs", "ai_jobs"]
+KEY_ORDER = ["name", "category", "hq", "ats", "slug", "verified", "jobs", "ai_jobs", "checked"]
+# Boards found missing or empty aren't re-probed for this long, so a PR run only probes new entries.
+RECHECK_DAYS = 7
 
 # Rough title filter, only to help pruning; real classification lives in extract/.
 AI_TITLE = re.compile(
@@ -129,8 +132,10 @@ def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
     """
     guessed = company["ats"]
     attempts = [(guessed, company["slug"])]
-    for ats in [guessed] + [a for a in ATS_ORDER if a != guessed and a not in GUESS_ONLY_ATS]:
-        attempts += [(ats, s) for s in slug_variants(company)]
+    hosts = [guessed] + [a for a in ATS_ORDER if a != guessed and a not in GUESS_ONLY_ATS]
+    # Slug-major order alternates hosts, so one host's per-host delay overlaps the others' requests.
+    for slug in slug_variants(company):
+        attempts += [(ats, slug) for ats in hosts]
     empty: Board | None = None
     errors: list[str] = []
     for ats, slug in dict.fromkeys(attempts):
@@ -151,9 +156,15 @@ def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
     return empty
 
 
-def needs_check(company: dict[str, Any]) -> bool:
-    # Empty boards are rechecked each run: the company may have moved ATS or started hiring.
-    return company.get("verified") is not True or not company.get("jobs")
+def needs_check(company: dict[str, Any], today: date | None = None) -> bool:
+    if company.get("verified") is True and company.get("jobs"):
+        return False
+    # Missing or empty boards are rechecked weekly: the company may have moved ATS or started hiring.
+    checked = company.get("checked")
+    if checked:
+        today = today or date.today()
+        return (today - date.fromisoformat(str(checked))).days >= RECHECK_DAYS
+    return True
 
 
 def format_line(indent: str, company: dict[str, Any]) -> str:
@@ -231,7 +242,7 @@ def main() -> int:
         except FetchError as e:
             print(f"[{i}/{len(companies)}] {company['name']}: gave up after retries, left unchanged ({e})", file=sys.stderr, flush=True)
             continue
-        updated = dict(company)
+        updated = dict(company, checked=date.today().isoformat())
         if board:
             updated.update(ats=board.ats, slug=board.slug, verified=True, jobs=len(board.titles),
                            ai_jobs=sum(bool(AI_TITLE.search(t)) for t in board.titles))

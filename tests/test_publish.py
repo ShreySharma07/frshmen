@@ -54,10 +54,27 @@ def test_changed_content_updates_but_keeps_first_seen(db):
     assert (r["level"], r["description_text"], r["first_seen_at"]) == ("experienced", "Needs 3+ years", "2026-10-06T00:00:00Z")
 
 
-def test_missing_job_from_ok_board_is_closed_not_deleted(db):
+def test_missing_job_is_closed_after_two_misses_not_deleted(db):
     pub.publish(db, payload([job("1"), job("2")]), now="t1")
     p = pub.publish(db, payload([job("1")]), now="t2")
+    assert (p.missed, p.closed) == (1, 0) and rows(db)["ashby:acme:2"]["status"] == "open"
+    p = pub.publish(db, payload([job("1")]), now="t3")
     assert p.closed == 1 and rows(db)["ashby:acme:2"]["status"] == "closed"
+
+
+def test_one_miss_then_seen_again_resets_the_count(db):
+    pub.publish(db, payload([job("1"), job("2")]), now="t1")
+    pub.publish(db, payload([job("1")]), now="t2")
+    p = pub.publish(db, payload([job("1"), job("2")]), now="t3")
+    assert p.reopened == 0 and rows(db)["ashby:acme:2"]["missed_runs"] == 0
+    p = pub.publish(db, payload([job("1")]), now="t4")
+    assert p.closed == 0 and rows(db)["ashby:acme:2"]["status"] == "open"
+
+
+def test_migrations_run_once(tmp_path):
+    path = tmp_path / "m.db"
+    pub.SqliteDatabase(path).migrate()
+    pub.SqliteDatabase(path).migrate()  # a second ALTER TABLE would raise "duplicate column"
 
 
 def test_failed_board_does_not_close_its_jobs(db):
@@ -69,6 +86,7 @@ def test_failed_board_does_not_close_its_jobs(db):
 def test_reappearing_job_is_reopened(db):
     pub.publish(db, payload([job("1"), job("2")]), now="t1")
     pub.publish(db, payload([job("1")]), now="t2")
+    pub.publish(db, payload([job("1")]), now="t2b")
     p = pub.publish(db, payload([job("1"), job("2")]), now="t3")
     assert p.reopened == 1 and rows(db)["ashby:acme:2"]["status"] == "open"
     assert rows(db)["ashby:acme:2"]["first_seen_at"] == "t1"

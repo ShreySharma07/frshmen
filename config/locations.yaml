@@ -3,11 +3,11 @@
 # Ambiguous names (Georgia, Cambridge, Birmingham, Paris TX...) are deliberately left out.
 
 countries:
+  # Cities in india_cities below also count as India; list only country/state names here.
   India:
-    [india, ind, bharat, bengaluru, bangalore, blr, karnataka, hyderabad, telangana, pune, mumbai, bombay,
-     maharashtra, delhi, new delhi, delhi ncr, ncr, gurgaon, gurugram, noida, haryana, chennai, madras,
-     tamil nadu, coimbatore, madurai, kolkata, calcutta, ahmedabad, gujarat, surat, jaipur, rajasthan,
-     kochi, cochin, kerala, trivandrum, thiruvananthapuram, indore, chandigarh, lucknow, bhubaneswar]
+    [india, ind, bharat, karnataka, telangana, maharashtra, haryana, tamil nadu, gujarat, rajasthan, kerala,
+     west bengal, uttar pradesh, madhya pradesh, andhra pradesh, odisha, orissa, assam, bihar, jharkhand,
+     uttarakhand, chhattisgarh, himachal pradesh]
   United States:
     [united states, united sates, united states of america, usa, u.s., u.s.a., america, san francisco,
      sf bay area, bay area, san francisco bay area, mountain view, mountian view, palo alto, menlo park,
@@ -40,6 +40,58 @@ countries:
   Uruguay: [uruguay, montevideo]
   Colombia: [colombia, bogotá, bogota, medellín, medellin]
   Chile: [chile, santiago de chile]
+
+# Indian cities: canonical name (shown in the City filter) -> spellings seen in postings.
+# Satellite towns fold into their metro where job seekers treat them as one (Thane -> Mumbai).
+india_cities:
+  Bengaluru: [bengaluru, bangalore, blr, electronic city, whitefield]
+  Hyderabad: [hyderabad, secunderabad, hitec city, hitech city]
+  Pune: [pune, pimpri, hinjewadi]
+  Mumbai: [mumbai, bombay, navi mumbai, thane, powai]
+  Delhi: [delhi, new delhi]
+  Delhi NCR: [delhi ncr, ncr]
+  Gurugram: [gurugram, gurgaon]
+  Noida: [noida, greater noida]
+  Faridabad: [faridabad]
+  Ghaziabad: [ghaziabad]
+  Chennai: [chennai, madras]
+  Kolkata: [kolkata, calcutta]
+  Ahmedabad: [ahmedabad]
+  Gandhinagar: [gandhinagar, gift city]
+  Vadodara: [vadodara, baroda]
+  Surat: [surat]
+  Jaipur: [jaipur]
+  Jodhpur: [jodhpur]
+  Udaipur: [udaipur]
+  Kochi: [kochi, cochin, ernakulam, infopark]
+  Thiruvananthapuram: [thiruvananthapuram, trivandrum, technopark]
+  Kozhikode: [kozhikode, calicut]
+  Coimbatore: [coimbatore]
+  Madurai: [madurai, maduria]  # 'maduria' is a typo seen in a real posting
+  Tiruchirappalli: [tiruchirappalli, trichy]
+  Mysuru: [mysuru, mysore]
+  Mangaluru: [mangaluru, mangalore]
+  Hubballi: [hubballi, hubli]
+  Visakhapatnam: [visakhapatnam, vizag]
+  Vijayawada: [vijayawada]
+  Nagpur: [nagpur]
+  Nashik: [nashik]
+  Indore: [indore]
+  Bhopal: [bhopal]
+  Chandigarh: [chandigarh, tricity]
+  Mohali: [mohali]
+  Lucknow: [lucknow]
+  Kanpur: [kanpur]
+  Varanasi: [varanasi]
+  Bhubaneswar: [bhubaneswar]
+  Patna: [patna]
+  Ranchi: [ranchi]
+  Raipur: [raipur]
+  Guwahati: [guwahati]
+  Dehradun: [dehradun]
+  Goa: [goa, panaji]
+  Amritsar: [amritsar]
+  Ludhiana: [ludhiana]
 
 # Two-letter codes after a comma ("Austin, TX") are US states first, then ISO country codes ("Mexico City, MX").
 us_states:

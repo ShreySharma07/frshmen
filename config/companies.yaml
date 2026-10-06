@@ -285,3 +285,239 @@ companies:
   - {name: Persana AI, category: yc, hq: us, ats: ashby, slug: persana, verified: false}
   - {name: Openmart, category: yc, hq: us, ats: ashby, slug: openmart, verified: false}
   - {name: Simple AI, category: yc, hq: us, ats: ashby, slug: simple-ai, verified: true, jobs: 9, ai_jobs: 1}
+
+  # --- YC AI startups imported from yc-oss on 2026-10-06 (scripts/import_yc.py) ---
+  - {name: Hub, category: yc, hq: us, ats: ashby, slug: hub, verified: false}
+  - {name: Ressl AI, category: yc, hq: in, ats: ashby, slug: ressl-ai, verified: false}
+  - {name: Revion, category: yc, hq: us, ats: ashby, slug: revion, verified: false}
+  - {name: AfterQuery, category: yc, hq: us, ats: ashby, slug: afterquery, verified: false}
+  - {name: Auctor, category: yc, hq: us, ats: ashby, slug: auctor, verified: false}
+  - {name: Besimple AI, category: yc, hq: us, ats: ashby, slug: besimple-ai, verified: false}
+  - {name: Bluejay, category: yc, hq: us, ats: ashby, slug: bluejay, verified: false}
+  - {name: Bolna AI, category: yc, hq: in, ats: ashby, slug: bolna-ai, verified: false}
+  - {name: Brickanta, category: yc, hq: eu, ats: ashby, slug: brickanta, verified: false}
+  - {name: Calltree, category: yc, hq: us, ats: ashby, slug: calltree, verified: false}
+  - {name: Closure, category: yc, hq: us, ats: ashby, slug: closure, verified: false}
+  - {name: ComplyDo, category: yc, hq: eu, ats: ashby, slug: complydo, verified: false}
+  - {name: Contrario, category: yc, hq: us, ats: ashby, slug: contrario, verified: false}
+  - {name: F2, category: yc, hq: us, ats: ashby, slug: f2, verified: false}
+  - {name: Finto, category: yc, hq: eu, ats: ashby, slug: finto-de, verified: false}
+  - {name: Fleetline, category: yc, hq: us, ats: ashby, slug: fleetline, verified: false}
+  - {name: Forge Automation, category: yc, hq: ca, ats: ashby, slug: forge-automation, verified: false}
+  - {name: Godela, category: yc, hq: us, ats: ashby, slug: godela, verified: false}
+  - {name: Harper, category: yc, hq: us, ats: ashby, slug: harper, verified: false}
+  - {name: HUD, category: yc, hq: us, ats: ashby, slug: hud, verified: false}
+  - {name: Lanesurf, category: yc, hq: us, ats: ashby, slug: lanesurf, verified: false}
+  - {name: Leaping AI, category: yc, hq: us, ats: ashby, slug: leaping-ai, verified: false}
+  - {name: Lucis, category: yc, hq: eu, ats: ashby, slug: lucis, verified: false}
+  - {name: Mentra, category: yc, hq: us, ats: ashby, slug: mentra, verified: false}
+  - {name: Optifye.ai, category: yc, hq: in, ats: ashby, slug: optifye-ai, verified: false}
+  - {name: Proception Inc, category: yc, hq: us, ats: ashby, slug: proception-inc, verified: false}
+  - {name: QualGent, category: yc, hq: us, ats: ashby, slug: qualgent, verified: false}
+  - {name: Reacher, category: yc, hq: us, ats: ashby, slug: reacher, verified: false}
+  - {name: SalesPatriot, category: yc, hq: us, ats: ashby, slug: salespatriot, verified: false}
+  - {name: Semble, category: yc, hq: us, ats: ashby, slug: semble, verified: false}
+  - {name: Sim, category: yc, hq: us, ats: ashby, slug: sim, verified: false}
+  - {name: Sixtyfour, category: yc, hq: us, ats: ashby, slug: sixtyfour, verified: false}
+  - {name: Spott, category: yc, hq: eu, ats: ashby, slug: spott, verified: false}
+  - {name: Structured AI, category: yc, hq: us, ats: ashby, slug: structured-ai, verified: false}
+  - {name: Synthio Labs, category: yc, hq: us, ats: ashby, slug: synthio-labs, verified: false}
+  - {name: throxy, category: yc, hq: uk, ats: ashby, slug: throxy, verified: false}
+  - {name: Toothy AI, category: yc, hq: us, ats: ashby, slug: toothy-ai, verified: false}
+  - {name: Trelium, category: yc, hq: us, ats: ashby, slug: trelium, verified: false}
+  - {name: Uplane, category: yc, hq: us, ats: ashby, slug: uplane, verified: false}
+  - {name: Veritus, category: yc, hq: us, ats: ashby, slug: veritus, verified: false}
+  - {name: Vesence, category: yc, hq: us, ats: ashby, slug: vesence, verified: false}
+  - {name: Weave, category: yc, hq: us, ats: ashby, slug: weave-3, verified: false}
+  - {name: YouShift, category: yc, hq: us, ats: ashby, slug: youshift, verified: false}
+  - {name: Zalos, category: yc, hq: uk, ats: ashby, slug: zalos, verified: false}
+  - {name: Alex, category: yc, hq: us, ats: ashby, slug: alex-com, verified: false}
+  - {name: Anthrogen, category: yc, hq: us, ats: ashby, slug: anthrogen, verified: false}
+  - {name: Arini, category: yc, hq: us, ats: ashby, slug: arini, verified: false}
+  - {name: Artisan, category: yc, hq: us, ats: ashby, slug: artisan, verified: false}
+  - {name: Arva AI, category: yc, hq: us, ats: ashby, slug: arva-ai, verified: false}
+  - {name: Assembly HOA, category: yc, hq: us, ats: ashby, slug: assembly-hoa, verified: false}
+  - {name: Brighterway, category: yc, hq: us, ats: ashby, slug: brighterway, verified: false}
+  - {name: Capitol AI, category: yc, hq: us, ats: ashby, slug: capitol-ai, verified: false}
+  - {name: Carma, category: yc, hq: us, ats: ashby, slug: carma, verified: false}
+  - {name: Cartage, category: yc, hq: us, ats: ashby, slug: cartage, verified: false}
+  - {name: Clarion, category: yc, hq: us, ats: ashby, slug: clarion, verified: false}
+  - {name: Clearly AI, category: yc, hq: us, ats: ashby, slug: clearly-ai, verified: false}
+  - {name: Codes Health, category: yc, hq: us, ats: ashby, slug: codes-health, verified: false}
+  - {name: Conduit, category: yc, hq: us, ats: ashby, slug: conduit-ai, verified: false}
+  - {name: Conveo, category: yc, hq: uk, ats: ashby, slug: conveo, verified: false}
+  - {name: Corgi Insurance, category: yc, hq: us, ats: ashby, slug: corgi-insurance, verified: false}
+  - {name: Coval, category: yc, hq: us, ats: ashby, slug: coval, verified: false}
+  - {name: CTGT, category: yc, hq: us, ats: ashby, slug: ctgt, verified: false}
+  - {name: Deepnight, category: yc, hq: us, ats: ashby, slug: deepnight, verified: false}
+  - {name: Domu Technology Inc., category: yc, hq: us, ats: ashby, slug: domu-technology-inc, verified: false}
+  - {name: Drillbit, category: yc, hq: us, ats: ashby, slug: drillbit, verified: false}
+  - {name: Entangl, category: yc, hq: us, ats: ashby, slug: entangl, verified: false}
+  - {name: Event Horizon Labs, category: yc, hq: us, ats: ashby, slug: event-horizon-labs, verified: false}
+  - {name: FINNY AI, category: yc, hq: us, ats: ashby, slug: finny-ai, verified: false}
+  - {name: Garage, category: yc, hq: us, ats: ashby, slug: garage-2, verified: false}
+  - {name: Greenboard, category: yc, hq: us, ats: ashby, slug: greenboard, verified: false}
+  - {name: Legora, category: yc, hq: eu, ats: ashby, slug: legora, verified: false}
+  - {name: Merlin AI, category: yc, hq: us, ats: ashby, slug: merlin-ai, verified: false}
+  - {name: Model ML, category: yc, hq: uk, ats: ashby, slug: model-ml, verified: false}
+  - {name: Momentic, category: yc, hq: us, ats: ashby, slug: momentic, verified: false}
+  - {name: No Logo, category: yc, hq: us, ats: ashby, slug: no-logo, verified: false}
+  - {name: OffDeal, category: yc, hq: us, ats: ashby, slug: offdeal, verified: false}
+  - {name: Open, category: yc, hq: global, ats: ashby, slug: open, verified: false}
+  - {name: Piramidal, category: yc, hq: us, ats: ashby, slug: piramidal, verified: false}
+  - {name: PointOne, category: yc, hq: us, ats: ashby, slug: pointone, verified: false}
+  - {name: ProSights, category: yc, hq: us, ats: ashby, slug: prosights, verified: false}
+  - {name: Reform, category: yc, hq: us, ats: ashby, slug: reform, verified: false}
+  - {name: Respan, category: yc, hq: us, ats: ashby, slug: respan, verified: false}
+  - {name: RetailReady, category: yc, hq: us, ats: ashby, slug: retailready, verified: false}
+  - {name: Revyl, category: yc, hq: us, ats: ashby, slug: revyl, verified: false}
+  - {name: Saturn, category: yc, hq: uk, ats: ashby, slug: saturn, verified: false}
+  - {name: Syntra, category: yc, hq: us, ats: ashby, slug: syntra, verified: false}
+  - {name: Tamarind Bio, category: yc, hq: us, ats: ashby, slug: tamarind-bio, verified: false}
+  - {name: TaxGPT, category: yc, hq: us, ats: ashby, slug: taxgpt, verified: false}
+  - {name: Thunder Compute, category: yc, hq: us, ats: ashby, slug: thunder-compute, verified: false}
+  - {name: Trellis AI, category: yc, hq: us, ats: ashby, slug: trellis-ai, verified: false}
+  - {name: Ubicloud, category: yc, hq: us, ats: ashby, slug: ubicloud, verified: false}
+  - {name: Unsloth AI, category: yc, hq: us, ats: ashby, slug: unsloth-ai, verified: false}
+  - {name: Usul, category: yc, hq: us, ats: ashby, slug: usul, verified: false}
+  - {name: Yondu, category: yc, hq: us, ats: ashby, slug: yondu, verified: false}
+  - {name: Zeit AI, category: yc, hq: eu, ats: ashby, slug: zeit-ai, verified: false}
+  - {name: Zep AI, category: yc, hq: us, ats: ashby, slug: zep-ai, verified: false}
+  - {name: 1stCollab, category: yc, hq: us, ats: ashby, slug: 1stcollab, verified: false}
+  - {name: '222', category: yc, hq: us, ats: ashby, slug: '222', verified: false}
+  - {name: Accend, category: yc, hq: global, ats: ashby, slug: accend, verified: false}
+  - {name: Alguna, category: yc, hq: uk, ats: ashby, slug: alguna, verified: false}
+  - {name: Andromeda Surgical, category: yc, hq: us, ats: ashby, slug: andromeda-surgical, verified: false}
+  - {name: Boundary, category: yc, hq: us, ats: ashby, slug: boundary, verified: false}
+  - {name: Bretton AI, category: yc, hq: us, ats: ashby, slug: bretton-ai, verified: false}
+  - {name: Campfire, category: yc, hq: us, ats: ashby, slug: campfire-2, verified: false}
+  - {name: Casca, category: yc, hq: us, ats: ashby, slug: casca, verified: false}
+  - {name: Clearest Health, category: yc, hq: us, ats: ashby, slug: clearest-health, verified: false}
+  - {name: Concourse, category: yc, hq: us, ats: ashby, slug: concourse, verified: false}
+  - {name: Cosine, category: yc, hq: uk, ats: ashby, slug: cosine, verified: false}
+  - {name: Credal.ai, category: yc, hq: us, ats: ashby, slug: credal-ai, verified: false}
+  - {name: Decoda Health, category: yc, hq: ca, ats: ashby, slug: decoda-health, verified: false}
+  - {name: Diffuse Bio, category: yc, hq: us, ats: ashby, slug: diffuse-bio, verified: false}
+  - {name: dili, category: yc, hq: us, ats: ashby, slug: dili, verified: false}
+  - {name: Diligent, category: yc, hq: uk, ats: ashby, slug: diligent, verified: false}
+  - {name: Elyos AI, category: yc, hq: uk, ats: ashby, slug: elyos-ai, verified: false}
+  - {name: FleetWorks, category: yc, hq: us, ats: ashby, slug: fleetworks, verified: false}
+  - {name: Flint, category: yc, hq: us, ats: ashby, slug: flint-2, verified: false}
+  - {name: Giga, category: yc, hq: us, ats: ashby, slug: giga, verified: false}
+  - {name: Hadrius, category: yc, hq: us, ats: ashby, slug: hadrius, verified: false}
+  - {name: HappyRobot, category: yc, hq: us, ats: ashby, slug: happyrobot, verified: false}
+  - {name: Inkeep, category: yc, hq: us, ats: ashby, slug: inkeep, verified: false}
+  - {name: kapa.ai, category: yc, hq: global, ats: ashby, slug: kapa-ai, verified: false}
+  - {name: Langdock, category: yc, hq: eu, ats: ashby, slug: langdock, verified: false}
+  - {name: Latent, category: yc, hq: us, ats: ashby, slug: latent, verified: false}
+  - {name: LiteLLM, category: yc, hq: us, ats: ashby, slug: litellm, verified: false}
+  - {name: loopfour, category: yc, hq: us, ats: ashby, slug: loopfour, verified: false}
+  - {name: Maven Bio, category: yc, hq: us, ats: ashby, slug: maven-bio, verified: false}
+  - {name: Metal, category: yc, hq: us, ats: ashby, slug: metal, verified: false}
+  - {name: Middleware, category: yc, hq: us, ats: ashby, slug: middleware, verified: false}
+  - {name: Numen, category: yc, hq: us, ats: ashby, slug: numen, verified: false}
+  - {name: Outset, category: yc, hq: us, ats: ashby, slug: outset, verified: false}
+  - {name: Prosper, category: yc, hq: us, ats: ashby, slug: prosper, verified: false}
+  - {name: Readily, category: yc, hq: us, ats: ashby, slug: readily, verified: false}
+  - {name: Reflex, category: yc, hq: us, ats: ashby, slug: reflex, verified: false}
+  - {name: Rollstack, category: yc, hq: us, ats: ashby, slug: rollstack-2, verified: false}
+  - {name: Rubbrband, category: yc, hq: us, ats: ashby, slug: rubbrband, verified: false}
+  - {name: Salient, category: yc, hq: us, ats: ashby, slug: salient, verified: false}
+  - {name: Skyvern, category: yc, hq: us, ats: ashby, slug: skyvern, verified: false}
+  - {name: Strada, category: yc, hq: us, ats: ashby, slug: strada, verified: false}
+  - {name: SuperKalam, category: yc, hq: in, ats: ashby, slug: superkalam, verified: false}
+  - {name: Syncly, category: yc, hq: us, ats: ashby, slug: syncly, verified: false}
+  - {name: Variance, category: yc, hq: us, ats: ashby, slug: variance, verified: false}
+  - {name: Vector, category: yc, hq: us, ats: ashby, slug: vector, verified: false}
+  - {name: VectorShift, category: yc, hq: us, ats: ashby, slug: vectorshift, verified: false}
+  - {name: Agave, category: yc, hq: us, ats: ashby, slug: agave, verified: false}
+  - {name: Ankr Health, category: yc, hq: us, ats: ashby, slug: ankr-health, verified: false}
+  - {name: AstroForge, category: yc, hq: us, ats: ashby, slug: astroforge, verified: false}
+  - {name: Aurelian, category: yc, hq: us, ats: ashby, slug: aurelian, verified: false}
+  - {name: AviaryAI, category: yc, hq: us, ats: ashby, slug: aviaryai, verified: false}
+  - {name: Axle, category: yc, hq: us, ats: ashby, slug: axle, verified: false}
+  - {name: Axross Pte Ltd, category: yc, hq: global, ats: ashby, slug: axross-pte-ltd, verified: false}
+  - {name: Bemlo, category: yc, hq: eu, ats: ashby, slug: bemlo, verified: false}
+  - {name: Blee, category: yc, hq: us, ats: ashby, slug: blee, verified: false}
+  - {name: Broccoli AI, category: yc, hq: us, ats: ashby, slug: broccoli-ai, verified: false}
+  - {name: Cambio, category: yc, hq: us, ats: ashby, slug: cambio-2, verified: false}
+  - {name: Cerrion, category: yc, hq: eu, ats: ashby, slug: cerrion, verified: false}
+  - {name: Cinder, category: yc, hq: us, ats: ashby, slug: cinder-2, verified: false}
+  - {name: Cogram, category: yc, hq: us, ats: ashby, slug: cogram, verified: false}
+  - {name: Coris, category: yc, hq: us, ats: ashby, slug: coris, verified: false}
+  - {name: Curacel, category: yc, hq: uk, ats: ashby, slug: curacel, verified: false}
+  - {name: Dart, category: yc, hq: us, ats: ashby, slug: dart, verified: false}
+  - {name: Dynamo AI, category: yc, hq: us, ats: ashby, slug: dynamo-ai, verified: false}
+  - {name: Eventual, category: yc, hq: us, ats: ashby, slug: eventual, verified: false}
+  - {name: Finku, category: yc, hq: global, ats: ashby, slug: finku, verified: false}
+  - {name: Flagright, category: yc, hq: us, ats: ashby, slug: flagright, verified: false}
+  - {name: GovDash, category: yc, hq: us, ats: ashby, slug: govdash, verified: false}
+  - {name: Gym Class, category: yc, hq: us, ats: ashby, slug: gym-class, verified: false}
+  - {name: HOMLI, category: yc, hq: us, ats: ashby, slug: homli, verified: false}
+  - {name: Invert, category: yc, hq: us, ats: ashby, slug: invert, verified: false}
+  - {name: Juicebox, category: yc, hq: us, ats: ashby, slug: juicebox, verified: false}
+  - {name: Julius, category: yc, hq: us, ats: ashby, slug: julius, verified: false}
+  - {name: KorrAI, category: yc, hq: ca, ats: ashby, slug: korrai, verified: false}
+  - {name: Landeed, category: yc, hq: in, ats: ashby, slug: landeed, verified: false}
+  - {name: Layerup, category: yc, hq: us, ats: ashby, slug: layerup, verified: false}
+  - {name: Metriport, category: yc, hq: us, ats: ashby, slug: metriport, verified: false}
+  - {name: NewsCatcher, category: yc, hq: eu, ats: ashby, slug: newscatcher, verified: false}
+  - {name: Oneleet, category: yc, hq: eu, ats: ashby, slug: oneleet, verified: false}
+  - {name: Paces, category: yc, hq: us, ats: ashby, slug: paces, verified: false}
+  - {name: Pasito, category: yc, hq: us, ats: ashby, slug: pasito, verified: false}
+  - {name: PermitFlow, category: yc, hq: us, ats: ashby, slug: permitflow, verified: false}
+  - {name: Polymath Robotics, category: yc, hq: us, ats: ashby, slug: polymath-robotics, verified: false}
+  - {name: Provision, category: yc, hq: ca, ats: ashby, slug: provision, verified: false}
+  - {name: Pump.co, category: yc, hq: us, ats: ashby, slug: pump-co, verified: false}
+  - {name: Raven, category: yc, hq: in, ats: ashby, slug: raven, verified: false}
+  - {name: Reality Defender, category: yc, hq: us, ats: ashby, slug: reality-defender, verified: false}
+  - {name: Reforged Labs, category: yc, hq: global, ats: ashby, slug: reforged-labs, verified: false}
+  - {name: Serif Health, category: yc, hq: us, ats: ashby, slug: serif-health, verified: false}
+  - {name: Sieve, category: yc, hq: us, ats: ashby, slug: sieve, verified: false}
+  - {name: Spade, category: yc, hq: us, ats: ashby, slug: spade, verified: false}
+  - {name: Thera, category: yc, hq: us, ats: ashby, slug: thera, verified: false}
+  - {name: Two Dots, category: yc, hq: us, ats: ashby, slug: two-dots, verified: false}
+  - {name: Typewise, category: yc, hq: eu, ats: ashby, slug: typewise, verified: false}
+  - {name: Velt, category: yc, hq: us, ats: ashby, slug: velt, verified: false}
+  - {name: voize, category: yc, hq: eu, ats: ashby, slug: voize, verified: false}
+  - {name: Alinea, category: yc, hq: us, ats: ashby, slug: alinea, verified: false}
+  - {name: Anima, category: yc, hq: uk, ats: ashby, slug: anima, verified: false}
+  - {name: arnata, category: yc, hq: us, ats: ashby, slug: arnata, verified: false}
+  - {name: Atomic Industries, category: yc, hq: us, ats: ashby, slug: atomic-industries, verified: false}
+  - {name: authzed, category: yc, hq: us, ats: ashby, slug: authzed, verified: false}
+  - {name: BoldVoice, category: yc, hq: us, ats: ashby, slug: boldvoice, verified: false}
+  - {name: BusinessOnBot, category: yc, hq: in, ats: ashby, slug: businessonbot, verified: false}
+  - {name: Charge Robotics, category: yc, hq: us, ats: ashby, slug: charge-robotics, verified: false}
+  - {name: CoLoop, category: yc, hq: uk, ats: ashby, slug: coloop, verified: false}
+  - {name: Confido, category: yc, hq: us, ats: ashby, slug: confido, verified: false}
+  - {name: Coulomb AI, category: yc, hq: in, ats: ashby, slug: coulomb-ai, verified: false}
+  - {name: Cyble, category: yc, hq: us, ats: ashby, slug: cyble, verified: false}
+  - {name: Datrics, category: yc, hq: us, ats: ashby, slug: datrics, verified: false}
+  - {name: DigiBuild, category: yc, hq: us, ats: ashby, slug: digibuild, verified: false}
+  - {name: Encord, category: yc, hq: uk, ats: ashby, slug: encord, verified: false}
+  - {name: Fathom, category: yc, hq: us, ats: ashby, slug: fathom, verified: false}
+  - {name: Gigs, category: yc, hq: us, ats: ashby, slug: gigs, verified: false}
+  - {name: Humaans, category: yc, hq: uk, ats: ashby, slug: humaans, verified: false}
+  - {name: Kalam Labs, category: yc, hq: in, ats: ashby, slug: kalam-labs, verified: false}
+  - {name: Lamar Health, category: yc, hq: us, ats: ashby, slug: lamar-health, verified: false}
+  - {name: Legion Health, category: yc, hq: us, ats: ashby, slug: legion-health, verified: false}
+  - {name: LiveFlow, category: yc, hq: us, ats: ashby, slug: liveflow, verified: false}
+  - {name: Mach9, category: yc, hq: us, ats: ashby, slug: mach9, verified: false}
+  - {name: MindFi, category: yc, hq: global, ats: ashby, slug: mindfi, verified: false}
+  - {name: Neodocs, category: yc, hq: in, ats: ashby, slug: neodocs, verified: false}
+  - {name: OneSchema, category: yc, hq: us, ats: ashby, slug: oneschema, verified: false}
+  - {name: Popl, category: yc, hq: us, ats: ashby, slug: popl, verified: false}
+  - {name: Replo, category: yc, hq: us, ats: ashby, slug: replo, verified: false}
+  - {name: RocketSDR, category: yc, hq: in, ats: ashby, slug: rocketsdr, verified: false}
+  - {name: Rootly, category: yc, hq: us, ats: ashby, slug: rootly, verified: false}
+  - {name: SalaryBox, category: yc, hq: in, ats: ashby, slug: salarybox, verified: false}
+  - {name: Scispot, category: yc, hq: ca, ats: ashby, slug: scispot-io, verified: false}
+  - {name: Slope, category: yc, hq: us, ats: ashby, slug: slope, verified: false}
+  - {name: Sully, category: yc, hq: us, ats: ashby, slug: sully, verified: false}
+  - {name: Telmai, category: yc, hq: us, ats: ashby, slug: telmai, verified: false}
+  - {name: Tint, category: yc, hq: us, ats: ashby, slug: tint, verified: false}
+  - {name: Tractian, category: yc, hq: us, ats: ashby, slug: tractian, verified: false}
+  - {name: Waydev, category: yc, hq: eu, ats: ashby, slug: waydev, verified: false}
+  - {name: Writesonic, category: yc, hq: in, ats: ashby, slug: writesonic, verified: false}
+  - {name: Zensors, category: yc, hq: us, ats: ashby, slug: zensors-inc, verified: false}
+  - {name: Zuma, category: yc, hq: us, ats: ashby, slug: resident-boost, verified: false}

@@ -82,6 +82,13 @@ def test_needs_check():
     assert not vc.needs_check({"name": "A", "verified": True, "jobs": 3})
 
 
+def test_not_found_is_rechecked_weekly():
+    from datetime import date
+    c = {"name": "A", "verified": False, "checked": "2026-10-06"}
+    assert not vc.needs_check(c, today=date(2026, 10, 10))
+    assert vc.needs_check(c, today=date(2026, 10, 13))
+
+
 def test_slug_variants_include_parenthetical_name():
     assert "cursor" in vc.slug_variants({"name": "Anysphere (Cursor)", "slug": "anysphere"})
 
