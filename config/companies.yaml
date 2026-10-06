@@ -314,57 +314,57 @@ companies:
   - {name: Darwinbox, category: india, hq: in, ats: darwinbox, slug: dbx, verified: false, checked: '2026-10-06'}
 
   # --- MNCs and global companies hiring in India (india_only: only India + remote roles fetched; see docs/decisions.md) ---
-  - {name: NVIDIA, category: mnc, hq: us, ats: workday, slug: nvidia/wd5/NVIDIAExternalCareerSite, india_only: true, verified: false}
-  - {name: Adobe, category: mnc, hq: us, ats: workday, slug: adobe/wd5/external_experienced, india_only: true, verified: false}
-  - {name: Salesforce, category: mnc, hq: us, ats: workday, slug: salesforce/wd12/External_Career_Site, india_only: true, verified: false}
-  - {name: Intel, category: mnc, hq: us, ats: workday, slug: intel/wd1/External, india_only: true, verified: false}
-  - {name: Walmart Global Tech, category: mnc, hq: us, ats: workday, slug: walmart/wd504/WalmartExternal, india_only: true, verified: false}
-  - {name: Mastercard, category: mnc, hq: us, ats: workday, slug: mastercard/wd1/CorporateCareers, india_only: true, verified: false}
-  - {name: HP, category: mnc, hq: us, ats: workday, slug: hp/wd5/ExternalCareerSite, india_only: true, verified: false}
-  - {name: HPE, category: mnc, hq: us, ats: workday, slug: hpe/wd5/Jobsathpe, india_only: true, verified: false}
-  - {name: Cisco, category: mnc, hq: us, ats: workday, slug: cisco/wd5/Cisco_Careers, india_only: true, verified: false}
-  - {name: Target, category: mnc, hq: us, ats: workday, slug: target/wd5/targetcareers, india_only: true, verified: false}
-  - {name: Visa, category: mnc, hq: us, ats: workday, slug: visa/wd5/Visa, india_only: true, verified: false}
-  - {name: Visa (Early Careers), category: mnc, hq: us, ats: workday, slug: visa/wd5/Visa_Early_Careers, india_only: true, verified: false}
-  - {name: Workday, category: mnc, hq: us, ats: workday, slug: workday/wd5/Workday, india_only: true, verified: false}
-  - {name: Wells Fargo, category: mnc, hq: us, ats: workday, slug: wf/wd1/WellsFargoJobs, india_only: true, verified: false}
-  - {name: Broadcom, category: mnc, hq: us, ats: workday, slug: broadcom/wd1/External_Career, india_only: true, verified: false}
-  - {name: Autodesk, category: mnc, hq: us, ats: workday, slug: autodesk/wd1/Ext, india_only: true, verified: false}
-  - {name: CrowdStrike, category: mnc, hq: us, ats: workday, slug: crowdstrike/wd5/crowdstrikecareers, india_only: true, verified: false}
-  - {name: Red Hat, category: mnc, hq: us, ats: workday, slug: redhat/wd5/Jobs, india_only: true, verified: false}
-  - {name: Analog Devices, category: mnc, hq: us, ats: workday, slug: analogdevices/wd1/External, india_only: true, verified: false}
-  - {name: Cadence, category: mnc, hq: us, ats: workday, slug: cadence/wd1/External_Careers, india_only: true, verified: false}
-  - {name: Micron, category: mnc, hq: us, ats: workday, slug: micron/wd1/External, india_only: true, verified: false}
-  - {name: Expedia, category: mnc, hq: us, ats: workday, slug: expedia/wd108/search, india_only: true, verified: false}
-  - {name: Samsung, category: mnc, hq: global, ats: workday, slug: sec/wd3/Samsung_Careers, india_only: true, verified: false}
-  - {name: Thomson Reuters, category: mnc, hq: global, ats: workday, slug: thomsonreuters/wd5/External_Career_Site, india_only: true, verified: false}
-  - {name: BlackRock, category: mnc, hq: us, ats: workday, slug: blackrock/wd1/BlackRock_Professional, india_only: true, verified: false}
-  - {name: Applied Materials, category: mnc, hq: us, ats: workday, slug: amat/wd1/External, india_only: true, verified: false}
-  - {name: Qualys, category: mnc, hq: us, ats: workday, slug: qualys/wd5/Careers, india_only: true, verified: false}
-  - {name: Microchip, category: mnc, hq: us, ats: workday, slug: microchiphr/wd5/External, india_only: true, verified: false}
-  - {name: RTX, category: mnc, hq: us, ats: workday, slug: globalhr/wd5/REC_RTX_Ext_Gateway, india_only: true, verified: false}
-  - {name: Stripe, category: mnc, hq: us, ats: greenhouse, slug: stripe, india_only: true, verified: false}
-  - {name: Coinbase, category: mnc, hq: us, ats: greenhouse, slug: coinbase, india_only: true, verified: false}
-  - {name: Rubrik, category: mnc, hq: us, ats: greenhouse, slug: rubrik, india_only: true, verified: false}
-  - {name: Okta, category: mnc, hq: us, ats: greenhouse, slug: okta, india_only: true, verified: false}
-  - {name: Twilio, category: mnc, hq: us, ats: greenhouse, slug: twilio, india_only: true, verified: false}
-  - {name: MongoDB, category: mnc, hq: us, ats: greenhouse, slug: mongodb, india_only: true, verified: false}
-  - {name: Elastic, category: mnc, hq: us, ats: greenhouse, slug: elastic, india_only: true, verified: false}
-  - {name: Airbnb, category: mnc, hq: us, ats: greenhouse, slug: airbnb, india_only: true, verified: false}
-  - {name: Thoughtworks, category: mnc, hq: global, ats: greenhouse, slug: thoughtworks, india_only: true, verified: false}
-  - {name: Zscaler, category: mnc, hq: us, ats: greenhouse, slug: zscaler, india_only: true, verified: false}
-  - {name: Pure Storage, category: mnc, hq: us, ats: greenhouse, slug: purestorage, india_only: true, verified: false}
-  - {name: Druva, category: mnc, hq: in, ats: greenhouse, slug: druva, india_only: true, verified: false}
-  - {name: Snowflake, category: mnc, hq: us, ats: ashby, slug: snowflake, india_only: true, verified: false}
-  - {name: ServiceNow, category: mnc, hq: us, ats: smartrecruiters, slug: ServiceNow, india_only: true, verified: false}
-  - {name: Bosch, category: mnc, hq: eu, ats: smartrecruiters, slug: BoschGroup, india_only: true, verified: false}
-  - {name: Microsoft, category: mnc, hq: us, ats: eightfold, slug: apply.careers.microsoft.com/microsoft.com, india_only: true, verified: false}
-  - {name: Qualcomm, category: mnc, hq: us, ats: eightfold, slug: careers.qualcomm.com/qualcomm.com, india_only: true, verified: false}
-  - {name: PayPal, category: mnc, hq: us, ats: eightfold, slug: paypal.eightfold.ai/paypal.com, india_only: true, verified: false}
-  - {name: Morgan Stanley, category: mnc, hq: us, ats: eightfold, slug: morganstanley.eightfold.ai/morganstanley.com, india_only: true, verified: false}
-  - {name: NetApp, category: mnc, hq: us, ats: eightfold, slug: netapp.eightfold.ai/netapp.com, india_only: true, verified: false}
-  - {name: Netflix, category: mnc, hq: us, ats: eightfold, slug: explore.jobs.netflix.net/netflix.com, india_only: true, verified: false}
-  - {name: Amazon, category: mnc, hq: us, ats: amazon, slug: IND, india_only: true, verified: false}
+  - {name: NVIDIA, category: mnc, hq: us, ats: workday, slug: nvidia/wd5/NVIDIAExternalCareerSite, india_only: true, verified: true, jobs: 100, ai_jobs: 20, checked: '2026-10-06'}
+  - {name: Adobe, category: mnc, hq: us, ats: workday, slug: adobe/wd5/external_experienced, india_only: true, verified: true, jobs: 100, ai_jobs: 19, checked: '2026-10-06'}
+  - {name: Salesforce, category: mnc, hq: us, ats: workday, slug: salesforce/wd12/External_Career_Site, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Intel, category: mnc, hq: us, ats: workday, slug: intel/wd1/External, india_only: true, verified: true, jobs: 100, ai_jobs: 9, checked: '2026-10-06'}
+  - {name: Walmart Global Tech, category: mnc, hq: us, ats: workday, slug: walmart/wd504/WalmartExternal, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: Mastercard, category: mnc, hq: us, ats: workday, slug: mastercard/wd1/CorporateCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 8, checked: '2026-10-06'}
+  - {name: HP, category: mnc, hq: us, ats: workday, slug: hp/wd5/ExternalCareerSite, india_only: true, verified: true, jobs: 100, ai_jobs: 6, checked: '2026-10-06'}
+  - {name: HPE, category: mnc, hq: us, ats: workday, slug: hpe/wd5/Jobsathpe, india_only: true, verified: true, jobs: 100, ai_jobs: 15, checked: '2026-10-06'}
+  - {name: Cisco, category: mnc, hq: us, ats: workday, slug: cisco/wd5/Cisco_Careers, india_only: true, verified: true, jobs: 1358, ai_jobs: 70, checked: '2026-10-06'}
+  - {name: Target, category: mnc, hq: us, ats: workday, slug: target/wd5/targetcareers, india_only: true, verified: true, jobs: 99, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Visa, category: mnc, hq: us, ats: workday, slug: visa/wd5/Visa, india_only: true, verified: true, jobs: 100, ai_jobs: 11, checked: '2026-10-06'}
+  - {name: Visa (Early Careers), category: mnc, hq: us, ats: workday, slug: visa/wd5/Visa_Early_Careers, india_only: true, verified: true, jobs: 24, ai_jobs: 5, checked: '2026-10-06'}
+  - {name: Workday, category: mnc, hq: us, ats: workday, slug: workday/wd5/Workday, india_only: true, verified: true, jobs: 100, ai_jobs: 13, checked: '2026-10-06'}
+  - {name: Wells Fargo, category: mnc, hq: us, ats: workday, slug: wf/wd1/WellsFargoJobs, india_only: true, verified: true, jobs: 100, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Broadcom, category: mnc, hq: us, ats: workday, slug: broadcom/wd1/External_Career, india_only: true, verified: true, jobs: 365, ai_jobs: 8, checked: '2026-10-06'}
+  - {name: Autodesk, category: mnc, hq: us, ats: workday, slug: autodesk/wd1/Ext, india_only: true, verified: true, jobs: 100, ai_jobs: 11, checked: '2026-10-06'}
+  - {name: CrowdStrike, category: mnc, hq: us, ats: workday, slug: crowdstrike/wd5/crowdstrikecareers, india_only: true, verified: true, jobs: 100, ai_jobs: 13, checked: '2026-10-06'}
+  - {name: Red Hat, category: mnc, hq: us, ats: workday, slug: redhat/wd5/Jobs, india_only: true, verified: true, jobs: 100, ai_jobs: 7, checked: '2026-10-06'}
+  - {name: Analog Devices, category: mnc, hq: us, ats: workday, slug: analogdevices/wd1/External, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: Cadence, category: mnc, hq: us, ats: workday, slug: cadence/wd1/External_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 12, checked: '2026-10-06'}
+  - {name: Micron, category: mnc, hq: us, ats: workday, slug: micron/wd1/External, india_only: true, verified: true, jobs: 3118, ai_jobs: 142, checked: '2026-10-06'}
+  - {name: Expedia, category: mnc, hq: us, ats: workday, slug: expedia/wd108/search, india_only: true, verified: true, jobs: 163, ai_jobs: 19, checked: '2026-10-06'}
+  - {name: Samsung, category: mnc, hq: global, ats: workday, slug: sec/wd3/Samsung_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Thomson Reuters, category: mnc, hq: global, ats: workday, slug: thomsonreuters/wd5/External_Career_Site, india_only: true, verified: true, jobs: 100, ai_jobs: 10, checked: '2026-10-06'}
+  - {name: BlackRock, category: mnc, hq: us, ats: workday, slug: blackrock/wd1/BlackRock_Professional, india_only: true, verified: true, jobs: 308, ai_jobs: 19, checked: '2026-10-06'}
+  - {name: Applied Materials, category: mnc, hq: us, ats: workday, slug: amat/wd1/External, india_only: true, verified: true, jobs: 100, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Qualys, category: mnc, hq: us, ats: workday, slug: qualys/wd5/Careers, india_only: true, verified: true, jobs: 157, ai_jobs: 19, checked: '2026-10-06'}
+  - {name: Microchip, category: mnc, hq: us, ats: workday, slug: microchiphr/wd5/External, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: RTX, category: mnc, hq: us, ats: workday, slug: globalhr/wd5/REC_RTX_Ext_Gateway, india_only: true, verified: true, jobs: 4824, ai_jobs: 42, checked: '2026-10-06'}
+  - {name: Stripe, category: mnc, hq: us, ats: greenhouse, slug: stripe, india_only: true, verified: true, jobs: 719, ai_jobs: 41, checked: '2026-10-06'}
+  - {name: Coinbase, category: mnc, hq: us, ats: greenhouse, slug: coinbase, india_only: true, verified: true, jobs: 226, ai_jobs: 15, checked: '2026-10-06'}
+  - {name: Rubrik, category: mnc, hq: us, ats: greenhouse, slug: rubrik, india_only: true, verified: true, jobs: 131, ai_jobs: 5, checked: '2026-10-06'}
+  - {name: Okta, category: mnc, hq: us, ats: greenhouse, slug: okta, india_only: true, verified: true, jobs: 368, ai_jobs: 14, checked: '2026-10-06'}
+  - {name: Twilio, category: mnc, hq: us, ats: greenhouse, slug: twilio, india_only: true, verified: true, jobs: 132, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: MongoDB, category: mnc, hq: us, ats: greenhouse, slug: mongodb, india_only: true, verified: true, jobs: 394, ai_jobs: 17, checked: '2026-10-06'}
+  - {name: Elastic, category: mnc, hq: us, ats: greenhouse, slug: elastic, india_only: true, verified: true, jobs: 399, ai_jobs: 23, checked: '2026-10-06'}
+  - {name: Airbnb, category: mnc, hq: us, ats: greenhouse, slug: airbnb, india_only: true, verified: true, jobs: 151, ai_jobs: 20, checked: '2026-10-06'}
+  - {name: Thoughtworks, category: mnc, hq: global, ats: greenhouse, slug: thoughtworks, india_only: true, verified: true, jobs: 34, ai_jobs: 5, checked: '2026-10-06'}
+  - {name: Zscaler, category: mnc, hq: us, ats: greenhouse, slug: zscaler, india_only: true, verified: true, jobs: 366, ai_jobs: 22, checked: '2026-10-06'}
+  - {name: Pure Storage, category: mnc, hq: us, ats: greenhouse, slug: purestorage, india_only: true, verified: true, jobs: 353, ai_jobs: 16, checked: '2026-10-06'}
+  - {name: Druva, category: mnc, hq: in, ats: greenhouse, slug: druva, india_only: true, verified: true, jobs: 35, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Snowflake, category: mnc, hq: us, ats: ashby, slug: snowflake, india_only: true, verified: true, jobs: 351, ai_jobs: 47, checked: '2026-10-06'}
+  - {name: ServiceNow, category: mnc, hq: us, ats: smartrecruiters, slug: ServiceNow, india_only: true, verified: true, jobs: 100, ai_jobs: 8, checked: '2026-10-06'}
+  - {name: Bosch, category: mnc, hq: eu, ats: smartrecruiters, slug: BoschGroup, india_only: true, verified: true, jobs: 100, ai_jobs: 5, checked: '2026-10-06'}
+  - {name: Microsoft, category: mnc, hq: us, ats: eightfold, slug: apply.careers.microsoft.com/microsoft.com, india_only: true, verified: true, jobs: 250, ai_jobs: 42, checked: '2026-10-06'}
+  - {name: Qualcomm, category: mnc, hq: us, ats: eightfold, slug: careers.qualcomm.com/qualcomm.com, india_only: true, verified: true, jobs: 592, ai_jobs: 51, checked: '2026-10-06'}
+  - {name: PayPal, category: mnc, hq: us, ats: eightfold, slug: paypal.eightfold.ai/paypal.com, india_only: true, verified: true, jobs: 10, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Morgan Stanley, category: mnc, hq: us, ats: eightfold, slug: morganstanley.eightfold.ai/morganstanley.com, india_only: true, verified: true, jobs: 115, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: NetApp, category: mnc, hq: us, ats: eightfold, slug: netapp.eightfold.ai/netapp.com, india_only: true, verified: true, jobs: 20, ai_jobs: 4, checked: '2026-10-06'}
+  - {name: Netflix, category: mnc, hq: us, ats: eightfold, slug: explore.jobs.netflix.net/netflix.com, india_only: true, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Amazon, category: mnc, hq: us, ats: amazon, slug: IND, india_only: true, verified: true, jobs: 2294, ai_jobs: 153, checked: '2026-10-06'}
 
   # --- YC AI startups imported from yc-oss on 2026-10-06 (scripts/import_yc.py) ---
   - {name: Hub, category: yc, hq: us, ats: ashby, slug: hub, verified: false, checked: '2026-10-06'}
