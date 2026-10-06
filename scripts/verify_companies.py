@@ -29,7 +29,9 @@ COMPANIES = ROOT / "config" / "companies.yaml"
 REPORT = ROOT / "docs" / "company_check.md"
 
 USER_AGENT = "frshmen-jobboard/0.1 (personal job board; +https://github.com/ShreySharma07/frshmen)"
-MIN_SECONDS_PER_HOST = 1.0
+MIN_SECONDS_PER_HOST = 2.0
+MAX_RETRIES = 4
+RETRY_STATUSES = (429, 500, 502, 503, 504)
 ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters"]
 KEY_ORDER = ["name", "category", "hq", "ats", "slug", "verified", "jobs", "ai_jobs"]
 
@@ -59,20 +61,39 @@ class Fetcher:
 
     def get_json(self, url: str) -> Any | None:
         host = urlparse(url).netloc
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
+        for attempt in range(MAX_RETRIES + 1):
+            self._pace(host)
+            try:
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    return json.load(resp)
+            except urllib.error.HTTPError as e:
+                if e.code in (400, 404, 410):
+                    return None
+                if e.code not in RETRY_STATUSES or attempt == MAX_RETRIES:
+                    raise RuntimeError(f"{host}: HTTP {e.code}") from e
+                self._back_off(host, attempt, e.headers.get("Retry-After"))
+            except (urllib.error.URLError, TimeoutError) as e:
+                if attempt == MAX_RETRIES:
+                    raise RuntimeError(f"{host}: {e}") from e
+                self._back_off(host, attempt, None)
+            except json.JSONDecodeError:
+                return None
+        return None
+
+    def _pace(self, host: str) -> None:
         wait = MIN_SECONDS_PER_HOST - (time.monotonic() - self.last_hit.get(host, 0.0))
         if wait > 0:
             time.sleep(wait)
         self.last_hit[host] = time.monotonic()
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
-        try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                return json.load(resp)
-        except urllib.error.HTTPError as e:
-            if e.code in (400, 404, 410):
-                return None
-            raise
-        except json.JSONDecodeError:
-            return None
+
+    def _back_off(self, host: str, attempt: int, retry_after: str | None) -> None:
+        # Honour the server's Retry-After when it sends seconds; otherwise 5s, 10s, 20s, 40s.
+        delay = float(retry_after) if retry_after and retry_after.isdigit() else 5.0 * 2**attempt
+        delay = min(delay, 60.0)
+        print(f"  {host} asked us to slow down; waiting {delay:.0f}s", file=sys.stderr)
+        time.sleep(delay)
+        self.last_hit[host] = time.monotonic()
 
 
 GetJson = Callable[[str], Any]
@@ -107,7 +128,9 @@ def probe_ashby(get: GetJson, slug: str) -> Board | None:
 
 def probe_workable(get: GetJson, slug: str) -> Board | None:
     data = get(f"https://apply.workable.com/api/v1/widget/accounts/{slug}")
-    if not isinstance(data, dict) or "jobs" not in data:
+    # Many companies keep a dormant Workable account with no jobs while hiring
+    # elsewhere; an empty one says nothing, so treat it as not found.
+    if not isinstance(data, dict) or not data.get("jobs"):
         return None
     jobs = data["jobs"]
     return Board("workable", slug, [j.get("title", "") for j in jobs], data.get("name"),
@@ -142,15 +165,28 @@ def slug_variants(company: dict[str, Any]) -> list[str]:
 
 
 def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
+    """Return the first board with open jobs; an empty board only if nothing better exists.
+
+    An empty board on the guessed ATS is often a stale account, so keep looking.
+    """
     guessed = company["ats"]
     attempts = [(guessed, company["slug"])]
     for ats in [guessed] + [a for a in ATS_ORDER if a != guessed]:
         attempts += [(ats, s) for s in slug_variants(company)]
+    empty: Board | None = None
     for ats, slug in dict.fromkeys(attempts):
         board = PROBES[ats](get, slug)
-        if board is not None:
+        if board is None:
+            continue
+        if board.titles:
             return board
-    return None
+        empty = empty or board
+    return empty
+
+
+def needs_check(company: dict[str, Any]) -> bool:
+    # Empty boards are rechecked each run: the company may have moved ATS or started hiring.
+    return company.get("verified") is not True or not company.get("jobs")
 
 
 def format_line(indent: str, company: dict[str, Any]) -> str:
@@ -172,27 +208,35 @@ def rewrite_yaml(text: str, results: dict[str, dict[str, Any]]) -> str:
     return "".join(out)
 
 
-def write_report(rows: list[tuple[dict[str, Any], Board | None]]) -> None:
-    found = [r for r in rows if r[1]]
+def write_report(companies: list[dict[str, Any]], boards: dict[str, Board | None]) -> None:
+    """Summarise every company's current state; board name/sample only for ones checked this run."""
+    found = [c for c in companies if c.get("verified")]
     lines = [
         "# Company board check",
         "",
-        f"Generated by `scripts/verify_companies.py`. {len(found)}/{len(rows)} companies have a public board "
+        f"Generated by `scripts/verify_companies.py`. {len(found)}/{len(companies)} companies have a public board "
         "on a supported ATS.",
         "",
         "`AI/ML` counts titles matching a rough keyword filter; it is a pruning hint, not the real classifier. "
-        "Where the board name or sample link doesn't match the company, the slug hit the wrong company: fix or delete it.",
+        "Where the board name or sample link doesn't match the company, the slug hit the wrong company: fix or delete it. "
+        "Name/sample is shown only for companies checked in the latest run.",
         "",
         "| Company | Category | ATS | Slug | Open jobs | AI/ML titles | Board name / sample |",
         "|---|---|---|---|---:|---:|---|",
     ]
-    for c, b in sorted(rows, key=lambda r: (r[1] is None, r[0]["category"], r[0]["name"].lower())):
-        if b is None:
+
+    def status(c: dict[str, Any]) -> int:
+        return 0 if c.get("verified") else 1 if c.get("verified") is False else 2
+
+    for c in sorted(companies, key=lambda c: (status(c), c["category"], c["name"].lower())):
+        if c.get("verified") is False:
             lines.append(f"| {c['name']} | {c['category']} | not found | | | | |")
-            continue
-        ai = sum(bool(AI_TITLE.search(t)) for t in b.titles)
-        hint = b.board_name or (f"[sample]({b.sample_url})" if b.sample_url else "")
-        lines.append(f"| {c['name']} | {c['category']} | {b.ats} | `{b.slug}` | {len(b.titles)} | {ai} | {hint} |")
+        elif "verified" not in c:
+            lines.append(f"| {c['name']} | {c['category']} | not checked yet | | | | |")
+        else:
+            b = boards.get(c["name"])
+            hint = (b.board_name or (f"[sample]({b.sample_url})" if b.sample_url else "")) if b else ""
+            lines.append(f"| {c['name']} | {c['category']} | {c['ats']} | `{c['slug']}` | {c['jobs']} | {c['ai_jobs']} | {hint} |")
     REPORT.parent.mkdir(exist_ok=True)
     REPORT.write_text("\n".join(lines) + "\n")
 
@@ -200,21 +244,25 @@ def write_report(rows: list[tuple[dict[str, Any], Board | None]]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--only", nargs="*", help="check only these company names")
+    parser.add_argument("--all", action="store_true", help="recheck every company, not just unverified/empty ones")
     args = parser.parse_args()
 
     text = COMPANIES.read_text()
     companies = yaml.safe_load(text)["companies"]
+    all_companies = companies
     if args.only:
         companies = [c for c in companies if c["name"] in set(args.only)]
+    elif not args.all:
+        companies = [c for c in companies if needs_check(c)]
 
     fetcher = Fetcher()
-    rows: list[tuple[dict[str, Any], Board | None]] = []
+    boards: dict[str, Board | None] = {}
     results: dict[str, dict[str, Any]] = {}
     for i, company in enumerate(companies, 1):
         try:
             board = find_board(fetcher.get_json, company)
-        except (urllib.error.URLError, TimeoutError) as e:
-            print(f"[{i}/{len(companies)}] {company['name']}: network error, left unchanged ({e})", file=sys.stderr)
+        except RuntimeError as e:
+            print(f"[{i}/{len(companies)}] {company['name']}: gave up after retries, left unchanged ({e})", file=sys.stderr)
             continue
         updated = dict(company)
         if board:
@@ -225,16 +273,17 @@ def main() -> int:
             for k in ("jobs", "ai_jobs"):
                 updated.pop(k, None)
         results[company["name"]] = updated
-        rows.append((company, board))
+        boards[company["name"]] = board
         status = f"{board.ats}/{board.slug} ({len(board.titles)} jobs)" if board else "not found"
         print(f"[{i}/{len(companies)}] {company['name']}: {status}")
 
-    if not rows:
+    if companies and not boards:
         print("Nothing checked (network blocked?). Files left unchanged.", file=sys.stderr)
         return 1
     COMPANIES.write_text(rewrite_yaml(text, results))
-    write_report(rows)
-    print(f"\n{sum(1 for _, b in rows if b)}/{len(rows)} found. Report: {REPORT.relative_to(ROOT)}")
+    write_report([results.get(c["name"], c) for c in all_companies], boards)
+    print(f"\n{sum(1 for b in boards.values() if b)}/{len(boards)} found this run "
+          f"({len(companies) - len(boards)} gave up). Report: {REPORT.relative_to(ROOT)}")
     return 0
 
 
