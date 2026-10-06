@@ -26,9 +26,11 @@ def could_be_target(title: str) -> bool:
 def experience_line(text: str | None) -> str:
     """Render a structured experience field as a sentence the YoE extractor reads, keeping it as evidence.
 
-    "3-5" -> "Experience: 3-5 years". Empty when the ATS gave nothing.
+    "3-5" -> "Experience: 3-5 years"; "Fresher" stays as is. Empty when the ATS gave nothing usable.
     """
     text = (text or "").strip()
+    if re.fullmatch(r"(?i)fresher|freshers|entry[ -]level|no experience", text):
+        return f"Experience: {text}"
     if not text or not re.search(r"\d", text):
         return ""
     return f"Experience: {text}" if re.search(r"year|yr", text, re.I) else f"Experience: {text} years"

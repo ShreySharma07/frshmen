@@ -63,19 +63,8 @@ jobs:
               print(f"{ats} {slug}: {len(titles or [])} listed, {len(jobs)} fetched")
               for j in jobs[:2]:
                   print(f"  {j.title} | {j.location_raw} | {j.posted_at} | {j.description_text[:120]!r}")
-              if titles is None or (titles and not jobs and ats in ("keka", "zoho_recruit")):
+              # Every fetched job must carry text, or the YoE rules have nothing to check.
+              if titles is None or (titles and not jobs) or any(not j.description_text for j in jobs):
                   failed.append(ats)
-              if ats == "zoho_recruit" and titles is None:
-                  page = http.get_text(f"https://{slug}/jobs/Careers") or ""
-                  i = page.find('id="jobs"')
-                  print("  zoho page length", len(page), "jobs input at", i, repr(page[max(0, i - 200):i + 300]))
-          # Zoho's list has no description: check what a job page carries before JavaScript runs.
-          from sources import zoho_recruit
-          raw = zoho_recruit.embedded_jobs(http.get_text("https://wadhwaniai.zohorecruit.in/jobs/Careers")) or [{}]
-          page = http.get_text(f"https://wadhwaniai.zohorecruit.in/jobs/Careers/{raw[0].get('id')}") or ""
-          print("zoho job page length", len(page))
-          for marker in ('id="jobs"', "Job_Description", "Date_Opened", "Work_Experience", "application/ld+json"):
-              i = page.find(marker)
-              print(f"  {marker!r} at {i}:", repr(page[max(0, i - 60):i + 240]) if i >= 0 else "")
           assert not failed, f"adapters returned nothing: {failed}"
           EOF
