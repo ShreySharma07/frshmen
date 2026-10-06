@@ -11,29 +11,22 @@ Run: python scripts/verify_companies.py [--only NAME ...]
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import sys
-import time
-import urllib.error
-import urllib.request
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlparse
-
-import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
+
+import yaml  # noqa: E402
+
+from sources.http import FetchError, HttpClient  # noqa: E402
+
 COMPANIES = ROOT / "config" / "companies.yaml"
 REPORT = ROOT / "docs" / "company_check.md"
 
-USER_AGENT = "frshmen-jobboard/0.1 (personal job board; +https://github.com/ShreySharma07/frshmen)"
-MIN_SECONDS_PER_HOST = 2.0
-# Workable throttles far harder than the others (429 with Retry-After: 0).
-HOST_INTERVAL = {"apply.workable.com": 5.0}
-MAX_RETRIES = 4
-RETRY_STATUSES = (429, 500, 502, 503, 504)
 ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters"]
 KEY_ORDER = ["name", "category", "hq", "ats", "slug", "verified", "jobs", "ai_jobs"]
 
@@ -53,53 +46,6 @@ class Board:
     titles: list[str]
     board_name: str | None = None
     sample_url: str | None = None
-
-
-@dataclass
-class Fetcher:
-    """GET JSON politely: identify ourselves and space out requests per host."""
-
-    last_hit: dict[str, float] = field(default_factory=dict)
-
-    def get_json(self, url: str) -> Any | None:
-        host = urlparse(url).netloc
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
-        for attempt in range(MAX_RETRIES + 1):
-            self._pace(host)
-            try:
-                with urllib.request.urlopen(req, timeout=20) as resp:
-                    return json.load(resp)
-            except urllib.error.HTTPError as e:
-                if e.code in (400, 404, 410):
-                    return None
-                if e.code not in RETRY_STATUSES or attempt == MAX_RETRIES:
-                    raise RuntimeError(f"{host}: HTTP {e.code}") from e
-                self._back_off(host, attempt, e.headers.get("Retry-After"))
-            except (urllib.error.URLError, TimeoutError) as e:
-                if attempt == MAX_RETRIES:
-                    raise RuntimeError(f"{host}: {e}") from e
-                self._back_off(host, attempt, None)
-            except json.JSONDecodeError:
-                return None
-        return None
-
-    def _pace(self, host: str) -> None:
-        interval = HOST_INTERVAL.get(host, MIN_SECONDS_PER_HOST)
-        wait = interval - (time.monotonic() - self.last_hit.get(host, 0.0))
-        if wait > 0:
-            time.sleep(wait)
-        self.last_hit[host] = time.monotonic()
-
-    def _back_off(self, host: str, attempt: int, retry_after: str | None) -> None:
-        # Exponential 5s, 10s, 20s, 40s, raised to the server's Retry-After when larger
-        # (some hosts send Retry-After: 0, which would mean hammering them).
-        delay = 5.0 * 2**attempt
-        if retry_after and retry_after.isdigit():
-            delay = max(delay, float(retry_after))
-        delay = min(delay, 60.0)
-        print(f"  {host} asked us to slow down; waiting {delay:.0f}s", file=sys.stderr)
-        time.sleep(delay)
-        self.last_hit[host] = time.monotonic()
 
 
 GetJson = Callable[[str], Any]
@@ -187,7 +133,7 @@ def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
     for ats, slug in dict.fromkeys(attempts):
         try:
             board = PROBES[ats](get, slug)
-        except RuntimeError as e:
+        except FetchError as e:
             # One throttled host shouldn't stop us finding the board on another.
             errors.append(str(e))
             continue
@@ -198,7 +144,7 @@ def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
         empty = empty or board
     if empty is None and errors:
         # Can't claim "not found" when some probes never got an answer.
-        raise RuntimeError("; ".join(dict.fromkeys(errors)))
+        raise FetchError("; ".join(dict.fromkeys(errors)))
     return empty
 
 
@@ -273,14 +219,14 @@ def main() -> int:
     elif not args.all:
         companies = [c for c in companies if needs_check(c)]
 
-    fetcher = Fetcher()
+    http = HttpClient()  # no cache: we want a fresh answer about each board
     boards: dict[str, Board | None] = {}
     results: dict[str, dict[str, Any]] = {}
     for i, company in enumerate(companies, 1):
         try:
-            board = find_board(fetcher.get_json, company)
-        except RuntimeError as e:
-            print(f"[{i}/{len(companies)}] {company['name']}: gave up after retries, left unchanged ({e})", file=sys.stderr)
+            board = find_board(http.get_json, company)
+        except FetchError as e:
+            print(f"[{i}/{len(companies)}] {company['name']}: gave up after retries, left unchanged ({e})", file=sys.stderr, flush=True)
             continue
         updated = dict(company)
         if board:
@@ -293,7 +239,7 @@ def main() -> int:
         results[company["name"]] = updated
         boards[company["name"]] = board
         status = f"{board.ats}/{board.slug} ({len(board.titles)} jobs)" if board else "not found"
-        print(f"[{i}/{len(companies)}] {company['name']}: {status}")
+        print(f"[{i}/{len(companies)}] {company['name']}: {status}", flush=True)
 
     if companies and not boards:
         print("Nothing checked (network blocked?). Files left unchanged.", file=sys.stderr)

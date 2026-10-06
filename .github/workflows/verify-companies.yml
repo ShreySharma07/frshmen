@@ -7,6 +7,7 @@ on:
     paths:
       - config/companies.yaml
       - scripts/verify_companies.py
+      - sources/http.py
       - .github/workflows/verify-companies.yml
   workflow_dispatch:
 
@@ -36,7 +37,8 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: python scripts/verify_companies.py
+      # -u: show per-company progress live instead of all at the end.
+      - run: python -u scripts/verify_companies.py
 
       - name: Add report to job summary
         run: cat docs/company_check.md >> "$GITHUB_STEP_SUMMARY"

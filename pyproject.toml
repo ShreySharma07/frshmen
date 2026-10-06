@@ -1,0 +1,4 @@
+[tool.pytest.ini_options]
+# Lets tests import `sources` and `scripts.*` without installing the repo.
+pythonpath = [".", "scripts"]
+testpaths = ["tests"]
