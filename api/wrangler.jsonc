@@ -4,6 +4,8 @@
   "main": "src/worker.py",
   "compatibility_date": "2026-10-06",
   "compatibility_flags": ["python_workers"],
+  // Workers Logs (free tier): tracebacks from the API show up in the dashboard.
+  "observability": { "enabled": true },
   "d1_databases": [
     {
       "binding": "DB",

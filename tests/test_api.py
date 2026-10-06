@@ -109,3 +109,12 @@ def test_list_carries_one_highlight_not_full_evidence(client):
     pinecone = next(j for j in jobs if j["title"] == "Associate Field Engineer")
     assert pinecone["highlight"] == {"kind": "fresher_text",
                                      "text": "This is intended to be an entry level role for new grads/early career professionals."}
+
+
+def test_unexpected_errors_return_json_with_cause(tmp_path):
+    from storage import SqliteDatabase as S
+
+    app = create_app()
+    app.state.db = S(str(tmp_path / "empty.db"))  # no tables: every query fails
+    body = TestClient(app, raise_server_exceptions=False).get("/api/meta")
+    assert body.status_code == 500 and body.json()["error"].startswith("OperationalError: no such table")
