@@ -14,6 +14,7 @@ from typing import Any
 from sources.http import HttpClient
 from sources.models import Company, Job
 from sources.prefilter import experience_line
+from sources.text import html_to_text
 from sources.timeutil import to_utc_iso
 
 NAME = "keka"
@@ -61,7 +62,8 @@ def parse(payload: Any, company: Company) -> list[Job]:
     for raw in payload:
         locations = raw.get("jobLocations") or []
         names = [", ".join(p for p in (loc.get("city") or loc.get("name"), loc.get("countryName")) if p) for loc in locations]
-        description = (raw.get("description") or "").strip()
+        # Live responses carry HTML (some tools hand back a plain-text rendering).
+        description = html_to_text(raw.get("description"))
         jobs.append(Job(
             source=NAME,
             external_id=str(raw["id"]),

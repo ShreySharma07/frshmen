@@ -47,7 +47,8 @@ def test_title_screen_and_experience_line():
     assert not could_be_target("Senior Lead - Strategy") and not could_be_target("Account Manager")
     assert experience_line("3-5") == "Experience: 3-5 years"
     assert experience_line("2 - 5 Years") == "Experience: 2 - 5 Years"
-    assert experience_line("") == "" and experience_line("Fresher") == ""
+    assert experience_line("Fresher") == "Experience: Fresher"
+    assert experience_line("") == "" and experience_line("Negotiable") == ""
 
 
 # --- Workday -------------------------------------------------------------------
@@ -158,3 +159,27 @@ def test_zoho_reads_jobs_embedded_in_careers_page():
 
 def test_zoho_page_without_jobs_is_not_a_board():
     assert zoho_recruit.embedded_jobs("<html></html>") is None
+
+
+def test_zoho_job_page_record_is_decoded_from_its_js_string():
+    # Shape seen live on a Wadhwani AI job page: a JS single-quoted literal with \\x22 quotes.
+    record = '[{"id":"146520000003734311","Job_Description":"<p>Python, 0-1 years</p>","Work_Experience":"Fresher","Date_Opened":"2026-02-26","State":"Delhi","Publish":true}]'
+    literal = record.replace('"', "\\x22").replace("-", "\\-").replace("/", "\\/")
+    page = f"<script>var jobs = JSON.parse('{literal}');\nvar page_id = '1';</script>"
+    row = zoho_recruit.job_record(page, "146520000003734311")
+    assert row["Work_Experience"] == "Fresher" and row["Date_Opened"] == "2026-02-26"
+    item = {"id": "146520000003734311", "Posting_Title": "Trainee Roles", "City": "New Delhi", "Country": "India",
+            "Publish": "True", "Remote_Job": "False"}
+    http = FakeHttp({zoho_recruit.page_url(WADHWANI.slug): '<input id="jobs" value="' + json.dumps([item]).replace('"', "&quot;") + '">',
+                     zoho_recruit.job_page_url(WADHWANI.slug, item["id"]): page})
+    job = zoho_recruit.fetch(http, WADHWANI)[0]
+    assert job.description_text.startswith("Experience: Fresher") and "0-1 years" in job.description_text
+    assert job.location_raw == "New Delhi, Delhi, India" and job.posted_at == "2026-02-26T00:00:00Z"
+    assert job.ats_workplace_type is None  # "False" as a string is not remote
+
+
+def test_keka_live_html_description_becomes_text():
+    raw = [{"id": 1, "title": "ML Engineer", "description": "<div>Who we are</div><div>0-1 years</div>", "experience": "0-1",
+            "jobLocations": []}]
+    job = keka.parse(raw, JUPITER)[0]
+    assert "<div>" not in job.description_text and "Who we are" in job.description_text
