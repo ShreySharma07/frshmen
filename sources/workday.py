@@ -55,10 +55,17 @@ def location_from_path(path: str) -> str:
     return parts[1].replace("-", " ") if len(parts) >= 3 else ""
 
 
-def india_or_remote_path(path: str) -> bool:
-    # Screens a global board before any per-job request; fetch_jobs re-checks the full location.
+def india_rank(path: str) -> int | None:
+    """0 = path names India (or remote anywhere), 1 = no readable location, None = clearly elsewhere.
+
+    Path location segments vary by tenant ("India-Bengaluru", "IN-KA-BANGALORE-...", "BangaloreIND",
+    or none at all), so only a path that clearly names another country is skipped. fetch_jobs
+    re-checks every fetched job against its full location.
+    """
     countries = extract_location(location_from_path(path)).countries
-    return "India" in countries or countries == [REMOTE_UNSPECIFIED]
+    if "India" in countries or countries == [REMOTE_UNSPECIFIED]:
+        return 0
+    return 1 if not countries else None
 
 
 def list_titles(http: HttpClient, slug: str) -> list[str] | None:
@@ -72,7 +79,9 @@ def fetch(http: HttpClient, company: Company) -> list[Job]:
     sitemap = http.get_text(sitemap_url(company.slug)) or ""
     paths = [p for p in job_paths(sitemap, _parts(company.slug)[2]) if could_be_target(title_from_path(p))]
     if company.india_only:
-        paths = [p for p in paths if india_or_remote_path(p)]
+        # India paths first so the per-board cap is spent on them before unreadable ones.
+        ranked = [(r, p) for p in paths if (r := india_rank(p)) is not None]
+        paths = [p for _, p in sorted(ranked, key=lambda rp: rp[0])]
     jobs = []
     for path in paths[:MAX_DETAILS]:
         job = parse_detail(http.get_json(detail_url(company.slug, path)), company)

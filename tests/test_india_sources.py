@@ -187,9 +187,12 @@ def test_keka_live_html_description_becomes_text():
 
 def test_workday_india_only_board_screens_paths_by_location():
     assert workday.location_from_path("/job/India-Bangalore/ML-Engineer_R1") == "India Bangalore"
-    assert workday.india_or_remote_path("/job/Bengaluru/ML-Engineer_R1")
-    assert workday.india_or_remote_path("/job/India-Remote/ML-Engineer_R1")
-    assert not workday.india_or_remote_path("/job/Santa-Clara-CA/ML-Engineer_R2")
+    assert workday.india_rank("/job/Bengaluru/ML-Engineer_R1") == 0
+    assert workday.india_rank("/job/India-Remote/ML-Engineer_R1") == 0
+    assert workday.india_rank("/job/IN-KA-BANGALORE-Home-Office/ML-Engineer_R3") == 0
+    assert workday.india_rank("/job/BangaloreIND/ML-Engineer_R4") == 1  # unreadable: kept, checked later
+    assert workday.india_rank("/job/ML-Engineer_R5") == 1  # no location segment (Samsung)
+    assert workday.india_rank("/job/Santa-Clara-CA/ML-Engineer_R2") is None
     company = Company("BrowserStack", "workday", BS.slug, india_only=True)
     http = FakeHttp({workday.sitemap_url(BS.slug): text("workday_browserstack_sitemap.xml")})
     workday.fetch(http, company)
