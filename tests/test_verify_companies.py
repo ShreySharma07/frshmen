@@ -131,6 +131,9 @@ def test_careers_site_systems_use_the_exact_slug_only():
     class Http:
         requested = []
 
+        def post_json(self, url, body):
+            return None  # search unusable: the sitemap is the fallback
+
         def get_text(self, url):
             self.requested.append(url)
             return ('<urlset><url><loc>https://acme.wd1.myworkdayjobs.com/Careers/job/Pune/ML-Engineer_R1</loc>'

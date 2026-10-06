@@ -54,18 +54,28 @@ class HttpClient:
         """Body as text (careers pages, sitemaps), or None if it doesn't exist."""
         return self._get(url, accept, lambda raw: raw, fresh_days)
 
-    def _get(self, url: str, accept: str, decode: Callable[[str], Any], fresh_days: float | None = None) -> Any | None:
+    def post_json(self, url: str, body: Any) -> Any | None:
+        """POST a JSON body and parse the JSON answer (search endpoints careers sites call themselves).
+
+        Same pacing, backoff and User-Agent as GET; never cached, since the answer depends on the body.
+        """
+        return self._get(url, "application/json", json.loads, data=json.dumps(body).encode())
+
+    def _get(self, url: str, accept: str, decode: Callable[[str], Any], fresh_days: float | None = None,
+             data: bytes | None = None) -> Any | None:
         host = urlparse(url).netloc
-        cached = self._cache_read(url)
+        cached = self._cache_read(url) if data is None else None
         if fresh_days and cached and time.time() - cached.get("stored_at", 0) < fresh_days * 86400:
             return cached["body"]
         headers = {"User-Agent": USER_AGENT, "Accept": accept, "Accept-Language": "en-US,en;q=0.8"}
+        if data is not None:
+            headers["Content-Type"] = "application/json"
         if cached:
             if cached.get("etag"):
                 headers["If-None-Match"] = cached["etag"]
             if cached.get("last_modified"):
                 headers["If-Modified-Since"] = cached["last_modified"]
-        req = urllib.request.Request(url, headers=headers)
+        req = urllib.request.Request(url, headers=headers, data=data, method="POST" if data is not None else "GET")
 
         for attempt in range(MAX_RETRIES + 1):
             self._pace(host)
@@ -73,8 +83,9 @@ class HttpClient:
                 with urllib.request.urlopen(req, timeout=30) as resp:
                     raw = resp.read().decode("utf-8", errors="replace")
                     body = decode(raw)
-                    self._cache_write(url, resp.headers.get("ETag"), resp.headers.get("Last-Modified"), body,
-                                      keep=bool(fresh_days))
+                    if data is None:
+                        self._cache_write(url, resp.headers.get("ETag"), resp.headers.get("Last-Modified"), body,
+                                          keep=bool(fresh_days))
                     return body
             except urllib.error.HTTPError as e:
                 if e.code == 304 and cached:
