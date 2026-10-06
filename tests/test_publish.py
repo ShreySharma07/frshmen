@@ -123,3 +123,30 @@ def test_huge_description_is_capped_under_d1_statement_limit(db):
     p = pub.publish(db, payload([job("1", desc="x" * 200_000, content="0" * 64)]), now="t1")
     assert len(p.sql.encode()) < 100_000
     assert len(rows(db)["ashby:acme:1"]["description_text"]) == pub.MAX_DESCRIPTION_CHARS
+
+
+def test_rule_change_rewrites_only_jobs_whose_results_changed(db, monkeypatch):
+    pub.publish(db, payload([job("1"), job("2")]), now="t1")
+    monkeypatch.setattr(pub, "EXTRACT_VERSION", pub.EXTRACT_VERSION + 1)
+    # Job 1's result is unchanged by the "new rules"; job 2's level moves.
+    p = pub.publish(db, payload([job("1"), job("2", level="maybe")]), now="t2")
+    assert p.reclassified == 1 and "ashby:acme:1" not in p.sql
+    assert rows(db)["ashby:acme:2"]["level"] == "maybe"
+
+
+def test_legacy_rows_without_extract_hash_fall_back_to_version(db, monkeypatch):
+    pub.publish(db, payload([job("1")]), now="t1")
+    db.execute_script("UPDATE jobs SET extract_hash = NULL;")
+    assert pub.publish(db, payload([job("1")]), now="t2").sql == ""  # same version: left alone
+    monkeypatch.setattr(pub, "EXTRACT_VERSION", pub.EXTRACT_VERSION + 1)
+    p = pub.publish(db, payload([job("1")]), now="t3")
+    assert p.reclassified == 1 and rows(db)["ashby:acme:1"]["extract_hash"]
+
+
+def test_write_budget_puts_new_jobs_first_and_defers_the_rest(db):
+    pub.publish(db, payload([job("1"), job("2")]), now="t1")
+    # Next run: job 1 changed, jobs 3 and 4 are new, job 2 vanished. Budget fits two indexed writes.
+    p = pub.plan([job("1", desc="new text"), job("3"), job("4")], [{"source": "ashby", "company_slug": "acme"}],
+                 db.query("SELECT * FROM jobs"), "t2", budget=4)
+    assert (p.new, p.changed, p.missed, p.deferred) == (2, 0, 0, 2)
+    assert p.rows_written == 4

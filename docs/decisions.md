@@ -4,6 +4,16 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-06 — Stay inside D1's daily write limit
+- **What happened:** the 100k rows written/day limit was hit. Each extractor-version bump rewrote all ~14k stored jobs (cities, then visa/eligibility), on top of the first full insert; index updates count too.
+- **Options:** store only target-role jobs (~20x fewer rows) · keep everything and write smarter
+- **Choice (Shrey):** keep everything. Re-extraction now writes only rows whose extracted values changed (`extract_hash`, migration 0004), and each run writes at most 12k rows (new jobs first, then changed/reopened, re-extracted, closings); the rest waits for the next run.
+- **Why:** keeping every job means a role type added to the profile later instantly reveals older matching jobs.
+
+## 2026-10-06 — TurboHire (Flipkart, Ola, Setu, Urban Company, IDfy): not built
+- **Finding:** the careers hosts' robots.txt disallows all bots except Googlebot, and the job API needs a token that's only issued to requests claiming to come from TurboHire's own site (a forged Referer).
+- **Choice:** skip. CLAUDE.md requires respecting robots.txt and ToS, and faking a Referer is working around access control. Today these boards held ~37 open jobs in total (Flipkart 7, IDfy 19, Urban Company 11; Ola and Pine Labs/Setu 0).
+
 ## 2026-10-06 — Android and React Native roles; MNCs; visa rule for roles abroad
 - **Mobile roles. Options:** native Android only · Android + Flutter · all mobile · *(Shrey's choice)* Android + React Native
 - **Choice:** Android and React Native count as a `mobile` role family. iOS-only and Flutter stay excluded. A title naming Android/React Native beats the iOS/mobile excludes; generic "Mobile Engineer" titles need an Android/React Native stack in the description. The page gets a Role dropdown.
