@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
 import yaml  # noqa: E402
 
 from extract.classify import classify  # noqa: E402
+from extract.location import extract_location  # noqa: E402
 from extract.profile import load_profile  # noqa: E402
 from extract.role import match_role  # noqa: E402
 from sources import ADAPTERS  # noqa: E402
@@ -40,6 +41,13 @@ def load_companies(path: Path = COMPANIES) -> list[Company]:
         if c.get("verified") and c.get("jobs") and c.get("ats") in ADAPTERS:
             out.append(Company(name=c["name"], ats=c["ats"], slug=str(c["slug"]), category=c.get("category", "")))
     return out
+
+
+def location_fields(job: Job) -> dict:
+    loc = extract_location(job.location_raw, job.ats_countries)
+    # The ATS's structured workplace type wins; "or Remote" in the text is the fallback.
+    location_type = job.ats_workplace_type or ("remote" if loc.remote else None)
+    return {"countries": loc.countries, "location_type": location_type, "location_evidence": loc.evidence}
 
 
 def dedupe(jobs: list[Job]) -> list[Job]:
@@ -98,6 +106,7 @@ def main() -> int:
             **j.to_dict(),
             **classify(j.title, j.description_text, set(profile.exact_batch), set(profile.soft_batch)).to_dict(),
             **match_role(j.title, j.description_text, profile).to_dict(),
+            **location_fields(j),
         }
         for j in unique
     ]

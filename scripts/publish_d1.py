@@ -35,16 +35,16 @@ DEFAULT_JOBS = ROOT / "data" / "jobs.json"
 MIGRATIONS = ROOT / "db" / "migrations"
 
 # Bump when extract/ rules change so every stored job gets re-classified once.
-EXTRACT_VERSION = 1
+EXTRACT_VERSION = 2  # 2: countries/location_type from extract/location.py
 # D1 rejects SQL statements over 100 KB; real descriptions are ~5 KB.
 MAX_DESCRIPTION_CHARS = 60_000
 
 TEXT_FIELDS = [
-    "source", "company", "company_slug", "title", "url", "location_raw", "location_type", "countries",
+    "source", "company", "company_slug", "title", "url", "location_raw",
     "department", "employment_type", "posted_at", "description_text", "content_hash",
 ]
 EXTRACT_FIELDS = [
-    "extract_version", "yoe_min", "yoe_max", "yoe_evidence", "batch_years", "level", "level_confidence",
+    "extract_version", "location_type", "countries", "yoe_min", "yoe_max", "yoe_evidence", "batch_years", "level", "level_confidence",
     "level_reason", "role_match", "role_family", "role_reason", "evidence",
 ]
 
@@ -139,8 +139,9 @@ def to_row(job: dict[str, Any]) -> dict[str, Any]:
         "title": job["title"],
         "url": job["url"],
         "location_raw": job.get("location_raw"),
-        "location_type": job.get("ats_workplace_type"),
-        "countries": job.get("ats_countries") or [],
+        # Older jobs.json files predate extract/location.py; fall back to the ATS hints.
+        "location_type": job.get("location_type", job.get("ats_workplace_type")),
+        "countries": job.get("countries", job.get("ats_countries") or []),
         "department": job.get("department"),
         "employment_type": job.get("employment_type"),
         "posted_at": job.get("posted_at"),
@@ -157,7 +158,8 @@ def to_row(job: dict[str, Any]) -> dict[str, Any]:
         "role_match": bool(job.get("role_match")),
         "role_family": job.get("role_family"),
         "role_reason": job.get("role_reason"),
-        "evidence": {"level": job.get("evidence") or [], "role": job.get("role_evidence") or []},
+        "evidence": {"level": job.get("evidence") or [], "role": job.get("role_evidence") or [],
+                     "location": job.get("location_evidence") or []},
     }
 
 
