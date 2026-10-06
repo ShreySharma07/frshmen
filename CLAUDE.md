@@ -39,7 +39,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Pipeline: Python, run by GitHub Actions cron
 - Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows)
 - Backend API: FastAPI on Cloudflare Python Workers, D1 binding
-- Frontend: React (Vite + TypeScript) on Cloudflare Pages
+- Frontend: React (Vite + TypeScript), served by the same Worker via Workers Static Assets
 - LLM fallback: none yet (rules-only); revisit at build step 5
 - Companies: curated ~200 incl. YC AI startups, in `config/`
 - Any change to the above is a new decision: present options, let Shrey choose, log it.

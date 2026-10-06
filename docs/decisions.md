@@ -4,6 +4,11 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-06 — Serve React from the API Worker (Workers Static Assets) instead of Cloudflare Pages
+- **Options:** one Python Worker serving FastAPI + the React build · React on Pages + separate API Worker
+- **Choice:** One Worker. Supersedes the "Cloudflare Pages" part of the frontend decision below.
+- **Why:** One deploy and one URL, no CORS. Static asset requests are free and don't count toward Workers' 100k requests/day; only `/api/*` calls run Python. Cloudflare now recommends Static Assets over Pages for new projects.
+
 ## 2026-10-06 — Count plain "Software Engineer" titles when the work is Python + AI (pending Shrey's confirmation)
 - **Options:** only AI/ML and backend titles · also plain SWE titles whose description shows Python and AI/ML work
 - **Choice (proposed by Claude, toggle in `config/profile.yaml` → `generic_swe.enabled`):** include them.
