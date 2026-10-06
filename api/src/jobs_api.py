@@ -93,6 +93,7 @@ def create_app() -> FastAPI:
         q: str | None = Query(None, max_length=100),
         company: str | None = None,
         location_type: Literal["remote", "hybrid", "onsite"] | None = None,
+        country: str | None = Query(None, max_length=60),
         limit: int = Query(50, ge=1, le=100),
         offset: int = Query(0, ge=0, le=5000),
         db: Database = Depends(get_db),
@@ -114,6 +115,10 @@ def create_app() -> FastAPI:
         if location_type:
             where.append("location_type = ?")
             params.append(location_type)
+        if country:
+            # countries is a JSON array; json_each matches whole names ("India", not "Indiana").
+            where.append("EXISTS (SELECT 1 FROM json_each(jobs.countries) AS c WHERE c.value = ?)")
+            params.append(country)
         if q and q.strip():
             pattern = f"%{q.strip()[:MAX_QUERY_CHARS]}%"
             where.append("(title LIKE ? OR company LIKE ?)")
@@ -149,6 +154,11 @@ def create_app() -> FastAPI:
             "SELECT company, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 "
             "AND level IN ('fresher', 'maybe') GROUP BY company ORDER BY company"
         )
+        countries = await db.all(
+            "SELECT c.value AS country, COUNT(*) AS n FROM jobs, json_each(jobs.countries) AS c "
+            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.level IN ('fresher', 'maybe') "
+            "GROUP BY c.value ORDER BY n DESC, c.value"
+        )
         last_run = await db.all("SELECT * FROM runs ORDER BY id DESC LIMIT 1")
         by_level = {r["level"]: r["n"] for r in counts}
         return {
@@ -159,6 +169,7 @@ def create_app() -> FastAPI:
                 "new": new[0]["n"] if new else 0,
             },
             "companies": companies,
+            "countries": countries,
             "last_run": _decode(last_run[0]) if last_run else None,
         }
 
