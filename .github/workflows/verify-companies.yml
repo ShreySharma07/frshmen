@@ -1,0 +1,61 @@
+name: Verify company boards
+
+# Probes each company's public ATS board and commits the results back to the PR
+# branch, so the pruning report shows up in the PR diff.
+on:
+  pull_request:
+    paths:
+      - config/companies.yaml
+      - scripts/verify_companies.py
+      - .github/workflows/verify-companies.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-companies-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Check out the branch itself (not the merge commit) so we can push to it.
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - run: python scripts/verify_companies.py
+
+      - name: Add report to job summary
+        run: cat docs/company_check.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: company-check
+          path: |
+            config/companies.yaml
+            docs/company_check.md
+
+      # Only on PRs: never push straight to main from a manual run.
+      - name: Commit results to PR branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898088+github-actions[bot]@users.noreply.github.com"
+          git add config/companies.yaml docs/company_check.md
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Update company board check results"
+            git push
+          fi
