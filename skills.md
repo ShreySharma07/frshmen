@@ -86,7 +86,7 @@ Steps:
 **Use when:** working on the UI.
 
 Steps:
-1. Page reads one static JSON produced by the pipeline. No backend unless Shrey decides otherwise.
+1. Page (React on Cloudflare Pages) reads jobs from the FastAPI backend on Cloudflare Python Workers, which queries D1. See `docs/decisions.md`.
 2. Required views: Fresher (default), Maybe, New in last 24h. Required filters: location type, country, visa, skills, company, source.
 3. Each card shows: title, company, location type, level badge with confidence, matched skills, and an "evidence" expander showing why it was labeled fresher (the quoted snippet).
 4. Mobile-friendly, fast, no heavy framework unless chosen in decisions.md. Check accessibility basics.

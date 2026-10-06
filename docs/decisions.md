@@ -4,6 +4,23 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-05 — Company discovery
+- **Options:** hand-curated ~50 seed list · seed list + auto-discovery from YC/funding lists
+- **Choice:** Curated list of ~200 companies, including YC AI startups. Claude drafts it, Shrey prunes.
+- **Why:** Bigger coverage than 50 while keeping every entry verified as AI/ML with a working public ATS board (Greenhouse/Lever/Ashby). YC companies are added via their own ATS boards, not by scraping login-walled YC pages.
+
+## 2026-10-05 — Backend API
+- **Options:** Cloudflare Python Workers · Render free web service · no backend (static `jobs.json`)
+- **Choice:** FastAPI on Cloudflare Python Workers, reading D1 via a native binding.
+- **Why:** Shrey wants a Python backend; this keeps API, DB and frontend on one platform with no sleep/cold-start penalty (Render sleeps after 15 min idle, ~1 min wake).
+- **Free-tier limits:** 100k requests/day, short CPU time per request. Tooling is `pywrangler` (newer, thinner docs). Every API read counts toward D1's 5M rows read/day, so list queries must use indexes and pagination.
+- **Consequence:** Pipeline step 6 now writes to D1; the page calls the API instead of reading a static JSON.
+
+## 2026-10-05 — Frontend and hosting
+- **Options:** plain HTML/JS · small framework · React; GitHub Pages · Cloudflare Pages
+- **Choice:** React (Vite + TypeScript) on Cloudflare Pages. Claude builds it; Shrey reviews.
+- **Why:** A polished UI is the goal. Cloudflare Pages keeps hosting on the same platform as D1 and the API. Repo is public.
+
 ## 2026-10-05 — LLM for ambiguous (`maybe`) cases
 - **Options:** rules-only at first · Gemini free tier · Groq free tier
 - **Choice:** Rules-only for now.
