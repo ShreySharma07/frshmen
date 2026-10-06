@@ -99,3 +99,13 @@ def test_meta_counts(client):
 def test_rejects_bad_params(client):
     assert client.get("/api/jobs?view=bogus").status_code == 422
     assert client.get("/api/jobs?limit=1000").status_code == 422
+
+
+def test_list_carries_one_highlight_not_full_evidence(client):
+    jobs = client.get("/api/jobs?view=all&role=all").json()["jobs"]
+    hume = next(j for j in jobs if j["id"] == "greenhouse:humeai:4775962008")
+    assert "evidence" not in hume
+    assert hume["highlight"]["kind"] == "yoe_required" and "2+ years" in hume["highlight"]["text"]
+    pinecone = next(j for j in jobs if j["title"] == "Associate Field Engineer")
+    assert pinecone["highlight"] == {"kind": "fresher_text",
+                                     "text": "This is intended to be an entry level role for new grads/early career professionals."}

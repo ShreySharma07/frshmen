@@ -16,8 +16,16 @@ from storage import D1Database, Database
 
 LIST_COLUMNS = (
     "id, company, title, url, location_raw, location_type, countries, posted_at, first_seen_at, "
-    "level, level_confidence, level_reason, yoe_min, yoe_max, batch_years, role_family, visa_sponsorship"
+    "level, level_confidence, level_reason, yoe_min, yoe_max, yoe_evidence, batch_years, role_family, "
+    "visa_sponsorship, evidence"
 )
+# Which evidence decides a label, in order of preference. The page shows this one line per job.
+HIGHLIGHT_KINDS = {
+    "fresher": ("batch", "fresher_text", "yoe_required", "fresher_title"),  # batch says who can apply
+    "maybe": ("yoe_required", "yoe_preferred", "batch"),
+    "experienced": ("yoe_required", "senior_title"),
+}
+HIGHLIGHT_MAX = 280
 JSON_COLUMNS = ("countries", "batch_years", "evidence", "skills")
 # D1 rejects LIKE patterns over 50 bytes.
 MAX_QUERY_CHARS = 40
@@ -39,6 +47,24 @@ def _decode(row: dict[str, Any]) -> dict[str, Any]:
                 pass
     if "role_match" in row:
         row["role_match"] = bool(row["role_match"])
+    return row
+
+
+def _highlight(row: dict[str, Any]) -> dict[str, str] | None:
+    """The one snippet that best explains the label, so the list can show it without the full evidence."""
+    items = (row.get("evidence") or {}).get("level", []) if isinstance(row.get("evidence"), dict) else []
+    for kind in HIGHLIGHT_KINDS.get(row.get("level", ""), ()):
+        for item in items:
+            if item.get("kind") == kind and item.get("snippet"):
+                text = item["snippet"]
+                return {"kind": kind, "text": text if len(text) <= HIGHLIGHT_MAX else text[: HIGHLIGHT_MAX - 1] + "…"}
+    return None
+
+
+def _summary(row: dict[str, Any]) -> dict[str, Any]:
+    row = _decode(row)
+    row["highlight"] = _highlight(row)
+    row.pop("evidence", None)
     return row
 
 
@@ -86,7 +112,7 @@ def create_app() -> FastAPI:
                "ORDER BY first_seen_at DESC, id LIMIT ? OFFSET ?")
         rows = await db.all(sql, [*params, limit + 1, offset])
         return {
-            "jobs": [_decode(r) for r in rows[:limit]],
+            "jobs": [_summary(r) for r in rows[:limit]],
             "limit": limit,
             "offset": offset,
             "has_more": len(rows) > limit,
