@@ -37,3 +37,23 @@ def test_evidence_keeps_raw_text_and_ats_code():
     loc = extract_location("Bangalore, Karnataka", ["IN"])
     assert {"kind": "location", "snippet": "Bangalore, Karnataka"} in loc.evidence
     assert {"kind": "ats_country", "snippet": "IN"} in loc.evidence
+
+
+@pytest.mark.parametrize("raw,cities", [
+    ("Bangalore, Karnataka", ["Bengaluru"]),
+    ("Mumbai, Maharashtra / Delhi NCR / Bangalore, Karnataka", ["Mumbai", "Delhi NCR", "Bengaluru"]),
+    ("Navi Mumbai", ["Mumbai"]),  # satellite town folds into its metro
+    ("Gurgaon / Remote (India)", ["Gurugram"]),
+    ("Hyderabad; San Francisco, CA", ["Hyderabad"]),  # cities are tracked for India only
+    ("Mysore, India", ["Mysuru"]),
+    ("Vizag", ["Visakhapatnam"]),
+    ("San Francisco, CA", []),
+    ("Remote", []),
+])
+def test_indian_cities(raw, cities):
+    assert extract_location(raw).cities == cities
+
+
+@pytest.mark.parametrize("raw", ["Kochi", "Mohali, Punjab", "Thiruvananthapuram", "Remote, Uttar Pradesh"])
+def test_smaller_indian_places_count_as_india(raw):
+    assert extract_location(raw).countries == ["India"]

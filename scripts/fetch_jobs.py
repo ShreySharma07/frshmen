@@ -47,7 +47,7 @@ def location_fields(job: Job) -> dict:
     loc = extract_location(job.location_raw, job.ats_countries)
     # The ATS's structured workplace type wins; "or Remote" in the text is the fallback.
     location_type = job.ats_workplace_type or ("remote" if loc.remote else None)
-    return {"countries": loc.countries, "location_type": location_type, "location_evidence": loc.evidence}
+    return {"countries": loc.countries, "cities": loc.cities, "location_type": location_type, "location_evidence": loc.evidence}
 
 
 def dedupe(jobs: list[Job]) -> list[Job]:
