@@ -20,6 +20,8 @@ from sources.timeutil import to_utc_iso
 NAME = "workday"
 # Per-run cap on detail requests per board; the title screen keeps real boards well under it.
 MAX_DETAILS = 150
+# Job text rarely changes: reuse a stored detail for this long, so later runs only fetch new jobs.
+DETAIL_FRESH_DAYS = 3
 
 
 def _parts(slug: str) -> tuple[str, str, str]:
@@ -84,7 +86,7 @@ def fetch(http: HttpClient, company: Company) -> list[Job]:
         paths = [p for _, p in sorted(ranked, key=lambda rp: rp[0])]
     jobs = []
     for path in paths[:MAX_DETAILS]:
-        job = parse_detail(http.get_json(detail_url(company.slug, path)), company)
+        job = parse_detail(http.get_json(detail_url(company.slug, path), fresh_days=DETAIL_FRESH_DAYS), company)
         if job:
             jobs.append(job)
     return jobs

@@ -21,6 +21,7 @@ V2_PAGE = 50
 PCSX_PAGE = 10  # fixed by the endpoint
 MAX_PAGES = 60
 MAX_DETAILS = 150
+DETAIL_FRESH_DAYS = 3
 LOCATION = "India"
 _WORK_MODE = {"onsite": "onsite", "on-site": "onsite", "remote": "remote", "hybrid": "hybrid"}
 
@@ -99,7 +100,7 @@ def fetch(http: HttpClient, company: Company) -> list[Job]:
     positions = [p for p in positions if could_be_target(p.get("name") or "")]
     jobs = []
     for pos in positions[:MAX_DETAILS]:
-        detail = pos if kind == "v2" and pos.get("job_description") else http.get_json(detail_url(company.slug, pos["id"]))
+        detail = pos if kind == "v2" and pos.get("job_description") else http.get_json(detail_url(company.slug, pos["id"]), fresh_days=DETAIL_FRESH_DAYS)
         jobs.append(parse(pos, detail if isinstance(detail, dict) else {}, company))
     return jobs
 

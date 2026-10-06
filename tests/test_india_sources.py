@@ -24,12 +24,12 @@ class FakeHttp:
         self.routes = routes
         self.requested = []
 
-    def get_json(self, url):
+    def get_json(self, url, fresh_days=None):
         self.requested.append(url)
         body = self.routes.get(url)
         return json.loads(body) if isinstance(body, str) else body
 
-    def get_text(self, url):
+    def get_text(self, url, fresh_days=None):
         self.requested.append(url)
         return self.routes.get(url)
 

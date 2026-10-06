@@ -13,6 +13,7 @@ import json
 import sys
 import time
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -83,6 +84,7 @@ def main() -> int:
     parser.add_argument("--company", nargs="*", help="only these company names")
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--no-cache", action="store_true", help="skip ETag/If-Modified-Since cache")
+    parser.add_argument("--workers", type=int, default=8, help="boards fetched in parallel (different hosts)")
     args = parser.parse_args()
 
     companies = load_companies()
@@ -96,23 +98,28 @@ def main() -> int:
     jobs: list[Job] = []
     errors: dict[str, str] = {}
     per_company: dict[str, int] = {}
-    for i, company in enumerate(companies, 1):
+    def fetch_one(company: Company) -> tuple[Company, list[Job] | None, str | None]:
         try:
             found = ADAPTERS[company.ats].fetch(http, company)
         except FetchError as e:
-            errors[company.name] = str(e)
-            print(f"[{i}/{len(companies)}] {company.name}: FAILED ({e})", flush=True)
-            continue
+            return company, None, str(e)
         except (KeyError, TypeError, ValueError) as e:
             # The ATS changed its payload shape: report it, keep going.
-            errors[company.name] = f"parse error: {e!r}"
-            print(f"[{i}/{len(companies)}] {company.name}: PARSE FAILED ({e!r})", flush=True)
-            continue
+            return company, None, f"parse error: {e!r}"
         if company.india_only:
             found = [j for j in found if in_india_or_remote(j)]
-        per_company[company.name] = len(found)
-        jobs.extend(found)
-        print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
+        return company, found, None
+
+    # Boards on different hosts are fetched in parallel; HttpClient still spaces requests per host.
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        for i, (company, found, error) in enumerate(pool.map(fetch_one, companies), 1):
+            if error is not None:
+                errors[company.name] = error
+                print(f"[{i}/{len(companies)}] {company.name}: FAILED ({error})", flush=True)
+                continue
+            per_company[company.name] = len(found)
+            jobs.extend(found)
+            print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
 
     unique = dedupe(jobs)
     profile = load_profile()

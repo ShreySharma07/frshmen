@@ -19,6 +19,7 @@ NAME = "darwinbox"
 PAGE_SIZE = 50
 MAX_PAGES = 20
 MAX_DETAILS = 150
+DETAIL_FRESH_DAYS = 3
 
 
 def host(slug: str) -> str:
@@ -70,7 +71,7 @@ def fetch(http: HttpClient, company: Company) -> list[Job]:
     listed = [j for j in list_jobs(http, company.slug) or [] if could_be_target(j.get("title") or "")]
     jobs = []
     for item in listed[:MAX_DETAILS]:
-        detail = http.get_json(detail_url(company.slug, item["id"]))
+        detail = http.get_json(detail_url(company.slug, item["id"]), fresh_days=DETAIL_FRESH_DAYS)
         rows = ((detail or {}).get("message") or {}).get("job") if isinstance(detail, dict) else None
         jobs.append(parse(item, rows[0] if rows else {}, company))
     return jobs

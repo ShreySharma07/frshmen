@@ -89,3 +89,16 @@ def test_no_cache_entry_without_validators(monkeypatch, no_sleep, tmp_path):
     _serve(monkeypatch, [_Resp(b"[]")])
     HttpClient(cache_dir=tmp_path).get_json("https://api.lever.co/x")
     assert list(tmp_path.iterdir()) == []
+
+
+def test_pacing_reserves_slots_per_host_across_threads(monkeypatch):
+    # Two requests to one host from different threads must still be spaced; other hosts don't wait.
+    clock = [100.0]
+    sleeps = []
+    monkeypatch.setattr(http_mod.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(http_mod.time, "sleep", sleeps.append)
+    client = HttpClient()
+    client._pace("a.example")
+    client._pace("a.example")  # same instant, as if from a second thread
+    client._pace("b.example")
+    assert sleeps == [http_mod.MIN_SECONDS_PER_HOST]

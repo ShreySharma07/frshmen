@@ -23,6 +23,7 @@ from sources.timeutil import to_utc_iso
 
 NAME = "zoho_recruit"
 MAX_DETAILS = 60
+DETAIL_FRESH_DAYS = 3
 _JOBS_INPUT = re.compile(r"<input[^>]*\bid=[\"']jobs[\"'][^>]*>", re.I)
 _VALUE = re.compile(r"\bvalue=(\"([^\"]*)\"|'([^']*)')", re.I)
 # A single-quoted JS string holding a JSON array of records: '[{...}]'
@@ -86,7 +87,7 @@ def fetch(http: HttpClient, company: Company) -> list[Job]:
               if _truthy(j.get("Publish"), default=True) and could_be_target(_title(j))]
     jobs = []
     for item in listed[:MAX_DETAILS]:
-        detail = job_record(http.get_text(job_page_url(company.slug, item["id"])), item["id"])
+        detail = job_record(http.get_text(job_page_url(company.slug, item["id"]), fresh_days=DETAIL_FRESH_DAYS), item["id"])
         jobs.append(parse_one({**item, **detail}, company))
     return jobs
 
