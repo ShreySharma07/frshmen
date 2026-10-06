@@ -48,8 +48,9 @@ target_roles:
     - frontend
     - front end
     - front-end
+    # iOS-only and Flutter stay out; a title naming Android or React Native wins over these.
     - ios
-    - android
+    - flutter
     - mobile
     - qa
     - quality assurance
@@ -62,6 +63,14 @@ target_roles:
     - ux
     - user research
     - designer
+
+# Mobile (added 2026-10-06, see docs/decisions.md): Android and React Native.
+mobile:
+  # A title with any of these is a mobile target, even if it also says iOS or Mobile.
+  titles: [android, react native, react-native]
+  # Generic mobile titles count only when the description names an Android / React Native stack.
+  generic_titles: [mobile engineer, mobile developer, mobile application developer, mobile app developer, app developer]
+  requires_any: [android, kotlin, react native, react-native, jetpack compose]
 
 # Python backend roles are only a fit when the stack is Python; checked against the description.
 backend_requires_any: [python, fastapi, django, flask]
