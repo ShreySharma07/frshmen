@@ -48,8 +48,8 @@ jobs:
           failed = []
           for name, ats, slug in [
               ("BrowserStack", "workday", "browserstack/wd3/External"),
-              ("Spinny", "darwinbox", "spinzone"),
-              ("Jupiter", "keka", "jupiter"),
+              # Darwinbox answers 403 to GitHub's runners (docs/decisions.md), so it isn't checked here.
+              ("Jupiter", "keka", "jupiter/b5279857-cf81-4dde-a215-fc48957ee2b5"),
               ("Wadhwani AI", "zoho_recruit", "wadhwaniai.zohorecruit.in"),
           ]:
               try:
@@ -69,19 +69,13 @@ jobs:
                   page = http.get_text(f"https://{slug}/jobs/Careers") or ""
                   i = page.find('id="jobs"')
                   print("  zoho page length", len(page), "jobs input at", i, repr(page[max(0, i - 200):i + 300]))
-          # Field-name check for the two adapters built from documentation rather than a live sample.
-          from sources import keka, zoho_recruit
+          # Zoho's list has no description: check what a job page carries before JavaScript runs.
+          from sources import zoho_recruit
           raw = zoho_recruit.embedded_jobs(http.get_text("https://wadhwaniai.zohorecruit.in/jobs/Careers")) or [{}]
-          print("zoho keys:", sorted(raw[0]))
-          print("zoho sample:", {k: str(v)[:80] for k, v in raw[0].items()})
-          guid = keka.portal_guid(http, "jupiter")
-          print("keka guid:", guid)
-          if guid:
-              data = http.get_json(keka.list_url("jupiter", guid))
-              print("keka list:", type(data).__name__, len(data) if isinstance(data, list) else str(data)[:300])
-          page = http.get_text("https://jupiter.keka.com/careers/") or ""
-          for marker in ("embedjobs", "identifier", "khConfig"):
+          page = http.get_text(f"https://wadhwaniai.zohorecruit.in/jobs/Careers/{raw[0].get('id')}") or ""
+          print("zoho job page length", len(page))
+          for marker in ('id="jobs"', "Job_Description", "Date_Opened", "Work_Experience", "application/ld+json"):
               i = page.find(marker)
-              print(f"keka page {marker!r} at {i}:", repr(page[max(0, i - 80):i + 160]) if i >= 0 else "")
+              print(f"  {marker!r} at {i}:", repr(page[max(0, i - 60):i + 240]) if i >= 0 else "")
           assert not failed, f"adapters returned nothing: {failed}"
           EOF
