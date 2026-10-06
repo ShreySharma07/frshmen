@@ -178,7 +178,7 @@ companies:
   - {name: Yellow.ai, category: india, hq: in, ats: zoho_recruit, slug: yellow.zohorecruit.in, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Haptik, category: india, hq: in, ats: lever, slug: haptik, verified: false, checked: '2026-10-06'}
   - {name: Gupshup, category: india, hq: in, ats: workable, slug: gupshup, verified: false, checked: '2026-10-06'}
-  - {name: Vue.ai (Mad Street Den), category: india, hq: in, ats: darwinbox, slug: msd, verified: false}
+  - {name: Vue.ai (Mad Street Den), category: india, hq: in, ats: darwinbox, slug: msd, verified: false, checked: '2026-10-06'}
   - {name: Qure.ai, category: india, hq: in, ats: zoho_recruit, slug: career.qure.ai, verified: true, jobs: 13, ai_jobs: 1, checked: '2026-10-06'}
   - {name: SigTuple, category: india, hq: in, ats: lever, slug: sigtuple, verified: false, checked: '2026-10-06'}
   - {name: Wadhwani AI, category: india, hq: in, ats: zoho_recruit, slug: wadhwaniai.zohorecruit.in, verified: true, jobs: 25, ai_jobs: 3, checked: '2026-10-06'}
@@ -189,7 +189,7 @@ companies:
   - {name: Meesho, category: india, hq: in, ats: lever, slug: meesho, verified: true, jobs: 59, ai_jobs: 7}
   - {name: PhonePe, category: india, hq: in, ats: smartrecruiters, slug: PHONEPELIMITED, verified: true, jobs: 90, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Groww, category: india, hq: in, ats: greenhouse, slug: groww, verified: true, jobs: 7, ai_jobs: 0}
-  - {name: Zepto, category: india, hq: in, ats: darwinbox, slug: zepto, verified: false}
+  - {name: Zepto, category: india, hq: in, ats: darwinbox, slug: zepto, verified: false, checked: '2026-10-06'}
   - {name: InMobi, category: india, hq: in, ats: greenhouse, slug: inmobi, verified: true, jobs: 72, ai_jobs: 9}
   - {name: Glance, category: india, hq: in, ats: greenhouse, slug: glance, verified: true, jobs: 37, ai_jobs: 7}
   - {name: ShareChat, category: india, hq: in, ats: lever, slug: sharechat, verified: false, checked: '2026-10-06'}
@@ -205,10 +205,10 @@ companies:
   - {name: Jar, category: india, hq: in, ats: workable, slug: jar, verified: false, checked: '2026-10-06'}
   - {name: Sprinto, category: india, hq: in, ats: lever, slug: Sprinto, verified: true, jobs: 34, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Whatfix, category: india, hq: in, ats: smartrecruiters, slug: whatfix, verified: true, jobs: 1, ai_jobs: 0}
-  - {name: Locus, category: india, hq: in, ats: darwinbox, slug: locus, verified: false}
+  - {name: Locus, category: india, hq: in, ats: darwinbox, slug: locus, verified: false, checked: '2026-10-06'}
   - {name: Innovaccer, category: india, hq: in, ats: workable, slug: innovaccer-analytics, verified: true, jobs: 73, ai_jobs: 10, checked: '2026-10-06'}
-  - {name: HealthifyMe, category: india, hq: in, ats: darwinbox, slug: healthify, verified: false}
-  - {name: Pixxel, category: india, hq: in, ats: darwinbox, slug: pixxel, verified: false}
+  - {name: HealthifyMe, category: india, hq: in, ats: darwinbox, slug: healthify, verified: false, checked: '2026-10-06'}
+  - {name: Pixxel, category: india, hq: in, ats: darwinbox, slug: pixxel, verified: false, checked: '2026-10-06'}
   - {name: Mindtickle, category: india, hq: in, ats: lever, slug: mindtickle, verified: true, jobs: 17, ai_jobs: 1}
   - {name: Chargebee, category: india, hq: in, ats: lever, slug: chargebee, verified: false, checked: '2026-10-06'}
   - {name: Exotel, category: india, hq: in, ats: lever, slug: exotel, verified: false, checked: '2026-10-06'}
@@ -230,7 +230,7 @@ companies:
   - {name: Ola, category: india, hq: in, ats: workable, slug: olacabs, verified: false, checked: '2026-10-06'}
   - {name: Nykaa, category: india, hq: in, ats: workable, slug: nykaa, verified: false, checked: '2026-10-06'}
   - {name: Urban Company, category: india, hq: in, ats: lever, slug: urbancompany, verified: false, checked: '2026-10-06'}
-  - {name: Spinny, category: india, hq: in, ats: darwinbox, slug: spinzone, verified: false}
+  - {name: Spinny, category: india, hq: in, ats: darwinbox, slug: spinzone, verified: false, checked: '2026-10-06'}
 
   # --- YC AI startups ---
   - {name: Langfuse, category: yc, hq: eu, ats: ashby, slug: langfuse, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-10-06'}
@@ -306,10 +306,10 @@ companies:
   - {name: Altimate AI, category: india, hq: in, ats: ashby, slug: altimate, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Sprinklr, category: india, hq: in, ats: workday, slug: sprinklr/wd1/careers, verified: true, jobs: 70, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Quantiphi, category: india, hq: in, ats: workday, slug: quantiphi/wd1/Careers_at_Quantiphi, verified: true, jobs: 87, ai_jobs: 18, checked: '2026-10-06'}
-  - {name: Games24x7, category: india, hq: in, ats: darwinbox, slug: games24x7, verified: false}
-  - {name: LatentView, category: india, hq: in, ats: darwinbox, slug: latentview, verified: false}
-  - {name: Perfios, category: india, hq: in, ats: darwinbox, slug: perfios, verified: false}
-  - {name: Darwinbox, category: india, hq: in, ats: darwinbox, slug: dbx, verified: false}
+  - {name: Games24x7, category: india, hq: in, ats: darwinbox, slug: games24x7, verified: false, checked: '2026-10-06'}
+  - {name: LatentView, category: india, hq: in, ats: darwinbox, slug: latentview, verified: false, checked: '2026-10-06'}
+  - {name: Perfios, category: india, hq: in, ats: darwinbox, slug: perfios, verified: false, checked: '2026-10-06'}
+  - {name: Darwinbox, category: india, hq: in, ats: darwinbox, slug: dbx, verified: false, checked: '2026-10-06'}
 
   # --- YC AI startups imported from yc-oss on 2026-10-06 (scripts/import_yc.py) ---
   - {name: Hub, category: yc, hq: us, ats: ashby, slug: hub, verified: false, checked: '2026-10-06'}
