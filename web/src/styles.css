@@ -176,6 +176,22 @@ body {
   flex: 1 1 260px;
 }
 
+/* Checkbox sits level with the bottom of the dropdowns. */
+.field--check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: end;
+  padding-bottom: 10px;
+  color: var(--ink);
+}
+
+.field.field--check input {
+  width: auto;
+  padding: 0;
+  accent-color: var(--ink);
+}
+
 .field input,
 .field select {
   font: inherit;

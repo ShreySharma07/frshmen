@@ -42,6 +42,7 @@ export const FAMILY_LABEL: Record<string, string> = {
   ai_ml: "AI / ML",
   backend: "Python backend",
   generic_swe: "Software + AI",
+  mobile: "Android / React Native",
 };
 
 export const levelLabel = (level: Level) =>
