@@ -22,6 +22,8 @@ sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
 import yaml  # noqa: E402
 
 from extract.classify import classify  # noqa: E402
+from extract.profile import load_profile  # noqa: E402
+from extract.role import match_role  # noqa: E402
 from sources import ADAPTERS  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
 from sources.models import Company, Job  # noqa: E402
@@ -90,10 +92,21 @@ def main() -> int:
         print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
 
     unique = dedupe(jobs)
-    records = [{**j.to_dict(), **classify(j.title, j.description_text).to_dict()} for j in unique]
+    profile = load_profile()
+    records = [
+        {
+            **j.to_dict(),
+            **classify(j.title, j.description_text, set(profile.exact_batch), set(profile.soft_batch)).to_dict(),
+            **match_role(j.title, j.description_text, profile).to_dict(),
+        }
+        for j in unique
+    ]
     args.out.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        # Boards that answered: publish_d1.py only closes missing jobs from these.
+        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company],
+        "errors": errors,
         "jobs": records,
     }
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
@@ -103,6 +116,9 @@ def main() -> int:
     print(f"Jobs: fetched={len(jobs)} after_dedupe={len(unique)} -> {args.out}")
     levels = Counter(r["level"] for r in records)
     print(f"Levels: fresher={levels['fresher']} maybe={levels['maybe']} experienced={levels['experienced']}")
+    targets = [r for r in records if r["role_match"]]
+    target_levels = Counter(r["level"] for r in targets)
+    print(f"Target roles: {len(targets)} (fresher={target_levels['fresher']} maybe={target_levels['maybe']})")
     print(f"Took {time.monotonic() - started:.0f}s")
     for name, err in errors.items():
         print(f"  error: {name}: {err}")

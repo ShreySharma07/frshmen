@@ -1,0 +1,62 @@
+name: Fetch and publish jobs
+
+# fetch -> classify -> publish changed rows to D1. Manual for now; the schedule
+# comes with build step 4. Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - run: pip install -r requirements.txt
+
+      # Keeps ETag / Last-Modified validators between runs so unchanged boards cost hosts ~nothing.
+      - uses: actions/cache@v4
+        with:
+          path: .cache/http
+          key: http-cache-${{ github.run_id }}
+          restore-keys: http-cache-
+
+      - name: Fetch and classify
+        run: python -u scripts/fetch_jobs.py
+
+      - name: Publish to D1
+        run: python -u scripts/publish_d1.py --d1 frshmen
+
+      - name: Run summary
+        if: always()
+        run: |
+          python - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import json, collections, pathlib
+          p = pathlib.Path("data/jobs.json")
+          if not p.exists():
+              print("No jobs.json produced."); raise SystemExit
+          d = json.loads(p.read_text())
+          jobs = d["jobs"]
+          t = [j for j in jobs if j["role_match"]]
+          lv = collections.Counter(j["level"] for j in t)
+          print(f"**{len(jobs)} jobs** from {len(d['boards_ok'])} boards ({len(d['errors'])} failed). "
+                f"Target roles: {len(t)} — fresher {lv['fresher']}, maybe {lv['maybe']}, experienced {lv['experienced']}.")
+          for name, err in d["errors"].items():
+              print(f"- {name}: {err}")
+          EOF

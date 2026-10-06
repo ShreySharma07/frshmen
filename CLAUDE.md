@@ -20,7 +20,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 
 ## User profile (drives filtering and ranking)
 - B.Tech CS with AI specialisation, graduated 2026 → eligible for "2026 batch", "new grad", "graduate", "0-1 year" roles. Also treat 2025/2027 batch targeting as a soft match.
-- Target: AI/ML Engineer, ML Research Engineer, Applied Scientist (junior), Data Scientist (junior), LLM/GenAI Engineer, MLOps (junior), AI Engineer, **Python Backend Engineer (junior; Python stack such as FastAPI/Django)**, Research Intern → only if full-time conversion is stated. Skip frontend/mobile/QA/sales roles. Role keywords live in `config/profile.yaml`.
+- Target: AI/ML Engineer, ML Research Engineer, Applied Scientist (junior), Data Scientist (junior), LLM/GenAI Engineer, MLOps (junior), AI Engineer, **Python Backend Engineer (junior; Python stack such as FastAPI/Django)**, Research Intern → only if full-time conversion is stated. Plain "Software Engineer" titles count only when the description shows Python and AI/ML work (`generic_swe` toggle). Skip frontend/mobile/QA/sales roles. Role keywords live in `config/profile.yaml`; matching is in `extract/role.py`.
 - Locations: India (any city, but **hide onsite-only roles in Bengaluru and Hyderabad**; hybrid/remote there is fine), remote-global, and Europe/US **only if visa sponsorship is offered or relocation is explicit**.
 - Skills to match against (edit in `config/profile.yaml`): Python, PyTorch, FastAPI, LLMs, knowledge distillation, speculative decoding, CUDA kernels, agents/evals. Add the real resume list there.
 
@@ -39,7 +39,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Pipeline: Python, run by GitHub Actions cron
 - Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows)
 - Backend API: FastAPI on Cloudflare Python Workers, D1 binding
-- Frontend: React (Vite + TypeScript) on Cloudflare Pages
+- Frontend: React (Vite + TypeScript), served by the same Worker via Workers Static Assets
 - LLM fallback: none yet (rules-only); revisit at build step 5
 - Companies: curated ~200 incl. YC AI startups, in `config/`
 - Any change to the above is a new decision: present options, let Shrey choose, log it.
