@@ -99,3 +99,9 @@ def test_quotes_in_text_survive_round_trip(db):
     pub.publish(db, payload([job("1", title="Engineer, O'Reilly's team", desc="It's '; DROP TABLE jobs; --")]), now="t1")
     r = rows(db)["ashby:acme:1"]
     assert r["title"] == "Engineer, O'Reilly's team" and r["description_text"].startswith("It's '; DROP")
+
+
+def test_huge_description_is_capped_under_d1_statement_limit(db):
+    p = pub.publish(db, payload([job("1", desc="x" * 200_000, content="0" * 64)]), now="t1")
+    assert len(p.sql.encode()) < 100_000
+    assert len(rows(db)["ashby:acme:1"]["description_text"]) == pub.MAX_DESCRIPTION_CHARS

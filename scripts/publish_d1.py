@@ -36,6 +36,8 @@ MIGRATIONS = ROOT / "db" / "migrations"
 
 # Bump when extract/ rules change so every stored job gets re-classified once.
 EXTRACT_VERSION = 1
+# D1 rejects SQL statements over 100 KB; real descriptions are ~5 KB.
+MAX_DESCRIPTION_CHARS = 60_000
 
 TEXT_FIELDS = [
     "source", "company", "company_slug", "title", "url", "location_raw", "location_type", "countries",
@@ -50,6 +52,7 @@ EXTRACT_FIELDS = [
 class Database(Protocol):
     def query(self, sql: str) -> list[dict[str, Any]]: ...
     def execute_script(self, sql: str) -> None: ...
+    def migrate(self) -> None: ...
 
 
 class SqliteDatabase:
@@ -64,6 +67,11 @@ class SqliteDatabase:
         self.conn.executescript(sql)
         self.conn.commit()
 
+    def migrate(self) -> None:
+        # Local files only: every migration is written to be re-runnable here.
+        for path in sorted(MIGRATIONS.glob("*.sql")):
+            self.execute_script(path.read_text())
+
 
 class WranglerD1:
     """Talks to Cloudflare D1 through the wrangler CLI (auth via CLOUDFLARE_API_TOKEN / ACCOUNT_ID)."""
@@ -76,9 +84,16 @@ class WranglerD1:
             raise SystemExit("npx not found: install Node.js to publish to D1")
 
     def _run(self, *args: str) -> str:
-        cmd = [*self.wrangler, "d1", "execute", self.database, "--remote", "--config", str(self.config), *args]
+        return self._wrangler("execute", self.database, "--remote", *args)
+
+    def _wrangler(self, *args: str) -> str:
+        cmd = [*self.wrangler, "d1", *args, "--config", str(self.config)]
         out = subprocess.run(cmd, check=True, capture_output=True, text=True)
         return out.stdout
+
+    def migrate(self) -> None:
+        # wrangler records applied migrations in D1, so later ALTER TABLEs run exactly once.
+        self._wrangler("migrations", "apply", self.database, "--remote")
 
     def query(self, sql: str) -> list[dict[str, Any]]:
         payload = json.loads(self._run("--command", sql, "--json"))
@@ -129,7 +144,7 @@ def to_row(job: dict[str, Any]) -> dict[str, Any]:
         "department": job.get("department"),
         "employment_type": job.get("employment_type"),
         "posted_at": job.get("posted_at"),
-        "description_text": job.get("description_text"),
+        "description_text": (job.get("description_text") or "")[:MAX_DESCRIPTION_CHARS],
         "content_hash": job["content_hash"],
         "extract_version": EXTRACT_VERSION,
         "yoe_min": job.get("yoe_min"),
@@ -196,14 +211,9 @@ def run_row(p: Plan, payload: dict[str, Any], now: str) -> str:
             f"jobs_closed, errors) VALUES ({', '.join(map(sql_literal, values))});")
 
 
-def migrate(db: Database) -> None:
-    for path in sorted(MIGRATIONS.glob("*.sql")):
-        db.execute_script(path.read_text())
-
-
 def publish(db: Database, payload: dict[str, Any], now: str | None = None) -> Plan:
     now = now or datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-    migrate(db)
+    db.migrate()
     existing = db.query("SELECT id, source, company_slug, content_hash, extract_version, status FROM jobs")
     p = plan(payload["jobs"], payload.get("boards_ok", []), existing, now)
     db.execute_script("\n".join(s for s in [p.sql, run_row(p, payload, now)] if s))
