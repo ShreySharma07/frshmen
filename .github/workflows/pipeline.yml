@@ -1,9 +1,16 @@
 name: Fetch and publish jobs
 
-# fetch -> classify -> publish changed rows to D1. Manual for now; the schedule
-# comes with build step 4. Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+# fetch -> classify -> publish changed rows to D1, every 3 hours (docs/decisions.md).
+# Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
 on:
+  schedule:
+    # Minute 17, not 0: GitHub delays on-the-hour cron runs the most.
+    - cron: "17 */3 * * *"
   workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write  # keep-alive step below
 
 concurrency:
   group: pipeline
@@ -42,6 +49,14 @@ jobs:
 
       - name: Publish to D1
         run: python -u scripts/publish_d1.py --d1 frshmen
+
+      # GitHub disables scheduled workflows after 60 days without repo activity;
+      # re-enabling through the API resets that timer.
+      - name: Keep schedule alive
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/pipeline.yml/enable"
 
       - name: Run summary
         if: always()

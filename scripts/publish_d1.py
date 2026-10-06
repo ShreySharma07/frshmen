@@ -5,7 +5,8 @@ Rules (skills.md §4):
 - content changed   -> UPDATE text + extraction fields (content_hash differs)
 - extractor changed -> UPDATE extraction fields (extract_version differs)
 - closed but back   -> reopen
-- open but missing from a board that fetched OK -> status = 'closed' (never deleted)
+- open but missing from a board that fetched OK -> missed_runs + 1; closed (never deleted)
+  after CLOSE_AFTER_MISSES runs in a row, so one flaky response doesn't hide a live job
 
 D1's free tier allows 100k written rows/day, so unchanged jobs are not touched.
 Writes go out as one SQL file through `wrangler d1 execute`, because D1 caps a
@@ -38,6 +39,7 @@ MIGRATIONS = ROOT / "db" / "migrations"
 EXTRACT_VERSION = 2  # 2: countries/location_type from extract/location.py
 # D1 rejects SQL statements over 100 KB; real descriptions are ~5 KB.
 MAX_DESCRIPTION_CHARS = 60_000
+CLOSE_AFTER_MISSES = 2
 
 TEXT_FIELDS = [
     "source", "company", "company_slug", "title", "url", "location_raw",
@@ -68,9 +70,12 @@ class SqliteDatabase:
         self.conn.commit()
 
     def migrate(self) -> None:
-        # Local files only: every migration is written to be re-runnable here.
+        # Tracks applied files like wrangler does in D1, so ALTER TABLEs run exactly once.
+        self.conn.execute("CREATE TABLE IF NOT EXISTS local_migrations (name TEXT PRIMARY KEY)")
+        applied = {r[0] for r in self.conn.execute("SELECT name FROM local_migrations")}
         for path in sorted(MIGRATIONS.glob("*.sql")):
-            self.execute_script(path.read_text())
+            if path.name not in applied:
+                self.execute_script(path.read_text() + f"\nINSERT INTO local_migrations VALUES ('{path.name}');")
 
 
 class WranglerD1:
@@ -113,6 +118,7 @@ class Plan:
     reclassified: int
     reopened: int
     closed: int
+    missed: int = 0  # absent once, still open
 
 
 def sql_literal(value: Any) -> str:
@@ -167,7 +173,7 @@ def plan(jobs: list[dict[str, Any]], boards_ok: list[dict[str, str]], existing: 
          now: str) -> Plan:
     current = {row["id"]: row for row in existing}
     stmts: list[str] = []
-    counts = dict(new=0, changed=0, reclassified=0, reopened=0, closed=0)
+    counts = dict(new=0, changed=0, reclassified=0, reopened=0, closed=0, missed=0)
 
     for job in jobs:
         row = to_row(job)
@@ -187,21 +193,27 @@ def plan(jobs: list[dict[str, Any]], boards_ok: list[dict[str, str]], existing: 
             counts["reclassified"] += 1
         if old["status"] != "open":
             counts["reopened"] += 1
-        if fields or old["status"] != "open":
-            sets = [f"{c} = {sql_literal(row[c])}" for c in fields] + ["status = 'open'"]
+        if fields or old["status"] != "open" or old.get("missed_runs"):
+            sets = [f"{c} = {sql_literal(row[c])}" for c in fields] + ["status = 'open'", "missed_runs = 0"]
             stmts.append(f"UPDATE jobs SET {', '.join(sets)} WHERE id = {sql_literal(row['id'])};")
 
     # Only close jobs from boards we actually fetched: a failed board says nothing about its jobs.
     seen = {job["id"] for job in jobs}
     ok = {(b["source"], b["company_slug"]) for b in boards_ok}
-    to_close = [
-        r["id"] for r in existing
+    missing = [
+        r for r in existing
         if r["status"] == "open" and r["id"] not in seen and (r["source"], r["company_slug"]) in ok
     ]
+    to_close = [r["id"] for r in missing if (r.get("missed_runs") or 0) + 1 >= CLOSE_AFTER_MISSES]
+    to_miss = [r["id"] for r in missing if (r.get("missed_runs") or 0) + 1 < CLOSE_AFTER_MISSES]
     if to_close:
         ids = ", ".join(sql_literal(i) for i in to_close)
-        stmts.append(f"UPDATE jobs SET status = 'closed' WHERE id IN ({ids});")
+        stmts.append(f"UPDATE jobs SET status = 'closed', missed_runs = missed_runs + 1 WHERE id IN ({ids});")
         counts["closed"] = len(to_close)
+    if to_miss:
+        ids = ", ".join(sql_literal(i) for i in to_miss)
+        stmts.append(f"UPDATE jobs SET missed_runs = missed_runs + 1 WHERE id IN ({ids});")
+        counts["missed"] = len(to_miss)
 
     return Plan(sql="\n".join(stmts), **counts)
 
@@ -216,7 +228,7 @@ def run_row(p: Plan, payload: dict[str, Any], now: str) -> str:
 def publish(db: Database, payload: dict[str, Any], now: str | None = None) -> Plan:
     now = now or datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     db.migrate()
-    existing = db.query("SELECT id, source, company_slug, content_hash, extract_version, status FROM jobs")
+    existing = db.query("SELECT id, source, company_slug, content_hash, extract_version, status, missed_runs FROM jobs")
     p = plan(payload["jobs"], payload.get("boards_ok", []), existing, now)
     db.execute_script("\n".join(s for s in [p.sql, run_row(p, payload, now)] if s))
     return p
@@ -235,7 +247,7 @@ def main() -> int:
     db: Database = SqliteDatabase(args.sqlite) if args.sqlite else WranglerD1(args.d1, args.config)
     p = publish(db, payload)
     print(f"published: new={p.new} changed={p.changed} reclassified={p.reclassified} "
-          f"reopened={p.reopened} closed={p.closed} (unchanged jobs not written)")
+          f"reopened={p.reopened} missed_once={p.missed} closed={p.closed} (unchanged jobs not written)")
     return 0
 
 
