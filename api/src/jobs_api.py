@@ -10,7 +10,10 @@ import json
 from datetime import datetime, timedelta, timezone
 from typing import Any, Literal
 
+import traceback
+
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
 
 from storage import D1Database, Database
 
@@ -75,6 +78,13 @@ def _since(hours: int) -> str:
 
 def create_app() -> FastAPI:
     app = FastAPI(title="frshmen", docs_url="/api/docs", openapi_url="/api/openapi.json")
+
+    @app.exception_handler(Exception)
+    async def report_errors(request: Request, exc: Exception) -> JSONResponse:
+        # Printed tracebacks land in Workers Logs; the short type/message makes a failure
+        # diagnosable from the browser. Nothing secret flows through this read-only API.
+        traceback.print_exc()
+        return JSONResponse({"error": f"{type(exc).__name__}: {str(exc)[:300]}"}, status_code=500)
 
     @app.get("/api/jobs")
     async def list_jobs(
