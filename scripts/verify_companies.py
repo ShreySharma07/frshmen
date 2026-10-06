@@ -28,6 +28,9 @@ COMPANIES = ROOT / "config" / "companies.yaml"
 REPORT = ROOT / "docs" / "company_check.md"
 
 ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters"]
+# Probed only when it is the company's guessed ATS: Workable throttles hard and
+# few of our companies use it, so trying it for everyone mostly bought 429s.
+GUESS_ONLY_ATS = {"workable"}
 KEY_ORDER = ["name", "category", "hq", "ats", "slug", "verified", "jobs", "ai_jobs"]
 
 # Rough title filter, only to help pruning; real classification lives in extract/.
@@ -126,7 +129,7 @@ def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
     """
     guessed = company["ats"]
     attempts = [(guessed, company["slug"])]
-    for ats in [guessed] + [a for a in ATS_ORDER if a != guessed]:
+    for ats in [guessed] + [a for a in ATS_ORDER if a != guessed and a not in GUESS_ONLY_ATS]:
         attempts += [(ats, s) for s in slug_variants(company)]
     empty: Board | None = None
     errors: list[str] = []

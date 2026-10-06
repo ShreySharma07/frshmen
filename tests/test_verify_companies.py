@@ -99,13 +99,22 @@ def test_throttled_host_does_not_hide_board_elsewhere():
 
 def test_unanswered_probes_are_not_reported_as_not_found():
     def get(url):
-        if "workable" in url:
-            raise FetchError("apply.workable.com: HTTP 429")
+        if "smartrecruiters" in url:
+            raise FetchError("api.smartrecruiters.com: HTTP 429")
         return None
 
     try:
         vc.find_board(get, {"name": "Acme", "ats": "ashby", "slug": "acme"})
     except FetchError as e:
-        assert "workable" in str(e)
+        assert "smartrecruiters" in str(e)
     else:
         raise AssertionError("expected FetchError")
+
+
+def test_workable_only_probed_when_guessed():
+    get, calls = fake_get({})
+    vc.find_board(get, {"name": "Acme", "ats": "ashby", "slug": "acme"})
+    assert not any("workable" in u for u in calls)
+
+    get, calls = fake_get({"https://apply.workable.com/api/v1/widget/accounts/acme": {"name": "Acme", "jobs": [{"title": "ML", "url": "u"}]}})
+    assert vc.find_board(get, {"name": "Acme", "ats": "workable", "slug": "acme"}).ats == "workable"
