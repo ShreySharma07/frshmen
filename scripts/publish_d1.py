@@ -36,7 +36,7 @@ DEFAULT_JOBS = ROOT / "data" / "jobs.json"
 MIGRATIONS = ROOT / "db" / "migrations"
 
 # Bump when extract/ rules change so every stored job gets re-classified once.
-EXTRACT_VERSION = 3  # 2: countries/location_type from extract/location.py; 3: Indian cities
+EXTRACT_VERSION = 4  # 2: countries/location_type; 3: Indian cities; 4: mobile roles, visa, eligibility
 # D1 rejects SQL statements over 100 KB; real descriptions are ~5 KB.
 MAX_DESCRIPTION_CHARS = 60_000
 CLOSE_AFTER_MISSES = 2
@@ -46,7 +46,7 @@ TEXT_FIELDS = [
     "department", "employment_type", "posted_at", "description_text", "content_hash",
 ]
 EXTRACT_FIELDS = [
-    "extract_version", "location_type", "countries", "cities", "yoe_min", "yoe_max", "yoe_evidence", "batch_years", "level", "level_confidence",
+    "extract_version", "location_type", "countries", "cities", "visa_sponsorship", "eligible", "yoe_min", "yoe_max", "yoe_evidence", "batch_years", "level", "level_confidence",
     "level_reason", "role_match", "role_family", "role_reason", "evidence",
 ]
 
@@ -149,6 +149,9 @@ def to_row(job: dict[str, Any]) -> dict[str, Any]:
         "location_type": job.get("location_type", job.get("ats_workplace_type")),
         "countries": job.get("countries", job.get("ats_countries") or []),
         "cities": job.get("cities") or [],
+        "visa_sponsorship": job.get("visa_sponsorship") or "unknown",
+        # Older jobs.json files predate extract/eligibility.py: keep them visible.
+        "eligible": job.get("eligible", True),
         "department": job.get("department"),
         "employment_type": job.get("employment_type"),
         "posted_at": job.get("posted_at"),
@@ -166,7 +169,8 @@ def to_row(job: dict[str, Any]) -> dict[str, Any]:
         "role_family": job.get("role_family"),
         "role_reason": job.get("role_reason"),
         "evidence": {"level": job.get("evidence") or [], "role": job.get("role_evidence") or [],
-                     "location": job.get("location_evidence") or []},
+                     "location": job.get("location_evidence") or [],
+                     "eligibility": job.get("eligibility_reason")},
     }
 
 

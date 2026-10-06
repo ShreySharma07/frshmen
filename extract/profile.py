@@ -28,6 +28,7 @@ class Profile:
     mobile_titles: tuple[str, ...] = ()
     mobile_generic_titles: tuple[str, ...] = ()
     mobile_requires_any: tuple[str, ...] = ()
+    hide_onsite_only_in: frozenset[str] = frozenset()
     skills: tuple[str, ...] = field(default_factory=tuple)
 
 
@@ -51,4 +52,5 @@ def load_profile(path: Path = DEFAULT_PATH) -> Profile:
         mobile_titles=tuple(p.lower() for p in mobile.get("titles", [])),
         mobile_generic_titles=tuple(p.lower() for p in mobile.get("generic_titles", [])),
         mobile_requires_any=tuple(p.lower() for p in mobile.get("requires_any", [])),
+        hide_onsite_only_in=frozenset(c.lower() for c in raw.get("locations", {}).get("india", {}).get("hide_onsite_only_in", [])),
     )

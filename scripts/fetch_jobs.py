@@ -22,9 +22,11 @@ sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
 import yaml  # noqa: E402
 
 from extract.classify import classify  # noqa: E402
+from extract.eligibility import check_eligibility  # noqa: E402
 from extract.location import extract_location  # noqa: E402
 from extract.profile import load_profile  # noqa: E402
 from extract.role import match_role  # noqa: E402
+from extract.visa import extract_visa  # noqa: E402
 from sources import ADAPTERS  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
 from sources.models import Company, Job  # noqa: E402
@@ -43,11 +45,15 @@ def load_companies(path: Path = COMPANIES) -> list[Company]:
     return out
 
 
-def location_fields(job: Job) -> dict:
+def location_fields(job: Job, hide_onsite_only_in: frozenset[str] = frozenset({"bengaluru", "hyderabad"})) -> dict:
     loc = extract_location(job.location_raw, job.ats_countries)
     # The ATS's structured workplace type wins; "or Remote" in the text is the fallback.
     location_type = job.ats_workplace_type or ("remote" if loc.remote else None)
-    return {"countries": loc.countries, "cities": loc.cities, "location_type": location_type, "location_evidence": loc.evidence}
+    visa = extract_visa(job.description_text)
+    fit = check_eligibility(loc.countries, loc.cities, location_type, visa, hide_onsite_only_in)
+    return {"countries": loc.countries, "cities": loc.cities, "location_type": location_type,
+            "location_evidence": loc.evidence + visa.evidence, "visa_sponsorship": visa.sponsorship,
+            "eligible": fit.eligible, "eligibility_reason": fit.reason}
 
 
 def dedupe(jobs: list[Job]) -> list[Job]:
@@ -106,7 +112,7 @@ def main() -> int:
             **j.to_dict(),
             **classify(j.title, j.description_text, set(profile.exact_batch), set(profile.soft_batch)).to_dict(),
             **match_role(j.title, j.description_text, profile).to_dict(),
-            **location_fields(j),
+            **location_fields(j, profile.hide_onsite_only_in or frozenset({"bengaluru", "hyderabad"})),
         }
         for j in unique
     ]
