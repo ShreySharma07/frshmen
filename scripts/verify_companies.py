@@ -130,7 +130,15 @@ def slug_variants(company: dict[str, Any]) -> list[str]:
 
 
 def probe_exact(http: HttpClient | None, ats: str, slug: str) -> Board | None:
-    titles = ADAPTERS[ats].list_titles(http, slug) if http is not None else None
+    try:
+        titles = ADAPTERS[ats].list_titles(http, slug) if http is not None else None
+    except FetchError as e:
+        # A 403 is the site refusing our bot (Darwinbox does this to GitHub's runners), not a
+        # flaky answer: record it as checked so it is retried weekly instead of failing every run.
+        if "HTTP 403" in str(e):
+            print(f"  {slug}: refused (HTTP 403); counted as not available", file=sys.stderr, flush=True)
+            return None
+        raise
     return None if titles is None else Board(ats, slug, titles)
 
 

@@ -140,3 +140,13 @@ def test_careers_site_systems_use_the_exact_slug_only():
     board = vc.find_board(lambda url: None, {"name": "Acme", "ats": "workday", "slug": "acme/wd1/Careers"}, http)
     assert (board.ats, board.slug, board.titles) == ("workday", "acme/wd1/Careers", ["ML Engineer"])
     assert http.requested == ["https://acme.wd1.myworkdayjobs.com/Careers/siteMap.xml"]
+
+
+def test_careers_site_403_counts_as_checked_not_an_error():
+    from sources.http import FetchError
+
+    class Http:
+        def get_json(self, url):
+            raise FetchError("zepto.darwinbox.in: HTTP 403")
+
+    assert vc.find_board(lambda url: None, {"name": "Zepto", "ats": "darwinbox", "slug": "zepto"}, Http()) is None
