@@ -183,3 +183,16 @@ def test_keka_live_html_description_becomes_text():
             "jobLocations": []}]
     job = keka.parse(raw, JUPITER)[0]
     assert "<div>" not in job.description_text and "Who we are" in job.description_text
+
+
+def test_workday_india_only_board_screens_paths_by_location():
+    assert workday.location_from_path("/job/India-Bangalore/ML-Engineer_R1") == "India Bangalore"
+    assert workday.india_or_remote_path("/job/Bengaluru/ML-Engineer_R1")
+    assert workday.india_or_remote_path("/job/India-Remote/ML-Engineer_R1")
+    assert not workday.india_or_remote_path("/job/Santa-Clara-CA/ML-Engineer_R2")
+    company = Company("BrowserStack", "workday", BS.slug, india_only=True)
+    http = FakeHttp({workday.sitemap_url(BS.slug): text("workday_browserstack_sitemap.xml")})
+    workday.fetch(http, company)
+    # Dublin's engineering role is never requested; India Remote's is.
+    assert not any("Dublin" in u for u in http.requested)
+    assert any("India-Remote" in u for u in http.requested)

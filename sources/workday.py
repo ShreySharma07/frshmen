@@ -12,6 +12,7 @@ from typing import Any
 
 from sources.http import HttpClient
 from sources.models import Company, Job
+from extract.location import REMOTE_UNSPECIFIED, extract_location
 from sources.prefilter import could_be_target
 from sources.text import html_to_text
 from sources.timeutil import to_utc_iso
@@ -48,6 +49,18 @@ def title_from_path(path: str) -> str:
     return re.sub(r"_[A-Za-z]*\d[\w-]*$", "", last).replace("-", " ").strip()
 
 
+def location_from_path(path: str) -> str:
+    """"/job/India-Bangalore/ML-Engineer_R1" -> "India Bangalore"."""
+    parts = path.strip("/").split("/")
+    return parts[1].replace("-", " ") if len(parts) >= 3 else ""
+
+
+def india_or_remote_path(path: str) -> bool:
+    # Screens a global board before any per-job request; fetch_jobs re-checks the full location.
+    countries = extract_location(location_from_path(path)).countries
+    return "India" in countries or countries == [REMOTE_UNSPECIFIED]
+
+
 def list_titles(http: HttpClient, slug: str) -> list[str] | None:
     sitemap = http.get_text(sitemap_url(slug))
     if sitemap is None or "<urlset" not in sitemap:
@@ -58,6 +71,8 @@ def list_titles(http: HttpClient, slug: str) -> list[str] | None:
 def fetch(http: HttpClient, company: Company) -> list[Job]:
     sitemap = http.get_text(sitemap_url(company.slug)) or ""
     paths = [p for p in job_paths(sitemap, _parts(company.slug)[2]) if could_be_target(title_from_path(p))]
+    if company.india_only:
+        paths = [p for p in paths if india_or_remote_path(p)]
     jobs = []
     for path in paths[:MAX_DETAILS]:
         job = parse_detail(http.get_json(detail_url(company.slug, path)), company)

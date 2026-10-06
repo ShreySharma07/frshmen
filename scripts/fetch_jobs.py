@@ -23,7 +23,7 @@ import yaml  # noqa: E402
 
 from extract.classify import classify  # noqa: E402
 from extract.eligibility import check_eligibility  # noqa: E402
-from extract.location import extract_location  # noqa: E402
+from extract.location import REMOTE_UNSPECIFIED, extract_location  # noqa: E402
 from extract.profile import load_profile  # noqa: E402
 from extract.role import match_role  # noqa: E402
 from extract.visa import extract_visa  # noqa: E402
@@ -41,7 +41,8 @@ def load_companies(path: Path = COMPANIES) -> list[Company]:
     out = []
     for c in yaml.safe_load(path.read_text())["companies"]:
         if c.get("verified") and c.get("jobs") and c.get("ats") in ADAPTERS:
-            out.append(Company(name=c["name"], ats=c["ats"], slug=str(c["slug"]), category=c.get("category", "")))
+            out.append(Company(name=c["name"], ats=c["ats"], slug=str(c["slug"]), category=c.get("category", ""),
+                               india_only=bool(c.get("india_only"))))
     return out
 
 
@@ -54,6 +55,12 @@ def location_fields(job: Job, hide_onsite_only_in: frozenset[str] = frozenset({"
     return {"countries": loc.countries, "cities": loc.cities, "location_type": location_type,
             "location_evidence": loc.evidence + visa.evidence, "visa_sponsorship": visa.sponsorship,
             "eligible": fit.eligible, "eligibility_reason": fit.reason}
+
+
+def in_india_or_remote(job: Job) -> bool:
+    """For india_only boards: keep India and location-free remote roles, drop the rest before classifying."""
+    loc = extract_location(job.location_raw, job.ats_countries)
+    return "India" in loc.countries or loc.countries == [REMOTE_UNSPECIFIED] or not loc.countries
 
 
 def dedupe(jobs: list[Job]) -> list[Job]:
@@ -101,6 +108,8 @@ def main() -> int:
             errors[company.name] = f"parse error: {e!r}"
             print(f"[{i}/{len(companies)}] {company.name}: PARSE FAILED ({e!r})", flush=True)
             continue
+        if company.india_only:
+            found = [j for j in found if in_india_or_remote(j)]
         per_company[company.name] = len(found)
         jobs.extend(found)
         print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
