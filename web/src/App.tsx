@@ -27,7 +27,7 @@ const initialView = (): View => {
 };
 
 export function App() {
-  const [filters, setFilters] = useState<Filters>({ view: initialView(), q: "", company: "", location: "" });
+  const [filters, setFilters] = useState<Filters>({ view: initialView(), q: "", company: "", country: "", location: "" });
   const [query, setQuery] = useState("");
   const [jobs, setJobs] = useState<JobSummary[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -77,7 +77,7 @@ export function App() {
   }, [filters, jobs.length]);
 
   const view = VIEWS.find((v) => v.id === filters.view)!;
-  const filtered = Boolean(filters.q || filters.company || filters.location);
+  const filtered = Boolean(filters.q || filters.company || filters.country || filters.location);
 
   return (
     <div className="page">
@@ -128,6 +128,17 @@ export function App() {
           </select>
         </label>
         <label className="field">
+          <span>Country</span>
+          <select value={filters.country} onChange={(e) => setFilters((f) => ({ ...f, country: e.target.value }))}>
+            <option value="">Any country</option>
+            {meta?.countries.map((c) => (
+              <option key={c.country} value={c.country}>
+                {c.country} ({c.n})
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
           <span>Work mode</span>
           <select
             value={filters.location}
@@ -151,7 +162,7 @@ export function App() {
           </div>
         )}
         {!error && !loading && jobs.length === 0 && (
-          <p className="notice">{filtered ? "No roles match these filters. Clear the search or pick another company." : view.empty}</p>
+          <p className="notice">{filtered ? "No roles match these filters. Clear the search, or pick another company or country." : view.empty}</p>
         )}
         <ol className="jobs" aria-busy={loading}>
           {jobs.map((job) => (
