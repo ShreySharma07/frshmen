@@ -18,7 +18,7 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ## 2026-10-06 — More YC startups from the yc-oss dataset
 - **Options:** yc-oss dataset (community JSON mirror of the YC directory on GitHub) · Claude hand-picks
-- **Choice:** yc-oss dataset, filtered to AI companies that are hiring, then verified against the ATSs like every other company.
+- **Choice:** yc-oss dataset, filtered to active, hiring, AI-tagged companies from batch 2021 on with 10+ people (or based in India), then verified against the ATSs like every other company. First import: 234 companies.
 - **Why:** Covers recent batches without scraping YC's site or the login-walled Work at a Startup. Supersedes the "~200 companies" target: the list grows past it, still with only verified boards fetched.
 
 ## 2026-10-06 — Indian companies outside Greenhouse/Lever/Ashby

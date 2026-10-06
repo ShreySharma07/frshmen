@@ -41,7 +41,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Backend API: FastAPI on Cloudflare Python Workers, D1 binding
 - Frontend: React (Vite + TypeScript), served by the same Worker via Workers Static Assets
 - LLM fallback: none yet (rules-only); revisit at build step 5
-- Companies: curated ~200 incl. YC AI startups, in `config/`
+- Companies: curated list in `config/companies.yaml`, plus hiring YC AI startups imported from the yc-oss dataset (`scripts/import_yc.py`); only verified boards are fetched
 - Any change to the above is a new decision: present options, let Shrey choose, log it.
 
 ## Suggested build order
