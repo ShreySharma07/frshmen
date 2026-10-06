@@ -20,7 +20,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 
 ## User profile (drives filtering and ranking)
 - B.Tech CS with AI specialisation, graduated 2026 → eligible for "2026 batch", "new grad", "graduate", "0-1 year" roles. Also treat 2025/2027 batch targeting as a soft match.
-- Target: AI/ML Engineer, ML Research Engineer, Applied Scientist (junior), Data Scientist (junior), LLM/GenAI Engineer, MLOps (junior), AI Engineer, Research Intern → only if full-time conversion is stated. Skip pure web/mobile/QA/sales roles.
+- Target: AI/ML Engineer, ML Research Engineer, Applied Scientist (junior), Data Scientist (junior), LLM/GenAI Engineer, MLOps (junior), AI Engineer, **Python Backend Engineer (junior; Python stack such as FastAPI/Django)**, Research Intern → only if full-time conversion is stated. Skip frontend/mobile/QA/sales roles. Role keywords live in `config/profile.yaml`.
 - Locations: India (any city, but **hide onsite-only roles in Bengaluru and Hyderabad**; hybrid/remote there is fine), remote-global, and Europe/US **only if visa sponsorship is offered or relocation is explicit**.
 - Skills to match against (edit in `config/profile.yaml`): Python, PyTorch, FastAPI, LLMs, knowledge distillation, speculative decoding, CUDA kernels, agents/evals. Add the real resume list there.
 

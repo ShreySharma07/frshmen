@@ -1,0 +1,80 @@
+# Shrey's profile: drives filtering and ranking. Edit freely; nothing here is hardcoded.
+
+graduation_year: 2026
+# Batch years accepted for "fresher": exact match is a strong fit, the others a soft one.
+batch_years:
+  exact: [2026]
+  soft: [2025, 2027]
+
+# Target roles, matched against job titles (case-insensitive, whole words).
+# A title must hit at least one `include` and no `exclude` to count as a target role.
+target_roles:
+  include:
+    # AI / ML
+    - ai engineer
+    - ml engineer
+    - machine learning engineer
+    - machine learning
+    - applied scientist
+    - research engineer
+    - ml research engineer
+    - data scientist
+    - llm engineer
+    - genai engineer
+    - generative ai
+    - mlops
+    - ml platform
+    - ml infrastructure
+    - nlp engineer
+    - computer vision engineer
+    # Python backend (added 2026-10-06, see docs/decisions.md)
+    - backend engineer
+    - backend developer
+    - back end engineer
+    - back-end engineer
+    - python engineer
+    - python developer
+    - software engineer, backend
+    - software engineer - backend
+    - software engineer (backend)
+  # Interns only if full-time conversion is stated (checked in the description).
+  intern_requires_conversion: true
+  exclude:
+    - frontend
+    - front end
+    - front-end
+    - ios
+    - android
+    - mobile
+    - qa
+    - quality assurance
+    - test engineer
+    - sdet
+    - sales
+    - account executive
+    - marketing
+    - recruiter
+
+# Python backend roles are only a fit when the stack is Python; checked against the description.
+backend_requires_any: [python, fastapi, django, flask]
+
+skills:
+  - python
+  - pytorch
+  - fastapi
+  - llms
+  - knowledge distillation
+  - speculative decoding
+  - cuda
+  - agents
+  - evals
+  # TODO(Shrey): add the rest of your resume skills.
+
+locations:
+  india:
+    allowed: true
+    # Onsite-only roles in these cities are hidden; hybrid/remote there is fine.
+    hide_onsite_only_in: [bengaluru, bangalore, hyderabad]
+  remote_global: true
+  # Europe/US only with visa sponsorship or explicit relocation.
+  abroad_requires_sponsorship: true
