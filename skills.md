@@ -53,7 +53,7 @@ Checks: every new misclassification becomes a fixture in `tests/fixtures/labeled
 **Use when:** filtering by geography.
 
 Steps:
-1. Normalize location to `location_type` (remote / hybrid / onsite) and a country list. "Remote" must be checked for geo restrictions ("US only", "EU timezones") before counting as remote-global.
+1. Normalize location to `location_type` (remote / hybrid / onsite) and a country list. Countries: `extract/location.py` with aliases in `config/locations.yaml` (add cities/spellings there, not in code). "Remote" must be checked for geo restrictions ("US only", "EU timezones") before counting as remote-global.
 2. India: keep all cities except **onsite-only Bengaluru and Hyderabad** (configurable in `config/profile.yaml`).
 3. Europe/US: keep only if the text indicates sponsorship or relocation help (`visa sponsorship`, `we sponsor`, `relocation assistance`, `Blue Card`, `H-1B`). Explicit negatives (`no sponsorship`, `must be authorized to work`, `no visa`) set `visa_sponsorship = no` and hide the job.
 4. Unknown sponsorship for Europe/US → `unknown`, hidden by default, visible with a filter toggle.

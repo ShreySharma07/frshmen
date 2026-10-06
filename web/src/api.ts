@@ -49,6 +49,7 @@ export interface JobPage {
 export interface Meta {
   counts: Record<Level | "new", number>;
   companies: { company: string; n: number }[];
+  countries: { country: string; n: number }[];
   last_run: { finished_at: string; companies_ok: number; companies_failed: number } | null;
 }
 
@@ -56,6 +57,7 @@ export interface Filters {
   view: View;
   q: string;
   company: string;
+  country: string;
   location: "" | "remote" | "hybrid" | "onsite";
 }
 
@@ -71,6 +73,7 @@ export function fetchJobs(filters: Filters, offset: number, signal?: AbortSignal
   const params = new URLSearchParams({ view: filters.view, limit: "40", offset: String(offset) });
   if (filters.q.trim()) params.set("q", filters.q.trim());
   if (filters.company) params.set("company", filters.company);
+  if (filters.country) params.set("country", filters.country);
   if (filters.location) params.set("location_type", filters.location);
   return get<JobPage>(`/api/jobs?${params}`, signal);
 }

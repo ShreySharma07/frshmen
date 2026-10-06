@@ -38,8 +38,10 @@ def client(tmp_path):
     recs = records()
     # A synthetic target fresher, first seen now, plus one seen 3 days ago.
     fresh = dict(recs[0], id="ashby:acme:new", title="ML Engineer - New Grad", company="Acme", company_slug="acme",
-                 source="ashby", level="fresher", role_match=True, role_family="ai_ml", content_hash="x1")
-    old = dict(fresh, id="ashby:acme:old", title="ML Engineer, Fresher", content_hash="x2")
+                 source="ashby", level="fresher", role_match=True, role_family="ai_ml", content_hash="x1",
+                 countries=["India"])
+    old = dict(fresh, id="ashby:acme:old", title="ML Engineer, Fresher", content_hash="x2",
+               countries=["United States", "Canada"])
     pub.publish(db, {"jobs": [old], "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc) - timedelta(days=3)))
     pub.publish(db, {"jobs": [*recs, fresh, old], "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc)))
     app = create_app()
@@ -118,3 +120,15 @@ def test_unexpected_errors_return_json_with_cause(tmp_path):
     app.state.db = S(str(tmp_path / "empty.db"))  # no tables: every query fails
     body = TestClient(app, raise_server_exceptions=False).get("/api/meta")
     assert body.status_code == 500 and body.json()["error"].startswith("OperationalError: no such table")
+
+
+def test_country_filter_matches_whole_names(client):
+    india = [j["title"] for j in client.get("/api/jobs?country=India").json()["jobs"]]
+    canada = [j["title"] for j in client.get("/api/jobs?country=Canada").json()["jobs"]]
+    assert india == ["ML Engineer - New Grad"] and canada == ["ML Engineer, Fresher"]
+    assert client.get("/api/jobs?country=Ind").json()["jobs"] == []
+
+
+def test_meta_lists_countries_with_counts(client):
+    countries = {c["country"]: c["n"] for c in client.get("/api/meta").json()["countries"]}
+    assert countries["India"] == 1 and countries["Canada"] == 1

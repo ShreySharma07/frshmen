@@ -1,0 +1,81 @@
+# Location aliases used by extract/location.py to map free-text job locations to countries.
+# Matching is case-insensitive on whole words. Add cities/spellings as postings show them.
+# Ambiguous names (Georgia, Cambridge, Birmingham, Paris TX...) are deliberately left out.
+
+countries:
+  India:
+    [india, ind, bharat, bengaluru, bangalore, blr, karnataka, hyderabad, telangana, pune, mumbai, bombay,
+     maharashtra, delhi, new delhi, delhi ncr, ncr, gurgaon, gurugram, noida, haryana, chennai, madras,
+     tamil nadu, coimbatore, madurai, kolkata, calcutta, ahmedabad, gujarat, surat, jaipur, rajasthan,
+     kochi, cochin, kerala, trivandrum, thiruvananthapuram, indore, chandigarh, lucknow, bhubaneswar]
+  United States:
+    [united states, united sates, united states of america, usa, u.s., u.s.a., america, san francisco,
+     sf bay area, bay area, san francisco bay area, mountain view, mountian view, palo alto, menlo park,
+     sunnyvale, san jose, santa clara, redwood city, oakland, berkeley, los angeles, san diego, sacramento,
+     seattle, bellevue, redmond, portland, new york, new york city, nyc, brooklyn, boston, cambridge ma,
+     washington dc, washington, d.c., chicago, austin, dallas, houston, texas, denver, colorado,
+     colorado springs, boulder, atlanta, miami, nashville, st. louis, st louis, omaha, honolulu,
+     philadelphia, pittsburgh, detroit, minneapolis, salt lake city, phoenix, raleigh, california, florida]
+  United Kingdom: [united kingdom, uk, u.k., great britain, england, scotland, london, manchester, edinburgh, bristol, oxford]
+  Canada: [canada, toronto, vancouver, montreal, montréal, ottawa, waterloo, calgary]
+  Germany: [germany, deutschland, berlin, munich, münchen, hamburg, frankfurt, cologne]
+  France: [france, paris, lyon]
+  Netherlands: [netherlands, amsterdam, rotterdam, the hague]
+  Ireland: [ireland, dublin]
+  Switzerland: [switzerland, zurich, zürich, geneva, lausanne]
+  Spain: [spain, madrid, barcelona]
+  Poland: [poland, warsaw, krakow, kraków]
+  Sweden: [sweden, stockholm]
+  Israel: [israel, tel aviv]
+  Singapore: [singapore]
+  Japan: [japan, tokyo, osaka]
+  South Korea: [south korea, korea, seoul]
+  Australia: [australia, sydney, melbourne]
+  United Arab Emirates: [united arab emirates, uae, dubai, abu dhabi]
+  Qatar: [qatar, doha]
+  Saudi Arabia: [saudi arabia, ksa, riyadh, jeddah]
+  Mexico: [mexico, méxico, mexico city]
+  Brazil: [brazil, são paulo, sao paulo]
+  Argentina: [argentina, buenos aires]
+  Uruguay: [uruguay, montevideo]
+  Colombia: [colombia, bogotá, bogota, medellín, medellin]
+  Chile: [chile, santiago de chile]
+
+# Two-letter codes after a comma ("Austin, TX") are US states first, then ISO country codes ("Mexico City, MX").
+us_states:
+  [AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS,
+   MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY]
+
+# ISO codes as some ATSs send them (Lever "IN", Ashby "USA").
+iso_codes:
+  IN: India
+  IND: India
+  US: United States
+  USA: United States
+  GB: United Kingdom
+  GBR: United Kingdom
+  UK: United Kingdom
+  CA: Canada
+  CAN: Canada
+  DE: Germany
+  FR: France
+  NL: Netherlands
+  IE: Ireland
+  CH: Switzerland
+  ES: Spain
+  PL: Poland
+  SE: Sweden
+  IL: Israel
+  SG: Singapore
+  JP: Japan
+  KR: South Korea
+  AU: Australia
+  AE: United Arab Emirates
+  QA: Qatar
+  SA: Saudi Arabia
+  MX: Mexico
+  BR: Brazil
+  AR: Argentina
+  UY: Uruguay
+  CO: Colombia
+  CL: Chile
