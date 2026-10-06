@@ -1,7 +1,7 @@
-"""Fetch every verified company's board and write normalized jobs to data/jobs.json.
+"""Fetch every verified company's board and write classified jobs to data/jobs.json.
 
-Build step 1: fetch -> normalize -> dedupe. Extraction, classification and D1
-publishing come later. One broken board never stops the others.
+fetch -> normalize -> dedupe -> classify (fresher / maybe / experienced, with
+evidence). D1 publishing comes later. One broken board never stops the others.
 
 Run: python scripts/fetch_jobs.py [--limit N] [--company NAME ...] [--out PATH]
 """
@@ -12,6 +12,7 @@ import argparse
 import json
 import sys
 import time
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,6 +21,7 @@ sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
 
 import yaml  # noqa: E402
 
+from extract.classify import classify  # noqa: E402
 from sources import ADAPTERS  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
 from sources.models import Company, Job  # noqa: E402
@@ -88,16 +90,19 @@ def main() -> int:
         print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
 
     unique = dedupe(jobs)
+    records = [{**j.to_dict(), **classify(j.title, j.description_text).to_dict()} for j in unique]
     args.out.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        "jobs": [j.to_dict() for j in unique],
+        "jobs": records,
     }
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
 
     # Run summary (skills.md §7): fetched, kept, per-source errors.
     print(f"\nCompanies: {len(companies)} ok={len(per_company)} failed={len(errors)}")
     print(f"Jobs: fetched={len(jobs)} after_dedupe={len(unique)} -> {args.out}")
+    levels = Counter(r["level"] for r in records)
+    print(f"Levels: fresher={levels['fresher']} maybe={levels['maybe']} experienced={levels['experienced']}")
     print(f"Took {time.monotonic() - started:.0f}s")
     for name, err in errors.items():
         print(f"  error: {name}: {err}")
