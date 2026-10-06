@@ -41,7 +41,7 @@ jobs:
           import sys
           sys.path.insert(0, ".")
           from sources import ADAPTERS
-          from sources.http import HttpClient
+          from sources.http import FetchError, HttpClient
           from sources.models import Company
 
           http = HttpClient()
@@ -52,8 +52,14 @@ jobs:
               ("Jupiter", "keka", "jupiter"),
               ("Wadhwani AI", "zoho_recruit", "wadhwaniai.zohorecruit.in"),
           ]:
-              titles = ADAPTERS[ats].list_titles(http, slug)
-              jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug)) if titles else []
+              try:
+                  titles = ADAPTERS[ats].list_titles(http, slug)
+                  jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug)) if titles else []
+              except FetchError as e:
+                  # One blocked host shouldn't hide whether the other adapters work.
+                  print(f"{ats} {slug}: FAILED {e}")
+                  failed.append(ats)
+                  continue
               print(f"{ats} {slug}: {len(titles or [])} listed, {len(jobs)} fetched")
               for j in jobs[:2]:
                   print(f"  {j.title} | {j.location_raw} | {j.posted_at} | {j.description_text[:120]!r}")
