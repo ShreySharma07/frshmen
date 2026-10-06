@@ -25,6 +25,9 @@ Newest first. Each entry: date, options considered, choice, why.
 - **Options:** new ATS adapters + schema.org JSON-LD fallback · one scraper per company · ATS adapters only
 - **Choice:** ATS adapters for job systems common in India that publish public job data, plus a generic reader for the schema.org `JobPosting` JSON-LD that careers pages embed for Google Jobs.
 - **Why:** One adapter covers many companies and breaks rarely; per-company HTML scrapers break whenever a site changes. Survey which system each unverified Indian company uses first, then build only the adapters that cover several companies. robots.txt is checked before any careers page is read.
+- **Survey result (41 unverified Indian companies + 45 proposed):** Darwinbox 11, Workday 6, Zoho Recruit 3, Keka 3; TurboHire 5 (Flipkart, Ola, Setu, Urban Company, IDfy); a long tail of one-company systems; JSON-LD on job pages at only 3 sites.
+- **Built:** Workday (public sitemap + per-job JSON), Darwinbox (paged list + per-job JSON), Keka (one JSON list), Zoho Recruit (jobs embedded in the careers page). Workday and Darwinbox need one request per job, so they only fetch jobs whose title could be a target role (`sources/prefilter.py`). Keka's and Darwinbox's structured experience fields become an "Experience: 3-5 years" line so the YoE rules use them as evidence.
+- **Deferred:** the JSON-LD reader (3 sites isn't worth it yet) and TurboHire (endpoint not researched; next candidate, covers Flipkart and Ola).
 
 ## 2026-10-06 — Serve React from the API Worker (Workers Static Assets) instead of Cloudflare Pages
 - **Options:** one Python Worker serving FastAPI + the React build · React on Pages + separate API Worker

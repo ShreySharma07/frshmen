@@ -33,3 +33,49 @@ jobs:
           empty = [j["id"] for j in jobs if not j["description_text"]]
           assert not empty, f"empty descriptions: {empty}"
           EOF
+
+      # Careers-site systems (docs/decisions.md): one known board each, called through the adapters.
+      - name: Check careers-site adapters live
+        run: |
+          python - <<'EOF'
+          import sys
+          sys.path.insert(0, ".")
+          from sources import ADAPTERS
+          from sources.http import FetchError, HttpClient
+          from sources.models import Company
+
+          http = HttpClient()
+          failed = []
+          for name, ats, slug in [
+              ("BrowserStack", "workday", "browserstack/wd3/External"),
+              # Darwinbox answers 403 to GitHub's runners (docs/decisions.md), so it isn't checked here.
+              ("Jupiter", "keka", "jupiter/b5279857-cf81-4dde-a215-fc48957ee2b5"),
+              ("Wadhwani AI", "zoho_recruit", "wadhwaniai.zohorecruit.in"),
+          ]:
+              try:
+                  titles = ADAPTERS[ats].list_titles(http, slug)
+                  jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug)) if titles else []
+              except FetchError as e:
+                  # One blocked host shouldn't hide whether the other adapters work.
+                  print(f"{ats} {slug}: FAILED {e}")
+                  failed.append(ats)
+                  continue
+              print(f"{ats} {slug}: {len(titles or [])} listed, {len(jobs)} fetched")
+              for j in jobs[:2]:
+                  print(f"  {j.title} | {j.location_raw} | {j.posted_at} | {j.description_text[:120]!r}")
+              if titles is None or (titles and not jobs and ats in ("keka", "zoho_recruit")):
+                  failed.append(ats)
+              if ats == "zoho_recruit" and titles is None:
+                  page = http.get_text(f"https://{slug}/jobs/Careers") or ""
+                  i = page.find('id="jobs"')
+                  print("  zoho page length", len(page), "jobs input at", i, repr(page[max(0, i - 200):i + 300]))
+          # Zoho's list has no description: check what a job page carries before JavaScript runs.
+          from sources import zoho_recruit
+          raw = zoho_recruit.embedded_jobs(http.get_text("https://wadhwaniai.zohorecruit.in/jobs/Careers")) or [{}]
+          page = http.get_text(f"https://wadhwaniai.zohorecruit.in/jobs/Careers/{raw[0].get('id')}") or ""
+          print("zoho job page length", len(page))
+          for marker in ('id="jobs"', "Job_Description", "Date_Opened", "Work_Experience", "application/ld+json"):
+              i = page.find(marker)
+              print(f"  {marker!r} at {i}:", repr(page[max(0, i - 60):i + 240]) if i >= 0 else "")
+          assert not failed, f"adapters returned nothing: {failed}"
+          EOF

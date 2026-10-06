@@ -1,0 +1,34 @@
+{
+ "jobPostingInfo": {
+  "id": "c96796de23181000e967e495a2960000",
+  "title": "Engineering Manager",
+  "jobDescription": "<p>Location: This is a fully remote position, open to candidates residing anywhere in India.</p><p><b>Desired experience:</b></p><ul><li>Experience: 8-12 years of experience in good product based companies and preferably product start-ups.</li><li>Strong grasp of scalable web back-end, streaming, full stack development.</li></ul>",
+  "location": "India Remote",
+  "postedOn": "Posted Yesterday",
+  "startDate": "2026-10-05",
+  "timeType": "Full time",
+  "jobReqId": "JR103661",
+  "jobPostingId": "Engineering-Manager_JR103661",
+  "jobPostingSiteId": "External",
+  "country": {
+   "descriptor": "India",
+   "id": "c4f78be1a8f14da0ab49ce1162348a5e"
+  },
+  "canApply": true,
+  "posted": true,
+  "jobRequisitionLocation": {
+   "descriptor": "Mumbai",
+   "country": {
+    "descriptor": "India",
+    "alpha2Code": "IN"
+   }
+  },
+  "externalUrl": "https://browserstack.wd3.myworkdayjobs.com/External/job/India-Remote/Engineering-Manager_JR103661"
+ },
+ "hiringOrganization": {
+  "name": "BrowserStack Software Private Limited",
+  "url": ""
+ },
+ "similarJobs": [],
+ "userAuthenticated": false
+}

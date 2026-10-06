@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
 
 import yaml  # noqa: E402
 
+from sources import ADAPTERS  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
 
 COMPANIES = ROOT / "config" / "companies.yaml"
@@ -32,6 +33,9 @@ ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters"]
 # Probed only when it is the company's guessed ATS: Workable throttles hard and
 # few of our companies use it, so trying it for everyone mostly bought 429s.
 GUESS_ONLY_ATS = {"workable"}
+# Careers-site systems whose identifier can't be guessed from a name (Workday needs
+# tenant/wdN/site, Keka a portal id...): probed only with the exact slug on file.
+EXACT_SLUG_ATS = {"workday", "darwinbox", "keka", "zoho_recruit"}
 KEY_ORDER = ["name", "category", "hq", "ats", "slug", "verified", "jobs", "ai_jobs", "checked"]
 # Boards found missing or empty aren't re-probed for this long, so a PR run only probes new entries.
 RECHECK_DAYS = 7
@@ -125,12 +129,19 @@ def slug_variants(company: dict[str, Any]) -> list[str]:
     return list(dict.fromkeys(v for v in variants if v))
 
 
-def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
+def probe_exact(http: HttpClient | None, ats: str, slug: str) -> Board | None:
+    titles = ADAPTERS[ats].list_titles(http, slug) if http is not None else None
+    return None if titles is None else Board(ats, slug, titles)
+
+
+def find_board(get: GetJson, company: dict[str, Any], http: HttpClient | None = None) -> Board | None:
     """Return the first board with open jobs; an empty board only if nothing better exists.
 
     An empty board on the guessed ATS is often a stale account, so keep looking.
     """
     guessed = company["ats"]
+    if guessed in EXACT_SLUG_ATS:
+        return probe_exact(http, guessed, str(company["slug"]))
     attempts = [(guessed, company["slug"])]
     hosts = [guessed] + [a for a in ATS_ORDER if a != guessed and a not in GUESS_ONLY_ATS]
     # Slug-major order alternates hosts, so one host's per-host delay overlaps the others' requests.
@@ -238,7 +249,7 @@ def main() -> int:
     results: dict[str, dict[str, Any]] = {}
     for i, company in enumerate(companies, 1):
         try:
-            board = find_board(http.get_json, company)
+            board = find_board(http.get_json, company, http)
         except FetchError as e:
             print(f"[{i}/{len(companies)}] {company['name']}: gave up after retries, left unchanged ({e})", file=sys.stderr, flush=True)
             continue

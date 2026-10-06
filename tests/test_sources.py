@@ -41,8 +41,8 @@ def test_every_posting_is_normalized(module, fixture, company, count):
     assert len({j.id for j in jobs}) == count
 
 
-def test_registry_has_all_three():
-    assert set(ADAPTERS) == {"greenhouse", "lever", "ashby"}
+def test_registry_has_every_adapter():
+    assert set(ADAPTERS) == {"greenhouse", "lever", "ashby", "workday", "darwinbox", "keka", "zoho_recruit"}
 
 
 def test_greenhouse_fields():

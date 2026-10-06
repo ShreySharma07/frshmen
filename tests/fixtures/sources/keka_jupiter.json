@@ -1,0 +1,46 @@
+[
+ {
+  "id": 134831,
+  "title": "Devops Engineer - SDE 2",
+  "description": "Who we're looking forWe are looking for a highly skilled DevOps engineer, SDE 2 focusing on AWS infrastructure.What is needed for this role\u00b73+ years of experience in DevOps, SRE, or Cloud Engineering.",
+  "departmentName": "Engineering",
+  "jobLocations": [
+   {
+    "id": 31395,
+    "name": "Europa Bangalore",
+    "city": "Bengaluru",
+    "state": "KA",
+    "countryCode": "IN",
+    "countryName": "India"
+   }
+  ],
+  "jobType": 2,
+  "experience": "3-5",
+  "publishedOn": "2026-07-15T07:26:49.647Z",
+  "publishedSinceDays": 83,
+  "skillNames": []
+ },
+ {
+  "id": 117912,
+  "title": "Customer support executive",
+  "description": "We are currently hiring fresh graduates for a voice and non-voice process role within our customer support team. Freshers can also apply.",
+  "departmentName": "Customer Service",
+  "jobLocations": [
+   {
+    "id": 31395,
+    "name": "Europa Bangalore",
+    "city": "Bengaluru",
+    "state": "KA",
+    "countryCode": "IN",
+    "countryName": "India"
+   }
+  ],
+  "jobType": 2,
+  "experience": "0-1",
+  "publishedOn": "2026-05-29T08:30:04.627Z",
+  "publishedSinceDays": 130,
+  "skillNames": [
+   "communication skills"
+  ]
+ }
+]
