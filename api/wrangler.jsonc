@@ -8,8 +8,8 @@
     {
       "binding": "DB",
       "database_name": "frshmen",
-      // Not a secret. Paste the ID from Cloudflare dashboard -> D1 -> frshmen.
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      // D1 database IDs are not secret; access needs the API token.
+      "database_id": "e711a274-e62b-4f4f-8eda-94151348814e",
       "migrations_dir": "../db/migrations"
     }
   ],
