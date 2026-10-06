@@ -25,6 +25,10 @@ class Profile:
     generic_swe_enabled: bool
     generic_swe_titles: tuple[str, ...]
     generic_swe_groups: tuple[tuple[str, ...], ...]
+    mobile_titles: tuple[str, ...] = ()
+    mobile_generic_titles: tuple[str, ...] = ()
+    mobile_requires_any: tuple[str, ...] = ()
+    hide_onsite_only_in: frozenset[str] = frozenset()
     skills: tuple[str, ...] = field(default_factory=tuple)
 
 
@@ -33,6 +37,7 @@ def load_profile(path: Path = DEFAULT_PATH) -> Profile:
     raw = yaml.safe_load(Path(path).read_text())
     roles = raw.get("target_roles", {})
     swe = raw.get("generic_swe", {})
+    mobile = raw.get("mobile", {})
     return Profile(
         exact_batch=frozenset(raw.get("batch_years", {}).get("exact", [])),
         soft_batch=frozenset(raw.get("batch_years", {}).get("soft", [])),
@@ -44,4 +49,8 @@ def load_profile(path: Path = DEFAULT_PATH) -> Profile:
         generic_swe_titles=tuple(p.lower() for p in swe.get("titles", [])),
         generic_swe_groups=tuple(tuple(w.lower() for w in group) for group in swe.get("requires_all_groups", [])),
         skills=tuple(s.lower() for s in raw.get("skills", [])),
+        mobile_titles=tuple(p.lower() for p in mobile.get("titles", [])),
+        mobile_generic_titles=tuple(p.lower() for p in mobile.get("generic_titles", [])),
+        mobile_requires_any=tuple(p.lower() for p in mobile.get("requires_any", [])),
+        hide_onsite_only_in=frozenset(c.lower() for c in raw.get("locations", {}).get("india", {}).get("hide_onsite_only_in", [])),
     )

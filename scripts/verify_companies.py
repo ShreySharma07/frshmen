@@ -35,8 +35,8 @@ ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters"]
 GUESS_ONLY_ATS = {"workable"}
 # Careers-site systems whose identifier can't be guessed from a name (Workday needs
 # tenant/wdN/site, Keka a portal id...): probed only with the exact slug on file.
-EXACT_SLUG_ATS = {"workday", "darwinbox", "keka", "zoho_recruit"}
-KEY_ORDER = ["name", "category", "hq", "ats", "slug", "verified", "jobs", "ai_jobs", "checked"]
+EXACT_SLUG_ATS = {"workday", "darwinbox", "keka", "zoho_recruit", "amazon", "eightfold"}
+KEY_ORDER = ["name", "category", "hq", "ats", "slug", "india_only", "verified", "jobs", "ai_jobs", "checked"]
 # Boards found missing or empty aren't re-probed for this long, so a PR run only probes new entries.
 RECHECK_DAYS = 7
 

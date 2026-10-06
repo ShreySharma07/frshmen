@@ -13,6 +13,7 @@ import json
 import sys
 import time
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,9 +23,11 @@ sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
 import yaml  # noqa: E402
 
 from extract.classify import classify  # noqa: E402
-from extract.location import extract_location  # noqa: E402
+from extract.eligibility import check_eligibility  # noqa: E402
+from extract.location import REMOTE_UNSPECIFIED, extract_location  # noqa: E402
 from extract.profile import load_profile  # noqa: E402
 from extract.role import match_role  # noqa: E402
+from extract.visa import extract_visa  # noqa: E402
 from sources import ADAPTERS  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
 from sources.models import Company, Job  # noqa: E402
@@ -39,15 +42,26 @@ def load_companies(path: Path = COMPANIES) -> list[Company]:
     out = []
     for c in yaml.safe_load(path.read_text())["companies"]:
         if c.get("verified") and c.get("jobs") and c.get("ats") in ADAPTERS:
-            out.append(Company(name=c["name"], ats=c["ats"], slug=str(c["slug"]), category=c.get("category", "")))
+            out.append(Company(name=c["name"], ats=c["ats"], slug=str(c["slug"]), category=c.get("category", ""),
+                               india_only=bool(c.get("india_only"))))
     return out
 
 
-def location_fields(job: Job) -> dict:
+def location_fields(job: Job, hide_onsite_only_in: frozenset[str] = frozenset({"bengaluru", "hyderabad"})) -> dict:
     loc = extract_location(job.location_raw, job.ats_countries)
     # The ATS's structured workplace type wins; "or Remote" in the text is the fallback.
     location_type = job.ats_workplace_type or ("remote" if loc.remote else None)
-    return {"countries": loc.countries, "cities": loc.cities, "location_type": location_type, "location_evidence": loc.evidence}
+    visa = extract_visa(job.description_text)
+    fit = check_eligibility(loc.countries, loc.cities, location_type, visa, hide_onsite_only_in)
+    return {"countries": loc.countries, "cities": loc.cities, "location_type": location_type,
+            "location_evidence": loc.evidence + visa.evidence, "visa_sponsorship": visa.sponsorship,
+            "eligible": fit.eligible, "eligibility_reason": fit.reason}
+
+
+def in_india_or_remote(job: Job) -> bool:
+    """For india_only boards: keep India and location-free remote roles, drop the rest before classifying."""
+    loc = extract_location(job.location_raw, job.ats_countries)
+    return "India" in loc.countries or loc.countries == [REMOTE_UNSPECIFIED] or not loc.countries
 
 
 def dedupe(jobs: list[Job]) -> list[Job]:
@@ -70,6 +84,7 @@ def main() -> int:
     parser.add_argument("--company", nargs="*", help="only these company names")
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--no-cache", action="store_true", help="skip ETag/If-Modified-Since cache")
+    parser.add_argument("--workers", type=int, default=8, help="boards fetched in parallel (different hosts)")
     args = parser.parse_args()
 
     companies = load_companies()
@@ -83,21 +98,28 @@ def main() -> int:
     jobs: list[Job] = []
     errors: dict[str, str] = {}
     per_company: dict[str, int] = {}
-    for i, company in enumerate(companies, 1):
+    def fetch_one(company: Company) -> tuple[Company, list[Job] | None, str | None]:
         try:
             found = ADAPTERS[company.ats].fetch(http, company)
         except FetchError as e:
-            errors[company.name] = str(e)
-            print(f"[{i}/{len(companies)}] {company.name}: FAILED ({e})", flush=True)
-            continue
+            return company, None, str(e)
         except (KeyError, TypeError, ValueError) as e:
             # The ATS changed its payload shape: report it, keep going.
-            errors[company.name] = f"parse error: {e!r}"
-            print(f"[{i}/{len(companies)}] {company.name}: PARSE FAILED ({e!r})", flush=True)
-            continue
-        per_company[company.name] = len(found)
-        jobs.extend(found)
-        print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
+            return company, None, f"parse error: {e!r}"
+        if company.india_only:
+            found = [j for j in found if in_india_or_remote(j)]
+        return company, found, None
+
+    # Boards on different hosts are fetched in parallel; HttpClient still spaces requests per host.
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        for i, (company, found, error) in enumerate(pool.map(fetch_one, companies), 1):
+            if error is not None:
+                errors[company.name] = error
+                print(f"[{i}/{len(companies)}] {company.name}: FAILED ({error})", flush=True)
+                continue
+            per_company[company.name] = len(found)
+            jobs.extend(found)
+            print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
 
     unique = dedupe(jobs)
     profile = load_profile()
@@ -106,7 +128,7 @@ def main() -> int:
             **j.to_dict(),
             **classify(j.title, j.description_text, set(profile.exact_batch), set(profile.soft_batch)).to_dict(),
             **match_role(j.title, j.description_text, profile).to_dict(),
-            **location_fields(j),
+            **location_fields(j, profile.hide_onsite_only_in or frozenset({"bengaluru", "hyderabad"})),
         }
         for j in unique
     ]

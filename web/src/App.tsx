@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchJobs, fetchMeta, type Filters, type JobSummary, type Meta, type View } from "./api";
+import { fetchJobs, fetchMeta, type Family, type Filters, type JobSummary, type Meta, type View } from "./api";
 import { JobRow } from "./JobRow";
 import { timeAgo } from "./format";
 
@@ -21,13 +21,16 @@ const VIEWS: { id: View; label: string; empty: string }[] = [
   },
 ];
 
+// Plain SWE roles that passed the Python + AI/ML check are grouped under AI / ML by the API.
+const FAMILY_OPTIONS: Record<Family, string> = { ai_ml: "AI / ML", backend: "Python backend", mobile: "Android / React Native" };
+
 const initialView = (): View => {
   const v = new URLSearchParams(location.search).get("view");
   return v === "maybe" || v === "new" ? v : "fresher";
 };
 
 export function App() {
-  const [filters, setFilters] = useState<Filters>({ view: initialView(), q: "", company: "", country: "", city: "", location: "" });
+  const [filters, setFilters] = useState<Filters>({ view: initialView(), q: "", company: "", country: "", city: "", family: "", includeIneligible: false, location: "" });
   const [query, setQuery] = useState("");
   const [jobs, setJobs] = useState<JobSummary[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -77,7 +80,7 @@ export function App() {
   }, [filters, jobs.length]);
 
   const view = VIEWS.find((v) => v.id === filters.view)!;
-  const filtered = Boolean(filters.q || filters.company || filters.country || filters.city || filters.location);
+  const filtered = Boolean(filters.q || filters.company || filters.country || filters.city || filters.family || filters.location);
 
   return (
     <div className="page">
@@ -115,6 +118,21 @@ export function App() {
         <label className="field field--grow">
           <span>Search titles and companies</span>
           <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="e.g. LLM, Sarvam" />
+        </label>
+        <label className="field">
+          <span>Role</span>
+          <select
+            value={filters.family}
+            onChange={(e) => setFilters((f) => ({ ...f, family: e.target.value as Filters["family"] }))}
+          >
+            <option value="">All roles</option>
+            {(Object.keys(FAMILY_OPTIONS) as Family[]).map((id) => (
+              <option key={id} value={id}>
+                {FAMILY_OPTIONS[id]}
+                {meta ? ` (${meta.families[id] ?? 0})` : ""}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="field">
           <span>Company</span>
@@ -166,6 +184,14 @@ export function App() {
             <option value="hybrid">Hybrid</option>
             <option value="onsite">Onsite</option>
           </select>
+        </label>
+        <label className="field field--check">
+          <input
+            type="checkbox"
+            checked={filters.includeIneligible}
+            onChange={(e) => setFilters((f) => ({ ...f, includeIneligible: e.target.checked }))}
+          />
+          <span>Include roles outside my locations</span>
         </label>
       </form>
 

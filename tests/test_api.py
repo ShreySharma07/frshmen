@@ -140,3 +140,38 @@ def test_city_filter_and_meta_cities(client):
     assert client.get("/api/jobs?city=Mumbai").json()["jobs"] == []
     cities = {c["city"]: c["n"] for c in client.get("/api/meta").json()["cities"]}
     assert cities == {"Bengaluru": 1, "Pune": 1}
+
+
+@pytest.fixture
+def mixed(tmp_path):
+    path = tmp_path / "mixed.db"
+    db = pub.SqliteDatabase(path)
+    base = dict(records()[0], source="ashby", company="Acme", company_slug="acme", level="fresher", role_match=True,
+                countries=["India"], cities=["Pune"])
+    rows = [
+        dict(base, id="ashby:acme:ml", title="ML Engineer", role_family="ai_ml", content_hash="m1"),
+        dict(base, id="ashby:acme:swe", title="Software Engineer", role_family="generic_swe", content_hash="m2"),
+        dict(base, id="ashby:acme:and", title="Android Developer", role_family="mobile", content_hash="m3"),
+        dict(base, id="ashby:acme:us", title="ML Engineer (US)", role_family="ai_ml", content_hash="m4",
+             countries=["United States"], cities=[], eligible=False,
+             eligibility_reason="United States without visa sponsorship"),
+    ]
+    pub.publish(db, {"jobs": rows, "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc)))
+    app = create_app()
+    app.state.db = SqliteDatabase(str(path))
+    return TestClient(app)
+
+
+def test_ineligible_locations_are_hidden_unless_asked(mixed):
+    titles = {j["title"] for j in mixed.get("/api/jobs").json()["jobs"]}
+    assert "ML Engineer (US)" not in titles
+    all_titles = {j["title"] for j in mixed.get("/api/jobs?include_ineligible=true").json()["jobs"]}
+    assert "ML Engineer (US)" in all_titles
+    assert mixed.get("/api/meta").json()["counts"]["fresher"] == 3
+
+
+def test_family_filter_groups_generic_swe_with_ai_ml(mixed):
+    ai = {j["title"] for j in mixed.get("/api/jobs?family=ai_ml").json()["jobs"]}
+    mobile = [j["title"] for j in mixed.get("/api/jobs?family=mobile").json()["jobs"]]
+    assert ai == {"ML Engineer", "Software Engineer"} and mobile == ["Android Developer"]
+    assert mixed.get("/api/meta").json()["families"] == {"ai_ml": 2, "backend": 0, "mobile": 1}

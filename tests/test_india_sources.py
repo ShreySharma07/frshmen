@@ -24,12 +24,12 @@ class FakeHttp:
         self.routes = routes
         self.requested = []
 
-    def get_json(self, url):
+    def get_json(self, url, fresh_days=None):
         self.requested.append(url)
         body = self.routes.get(url)
         return json.loads(body) if isinstance(body, str) else body
 
-    def get_text(self, url):
+    def get_text(self, url, fresh_days=None):
         self.requested.append(url)
         return self.routes.get(url)
 
@@ -183,3 +183,19 @@ def test_keka_live_html_description_becomes_text():
             "jobLocations": []}]
     job = keka.parse(raw, JUPITER)[0]
     assert "<div>" not in job.description_text and "Who we are" in job.description_text
+
+
+def test_workday_india_only_board_screens_paths_by_location():
+    assert workday.location_from_path("/job/India-Bangalore/ML-Engineer_R1") == "India Bangalore"
+    assert workday.india_rank("/job/Bengaluru/ML-Engineer_R1") == 0
+    assert workday.india_rank("/job/India-Remote/ML-Engineer_R1") == 0
+    assert workday.india_rank("/job/IN-KA-BANGALORE-Home-Office/ML-Engineer_R3") == 0
+    assert workday.india_rank("/job/BangaloreIND/ML-Engineer_R4") == 1  # unreadable: kept, checked later
+    assert workday.india_rank("/job/ML-Engineer_R5") == 1  # no location segment (Samsung)
+    assert workday.india_rank("/job/Santa-Clara-CA/ML-Engineer_R2") is None
+    company = Company("BrowserStack", "workday", BS.slug, india_only=True)
+    http = FakeHttp({workday.sitemap_url(BS.slug): text("workday_browserstack_sitemap.xml")})
+    workday.fetch(http, company)
+    # Dublin's engineering role is never requested; India Remote's is.
+    assert not any("Dublin" in u for u in http.requested)
+    assert any("India-Remote" in u for u in http.requested)

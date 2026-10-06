@@ -12,6 +12,7 @@ from typing import Any
 
 from sources.http import HttpClient
 from sources.models import Company, Job
+from extract.location import REMOTE_UNSPECIFIED, extract_location
 from sources.prefilter import could_be_target
 from sources.text import html_to_text
 from sources.timeutil import to_utc_iso
@@ -19,6 +20,8 @@ from sources.timeutil import to_utc_iso
 NAME = "workday"
 # Per-run cap on detail requests per board; the title screen keeps real boards well under it.
 MAX_DETAILS = 150
+# Job text rarely changes: reuse a stored detail for this long, so later runs only fetch new jobs.
+DETAIL_FRESH_DAYS = 3
 
 
 def _parts(slug: str) -> tuple[str, str, str]:
@@ -48,6 +51,25 @@ def title_from_path(path: str) -> str:
     return re.sub(r"_[A-Za-z]*\d[\w-]*$", "", last).replace("-", " ").strip()
 
 
+def location_from_path(path: str) -> str:
+    """"/job/India-Bangalore/ML-Engineer_R1" -> "India Bangalore"."""
+    parts = path.strip("/").split("/")
+    return parts[1].replace("-", " ") if len(parts) >= 3 else ""
+
+
+def india_rank(path: str) -> int | None:
+    """0 = path names India (or remote anywhere), 1 = no readable location, None = clearly elsewhere.
+
+    Path location segments vary by tenant ("India-Bengaluru", "IN-KA-BANGALORE-...", "BangaloreIND",
+    or none at all), so only a path that clearly names another country is skipped. fetch_jobs
+    re-checks every fetched job against its full location.
+    """
+    countries = extract_location(location_from_path(path)).countries
+    if "India" in countries or countries == [REMOTE_UNSPECIFIED]:
+        return 0
+    return 1 if not countries else None
+
+
 def list_titles(http: HttpClient, slug: str) -> list[str] | None:
     sitemap = http.get_text(sitemap_url(slug))
     if sitemap is None or "<urlset" not in sitemap:
@@ -58,9 +80,13 @@ def list_titles(http: HttpClient, slug: str) -> list[str] | None:
 def fetch(http: HttpClient, company: Company) -> list[Job]:
     sitemap = http.get_text(sitemap_url(company.slug)) or ""
     paths = [p for p in job_paths(sitemap, _parts(company.slug)[2]) if could_be_target(title_from_path(p))]
+    if company.india_only:
+        # India paths first so the per-board cap is spent on them before unreadable ones.
+        ranked = [(r, p) for p in paths if (r := india_rank(p)) is not None]
+        paths = [p for _, p in sorted(ranked, key=lambda rp: rp[0])]
     jobs = []
     for path in paths[:MAX_DETAILS]:
-        job = parse_detail(http.get_json(detail_url(company.slug, path)), company)
+        job = parse_detail(http.get_json(detail_url(company.slug, path), fresh_days=DETAIL_FRESH_DAYS), company)
         if job:
             jobs.append(job)
     return jobs

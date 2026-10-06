@@ -4,6 +4,14 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-06 — Android and React Native roles; MNCs; visa rule for roles abroad
+- **Mobile roles. Options:** native Android only · Android + Flutter · all mobile · *(Shrey's choice)* Android + React Native
+- **Choice:** Android and React Native count as a `mobile` role family. iOS-only and Flutter stay excluded. A title naming Android/React Native beats the iOS/mobile excludes; generic "Mobile Engineer" titles need an Android/React Native stack in the description. The page gets a Role dropdown.
+- **MNC locations. Options:** India + remote only · all locations · *(Shrey's choice)* India + remote, and roles abroad only when the posting sponsors visas
+- **Choice:** large MNC boards fetch only India and remote roles. For every company, a role outside India (and not remote-anywhere) is shown only when its description offers visa sponsorship or relocation — the profile rule that wasn't enforced until now. Onsite-only roles in Bengaluru/Hyderabad are hidden at the same time.
+- **MNC sources. Options:** Workday + Amazon + Eightfold · only systems already supported
+- **Choice:** Workday + Amazon + Eightfold (Microsoft, PayPal, Qualcomm…). Google has no public jobs API and is skipped.
+
 ## 2026-10-06 — Scheduled fetch (build step 4)
 - **Options:** every hour · every 3 hours · every 6 hours
 - **Choice:** Every 3 hours (cron `17 */3 * * *`, off the top of the hour because GitHub delays on-the-hour runs most).

@@ -20,7 +20,7 @@ from storage import D1Database, Database
 LIST_COLUMNS = (
     "id, company, title, url, location_raw, location_type, countries, cities, posted_at, first_seen_at, "
     "level, level_confidence, level_reason, yoe_min, yoe_max, yoe_evidence, batch_years, role_family, "
-    "visa_sponsorship, evidence"
+    "visa_sponsorship, eligible, evidence"
 )
 # Which evidence decides a label, in order of preference. The page shows this one line per job.
 HIGHLIGHT_KINDS = {
@@ -30,6 +30,10 @@ HIGHLIGHT_KINDS = {
 }
 HIGHLIGHT_MAX = 280
 JSON_COLUMNS = ("countries", "cities", "batch_years", "evidence", "skills")
+# The page's Role filter; plain SWE roles that passed the Python + AI/ML check count as AI/ML.
+FAMILIES = {"ai_ml": ("ai_ml", "generic_swe"), "backend": ("backend",), "mobile": ("mobile",)}
+# Every view shows only roles whose location fits the profile, unless asked otherwise.
+ELIGIBLE = "eligible = 1"
 # D1 rejects LIKE patterns over 50 bytes.
 MAX_QUERY_CHARS = 40
 
@@ -48,8 +52,9 @@ def _decode(row: dict[str, Any]) -> dict[str, Any]:
                 row[col] = json.loads(row[col])
             except json.JSONDecodeError:
                 pass
-    if "role_match" in row:
-        row["role_match"] = bool(row["role_match"])
+    for col in ("role_match", "eligible"):
+        if col in row:
+            row[col] = bool(row[col])
     return row
 
 
@@ -95,6 +100,8 @@ def create_app() -> FastAPI:
         location_type: Literal["remote", "hybrid", "onsite"] | None = None,
         country: str | None = Query(None, max_length=60),
         city: str | None = Query(None, max_length=60),
+        family: Literal["ai_ml", "backend", "mobile"] | None = None,
+        include_ineligible: bool = False,
         limit: int = Query(50, ge=1, le=100),
         offset: int = Query(0, ge=0, le=5000),
         db: Database = Depends(get_db),
@@ -103,6 +110,12 @@ def create_app() -> FastAPI:
         params: list[Any] = []
         if role == "target":
             where.append("role_match = 1")
+        if not include_ineligible:
+            where.append(ELIGIBLE)
+        if family:
+            fams = FAMILIES[family]
+            where.append(f"role_family IN ({', '.join('?' * len(fams))})")
+            params += list(fams)
         if view in ("fresher", "maybe"):
             where.append("level = ?")
             params.append(view)
@@ -147,26 +160,30 @@ def create_app() -> FastAPI:
     @app.get("/api/meta")
     async def meta(db: Database = Depends(get_db)) -> dict[str, Any]:
         counts = await db.all(
-            "SELECT level, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 GROUP BY level"
+            "SELECT level, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 AND eligible = 1 GROUP BY level"
         )
         new = await db.all(
-            "SELECT COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 "
+            "SELECT COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 AND eligible = 1 "
             "AND level IN ('fresher', 'maybe') AND first_seen_at >= ?",
             [_since(24)],
         )
         companies = await db.all(
-            "SELECT company, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 "
+            "SELECT company, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 AND eligible = 1 "
             "AND level IN ('fresher', 'maybe') GROUP BY company ORDER BY company"
         )
         countries = await db.all(
             "SELECT c.value AS country, COUNT(*) AS n FROM jobs, json_each(jobs.countries) AS c "
-            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.level IN ('fresher', 'maybe') "
+            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.eligible = 1 AND jobs.level IN ('fresher', 'maybe') "
             "GROUP BY c.value ORDER BY n DESC, c.value"
         )
         cities = await db.all(
             "SELECT c.value AS city, COUNT(*) AS n FROM jobs, json_each(jobs.cities) AS c "
-            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.level IN ('fresher', 'maybe') "
+            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.eligible = 1 AND jobs.level IN ('fresher', 'maybe') "
             "GROUP BY c.value ORDER BY n DESC, c.value"
+        )
+        families = await db.all(
+            "SELECT role_family AS family, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 "
+            "AND eligible = 1 AND level IN ('fresher', 'maybe') GROUP BY role_family"
         )
         last_run = await db.all("SELECT * FROM runs ORDER BY id DESC LIMIT 1")
         by_level = {r["level"]: r["n"] for r in counts}
@@ -180,6 +197,9 @@ def create_app() -> FastAPI:
             "companies": companies,
             "countries": countries,
             "cities": cities,
+            "families": {
+                name: sum(f["n"] for f in families if f["family"] in members) for name, members in FAMILIES.items()
+            },
             "last_run": _decode(last_run[0]) if last_run else None,
         }
 

@@ -44,6 +44,11 @@ jobs:
           from sources.http import FetchError, HttpClient
           from sources.models import Company
 
+          from sources import amazon, eightfold, workday
+          # Keep the smoke test small: a few pages and details per board are enough to see the shapes.
+          amazon.MAX_PAGES = eightfold.MAX_PAGES = 1
+          eightfold.MAX_DETAILS = workday.MAX_DETAILS = 5
+
           http = HttpClient()
           failed = []
           for name, ats, slug in [
@@ -51,10 +56,13 @@ jobs:
               # Darwinbox answers 403 to GitHub's runners (docs/decisions.md), so it isn't checked here.
               ("Jupiter", "keka", "jupiter/b5279857-cf81-4dde-a215-fc48957ee2b5"),
               ("Wadhwani AI", "zoho_recruit", "wadhwaniai.zohorecruit.in"),
+              ("Amazon", "amazon", "IND"),
+              ("NetApp", "eightfold", "netapp.eightfold.ai/netapp.com"),  # v2 tenant
+              ("Qualcomm", "eightfold", "careers.qualcomm.com/qualcomm.com"),  # PCSX tenant
           ]:
               try:
                   titles = ADAPTERS[ats].list_titles(http, slug)
-                  jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug)) if titles else []
+                  jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug, india_only=True)) if titles else []
               except FetchError as e:
                   # One blocked host shouldn't hide whether the other adapters work.
                   print(f"{ats} {slug}: FAILED {e}")

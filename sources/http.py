@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -37,18 +38,27 @@ class HttpClient:
 
     cache_dir: Path | None = None
     last_hit: dict[str, float] = field(default_factory=dict)
+    # Boards are fetched from several threads; pacing must still hold per host across all of them.
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
-    def get_json(self, url: str) -> Any | None:
-        """Parsed JSON, or None if the resource doesn't exist. Raises FetchError otherwise."""
-        return self._get(url, "application/json", json.loads)
+    def get_json(self, url: str, fresh_days: float | None = None) -> Any | None:
+        """Parsed JSON, or None if the resource doesn't exist. Raises FetchError otherwise.
 
-    def get_text(self, url: str, accept: str = "text/html,application/xml;q=0.9,*/*;q=0.8") -> str | None:
+        `fresh_days`: reuse a stored copy younger than this without asking the host at all.
+        For per-job detail calls, whose text rarely changes, so only new jobs cost a request.
+        """
+        return self._get(url, "application/json", json.loads, fresh_days)
+
+    def get_text(self, url: str, accept: str = "text/html,application/xml;q=0.9,*/*;q=0.8",
+                 fresh_days: float | None = None) -> str | None:
         """Body as text (careers pages, sitemaps), or None if it doesn't exist."""
-        return self._get(url, accept, lambda raw: raw)
+        return self._get(url, accept, lambda raw: raw, fresh_days)
 
-    def _get(self, url: str, accept: str, decode: Callable[[str], Any]) -> Any | None:
+    def _get(self, url: str, accept: str, decode: Callable[[str], Any], fresh_days: float | None = None) -> Any | None:
         host = urlparse(url).netloc
         cached = self._cache_read(url)
+        if fresh_days and cached and time.time() - cached.get("stored_at", 0) < fresh_days * 86400:
+            return cached["body"]
         headers = {"User-Agent": USER_AGENT, "Accept": accept, "Accept-Language": "en-US,en;q=0.8"}
         if cached:
             if cached.get("etag"):
@@ -63,7 +73,8 @@ class HttpClient:
                 with urllib.request.urlopen(req, timeout=30) as resp:
                     raw = resp.read().decode("utf-8", errors="replace")
                     body = decode(raw)
-                    self._cache_write(url, resp.headers.get("ETag"), resp.headers.get("Last-Modified"), body)
+                    self._cache_write(url, resp.headers.get("ETag"), resp.headers.get("Last-Modified"), body,
+                                      keep=bool(fresh_days))
                     return body
             except urllib.error.HTTPError as e:
                 if e.code == 304 and cached:
@@ -83,10 +94,13 @@ class HttpClient:
 
     def _pace(self, host: str) -> None:
         interval = HOST_INTERVAL.get(host, MIN_SECONDS_PER_HOST)
-        wait = interval - (time.monotonic() - self.last_hit.get(host, 0.0))
-        if wait > 0:
-            time.sleep(wait)
-        self.last_hit[host] = time.monotonic()
+        # Reserve the next slot for this host under the lock, then sleep outside it.
+        with self._lock:
+            now = time.monotonic()
+            slot = max(now, self.last_hit.get(host, 0.0) + interval) if host in self.last_hit else now
+            self.last_hit[host] = slot
+        if slot > now:
+            time.sleep(slot - now)
 
     def _back_off(self, host: str, attempt: int, retry_after: str | None) -> None:
         # Exponential 5s, 10s, 20s, 40s, raised to the server's Retry-After when larger
@@ -115,10 +129,12 @@ class HttpClient:
         except (OSError, json.JSONDecodeError):
             return None
 
-    def _cache_write(self, url: str, etag: str | None, last_modified: str | None, body: Any) -> None:
+    def _cache_write(self, url: str, etag: str | None, last_modified: str | None, body: Any,
+                     keep: bool = False) -> None:
         path = self._cache_path(url)
-        # Only worth storing when the host gave us something to revalidate with.
-        if path is None or not (etag or last_modified):
+        # Worth storing when the host gave us something to revalidate with, or the caller reuses it by age.
+        if path is None or not (etag or last_modified or keep):
             return
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({"url": url, "etag": etag, "last_modified": last_modified, "body": body}))
+        path.write_text(json.dumps({"url": url, "etag": etag, "last_modified": last_modified, "body": body,
+                                    "stored_at": time.time()}))

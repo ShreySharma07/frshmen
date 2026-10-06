@@ -25,7 +25,9 @@ export interface JobSummary {
   yoe_min: number | null;
   yoe_max: number | null;
   batch_years: number[];
-  role_family: "ai_ml" | "backend" | "generic_swe" | null;
+  role_family: "ai_ml" | "backend" | "generic_swe" | "mobile" | null;
+  visa_sponsorship: "yes" | "no" | "unknown";
+  eligible: boolean;
   highlight: Highlight | null;
 }
 
@@ -52,8 +54,11 @@ export interface Meta {
   companies: { company: string; n: number }[];
   countries: { country: string; n: number }[];
   cities: { city: string; n: number }[];
+  families: Record<Family, number>;
   last_run: { finished_at: string; companies_ok: number; companies_failed: number } | null;
 }
+
+export type Family = "ai_ml" | "backend" | "mobile";
 
 export interface Filters {
   view: View;
@@ -61,6 +66,8 @@ export interface Filters {
   company: string;
   country: string;
   city: string;
+  family: "" | Family;
+  includeIneligible: boolean;
   location: "" | "remote" | "hybrid" | "onsite";
 }
 
@@ -78,6 +85,8 @@ export function fetchJobs(filters: Filters, offset: number, signal?: AbortSignal
   if (filters.company) params.set("company", filters.company);
   if (filters.country) params.set("country", filters.country);
   if (filters.city) params.set("city", filters.city);
+  if (filters.family) params.set("family", filters.family);
+  if (filters.includeIneligible) params.set("include_ineligible", "true");
   if (filters.location) params.set("location_type", filters.location);
   return get<JobPage>(`/api/jobs?${params}`, signal);
 }

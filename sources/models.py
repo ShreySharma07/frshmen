@@ -17,6 +17,8 @@ class Company:
     ats: str
     slug: str
     category: str = ""
+    # Big global boards (MNCs): only India and remote roles are fetched (docs/decisions.md).
+    india_only: bool = False
 
 
 @dataclass

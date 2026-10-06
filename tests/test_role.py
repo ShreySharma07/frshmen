@@ -55,3 +55,22 @@ def test_generic_swe_can_be_switched_off(tmp_path):
     cfg.write_text(open("config/profile.yaml").read().replace("enabled: true", "enabled: false"))
     off = load_profile(cfg)
     assert not match_role("Software Engineer - New Grad", PY_AI, off).is_target
+
+
+@pytest.mark.parametrize("title,description,target", [
+    ("Android Developer", "Kotlin, Jetpack Compose", True),
+    ("Mobile Engineer (iOS/Android)", "", True),  # naming Android beats the iOS/mobile excludes
+    ("React Native Developer", "", True),
+    ("Mobile Engineer", "We build our app in React Native.", True),
+    ("Mobile Engineer", "Swift and SwiftUI only.", False),  # generic title needs an Android / RN stack
+    ("Senior iOS Engineer", "", False),
+    ("Flutter Developer", "", False),
+    ("Frontend Engineer (React Native)", "", False),  # still a frontend title
+    ("QA Engineer - Android", "", False),
+    ("Android Developer Intern", "Kotlin", False),  # interns still need stated conversion
+])
+def test_mobile_family(title, description, target):
+    r = match_role(title, description, P)
+    assert r.is_target is target
+    if target:
+        assert r.family == "mobile"

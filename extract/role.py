@@ -1,8 +1,10 @@
 """Is this a role Shrey targets? Title first, description only to confirm.
 
-Families: "ai_ml", "backend" (Python stack only) and "generic_swe" (plain Software
-Engineer titles whose description shows Python and AI/ML work). Excluded titles
-(frontend, mobile, QA, sales, ...) lose even if they also match an include.
+Families: "ai_ml", "backend" (Python stack only), "mobile" (Android / React Native)
+and "generic_swe" (plain Software Engineer titles whose description shows Python and
+AI/ML work). Excluded titles (frontend, iOS-only, QA, sales, ...) lose even if they
+also match an include; a title naming Android or React Native is exempt from the
+mobile-related excludes ("iOS/Android Engineer" is still a fit).
 """
 
 from __future__ import annotations
@@ -13,6 +15,8 @@ from typing import Any
 
 from extract.profile import BACKEND_PHRASES, Profile
 
+# Excludes that a title naming Android / React Native overrides ("iOS & Android Developer").
+_MOBILE_EXCLUDES = {"ios", "mobile"}
 _INTERN = re.compile(r"\bintern(ship)?s?\b", re.I)
 _CONVERSION = re.compile(
     r"conver(t|sion|ted)\b[^.\n]{0,60}(full[- ]time|permanent|offer)|full[- ]time (offer|conversion|role after)|"
@@ -47,21 +51,32 @@ def _snippet(description: str, words: tuple[str, ...]) -> str | None:
 
 def match_role(title: str, description: str, profile: Profile) -> RoleMatch:
     t = title.lower()
-    excluded = next((p for p in profile.exclude if _phrase(t, p)), None)
+    evidence = [{"kind": "title", "snippet": title}]
+    mobile_title = next((p for p in profile.mobile_titles if _phrase(t, p)), None)
+    generic_mobile = None if mobile_title else next((p for p in profile.mobile_generic_titles if _phrase(t, p)), None)
+    excludes = profile.exclude
+    if mobile_title or generic_mobile:
+        excludes = tuple(p for p in excludes if p not in _MOBILE_EXCLUDES)
+    excluded = next((p for p in excludes if _phrase(t, p)), None)
     if excluded:
-        return RoleMatch(False, None, f"title has excluded {excluded!r}", [{"kind": "title", "snippet": title}])
+        return RoleMatch(False, None, f"title has excluded {excluded!r}", evidence)
 
-    hit = next((p for p in profile.include if _phrase(t, p)), None)
+    hit = mobile_title or generic_mobile or next((p for p in profile.include if _phrase(t, p)), None)
     family = None
-    if hit:
+    if mobile_title or generic_mobile:
+        family = "mobile"
+    elif hit:
         family = "backend" if any(b in hit for b in BACKEND_PHRASES) else "ai_ml"
     elif profile.generic_swe_enabled and any(_phrase(t, p) for p in profile.generic_swe_titles):
         family = "generic_swe"
     if family is None:
-        return RoleMatch(False, None, "title matches no target role", [{"kind": "title", "snippet": title}])
+        return RoleMatch(False, None, "title matches no target role", evidence)
 
-    evidence = [{"kind": "title", "snippet": title}]
-    d = description.lower()
+    if generic_mobile:
+        found = _snippet(description, profile.mobile_requires_any)
+        if not found:
+            return RoleMatch(False, family, "mobile role without an Android / React Native stack", evidence)
+        evidence.append({"kind": "mobile_stack", "snippet": found})
 
     if family == "backend":
         found = _snippet(description, profile.backend_requires_any)
