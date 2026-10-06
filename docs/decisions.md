@@ -4,6 +4,17 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-06 — Add junior Python backend roles to targets
+- **Options:** AI/ML roles only · AI/ML + Python backend
+- **Choice:** AI/ML + junior Python backend (Python stack only: FastAPI/Django/Flask).
+- **Why:** Python backend is a strong adjacent fit for Shrey's skills (Python, FastAPI) and widens the fresher pool. Frontend, mobile, QA and sales stay excluded.
+- **Where:** `config/profile.yaml` → `target_roles`, `backend_requires_any`.
+
+## 2026-10-06 — Probe Workable only when guessed
+- **Options:** probe every ATS for every company · skip Workable unless it is the guessed ATS
+- **Choice:** Workable only when guessed.
+- **Why:** Workable throttles hard (429 with `Retry-After: 0`) and only 3 of ~260 companies use it; probing it for everyone slowed runs several-fold. Cost: a company that silently moved to Workable needs its `ats` set by hand.
+
 ## 2026-10-05 — Company discovery
 - **Options:** hand-curated ~50 seed list · seed list + auto-discovery from YC/funding lists
 - **Choice:** Curated list of ~200 companies, including YC AI startups. Claude drafts it, Shrey prunes.

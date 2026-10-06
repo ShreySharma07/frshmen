@@ -1,9 +1,5 @@
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-
-import verify_companies as vc  # noqa: E402
+import verify_companies as vc
+from sources.http import FetchError
 
 
 def fake_get(responses):
@@ -86,59 +82,6 @@ def test_needs_check():
     assert not vc.needs_check({"name": "A", "verified": True, "jobs": 3})
 
 
-class _Resp:
-    def __init__(self, body):
-        self.body = body
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *a):
-        return False
-
-    def read(self, *a):
-        return self.body
-
-
-def test_fetcher_backs_off_on_429_then_succeeds(monkeypatch):
-    import io
-    import urllib.error
-
-    sleeps = []
-    responses = [
-        urllib.error.HTTPError("u", 429, "Too Many", {"Retry-After": "7"}, io.BytesIO()),
-        _Resp(b'{"jobs": []}'),
-    ]
-
-    def urlopen(req, timeout):
-        r = responses.pop(0)
-        if isinstance(r, Exception):
-            raise r
-        return r
-
-    monkeypatch.setattr(vc.urllib.request, "urlopen", urlopen)
-    monkeypatch.setattr(vc.time, "sleep", sleeps.append)
-    assert vc.Fetcher().get_json("https://api.ashbyhq.com/x") == {"jobs": []}
-    assert 7.0 in sleeps
-
-
-def test_fetcher_gives_up_with_runtime_error(monkeypatch):
-    import io
-    import urllib.error
-
-    def urlopen(req, timeout):
-        raise urllib.error.HTTPError("u", 429, "Too Many", {}, io.BytesIO())
-
-    monkeypatch.setattr(vc.urllib.request, "urlopen", urlopen)
-    monkeypatch.setattr(vc.time, "sleep", lambda s: None)
-    try:
-        vc.Fetcher().get_json("https://api.lever.co/x")
-    except RuntimeError as e:
-        assert "api.lever.co: HTTP 429" in str(e)
-    else:
-        raise AssertionError("expected RuntimeError")
-
-
 def test_slug_variants_include_parenthetical_name():
     assert "cursor" in vc.slug_variants({"name": "Anysphere (Cursor)", "slug": "anysphere"})
 
@@ -146,7 +89,7 @@ def test_slug_variants_include_parenthetical_name():
 def test_throttled_host_does_not_hide_board_elsewhere():
     def get(url):
         if "lever" in url:
-            raise RuntimeError("api.lever.co: HTTP 429")
+            raise FetchError("api.lever.co: HTTP 429")
         if url == "https://api.ashbyhq.com/posting-api/job-board/acme":
             return {"jobs": [{"title": "ML Engineer", "jobUrl": "u"}]}
         return None
@@ -156,20 +99,22 @@ def test_throttled_host_does_not_hide_board_elsewhere():
 
 def test_unanswered_probes_are_not_reported_as_not_found():
     def get(url):
-        if "workable" in url:
-            raise RuntimeError("apply.workable.com: HTTP 429")
+        if "smartrecruiters" in url:
+            raise FetchError("api.smartrecruiters.com: HTTP 429")
         return None
 
     try:
         vc.find_board(get, {"name": "Acme", "ats": "ashby", "slug": "acme"})
-    except RuntimeError as e:
-        assert "workable" in str(e)
+    except FetchError as e:
+        assert "smartrecruiters" in str(e)
     else:
-        raise AssertionError("expected RuntimeError")
+        raise AssertionError("expected FetchError")
 
 
-def test_retry_after_zero_still_backs_off(monkeypatch):
-    sleeps = []
-    monkeypatch.setattr(vc.time, "sleep", sleeps.append)
-    vc.Fetcher()._back_off("h", 0, "0")
-    assert sleeps == [5.0]
+def test_workable_only_probed_when_guessed():
+    get, calls = fake_get({})
+    vc.find_board(get, {"name": "Acme", "ats": "ashby", "slug": "acme"})
+    assert not any("workable" in u for u in calls)
+
+    get, calls = fake_get({"https://apply.workable.com/api/v1/widget/accounts/acme": {"name": "Acme", "jobs": [{"title": "ML", "url": "u"}]}})
+    assert vc.find_board(get, {"name": "Acme", "ats": "workable", "slug": "acme"}).ats == "workable"

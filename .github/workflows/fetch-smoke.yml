@@ -1,0 +1,35 @@
+name: Fetch smoke test
+
+# Fetches one live board per ATS to catch payload changes the fixtures can't.
+# Three small requests; the full fetch is scheduled separately (build step 4).
+on:
+  pull_request:
+    paths:
+      - sources/**
+      - scripts/fetch_jobs.py
+      - .github/workflows/fetch-smoke.yml
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -u scripts/fetch_jobs.py --no-cache --company "Hume AI" CRED Pinecone
+      - name: Check every adapter produced jobs with text
+        run: |
+          python - <<'EOF'
+          import json, collections
+          jobs = json.load(open("data/jobs.json"))["jobs"]
+          by_source = collections.Counter(j["source"] for j in jobs)
+          print(dict(by_source))
+          assert set(by_source) == {"greenhouse", "lever", "ashby"}, by_source
+          empty = [j["id"] for j in jobs if not j["description_text"]]
+          assert not empty, f"empty descriptions: {empty}"
+          EOF

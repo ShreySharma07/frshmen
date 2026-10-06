@@ -45,7 +45,7 @@ Decision table:
 
 LLM fallback (only for `maybe`): send the description with a strict JSON schema (`yoe_required_min`, `yoe_required_max`, `fresher_friendly`, `evidence_quote`). Reject any answer whose `evidence_quote` is not a verbatim substring of the description. Cache results by `content_hash`.
 
-Checks: every new misclassification becomes a fixture in `tests/fixtures/` first. Report precision on the `fresher` bucket after any change.
+Checks: every new misclassification becomes a fixture in `tests/fixtures/labeled/postings.jsonl` first. Report precision on the `fresher` bucket after any change: `python scripts/eval_extractor.py` (exits non-zero if fresher precision drops below 100%). Code lives in `extract/` (`sections.py` → clauses with preferred/required section, `yoe.py`, `signals.py`, `classify.py`).
 
 ---
 
@@ -111,4 +111,4 @@ Steps:
 1. Save the job's full description as a fixture with the expected label.
 2. Run the extractor and read the stored evidence to see which rule fired or missed.
 3. Fix the rule or add a pattern. Do not special-case the single job.
-4. Re-run the whole fixture suite and report precision before and after.
+4. Re-run `python scripts/eval_extractor.py` and `pytest`; report fresher precision before and after.
