@@ -4,6 +4,28 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-06 — Scheduled fetch (build step 4)
+- **Options:** every hour · every 3 hours · every 6 hours
+- **Choice:** Every 3 hours (cron `17 */3 * * *`, off the top of the hour because GitHub delays on-the-hour runs most).
+- **Closing rule:** a job is closed after it is missing from its board on **2 runs in a row**, and only when that board fetched OK. One flaky response no longer hides a live job.
+- **Keep-alive:** each run re-enables its own workflow through the GitHub API, which resets GitHub's 60-day inactivity timer for scheduled workflows.
+- **Limits:** public repo, so Actions minutes are free; ~8 runs × ~6 min a day. D1 writes stay far under 100k/day because unchanged jobs are not written.
+
+## 2026-10-06 — Indian cities and a City filter
+- **Options:** more Indian city aliases only · a City dropdown for India only · both
+- **Choice:** Both. Schema gains a `cities` column (JSON array of Indian cities found in the location).
+- **Why:** Smaller cities (Mysuru, Vizag, Mohali…) were not mapped to India, and "India" alone is too coarse for picking where to live. Cities are only extracted for India, where the profile cares.
+
+## 2026-10-06 — More YC startups from the yc-oss dataset
+- **Options:** yc-oss dataset (community JSON mirror of the YC directory on GitHub) · Claude hand-picks
+- **Choice:** yc-oss dataset, filtered to AI companies that are hiring, then verified against the ATSs like every other company.
+- **Why:** Covers recent batches without scraping YC's site or the login-walled Work at a Startup. Supersedes the "~200 companies" target: the list grows past it, still with only verified boards fetched.
+
+## 2026-10-06 — Indian companies outside Greenhouse/Lever/Ashby
+- **Options:** new ATS adapters + schema.org JSON-LD fallback · one scraper per company · ATS adapters only
+- **Choice:** ATS adapters for job systems common in India that publish public job data, plus a generic reader for the schema.org `JobPosting` JSON-LD that careers pages embed for Google Jobs.
+- **Why:** One adapter covers many companies and breaks rarely; per-company HTML scrapers break whenever a site changes. Survey which system each unverified Indian company uses first, then build only the adapters that cover several companies. robots.txt is checked before any careers page is read.
+
 ## 2026-10-06 — Serve React from the API Worker (Workers Static Assets) instead of Cloudflare Pages
 - **Options:** one Python Worker serving FastAPI + the React build · React on Pages + separate API Worker
 - **Choice:** One Worker. Supersedes the "Cloudflare Pages" part of the frontend decision below.
