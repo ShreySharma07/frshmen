@@ -137,3 +137,39 @@ def test_fetcher_gives_up_with_runtime_error(monkeypatch):
         assert "api.lever.co: HTTP 429" in str(e)
     else:
         raise AssertionError("expected RuntimeError")
+
+
+def test_slug_variants_include_parenthetical_name():
+    assert "cursor" in vc.slug_variants({"name": "Anysphere (Cursor)", "slug": "anysphere"})
+
+
+def test_throttled_host_does_not_hide_board_elsewhere():
+    def get(url):
+        if "lever" in url:
+            raise RuntimeError("api.lever.co: HTTP 429")
+        if url == "https://api.ashbyhq.com/posting-api/job-board/acme":
+            return {"jobs": [{"title": "ML Engineer", "jobUrl": "u"}]}
+        return None
+
+    assert vc.find_board(get, {"name": "Acme", "ats": "lever", "slug": "acme"}).ats == "ashby"
+
+
+def test_unanswered_probes_are_not_reported_as_not_found():
+    def get(url):
+        if "workable" in url:
+            raise RuntimeError("apply.workable.com: HTTP 429")
+        return None
+
+    try:
+        vc.find_board(get, {"name": "Acme", "ats": "ashby", "slug": "acme"})
+    except RuntimeError as e:
+        assert "workable" in str(e)
+    else:
+        raise AssertionError("expected RuntimeError")
+
+
+def test_retry_after_zero_still_backs_off(monkeypatch):
+    sleeps = []
+    monkeypatch.setattr(vc.time, "sleep", sleeps.append)
+    vc.Fetcher()._back_off("h", 0, "0")
+    assert sleeps == [5.0]

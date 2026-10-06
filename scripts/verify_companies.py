@@ -30,6 +30,8 @@ REPORT = ROOT / "docs" / "company_check.md"
 
 USER_AGENT = "frshmen-jobboard/0.1 (personal job board; +https://github.com/ShreySharma07/frshmen)"
 MIN_SECONDS_PER_HOST = 2.0
+# Workable throttles far harder than the others (429 with Retry-After: 0).
+HOST_INTERVAL = {"apply.workable.com": 5.0}
 MAX_RETRIES = 4
 RETRY_STATUSES = (429, 500, 502, 503, 504)
 ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters"]
@@ -82,14 +84,18 @@ class Fetcher:
         return None
 
     def _pace(self, host: str) -> None:
-        wait = MIN_SECONDS_PER_HOST - (time.monotonic() - self.last_hit.get(host, 0.0))
+        interval = HOST_INTERVAL.get(host, MIN_SECONDS_PER_HOST)
+        wait = interval - (time.monotonic() - self.last_hit.get(host, 0.0))
         if wait > 0:
             time.sleep(wait)
         self.last_hit[host] = time.monotonic()
 
     def _back_off(self, host: str, attempt: int, retry_after: str | None) -> None:
-        # Honour the server's Retry-After when it sends seconds; otherwise 5s, 10s, 20s, 40s.
-        delay = float(retry_after) if retry_after and retry_after.isdigit() else 5.0 * 2**attempt
+        # Exponential 5s, 10s, 20s, 40s, raised to the server's Retry-After when larger
+        # (some hosts send Retry-After: 0, which would mean hammering them).
+        delay = 5.0 * 2**attempt
+        if retry_after and retry_after.isdigit():
+            delay = max(delay, float(retry_after))
         delay = min(delay, 60.0)
         print(f"  {host} asked us to slow down; waiting {delay:.0f}s", file=sys.stderr)
         time.sleep(delay)
@@ -159,8 +165,11 @@ PROBES: dict[str, Callable[[GetJson, str], Board | None]] = {
 
 
 def slug_variants(company: dict[str, Any]) -> list[str]:
-    base = re.sub(r"\(.*?\)", "", company["name"]).strip().lower()
-    variants = [str(company["slug"]), re.sub(r"[^a-z0-9]", "", base), re.sub(r"[^a-z0-9]+", "-", base).strip("-")]
+    # "Anysphere (Cursor)" -> try both "anysphere" and "cursor".
+    names = [re.sub(r"\(.*?\)", "", company["name"])] + re.findall(r"\((.*?)\)", company["name"])
+    variants = [str(company["slug"])]
+    for n in (n.strip().lower() for n in names):
+        variants += [re.sub(r"[^a-z0-9]", "", n), re.sub(r"[^a-z0-9]+", "-", n).strip("-")]
     return list(dict.fromkeys(v for v in variants if v))
 
 
@@ -174,13 +183,22 @@ def find_board(get: GetJson, company: dict[str, Any]) -> Board | None:
     for ats in [guessed] + [a for a in ATS_ORDER if a != guessed]:
         attempts += [(ats, s) for s in slug_variants(company)]
     empty: Board | None = None
+    errors: list[str] = []
     for ats, slug in dict.fromkeys(attempts):
-        board = PROBES[ats](get, slug)
+        try:
+            board = PROBES[ats](get, slug)
+        except RuntimeError as e:
+            # One throttled host shouldn't stop us finding the board on another.
+            errors.append(str(e))
+            continue
         if board is None:
             continue
         if board.titles:
             return board
         empty = empty or board
+    if empty is None and errors:
+        # Can't claim "not found" when some probes never got an answer.
+        raise RuntimeError("; ".join(dict.fromkeys(errors)))
     return empty
 
 
