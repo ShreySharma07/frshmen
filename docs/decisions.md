@@ -53,9 +53,9 @@ Newest first. Each entry: date, options considered, choice, why.
 - **Choice:** One Worker. Supersedes the "Cloudflare Pages" part of the frontend decision below.
 - **Why:** One deploy and one URL, no CORS. Static asset requests are free and don't count toward Workers' 100k requests/day; only `/api/*` calls run Python. Cloudflare now recommends Static Assets over Pages for new projects.
 
-## 2026-10-06 — Count plain "Software Engineer" titles when the work is Python + AI (pending Shrey's confirmation)
+## 2026-10-06 — Count plain "Software Engineer" titles when the work is Python + AI (confirmed by Shrey 2026-10-07)
 - **Options:** only AI/ML and backend titles · also plain SWE titles whose description shows Python and AI/ML work
-- **Choice (proposed by Claude, toggle in `config/profile.yaml` → `generic_swe.enabled`):** include them.
+- **Choice (toggle in `config/profile.yaml` → `generic_swe.enabled`):** include them. Confirmed by Shrey.
 - **Why:** New-grad postings at AI companies are often titled just "Software Engineer - New Grad" (e.g. Scale AI) while asking for Python, LLMs and evals. Without this they'd never show. Cost: more generic SWE roles at AI companies, since "AI" appears in most of their boilerplate.
 
 ## 2026-10-06 — Add junior Python backend roles to targets
