@@ -93,12 +93,12 @@ body {
 }
 
 .page {
-  max-width: 980px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 48px var(--gutter) 96px;
 }
 
-/* --- Masthead -------------------------------------------------------------- */
+/* --- Heading ---------------------------------------------------------------- */
 
 .masthead h1 {
   font-family: var(--font-display);
@@ -106,54 +106,75 @@ body {
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
-  margin: 0 0 12px;
-  /* The name gets the same marker stroke as the evidence: it's the page's one motif. */
+  margin: 0;
+  /* The heading gets the same marker stroke as the evidence: it's the page's one motif. */
   display: inline;
   background: linear-gradient(transparent 52%, var(--highlight) 52%, var(--highlight) 92%, transparent 92%);
-}
-
-.masthead__line {
-  max-width: var(--measure);
-  font-size: var(--step-1);
-  margin: 16px 0 4px;
 }
 
 .masthead__status {
   color: var(--ink-muted);
   font-size: var(--step--1);
-  margin: 0;
+  margin: 14px 0 0;
 }
 
-/* --- Tabs and filters ---------------------------------------------------- */
+/* --- Search and filters ------------------------------------------------------ */
 
-.tabs {
-  display: flex;
-  gap: 28px;
-  margin: 36px 0 0;
-  border-bottom: 1px solid var(--rule);
-  overflow-x: auto;
+.panel {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0 32px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
 }
 
-.tab {
-  font: 700 var(--step-1) / 1 var(--font-display);
+.search input {
+  font: inherit;
+  font-size: var(--step-1);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 13px 16px;
+  width: 100%;
+}
+
+.search input::placeholder {
+  color: var(--ink-muted);
+}
+
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--paper);
+  border-radius: 10px;
+  justify-self: start;
+}
+
+.segmented__option {
+  font: 700 var(--step-0) / 1 var(--font-display);
   color: var(--ink-muted);
   background: none;
   border: 0;
-  padding: 0 0 12px;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
+  border-radius: 7px;
+  padding: 9px 14px;
   cursor: pointer;
   white-space: nowrap;
 }
 
-.tab[aria-current="page"] {
+.segmented__option[aria-pressed="true"] {
   color: var(--ink);
-  border-bottom-color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-.tab__count {
+.segmented__count {
   font: 400 var(--step--1) var(--font-body);
-  margin-left: 8px;
+  margin-left: 6px;
   color: var(--ink-muted);
 }
 
@@ -161,7 +182,6 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 16px;
-  margin: 20px 0 8px;
 }
 
 .field {
@@ -170,10 +190,7 @@ body {
   font-size: var(--step--1);
   color: var(--ink-muted);
   min-width: 160px;
-}
-
-.field--grow {
-  flex: 1 1 260px;
+  flex: 1 1 160px;
 }
 
 /* Checkbox sits level with the bottom of the dropdowns. */
@@ -184,6 +201,19 @@ body {
   align-self: end;
   padding-bottom: 10px;
   color: var(--ink);
+  flex: 1 1 100%;
+}
+
+.field input,
+.field select {
+  font: inherit;
+  font-size: var(--step-0);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 9px 11px;
+  width: 100%;
 }
 
 .field.field--check input {
@@ -192,115 +222,114 @@ body {
   accent-color: var(--ink);
 }
 
-.field input,
-.field select {
-  font: inherit;
-  font-size: var(--step-0);
-  color: var(--ink);
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 9px 11px;
-  width: 100%;
-}
+/* --- Job cards --------------------------------------------------------------- */
 
-/* --- Job list -------------------------------------------------------------- */
-
-.jobs {
+.cards {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
 }
 
-.job {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 128px;
-  gap: 8px 28px;
-  padding: 24px 0 24px 18px;
-  border-bottom: 1px solid var(--rule);
-  /* The left rule carries the level, so the eye can sort a page without reading. */
-  border-left: 4px solid var(--level-color);
-  margin-left: -22px;
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 18px 16px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  /* The top rule carries the level, so the eye can sort a page without reading. */
+  border-top: 4px solid var(--level-color);
+  border-radius: 12px;
+  min-width: 0;
+}
+
+/* An open card takes the whole row so the description has room. */
+.card--open {
+  grid-column: 1 / -1;
 }
 
 .job--fresher { --level-color: var(--fresher); }
 .job--maybe { --level-color: var(--maybe); }
 .job--experienced { --level-color: var(--experienced); }
 
-.job__title {
-  font-family: var(--font-display);
-  font-size: var(--step-2);
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  line-height: 1.2;
-  margin: 0;
-}
-
-.job__toggle {
-  all: unset;
-  cursor: pointer;
-}
-
-.job__toggle:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-}
-
-.job__toggle:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
-}
-
-.job__apply {
-  margin-top: 10px;
-  font-weight: 700;
-  color: var(--ink);
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  padding: 4px 14px;
-  text-decoration: none;
+.card__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
   font-size: var(--step--1);
 }
 
-.job__apply:hover {
-  background: var(--ink);
-  color: var(--paper);
+.card__level {
+  font: 700 var(--step-0) / 1 var(--font-display);
+  color: var(--level-color);
 }
 
-.job__meta {
+.card__conf {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.card__title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.card__company {
+  margin: -4px 0 0;
+  font-weight: 700;
+  font-size: var(--step--1);
+}
+
+.card__location {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.card__tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 2px 18px;
-  margin: 6px 0 0;
+  gap: 6px;
+}
+
+.card__tags li {
+  font-size: var(--step--1);
   color: var(--ink-muted);
+  background: var(--paper);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.card__evidence {
+  margin: 0;
   font-size: var(--step--1);
 }
 
-.job__company {
-  color: var(--ink);
-  font-weight: 700;
-}
-
-.job__evidence {
-  max-width: var(--measure);
-  margin: 14px 0 0;
-}
-
-/* Two lines in the list; the expanded view shows the full sentence. */
-.job__evidence-text {
+/* Three lines on the card; the details show every sentence. */
+.card__evidence-text {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.job__evidence--none {
+.card__evidence--none {
   color: var(--ink-muted);
   font-style: italic;
 }
 
-.job__evidence-label {
+.card__evidence-label {
   display: block;
   font-size: var(--step--1);
   color: var(--level-color);
@@ -317,46 +346,64 @@ mark {
   padding: 0 2px;
 }
 
-.job__badge {
-  display: grid;
-  align-content: start;
-  justify-items: end;
-  gap: 2px;
-  text-align: right;
+.card__footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 6px;
   font-size: var(--step--1);
+}
+
+.card__seen {
   color: var(--ink-muted);
+  margin-right: auto;
 }
 
-.job__level {
-  font: 700 var(--step-1) / 1.1 var(--font-display);
-  color: var(--level-color);
+.card__details {
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 4px 2px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.job__conf {
-  font-variant-numeric: tabular-nums;
+.card__apply {
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 999px;
+  padding: 5px 14px;
+  text-decoration: none;
 }
 
-/* --- Expanded detail ------------------------------------------------------- */
+.card__apply:hover {
+  opacity: 0.85;
+}
 
-.job__detail {
-  grid-column: 1 / -1;
-  margin-top: 12px;
-  padding: 20px 22px;
-  background: var(--surface);
-  border-radius: 8px;
+/* --- Expanded details -------------------------------------------------------- */
+
+.card__detail {
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
   animation: reveal 160ms ease-out;
 }
 
-.job__detail h3 {
+.card__detail h3 {
   font: 700 var(--step-0) var(--font-display);
   margin: 0 0 6px;
 }
 
-.job__detail section + section {
+.card__detail section + section {
   margin-top: 22px;
 }
 
-.job__reason {
+.detail__reason {
   margin: 0 0 8px;
   color: var(--ink-muted);
 }
@@ -370,7 +417,7 @@ mark {
   max-width: var(--measure);
 }
 
-.job__description {
+.detail__description {
   white-space: pre-line;
   max-width: var(--measure);
   max-height: 420px;
@@ -414,26 +461,11 @@ mark {
 
 @media (max-width: 640px) {
   .page { padding-top: 32px; }
-  .job {
-    grid-template-columns: minmax(0, 1fr);
-    margin-left: 0;
-    padding-left: 14px;
-  }
-  .job__badge {
-    grid-row: 2;
-    justify-items: start;
-    text-align: left;
-    grid-auto-flow: column;
-    justify-content: start;
-    gap: 12px;
-    align-items: baseline;
-  }
-  .job__apply { margin-top: 0; }
-  .tabs { gap: 20px; }
+  .panel { padding: 16px; }
+  .cards { grid-template-columns: minmax(0, 1fr); }
   .field { min-width: 0; flex: 1 1 140px; }
-  .field--grow { flex-basis: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .job__detail { animation: none; }
+  .card__detail { animation: none; }
 }

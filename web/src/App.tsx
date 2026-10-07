@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchJobs, fetchMeta, type Family, type Filters, type JobSummary, type Meta, type View } from "./api";
-import { JobRow } from "./JobRow";
+import { JobCard } from "./JobCard";
 import { timeAgo } from "./format";
 
 const VIEWS: { id: View; label: string; empty: string }[] = [
@@ -85,10 +85,7 @@ export function App() {
   return (
     <div className="page">
       <header className="masthead">
-        <h1>frshmen</h1>
-        <p className="masthead__line">
-          Fresher-level AI/ML and Python backend roles. Each one shows the sentence that decided it.
-        </p>
+        <h1>Jobs</h1>
         {meta?.last_run && (
           <p className="masthead__status">
             Updated {timeAgo(meta.last_run.finished_at)} from {meta.last_run.companies_ok} company boards
@@ -97,102 +94,105 @@ export function App() {
         )}
       </header>
 
-      <nav className="tabs" aria-label="Job views">
-        {VIEWS.map((v) => (
-          <button
-            key={v.id}
-            className="tab"
-            aria-current={filters.view === v.id ? "page" : undefined}
-            onClick={() => {
-              setOpenId(null);
-              setFilters((f) => ({ ...f, view: v.id }));
-            }}
-          >
-            {v.label}
-            {meta && <span className="tab__count">{meta.counts[v.id]}</span>}
-          </button>
-        ))}
-      </nav>
+      <form className="panel" role="search" onSubmit={(e) => e.preventDefault()}>
+        <label className="search">
+          <span className="visually-hidden">Search titles and companies</span>
+          <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search titles and companies, e.g. LLM, Sarvam" />
+        </label>
+        <div className="segmented" role="group" aria-label="Job views">
+          {VIEWS.map((v) => (
+            <button
+              key={v.id}
+              type="button"
+              className="segmented__option"
+              aria-pressed={filters.view === v.id}
+              onClick={() => {
+                setOpenId(null);
+                setFilters((f) => ({ ...f, view: v.id }));
+              }}
+            >
+              {v.label}
+              {meta && <span className="segmented__count">{meta.counts[v.id]}</span>}
+            </button>
+          ))}
+        </div>
 
-      <form className="filters" role="search" onSubmit={(e) => e.preventDefault()}>
-        <label className="field field--grow">
-          <span>Search titles and companies</span>
-          <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="e.g. LLM, Sarvam" />
-        </label>
-        <label className="field">
-          <span>Role</span>
-          <select
-            value={filters.family}
-            onChange={(e) => setFilters((f) => ({ ...f, family: e.target.value as Filters["family"] }))}
-          >
-            <option value="">All roles</option>
-            {(Object.keys(FAMILY_OPTIONS) as Family[]).map((id) => (
-              <option key={id} value={id}>
-                {FAMILY_OPTIONS[id]}
-                {meta ? ` (${meta.families[id] ?? 0})` : ""}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Company</span>
-          <select value={filters.company} onChange={(e) => setFilters((f) => ({ ...f, company: e.target.value }))}>
-            <option value="">All companies</option>
-            {meta?.companies.map((c) => (
-              <option key={c.company} value={c.company}>
-                {c.company} ({c.n})
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Country</span>
-          <select
-            value={filters.country}
-            // A city belongs to one country, so changing country clears it.
-            onChange={(e) => setFilters((f) => ({ ...f, country: e.target.value, city: "" }))}
-          >
-            <option value="">Any country</option>
-            {meta?.countries.map((c) => (
-              <option key={c.country} value={c.country}>
-                {c.country} ({c.n})
-              </option>
-            ))}
-          </select>
-        </label>
-        {filters.country === "India" && meta && meta.cities.length > 0 && (
+        <div className="filters">
           <label className="field">
-            <span>City</span>
-            <select value={filters.city} onChange={(e) => setFilters((f) => ({ ...f, city: e.target.value }))}>
-              <option value="">Any city</option>
-              {meta.cities.map((c) => (
-                <option key={c.city} value={c.city}>
-                  {c.city} ({c.n})
+            <span>Role</span>
+            <select
+              value={filters.family}
+              onChange={(e) => setFilters((f) => ({ ...f, family: e.target.value as Filters["family"] }))}
+            >
+              <option value="">All roles</option>
+              {(Object.keys(FAMILY_OPTIONS) as Family[]).map((id) => (
+                <option key={id} value={id}>
+                  {FAMILY_OPTIONS[id]}
+                  {meta ? ` (${meta.families[id] ?? 0})` : ""}
                 </option>
               ))}
             </select>
           </label>
-        )}
-        <label className="field">
-          <span>Work mode</span>
-          <select
-            value={filters.location}
-            onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value as Filters["location"] }))}
-          >
-            <option value="">Any</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">Onsite</option>
-          </select>
-        </label>
-        <label className="field field--check">
-          <input
-            type="checkbox"
-            checked={filters.includeIneligible}
-            onChange={(e) => setFilters((f) => ({ ...f, includeIneligible: e.target.checked }))}
-          />
-          <span>Include roles outside my locations</span>
-        </label>
+          <label className="field">
+            <span>Company</span>
+            <select value={filters.company} onChange={(e) => setFilters((f) => ({ ...f, company: e.target.value }))}>
+              <option value="">All companies</option>
+              {meta?.companies.map((c) => (
+                <option key={c.company} value={c.company}>
+                  {c.company} ({c.n})
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>Country</span>
+            <select
+              value={filters.country}
+              // A city belongs to one country, so changing country clears it.
+              onChange={(e) => setFilters((f) => ({ ...f, country: e.target.value, city: "" }))}
+            >
+              <option value="">Any country</option>
+              {meta?.countries.map((c) => (
+                <option key={c.country} value={c.country}>
+                  {c.country} ({c.n})
+                </option>
+              ))}
+            </select>
+          </label>
+          {filters.country === "India" && meta && meta.cities.length > 0 && (
+            <label className="field">
+              <span>City</span>
+              <select value={filters.city} onChange={(e) => setFilters((f) => ({ ...f, city: e.target.value }))}>
+                <option value="">Any city</option>
+                {meta.cities.map((c) => (
+                  <option key={c.city} value={c.city}>
+                    {c.city} ({c.n})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <label className="field">
+            <span>Work mode</span>
+            <select
+              value={filters.location}
+              onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value as Filters["location"] }))}
+            >
+              <option value="">Any</option>
+              <option value="remote">Remote</option>
+              <option value="hybrid">Hybrid</option>
+              <option value="onsite">Onsite</option>
+            </select>
+          </label>
+          <label className="field field--check">
+            <input
+              type="checkbox"
+              checked={filters.includeIneligible}
+              onChange={(e) => setFilters((f) => ({ ...f, includeIneligible: e.target.checked }))}
+            />
+            <span>Include roles outside my locations</span>
+          </label>
+        </div>
       </form>
 
       <main>
@@ -207,9 +207,9 @@ export function App() {
         {!error && !loading && jobs.length === 0 && (
           <p className="notice">{filtered ? "No roles match these filters. Clear the search, or pick another company, country or city." : view.empty}</p>
         )}
-        <ol className="jobs" aria-busy={loading}>
+        <ol className="cards" aria-busy={loading}>
           {jobs.map((job) => (
-            <JobRow key={job.id} job={job} open={openId === job.id} onToggle={() => setOpenId(openId === job.id ? null : job.id)} />
+            <JobCard key={job.id} job={job} open={openId === job.id} onToggle={() => setOpenId(openId === job.id ? null : job.id)} />
           ))}
         </ol>
         {loading && <p className="notice">Loading roles…</p>}

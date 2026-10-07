@@ -8,7 +8,7 @@ interface Props {
   onToggle: () => void;
 }
 
-export function JobRow({ job, open, onToggle }: Props) {
+export function JobCard({ job, open, onToggle }: Props) {
   const [detail, setDetail] = useState<JobDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,56 +25,60 @@ export function JobRow({ job, open, onToggle }: Props) {
   const panelId = `detail-${job.id}`;
 
   return (
-    <li className={`job job--${job.level}`}>
-      <div className="job__main">
-        <h2 className="job__title">
-          <button className="job__toggle" aria-expanded={open} aria-controls={panelId} onClick={onToggle}>
-            {job.title}
-          </button>
-        </h2>
-
-        <p className="job__meta">
-          <span className="job__company">{job.company}</span>
-          <span>{locationLine(job)}</span>
-          {job.role_family && <span>{FAMILY_LABEL[job.role_family]}</span>}
-          <span title={job.first_seen_at}>Seen {timeAgo(job.first_seen_at)}</span>
-        </p>
-
-        {job.highlight ? (
-          <p className="job__evidence">
-            <span className="job__evidence-label">{kindLabel(job.highlight)}</span>
-            <span className="job__evidence-text">
-              <mark>{cleanSnippet(job.highlight.text)}</mark>
-            </span>
-          </p>
-        ) : (
-          <p className="job__evidence job__evidence--none">{reasonText(job.level, job.level_reason)}</p>
-        )}
+    <li className={`card job--${job.level}${open ? " card--open" : ""}`}>
+      <div className="card__top">
+        <span className="card__level">{levelLabel(job.level)}</span>
+        <span className="card__conf">{Math.round(job.level_confidence * 100)}% sure</span>
       </div>
 
-      <div className="job__badge" aria-label={`${job.level}, confidence ${Math.round(job.level_confidence * 100)}%`}>
-        <span className="job__level">{levelLabel(job.level)}</span>
-        <span className="job__conf">{Math.round(job.level_confidence * 100)}% sure</span>
-        {exp && <span className="job__exp">{exp}</span>}
-        {job.batch_years.length > 0 && <span className="job__exp">Batch {job.batch_years.join(", ")}</span>}
-        <a className="job__apply" href={job.url} target="_blank" rel="noopener noreferrer">
+      <h2 className="card__title">{job.title}</h2>
+      <p className="card__company">
+        {job.company}
+        <span className="card__location"> · {locationLine(job)}</span>
+      </p>
+
+      <ul className="card__tags" aria-label="Details">
+        {job.role_family && <li>{FAMILY_LABEL[job.role_family]}</li>}
+        {exp && <li>{exp}</li>}
+        {job.batch_years.length > 0 && <li>Batch {job.batch_years.join(", ")}</li>}
+      </ul>
+
+      {job.highlight ? (
+        <p className="card__evidence">
+          <span className="card__evidence-label">{kindLabel(job.highlight)}</span>
+          <span className="card__evidence-text">
+            <mark>{cleanSnippet(job.highlight.text)}</mark>
+          </span>
+        </p>
+      ) : (
+        <p className="card__evidence card__evidence--none">{reasonText(job.level, job.level_reason)}</p>
+      )}
+
+      <div className="card__footer">
+        <span className="card__seen" title={job.first_seen_at}>
+          Seen {timeAgo(job.first_seen_at)}
+        </span>
+        <button className="card__details" aria-expanded={open} aria-controls={panelId} onClick={onToggle}>
+          {open ? "Hide details" : "Details"}
+        </button>
+        <a className="card__apply" href={job.url} target="_blank" rel="noopener noreferrer">
           Apply<span className="visually-hidden"> to {job.title} at {job.company}</span>
         </a>
       </div>
 
       {open && (
-        <div className="job__detail" id={panelId}>
+        <div className="card__detail" id={panelId}>
           {error && <p className="notice notice--error">Couldn't load this job: {error}.</p>}
           {!detail && !error && <p className="notice">Loading details…</p>}
           {detail && (
             <>
               <section>
                 <h3>Why it's labelled {job.level}</h3>
-                <p className="job__reason">{reasonText(job.level, detail.level_reason)}</p>
+                <p className="detail__reason">{reasonText(job.level, detail.level_reason)}</p>
                 <ul className="evidence-list">
                   {detail.evidence.level.map((e, i) => (
                     <li key={i}>
-                      <span className="job__evidence-label">{kindLabel(e)}</span>
+                      <span className="card__evidence-label">{kindLabel(e)}</span>
                       <mark>{cleanSnippet(e.snippet)}</mark>
                     </li>
                   ))}
@@ -82,13 +86,13 @@ export function JobRow({ job, open, onToggle }: Props) {
               </section>
               <section>
                 <h3>Why it's a role for you</h3>
-                <p className="job__reason">{detail.role_reason}</p>
+                <p className="detail__reason">{detail.role_reason}</p>
                 <ul className="evidence-list">
                   {detail.evidence.role
                     .filter((e) => e.kind !== "title")
                     .map((e, i) => (
                       <li key={i}>
-                        <span className="job__evidence-label">{kindLabel(e)}</span>
+                        <span className="card__evidence-label">{kindLabel(e)}</span>
                         <mark>{cleanSnippet(e.snippet)}</mark>
                       </li>
                     ))}
@@ -96,7 +100,7 @@ export function JobRow({ job, open, onToggle }: Props) {
               </section>
               <section>
                 <h3>Description</h3>
-                <div className="job__description">{detail.description_text}</div>
+                <div className="detail__description">{detail.description_text}</div>
               </section>
             </>
           )}
