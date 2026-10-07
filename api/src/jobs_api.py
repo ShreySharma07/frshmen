@@ -94,6 +94,12 @@ def create_app() -> FastAPI:
     @app.get("/api/jobs")
     async def list_jobs(
         view: Literal["fresher", "maybe", "new", "all"] = "fresher",
+        # Newer, independent filters; when given they replace `view`.
+        level: Literal["fresher", "maybe", "any"] | None = None,
+        # Experience bucket from the page: "fresher", "0-1".."0-5" (fresher, or a stated minimum within
+        # that many years), "unstated" (no number in the posting), or "all". Replaces `level` when given.
+        experience: Literal["fresher", "0-1", "0-2", "0-3", "0-5", "unstated", "all"] | None = None,
+        posted: Literal["any", "24h"] | None = None,
         role: Literal["target", "all"] = "target",
         q: str | None = Query(None, max_length=100),
         company: str | None = None,
@@ -116,12 +122,27 @@ def create_app() -> FastAPI:
             fams = FAMILIES[family]
             where.append(f"role_family IN ({', '.join('?' * len(fams))})")
             params += list(fams)
-        if view in ("fresher", "maybe"):
+        if level is None and posted is None:
+            # Legacy `view`: "new" was fresher + maybe seen in the last 24 hours.
+            level = {"fresher": "fresher", "maybe": "maybe", "new": "any"}.get(view)
+            posted = "24h" if view == "new" else "any"
+        if experience is not None:
+            level = None
+            if experience == "fresher":
+                where.append("level = 'fresher'")
+            elif experience == "unstated":
+                where.append("level != 'fresher' AND yoe_min IS NULL")
+            elif experience.startswith("0-"):
+                where.append("(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= ?))")
+                params.append(int(experience[2:]))
+        if level in ("fresher", "maybe"):
             where.append("level = ?")
-            params.append(view)
-        elif view == "new":
+            params.append(level)
+        elif level == "any":
+            where.append("level IN ('fresher', 'maybe')")
+        if posted == "24h":
             # "New" means new to us (first_seen_at); many sources have no reliable post date.
-            where.append("level IN ('fresher', 'maybe') AND first_seen_at >= ?")
+            where.append("first_seen_at >= ?")
             params.append(_since(24))
         if company:
             where.append("company = ?")
