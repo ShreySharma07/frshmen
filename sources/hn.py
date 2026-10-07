@@ -28,10 +28,16 @@ def item_url(item_id: Any) -> str:
     return f"https://hn.algolia.com/api/v1/items/{item_id}"
 
 
-def latest_thread(http: HttpClient) -> dict[str, Any] | None:
+def recent_threads(http: HttpClient, count: int = 1) -> list[dict[str, Any]]:
+    """The newest `count` "Who is hiring?" threads, newest first, with their comments."""
     hits = (http.get_json(SEARCH_URL) or {}).get("hits") or []
-    thread = next((h for h in hits if (h.get("title") or "").startswith(THREAD_TITLE)), None)
-    return http.get_json(item_url(thread["objectID"])) if thread else None
+    threads = [h for h in hits if (h.get("title") or "").startswith(THREAD_TITLE)][:count]
+    return [t for t in (http.get_json(item_url(h["objectID"])) for h in threads) if t]
+
+
+def latest_thread(http: HttpClient) -> dict[str, Any] | None:
+    threads = recent_threads(http)
+    return threads[0] if threads else None
 
 
 def list_titles(http: HttpClient, slug: str) -> list[str] | None:
@@ -51,6 +57,11 @@ def header_parts(text: str) -> list[str]:
     return parts if len(parts) >= 2 else []
 
 
+def company_name(parts: list[str]) -> str:
+    # "Acme AI (https://acme.ai)" -> "Acme AI": drop bracketed asides first, then bare links.
+    return _URL.sub("", re.sub(r"\s*\(.*?\)", "", parts[0])).strip() or parts[0]
+
+
 def parse(payload: Any, company: Company) -> list[Job]:
     if not isinstance(payload, dict):
         return []
@@ -60,8 +71,7 @@ def parse(payload: Any, company: Company) -> list[Job]:
         parts = header_parts(text)
         if not text or not parts:
             continue  # deleted, or a reply-style comment rather than a job post
-        # "Acme AI (https://acme.ai)" -> "Acme AI": drop bracketed asides first, then bare links.
-        name = _URL.sub("", re.sub(r"\s*\(.*?\)", "", parts[0])).strip() or parts[0]
+        name = company_name(parts)
         rest = [p for p in parts[1:] if not _URL.fullmatch(p)]
         title = next((p for p in rest if _ROLE.search(p)), rest[0] if rest else "")
         if not title:
