@@ -124,3 +124,61 @@ def test_run_respects_the_call_cap():
 @pytest.mark.parametrize("posted,expected", [(None, True), ("2026-09-10T00:00:00Z", True), ("2026-09-01T00:00:00Z", False)])
 def test_shown_uses_the_page_age_window(posted, expected):
     assert llm_review.shown(record(posted_at=posted), NOW) is expected
+
+
+def test_failed_calls_are_not_cached_and_stop_after_a_streak():
+    recs = [record(id=i, content_hash=i) for i in "abcde"]
+    fail = llm_review.CallFailed("HTTP 500")
+    model, cache = FakeModel(fail, fail, fail), {}
+    out, stats = llm_review.run(recs, model, cache, max_calls=10, now=NOW)
+    assert stats["failed"] == llm_review.MAX_FAILURES and stats["asked"] == 0
+    assert cache == {} and out == recs  # retried next run, labels untouched
+
+
+class FakeResponse:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def read(self):
+        return json.dumps(self.payload).encode()
+
+
+def test_gemini_call_falls_back_to_the_next_model_on_404(monkeypatch):
+    import io
+    import urllib.error
+
+    seen = []
+
+    def fake_urlopen(req, timeout):
+        seen.append(req.full_url)
+        assert "key=" not in req.full_url and req.get_header("X-goog-api-key") == "k"
+        if "old-model" in req.full_url:
+            raise urllib.error.HTTPError(req.full_url, 404, "Not Found", {},
+                                         io.BytesIO(b'{"error": {"message": "model not found"}}'))
+        return FakeResponse({"candidates": [{"content": {"parts": [{"text": "{}"}]}}]})
+
+    monkeypatch.setattr(llm_review.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(llm_review, "PACE_SECONDS", 0)
+    call = llm_review.gemini_call("k", ["old-model", "new-model"])
+    assert call("p", {}) == "{}" and call("p", {}) == "{}"
+    assert [u.split("/models/")[1].split(":")[0] for u in seen] == ["old-model", "new-model", "new-model"]
+    assert call.models == ["new-model"]
+
+
+def test_gemini_call_with_no_model_left_stops_the_run(monkeypatch):
+    import io
+    import urllib.error
+
+    def fake_urlopen(req, timeout):
+        raise urllib.error.HTTPError(req.full_url, 404, "Not Found", {}, io.BytesIO(b"{}"))
+
+    monkeypatch.setattr(llm_review.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(llm_review, "PACE_SECONDS", 0)
+    with pytest.raises(llm_review.QuotaExhausted):
+        llm_review.gemini_call("k", ["a", "b"])("p", {})
