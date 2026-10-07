@@ -2,10 +2,10 @@
 #
 # Fields:
 #   name      display name
-#   category  lab | infra | applied | devtools | robotics | india | mnc | yc
+#   category  lab | infra | applied | devtools | robotics | india | mnc | yc | community
 #   hq        in | us | eu | uk | ca | global   (pruning hint only; job location is read per posting)
 #   ats       greenhouse | lever | ashby | workable | smartrecruiters   (guess until verified)
-#             | workday | darwinbox | keka | zoho_recruit | amazon | eightfold   (set by hand, never guessed)
+#             | workday | darwinbox | keka | zoho_recruit | amazon | eightfold | hn   (set by hand, never guessed)
 #   india_only  true on big global boards: only India and remote roles are fetched
 #   slug      board token on that ATS (guess until verified). Careers-site systems:
 #             workday "tenant/wdN/site", darwinbox subdomain or full host, keka "sub[/portal-guid]",
@@ -365,6 +365,9 @@ companies:
   - {name: NetApp, category: mnc, hq: us, ats: eightfold, slug: netapp.eightfold.ai/netapp.com, india_only: true, verified: true, jobs: 20, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Netflix, category: mnc, hq: us, ats: eightfold, slug: explore.jobs.netflix.net/netflix.com, india_only: true, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Amazon, category: mnc, hq: us, ats: amazon, slug: IND, india_only: true, verified: true, jobs: 2294, ai_jobs: 153, checked: '2026-10-06'}
+
+  # --- Community hiring threads (one entry covers every company posting there) ---
+  - {name: HN Who is hiring, category: community, hq: global, ats: hn, slug: whoishiring, verified: false}
 
   # --- YC AI startups imported from yc-oss on 2026-10-06 (scripts/import_yc.py) ---
   - {name: Hub, category: yc, hq: us, ats: ashby, slug: hub, verified: false, checked: '2026-10-06'}
