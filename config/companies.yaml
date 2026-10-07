@@ -367,7 +367,7 @@ companies:
   - {name: Amazon, category: mnc, hq: us, ats: amazon, slug: IND, india_only: true, verified: true, jobs: 2294, ai_jobs: 153, checked: '2026-10-06'}
 
   # --- Community hiring threads (one entry covers every company posting there) ---
-  - {name: HN Who is hiring, category: community, hq: global, ats: hn, slug: whoishiring, verified: false}
+  - {name: HN Who is hiring, category: community, hq: global, ats: hn, slug: whoishiring, verified: true, jobs: 211, ai_jobs: 41, checked: '2026-10-07'}
 
   # --- YC AI startups imported from yc-oss on 2026-10-06 (scripts/import_yc.py) ---
   - {name: Hub, category: yc, hq: us, ats: ashby, slug: hub, verified: false, checked: '2026-10-06'}
