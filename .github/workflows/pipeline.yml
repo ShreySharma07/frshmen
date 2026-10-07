@@ -1,7 +1,7 @@
 name: Fetch and publish jobs
 
 # fetch -> classify -> publish changed rows to D1, every 3 hours (docs/decisions.md).
-# Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+# Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID; GEMINI_API_KEY is optional.
 on:
   schedule:
     # Minute 17, not 0: GitHub delays on-the-hour cron runs the most.
@@ -44,8 +44,22 @@ jobs:
           key: http-cache-${{ github.run_id }}
           restore-keys: http-cache-
 
+      # Gemini verdicts per posting (content_hash), so each job costs one request ever.
+      - uses: actions/cache@v4
+        with:
+          path: .cache/llm
+          key: llm-cache-${{ github.run_id }}
+          restore-keys: llm-cache-
+
       - name: Fetch and classify
         run: python -u scripts/fetch_jobs.py
+
+      # Second opinion on `maybe` jobs (docs/decisions.md). Without the secret it only
+      # re-applies cached verdicts, and the rules' labels stand.
+      - name: LLM review of maybe jobs
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -u scripts/llm_review.py
 
       - name: Publish to D1
         run: python -u scripts/publish_d1.py --d1 frshmen

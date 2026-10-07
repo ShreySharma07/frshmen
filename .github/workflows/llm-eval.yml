@@ -1,0 +1,40 @@
+name: LLM eval
+
+# Rules + Gemini on the labeled postings; fails if fresher precision drops below 100%.
+# Run it before trusting a prompt or model change (docs/decisions.md).
+on:
+  pull_request:
+    paths:
+      - extract/**
+      - scripts/llm_review.py
+      - scripts/eval_llm.py
+      - tests/fixtures/labeled/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Evaluate
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "::warning::GEMINI_API_KEY secret not set; LLM eval skipped."
+            exit 0
+          fi
+          set -o pipefail
+          python -u scripts/eval_llm.py | tee -a "$GITHUB_STEP_SUMMARY"

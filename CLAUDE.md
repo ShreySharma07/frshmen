@@ -40,7 +40,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows)
 - Backend API: FastAPI on Cloudflare Python Workers, D1 binding
 - Frontend: React (Vite + TypeScript), served by the same Worker via Workers Static Assets
-- LLM fallback: none yet (rules-only); revisit at build step 5
+- LLM fallback: Gemini 2.5 Flash-Lite (free tier) for shown `maybe` jobs only, quote-verified and cached (`extract/llm.py`, `scripts/llm_review.py`); gated by `scripts/eval_llm.py`
 - Companies: curated list in `config/companies.yaml`, plus hiring YC AI startups imported from the yc-oss dataset (`scripts/import_yc.py`); only verified boards are fetched
 - Any change to the above is a new decision: present options, let Shrey choose, log it.
 
