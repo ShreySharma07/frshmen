@@ -4,6 +4,10 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-07 — Gemini model name, and failed calls
+- **Found:** with the key added, every call to `gemini-2.5-flash-lite` answered HTTP 404. The model is still listed, but its Cloud retirement is 2026-10-20 and Google no longer serves it to this key. The first eval reported a false 100%, because unanswered calls counted as "no usable answer". The pipeline would also have cached those failures and never asked again.
+- **Fix:** try `gemini-3.5-flash-lite`, then `gemini-3.1-flash-lite`, then `gemini-2.5-flash-lite`, moving on at each 404 (`GEMINI_MODEL` overrides the list). Still the Flash-Lite tier Shrey chose, so the free-tier limits above apply; check AI Studio's rate-limit page for the exact numbers per model. Failed calls are never cached. Three failures in a row stop that run's reviews. The eval now fails unless every call gets an answer.
+
 ## 2026-10-07 — LLM second opinion for `maybe` jobs (build step 5)
 - **Options:** Gemini 2.5 Flash-Lite free tier · Groq Llama 3.3 70B free tier · both, with Groq as backup
 - **Choice (Shrey):** Gemini. Replaces "rules-only for now" (2026-10-05).
