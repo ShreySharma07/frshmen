@@ -1,36 +1,35 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchJobs, fetchMeta, type Family, type Filters, type JobSummary, type Meta, type View } from "./api";
+import { fetchJobs, fetchMeta, type Family, type Filters, type JobSummary, type Experience, type Meta } from "./api";
 import { JobCard } from "./JobCard";
 import { timeAgo } from "./format";
 
-const VIEWS: { id: View; label: string; empty: string }[] = [
-  {
-    id: "fresher",
-    label: "Fresher",
-    empty: "No fresher roles match right now. Maybe has roles that state no experience requirement.",
-  },
-  {
-    id: "maybe",
-    label: "Maybe",
-    empty: "Nothing here. Maybe holds roles with no stated experience or a 1–2 year ask.",
-  },
-  {
-    id: "new",
-    label: "New today",
-    empty: "No new fresher or maybe roles in the last 24 hours.",
-  },
+// "0–N yrs" = fresher roles plus any role whose stated minimum is within N years.
+const EXPERIENCE: { id: Experience; label: string }[] = [
+  { id: "fresher", label: "Fresher" },
+  { id: "0-1", label: "0–1 yrs" },
+  { id: "0-2", label: "0–2 yrs" },
+  { id: "0-3", label: "0–3 yrs" },
+  { id: "0-5", label: "0–5 yrs" },
+  { id: "unstated", label: "Not stated" },
+  { id: "all", label: "All levels" },
 ];
+const EXPERIENCE_IDS = EXPERIENCE.map((x) => x.id) as string[];
 
 // Plain SWE roles that passed the Python + AI/ML check are grouped under AI / ML by the API.
 const FAMILY_OPTIONS: Record<Family, string> = { ai_ml: "AI / ML", backend: "Python backend", mobile: "Android / React Native" };
 
-const initialView = (): View => {
-  const v = new URLSearchParams(location.search).get("view");
-  return v === "maybe" || v === "new" ? v : "fresher";
+// Old links used ?view=fresher|maybe|new or ?level=; they still open sensible filters.
+const initialFilters = (): Pick<Filters, "experience" | "posted"> => {
+  const params = new URLSearchParams(location.search);
+  const view = params.get("view");
+  const posted = params.get("posted") === "24h" || view === "new" ? "24h" : "any";
+  const exp = params.get("experience");
+  if (exp && EXPERIENCE_IDS.includes(exp)) return { experience: exp as Experience, posted };
+  return { experience: view === "maybe" || view === "new" ? "0-2" : "fresher", posted };
 };
 
 export function App() {
-  const [filters, setFilters] = useState<Filters>({ view: initialView(), q: "", company: "", country: "", city: "", family: "", includeIneligible: false, location: "" });
+  const [filters, setFilters] = useState<Filters>({ ...initialFilters(), q: "", company: "", country: "", city: "", family: "", includeIneligible: false, location: "" });
   const [query, setQuery] = useState("");
   const [jobs, setJobs] = useState<JobSummary[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -63,7 +62,10 @@ export function App() {
       .catch((e: Error) => e.name !== "AbortError" && setError(e.message))
       .finally(() => !ctrl.signal.aborted && setLoading(false));
     const url = new URL(location.href);
-    url.searchParams.set("view", filters.view);
+    url.searchParams.delete("view");
+    url.searchParams.delete("level");
+    url.searchParams.set("experience", filters.experience);
+    url.searchParams.set("posted", filters.posted);
     history.replaceState(null, "", url);
     return () => ctrl.abort();
   }, [filters]);
@@ -79,8 +81,7 @@ export function App() {
       .finally(() => setLoading(false));
   }, [filters, jobs.length]);
 
-  const view = VIEWS.find((v) => v.id === filters.view)!;
-  const filtered = Boolean(filters.q || filters.company || filters.country || filters.city || filters.family || filters.location);
+    const filtered = Boolean(filters.q || filters.company || filters.country || filters.city || filters.family || filters.location || filters.posted !== "any");
 
   return (
     <div className="page">
@@ -99,25 +100,24 @@ export function App() {
           <span className="visually-hidden">Search titles and companies</span>
           <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search titles and companies, e.g. LLM, Sarvam" />
         </label>
-        <div className="segmented" role="group" aria-label="Job views">
-          {VIEWS.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              className="segmented__option"
-              aria-pressed={filters.view === v.id}
-              onClick={() => {
+        <div className="filters">
+          <label className="field">
+            <span>Experience</span>
+            <select
+              value={filters.experience}
+              onChange={(e) => {
                 setOpenId(null);
-                setFilters((f) => ({ ...f, view: v.id }));
+                setFilters((f) => ({ ...f, experience: e.target.value as Experience }));
               }}
             >
-              {v.label}
-              {meta && <span className="segmented__count">{meta.counts[v.id]}</span>}
-            </button>
-          ))}
-        </div>
-
-        <div className="filters">
+              {EXPERIENCE.map((x) => (
+                <option key={x.id} value={x.id}>
+                  {x.label}
+                  {meta && x.id === "fresher" ? ` (${meta.counts.fresher})` : ""}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="field">
             <span>Role</span>
             <select
@@ -184,6 +184,16 @@ export function App() {
               <option value="onsite">Onsite</option>
             </select>
           </label>
+          <label className="field">
+            <span>Posted</span>
+            <select
+              value={filters.posted}
+              onChange={(e) => setFilters((f) => ({ ...f, posted: e.target.value as Filters["posted"] }))}
+            >
+              <option value="any">Any time</option>
+              <option value="24h">New in the last 24 hours{meta ? ` (${meta.counts.new})` : ""}</option>
+            </select>
+          </label>
           <label className="field field--check">
             <input
               type="checkbox"
@@ -205,7 +215,9 @@ export function App() {
           </div>
         )}
         {!error && !loading && jobs.length === 0 && (
-          <p className="notice">{filtered ? "No roles match these filters. Clear the search, or pick another company, country or city." : view.empty}</p>
+          <p className="notice">{filtered ? "No roles match these filters. Clear the search, or pick another company, country or city." : filters.experience === "fresher"
+              ? "No fresher roles match right now. Try 0–1 or 0–2 yrs."
+              : "No roles match this experience range right now."}</p>
         )}
         <ol className="cards" aria-busy={loading}>
           {jobs.map((job) => (

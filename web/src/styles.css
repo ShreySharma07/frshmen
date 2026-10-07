@@ -145,39 +145,6 @@ body {
   color: var(--ink-muted);
 }
 
-.segmented {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 4px;
-  background: var(--paper);
-  border-radius: 10px;
-  justify-self: start;
-}
-
-.segmented__option {
-  font: 700 var(--step-0) / 1 var(--font-display);
-  color: var(--ink-muted);
-  background: none;
-  border: 0;
-  border-radius: 7px;
-  padding: 9px 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.segmented__option[aria-pressed="true"] {
-  color: var(--ink);
-  background: var(--surface);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-}
-
-.segmented__count {
-  font: 400 var(--step--1) var(--font-body);
-  margin-left: 6px;
-  color: var(--ink-muted);
-}
-
 .filters {
   display: flex;
   flex-wrap: wrap;
