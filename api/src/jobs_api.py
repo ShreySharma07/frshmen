@@ -34,6 +34,12 @@ JSON_COLUMNS = ("countries", "cities", "batch_years", "evidence", "skills")
 FAMILIES = {"ai_ml": ("ai_ml", "generic_swe"), "backend": ("backend",), "mobile": ("mobile",)}
 # Every view shows only roles whose location fits the profile, unless asked otherwise.
 ELIGIBLE = "eligible = 1"
+# Postings older than this are hidden when the source gives a posting date (docs/decisions.md);
+# jobs without one stay, since nothing says they're old.
+MAX_POST_AGE_DAYS = 30
+FRESH = "(posted_at IS NULL OR posted_at >= ?)"
+# What every page count and list starts from: open target roles that fit the profile and aren't stale.
+SHOWN = f"status = 'open' AND role_match = 1 AND {ELIGIBLE} AND {FRESH}"
 # D1 rejects LIKE patterns over 50 bytes.
 MAX_QUERY_CHARS = 40
 
@@ -112,8 +118,8 @@ def create_app() -> FastAPI:
         offset: int = Query(0, ge=0, le=5000),
         db: Database = Depends(get_db),
     ) -> dict[str, Any]:
-        where = ["status = 'open'"]
-        params: list[Any] = []
+        where = ["status = 'open'", FRESH]
+        params: list[Any] = [_since(MAX_POST_AGE_DAYS * 24)]
         if role == "target":
             where.append("role_match = 1")
         if not include_ineligible:
@@ -162,7 +168,8 @@ def create_app() -> FastAPI:
             where.append("(title LIKE ? OR company LIKE ?)")
             params += [pattern, pattern]
         sql = (f"SELECT {LIST_COLUMNS} FROM jobs WHERE {' AND '.join(where)} "
-               "ORDER BY first_seen_at DESC, id LIMIT ? OFFSET ?")
+               # Newest posting first; first-seen time stands in where the source gives no date.
+               "ORDER BY COALESCE(posted_at, first_seen_at) DESC, id LIMIT ? OFFSET ?")
         rows = await db.all(sql, [*params, limit + 1, offset])
         return {
             "jobs": [_summary(r) for r in rows[:limit]],
@@ -180,31 +187,23 @@ def create_app() -> FastAPI:
 
     @app.get("/api/meta")
     async def meta(db: Database = Depends(get_db)) -> dict[str, Any]:
-        counts = await db.all(
-            "SELECT level, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 AND eligible = 1 GROUP BY level"
-        )
-        new = await db.all(
-            "SELECT COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 AND eligible = 1 "
-            "AND level IN ('fresher', 'maybe') AND first_seen_at >= ?",
-            [_since(24)],
-        )
+        cutoff = [_since(MAX_POST_AGE_DAYS * 24)]
+        listed = f"{SHOWN} AND level IN ('fresher', 'maybe')"
+        counts = await db.all(f"SELECT level, COUNT(*) AS n FROM jobs WHERE {SHOWN} GROUP BY level", cutoff)
+        new = await db.all(f"SELECT COUNT(*) AS n FROM jobs WHERE {listed} AND first_seen_at >= ?", [*cutoff, _since(24)])
         companies = await db.all(
-            "SELECT company, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 AND eligible = 1 "
-            "AND level IN ('fresher', 'maybe') GROUP BY company ORDER BY company"
+            f"SELECT company, COUNT(*) AS n FROM jobs WHERE {listed} GROUP BY company ORDER BY company", cutoff
         )
         countries = await db.all(
-            "SELECT c.value AS country, COUNT(*) AS n FROM jobs, json_each(jobs.countries) AS c "
-            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.eligible = 1 AND jobs.level IN ('fresher', 'maybe') "
-            "GROUP BY c.value ORDER BY n DESC, c.value"
+            f"SELECT c.value AS country, COUNT(*) AS n FROM jobs, json_each(jobs.countries) AS c WHERE {listed} "
+            "GROUP BY c.value ORDER BY n DESC, c.value", cutoff
         )
         cities = await db.all(
-            "SELECT c.value AS city, COUNT(*) AS n FROM jobs, json_each(jobs.cities) AS c "
-            "WHERE jobs.status = 'open' AND jobs.role_match = 1 AND jobs.eligible = 1 AND jobs.level IN ('fresher', 'maybe') "
-            "GROUP BY c.value ORDER BY n DESC, c.value"
+            f"SELECT c.value AS city, COUNT(*) AS n FROM jobs, json_each(jobs.cities) AS c WHERE {listed} "
+            "GROUP BY c.value ORDER BY n DESC, c.value", cutoff
         )
         families = await db.all(
-            "SELECT role_family AS family, COUNT(*) AS n FROM jobs WHERE status = 'open' AND role_match = 1 "
-            "AND eligible = 1 AND level IN ('fresher', 'maybe') GROUP BY role_family"
+            f"SELECT role_family AS family, COUNT(*) AS n FROM jobs WHERE {listed} GROUP BY role_family", cutoff
         )
         last_run = await db.all("SELECT * FROM runs ORDER BY id DESC LIMIT 1")
         by_level = {r["level"]: r["n"] for r in counts}

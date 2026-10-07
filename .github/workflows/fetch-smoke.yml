@@ -58,6 +58,7 @@ jobs:
               ("Wadhwani AI", "zoho_recruit", "wadhwaniai.zohorecruit.in"),
               ("NVIDIA", "workday", "nvidia/wd5/NVIDIAExternalCareerSite"),  # sitemap stops at 100; search must page
               ("Amazon", "amazon", "IND"),
+              ("HN Who is hiring", "hn", "whoishiring"),
               ("NetApp", "eightfold", "netapp.eightfold.ai/netapp.com"),  # v2 tenant
               ("Qualcomm", "eightfold", "careers.qualcomm.com/qualcomm.com"),  # PCSX tenant
           ]:

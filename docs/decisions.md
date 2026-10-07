@@ -4,6 +4,12 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-07 — Old postings, and hiring outside company boards
+- **Old postings. Options:** hide when posted > 60 days ago and show the date · hide > 30 days · only show the date
+- **Choice (Shrey):** hide postings older than 30 days when the source gives a posting date; undated jobs stay. Lists sort by posting date and cards show "Posted 3 days ago". Before this, a job stayed listed for as long as its company left it on the board.
+- **Other channels. Options:** HN "Who is hiring" (official API) · paste-a-job form · Reddit hiring threads (free app key) · job-alert emails from Gmail. LinkedIn/Indeed/Glassdoor scraping, X (paid API), Wellfound and YC Work at a Startup (no API, ToS) ruled out.
+- **Choice (Shrey):** HN "Who is hiring" only, for now: the latest monthly thread through hn.algolia.com, one job per top-level post using the "Company | Role | Place" header convention.
+
 ## 2026-10-06 — Stay inside D1's daily write limit
 - **What happened:** the 100k rows written/day limit was hit. Each extractor-version bump rewrote all ~14k stored jobs (cities, then visa/eligibility), on top of the first full insert; index updates count too.
 - **Options:** store only target-role jobs (~20x fewer rows) · keep everything and write smarter

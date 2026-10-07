@@ -23,8 +23,9 @@ def records():
     jobs = (greenhouse.parse(json.load(open(FIX + "greenhouse_humeai.json")), Company("Hume AI", "greenhouse", "humeai"))
             + lever.parse(json.load(open(FIX + "lever_cred.json")), Company("CRED", "lever", "cred"))
             + ashby.parse(json.load(open(FIX + "ashby_pinecone.json")), Company("Pinecone", "ashby", "pinecone")))
+    # Fixture postings are months old; age has its own test, so these carry no posting date.
     return [{**j.to_dict(), **classify(j.title, j.description_text).to_dict(),
-             **match_role(j.title, j.description_text, profile).to_dict()} for j in jobs]
+             **match_role(j.title, j.description_text, profile).to_dict(), "posted_at": None} for j in jobs]
 
 
 def iso(dt):
@@ -37,7 +38,7 @@ def client(tmp_path):
     db = pub.SqliteDatabase(path)
     recs = records()
     # A synthetic target fresher, first seen now, plus one seen 3 days ago.
-    fresh = dict(recs[0], id="ashby:acme:new", title="ML Engineer - New Grad", company="Acme", company_slug="acme",
+    fresh = dict(recs[0], posted_at=None, id="ashby:acme:new", title="ML Engineer - New Grad", company="Acme", company_slug="acme",
                  source="ashby", level="fresher", role_match=True, role_family="ai_ml", content_hash="x1",
                  countries=["India"], cities=["Bengaluru", "Pune"])
     old = dict(fresh, id="ashby:acme:old", title="ML Engineer, Fresher", content_hash="x2",
@@ -146,7 +147,7 @@ def test_city_filter_and_meta_cities(client):
 def mixed(tmp_path):
     path = tmp_path / "mixed.db"
     db = pub.SqliteDatabase(path)
-    base = dict(records()[0], source="ashby", company="Acme", company_slug="acme", level="fresher", role_match=True,
+    base = dict(records()[0], posted_at=None, source="ashby", company="Acme", company_slug="acme", level="fresher", role_match=True,
                 countries=["India"], cities=["Pune"])
     rows = [
         dict(base, id="ashby:acme:ml", title="ML Engineer", role_family="ai_ml", content_hash="m1"),
@@ -189,7 +190,7 @@ def test_level_and_posted_filters_replace_view(client):
 def by_yoe(tmp_path):
     path = tmp_path / "yoe.db"
     db = pub.SqliteDatabase(path)
-    base = dict(records()[0], source="ashby", company="Acme", company_slug="acme", role_match=True, role_family="ai_ml",
+    base = dict(records()[0], posted_at=None, source="ashby", company="Acme", company_slug="acme", role_match=True, role_family="ai_ml",
                 countries=["India"], cities=["Pune"])
     rows = [
         dict(base, id="ashby:acme:f", title="Fresher", level="fresher", yoe_min=None, yoe_max=None, content_hash="y1"),
@@ -215,3 +216,24 @@ def by_yoe(tmp_path):
 def test_experience_buckets(by_yoe, bucket, titles):
     got = {j["title"] for j in by_yoe.get(f"/api/jobs?experience={bucket}").json()["jobs"]}
     assert got == titles
+
+
+def test_postings_older_than_30_days_are_hidden_and_newest_posting_sorts_first(tmp_path):
+    path = tmp_path / "age.db"
+    db = pub.SqliteDatabase(path)
+    now = datetime.now(timezone.utc)
+    base = dict(records()[0], source="ashby", company="Acme", company_slug="acme", level="fresher", role_match=True,
+                role_family="ai_ml", countries=["India"], cities=[])
+    rows = [
+        dict(base, id="ashby:acme:old", title="Old", posted_at=iso(now - timedelta(days=45)), content_hash="a1"),
+        dict(base, id="ashby:acme:recent", title="Recent", posted_at=iso(now - timedelta(days=3)), content_hash="a2"),
+        dict(base, id="ashby:acme:newest", title="Newest", posted_at=iso(now - timedelta(hours=2)), content_hash="a3"),
+        dict(base, id="ashby:acme:undated", title="Undated", posted_at=None, content_hash="a4"),
+    ]
+    pub.publish(db, {"jobs": rows, "boards_ok": [], "errors": {}}, now=iso(now - timedelta(days=5)))
+    app = create_app()
+    app.state.db = SqliteDatabase(str(path))
+    c = TestClient(app)
+    titles = [j["title"] for j in c.get("/api/jobs").json()["jobs"]]
+    assert titles == ["Newest", "Recent", "Undated"]  # undated jobs sort by first-seen time (5 days ago)
+    assert c.get("/api/meta").json()["counts"]["fresher"] == 3
