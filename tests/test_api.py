@@ -175,3 +175,43 @@ def test_family_filter_groups_generic_swe_with_ai_ml(mixed):
     mobile = [j["title"] for j in mixed.get("/api/jobs?family=mobile").json()["jobs"]]
     assert ai == {"ML Engineer", "Software Engineer"} and mobile == ["Android Developer"]
     assert mixed.get("/api/meta").json()["families"] == {"ai_ml": 2, "backend": 0, "mobile": 1}
+
+
+def test_level_and_posted_filters_replace_view(client):
+    both = [j["level"] for j in client.get("/api/jobs?level=any").json()["jobs"]]
+    assert set(both) <= {"fresher", "maybe"} and "fresher" in both
+    recent = [j["title"] for j in client.get("/api/jobs?level=fresher&posted=24h").json()["jobs"]]
+    assert recent == ["ML Engineer - New Grad"]  # the 3-day-old fresher is filtered out
+    assert client.get("/api/jobs?view=new").json() == client.get("/api/jobs?level=any&posted=24h").json()
+
+
+@pytest.fixture
+def by_yoe(tmp_path):
+    path = tmp_path / "yoe.db"
+    db = pub.SqliteDatabase(path)
+    base = dict(records()[0], source="ashby", company="Acme", company_slug="acme", role_match=True, role_family="ai_ml",
+                countries=["India"], cities=["Pune"])
+    rows = [
+        dict(base, id="ashby:acme:f", title="Fresher", level="fresher", yoe_min=None, yoe_max=None, content_hash="y1"),
+        dict(base, id="ashby:acme:1", title="One year", level="maybe", yoe_min=1, yoe_max=2, content_hash="y2"),
+        dict(base, id="ashby:acme:2", title="Two years", level="experienced", yoe_min=2, yoe_max=5, content_hash="y3"),
+        dict(base, id="ashby:acme:5", title="Five years", level="experienced", yoe_min=5, yoe_max=None, content_hash="y4"),
+        dict(base, id="ashby:acme:u", title="Unstated", level="maybe", yoe_min=None, yoe_max=None, content_hash="y5"),
+    ]
+    pub.publish(db, {"jobs": rows, "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc)))
+    app = create_app()
+    app.state.db = SqliteDatabase(str(path))
+    return TestClient(app)
+
+
+@pytest.mark.parametrize("bucket,titles", [
+    ("fresher", {"Fresher"}),
+    ("0-1", {"Fresher", "One year"}),
+    ("0-2", {"Fresher", "One year", "Two years"}),
+    ("0-5", {"Fresher", "One year", "Two years", "Five years"}),
+    ("unstated", {"Unstated"}),
+    ("all", {"Fresher", "One year", "Two years", "Five years", "Unstated"}),
+])
+def test_experience_buckets(by_yoe, bucket, titles):
+    got = {j["title"] for j in by_yoe.get(f"/api/jobs?experience={bucket}").json()["jobs"]}
+    assert got == titles

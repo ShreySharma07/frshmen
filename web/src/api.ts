@@ -1,7 +1,8 @@
 // Typed client for the FastAPI backend. Same origin in production; Vite proxies /api in dev.
 
 export type Level = "fresher" | "maybe" | "experienced";
-export type View = "fresher" | "maybe" | "new";
+export type Experience = "fresher" | "0-1" | "0-2" | "0-3" | "0-5" | "unstated" | "all";
+export type Posted = "any" | "24h";
 
 export interface Highlight {
   kind: string;
@@ -61,7 +62,8 @@ export interface Meta {
 export type Family = "ai_ml" | "backend" | "mobile";
 
 export interface Filters {
-  view: View;
+  experience: Experience;
+  posted: Posted;
   q: string;
   company: string;
   country: string;
@@ -80,7 +82,7 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 export function fetchJobs(filters: Filters, offset: number, signal?: AbortSignal): Promise<JobPage> {
-  const params = new URLSearchParams({ view: filters.view, limit: "40", offset: String(offset) });
+  const params = new URLSearchParams({ experience: filters.experience, posted: filters.posted, limit: "40", offset: String(offset) });
   if (filters.q.trim()) params.set("q", filters.q.trim());
   if (filters.company) params.set("company", filters.company);
   if (filters.country) params.set("country", filters.country);
