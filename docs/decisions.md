@@ -4,6 +4,14 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-07 — LLM second opinion for `maybe` jobs (build step 5)
+- **Options:** Gemini 2.5 Flash-Lite free tier · Groq Llama 3.3 70B free tier · both, with Groq as backup
+- **Choice (Shrey):** Gemini. Replaces "rules-only for now" (2026-10-05).
+- **How it's kept precise:** the rules run first, and only `maybe` jobs the page would show go to the model. Its answer must quote the posting verbatim (checked; quotes under 12 characters rejected). A required 2+ years makes the job `experienced`. A stated number fills `yoe_min` for the 0–N filters; the stored minimum is only ever raised. `fresher` is allowed only when the rules found no experience mention at all, and gets confidence 0.6 with the quote as evidence. Explicit requirements found by the rules are never overridden.
+- **Limits (free tier, checked 2026-10-07; Google has cut these before):** about 15 requests/min and 1,000/day. We use at most 100 requests a run (8 runs a day), one every 4.5 s, and stop at the first 429. Verdicts are cached per `content_hash` in the Actions cache, so the ~500-job backlog clears in about 5 runs and later runs ask only about new postings. Free-tier prompts may be used by Google; the postings are public.
+- **Gate:** `scripts/eval_llm.py` (the "LLM eval" workflow) runs rules + Gemini on the labeled postings and fails below 100% fresher precision. The labeled set has only 8 `maybe` cases, so it should grow with real `maybe` postings.
+- **Needs:** a `GEMINI_API_KEY` repo secret, from aistudio.google.com. Without it the pipeline stays rules-only.
+
 ## 2026-10-07 — Indian fintech, e-commerce and consultancies
 - **Asked (Shrey):** more Indian fintech, consultancy (Accenture, Deloitte...), startup and e-commerce companies.
 - **Added (18, on careers systems we already fetch):** BharatPe, Pine Labs, MobiKwik, Go Digit, smallcase, BigBasket, Delhivery, Rapido (Darwinbox); Upstox, Fi (Lever); Dhan (Keka); Myntra (Greenhouse); Tiger Analytics (Workable); Accenture, PwC campus, Genpact, Cognizant (Workday); Publicis Sapient (SmartRecruiters). Global consultancies are `india_only`. Dream11 retried under the `dream11` Lever slug.
