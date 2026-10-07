@@ -25,7 +25,9 @@ const initialFilters = (): Pick<Filters, "experience" | "posted"> => {
   const posted = params.get("posted") === "24h" || view === "new" ? "24h" : "any";
   const exp = params.get("experience");
   if (exp && EXPERIENCE_IDS.includes(exp)) return { experience: exp as Experience, posted };
-  return { experience: view === "maybe" || view === "new" ? "0-2" : "fresher", posted };
+  // Default to every level: many entry-level posts state no years, so the reader picks the range.
+  if (view === "fresher" || params.get("level") === "fresher") return { experience: "fresher", posted };
+  return { experience: view === "maybe" || view === "new" ? "0-2" : "all", posted };
 };
 
 export function App() {
