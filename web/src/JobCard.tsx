@@ -55,8 +55,9 @@ export function JobCard({ job, open, onToggle }: Props) {
       )}
 
       <div className="card__footer">
-        <span className="card__seen" title={job.first_seen_at}>
-          Seen {timeAgo(job.first_seen_at)}
+        {/* The source's posting date when it gives one; otherwise when we first saw the job. */}
+        <span className="card__seen" title={job.posted_at ?? job.first_seen_at}>
+          {job.posted_at ? `Posted ${timeAgo(job.posted_at)}` : `Seen ${timeAgo(job.first_seen_at)}`}
         </span>
         <button className="card__details" aria-expanded={open} aria-controls={panelId} onClick={onToggle}>
           {open ? "Hide details" : "Details"}
