@@ -4,6 +4,12 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-07 — Indian fintech, e-commerce and consultancies
+- **Asked (Shrey):** more Indian fintech, consultancy (Accenture, Deloitte...), startup and e-commerce companies.
+- **Added (18, on careers systems we already fetch):** BharatPe, Pine Labs, MobiKwik, Go Digit, smallcase, BigBasket, Delhivery, Rapido (Darwinbox); Upstox, Fi (Lever); Dhan (Keka); Myntra (Greenhouse); Tiger Analytics (Workable); Accenture, PwC campus, Genpact, Cognizant (Workday); Publicis Sapient (SmartRecruiters). Global consultancies are `india_only`. Dream11 retried under the `dream11` Lever slug.
+- **Left out, unsupported systems:** SuccessFactors (EY, Capgemini, HCLTech, Wipro, Globant), Avature (Deloitte USI, IBM), Oracle HCM (KPMG, EXL), Kula (Cashfree, Acko), TurboHire (Navi, skipped earlier), PeopleStrong (MathCo), MyNextHire (ShareChat), Skima (Nykaa), and custom portals (Infosys, TCS, Flipkart, Zerodha, Juspay, Urban Company, Udaan...). Some only take email or LinkedIn applications. SuccessFactors and Oracle HCM cover the most of these and are worth a separate adapter decision later.
+- **Caveat:** Darwinbox refuses GitHub's runners (403), so those 8 stay unverified until that changes.
+
 ## 2026-10-07 — Discovering companies automatically, and the default view
 - **Discovery sources. Options:** new YC batches (yc-oss) · board links in HN "Who is hiring?" posts · GitHub new-grad lists (e.g. SimplifyJobs)
 - **Choice (Shrey):** new YC batches and HN board links. `scripts/discover_companies.py` collects candidates from both, probes each board live, and keeps only boards with at least one title that could be a target role.
