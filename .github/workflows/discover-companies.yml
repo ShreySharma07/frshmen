@@ -1,0 +1,68 @@
+name: Discover companies
+
+# Weekly: find new companies (new YC startups, board links in HN "Who is hiring?"),
+# verify their boards, and open one PR once 10-20 qualify (docs/decisions.md).
+# Opening the PR needs Settings > Actions > General > "Allow GitHub Actions to create
+# and approve pull requests". PRs opened with GITHUB_TOKEN don't trigger other
+# workflows, so the boards are verified here, before the PR exists.
+on:
+  schedule:
+    - cron: "41 4 * * 1"  # Mondays 04:41 UTC (10:11 IST)
+  workflow_dispatch:
+  # On PRs that change discovery: a dry run, so the real candidate list shows in the log.
+  pull_request:
+    paths:
+      - scripts/discover_companies.py
+      - .github/workflows/discover-companies.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: discover-companies
+  cancel-in-progress: false
+
+env:
+  BRANCH: auto/discovered-companies
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # One batch at a time: while a discovery PR waits for review, don't open another.
+      - name: Check for an open discovery PR
+        id: open
+        if: github.event_name != 'pull_request'
+        run: echo "count=$(gh pr list --head "$BRANCH" --state open --json number --jq length)" >> "$GITHUB_OUTPUT"
+
+      - name: Discover and verify
+        id: discover
+        if: github.event_name == 'pull_request' || steps.open.outputs.count == '0'
+        run: |
+          python -u scripts/discover_companies.py --pr-body "$RUNNER_TEMP/pr-body.md" \
+            ${{ github.event_name == 'pull_request' && '--dry-run' || '' }}
+
+      - name: Open PR
+        if: steps.discover.outputs.ready == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898088+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add config/companies.yaml
+          git commit -m "Add auto-discovered companies"
+          # The branch only ever holds this bot's latest batch, so overwriting it is safe.
+          git push --force -u origin "$BRANCH"
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BRANCH" \
+            --title "Add auto-discovered companies ($(date -u +%F))" --body-file "$RUNNER_TEMP/pr-body.md"
