@@ -7,7 +7,7 @@ Two sources (see docs/decisions.md):
   SmartRecruiters, Workday) inside the last two monthly threads' posts.
 
 Each candidate's board is probed live, and only boards with at least one open title that
-could be a target role are kept. The run is stateless: rejects are simply found and
+names a target role (by the same title rules as extract/role.py) are kept. The run is stateless: rejects are simply found and
 dropped again next time. Nothing is written until at least MIN_BATCH companies qualify,
 so the weekly workflow opens one PR per 10-20 companies instead of a trickle.
 
@@ -36,7 +36,8 @@ import import_yc  # noqa: E402
 from verify_companies import AI_TITLE, find_board, format_line  # noqa: E402
 from sources import hn  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
-from sources.prefilter import could_be_target  # noqa: E402
+from extract.profile import load_profile  # noqa: E402
+from extract.role import match_role  # noqa: E402
 
 COMPANIES = ROOT / "config" / "companies.yaml"
 MIN_BATCH = 10
@@ -63,6 +64,18 @@ def norm(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
 
+def title_fits(title: str) -> bool:
+    """Does a title alone name a target role? Families that need the description to
+    confirm (Python backend, Android stack) count; plain "Software Engineer" doesn't,
+    or every tech company would qualify."""
+    m = match_role(title, "", load_profile())
+    return m.is_target or m.family in {"backend", "mobile"}
+
+
+def pretty_slug(slug: str) -> str:
+    return re.sub(r"[-_.]+", " ", slug.split("/")[0]).strip().title()
+
+
 def board_links(text: str) -> list[tuple[str, str]]:
     """(ats, slug) for every supported board linked in a post, in order of appearance."""
     text = html.unescape(text or "")
@@ -85,7 +98,11 @@ def hn_candidates(threads: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
             if not parts or not links:
                 continue
             ats, slug = links[0]  # a post's first board link is its own; later ones are rare asides
-            out.append({"name": hn.company_name(parts)[:80], "category": "hn", "hq": "global",
+            name = hn.company_name(parts)[:80]
+            # Some headers lead with a place or "Remote"; trust the name only if the board agrees.
+            if norm(name) not in norm(slug) and norm(slug) not in norm(name):
+                name = pretty_slug(slug)
+            out.append({"name": name, "category": "hn", "hq": "global",
                         "ats": ats, "slug": slug})
     return out
 
@@ -116,7 +133,7 @@ def qualify(http: HttpClient, candidate: dict[str, Any], today: str) -> dict[str
     except FetchError as e:
         print(f"  {candidate['name']}: no answer ({e})", file=sys.stderr, flush=True)
         return None
-    if board is None or not any(could_be_target(t) for t in board.titles):
+    if board is None or not any(title_fits(t) for t in board.titles):
         return None
     return dict(candidate, ats=board.ats, slug=board.slug, verified=True, jobs=len(board.titles),
                 ai_jobs=sum(bool(AI_TITLE.search(t)) for t in board.titles), checked=today)

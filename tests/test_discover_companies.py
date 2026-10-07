@@ -75,3 +75,17 @@ def test_yc_candidates_leave_verification_to_the_probe():
     data = [{"name": "Neo", "slug": "neo", "tags": ["AI"], "batch": "Fall 2026", "team_size": 12,
              "regions": ["India"], "status": "Active", "isHiring": True}]
     assert dc.yc_candidates(data, []) == [{"name": "Neo", "category": "yc", "hq": "in", "ats": "ashby", "slug": "neo"}]
+
+
+def test_title_fits_uses_the_role_title_rules():
+    assert dc.title_fits("Machine Learning Engineer")
+    assert dc.title_fits("Android Developer")
+    assert dc.title_fits("Backend Engineer (Python)")
+    assert not dc.title_fits("Software Engineer")  # needs a description to qualify
+    assert not dc.title_fits("Propulsion Engineer")
+    assert not dc.title_fits("Account Executive")
+
+
+def test_hn_header_name_falls_back_to_the_board_slug():
+    thread = {"children": [post(1, "NYC | Founding Engineer | Onsite<p>https://jobs.ashbyhq.com/norm-ai")]}
+    assert dc.hn_candidates([thread])[0]["name"] == "Norm Ai"
