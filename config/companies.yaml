@@ -195,7 +195,7 @@ companies:
   - {name: InMobi, category: india, hq: in, ats: greenhouse, slug: inmobi, verified: true, jobs: 72, ai_jobs: 9}
   - {name: Glance, category: india, hq: in, ats: greenhouse, slug: glance, verified: true, jobs: 37, ai_jobs: 7}
   - {name: ShareChat, category: india, hq: in, ats: lever, slug: sharechat, verified: false, checked: '2026-10-06'}
-  - {name: Dream11, category: india, hq: in, ats: lever, slug: dreamsports, verified: false, checked: '2026-10-06'}
+  - {name: Dream11, category: india, hq: in, ats: lever, slug: dream11, verified: false, checked: '2026-10-07'}
   - {name: Unacademy, category: india, hq: in, ats: smartrecruiters, slug: unacademy, verified: true, jobs: 3, ai_jobs: 0}
   - {name: upGrad, category: india, hq: in, ats: lever, slug: upgrad, verified: false, checked: '2026-10-06'}
   - {name: Freshworks, category: india, hq: in, ats: smartrecruiters, slug: freshworks, verified: true, jobs: 100, ai_jobs: 6}
@@ -365,6 +365,26 @@ companies:
   - {name: NetApp, category: mnc, hq: us, ats: eightfold, slug: netapp.eightfold.ai/netapp.com, india_only: true, verified: true, jobs: 20, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Netflix, category: mnc, hq: us, ats: eightfold, slug: explore.jobs.netflix.net/netflix.com, india_only: true, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Amazon, category: mnc, hq: us, ats: amazon, slug: IND, india_only: true, verified: true, jobs: 2294, ai_jobs: 153, checked: '2026-10-06'}
+
+  # --- Indian fintech, e-commerce and consultancies (careers systems surveyed 2026-10-07; see docs/decisions.md) ---
+  - {name: BharatPe, category: india, hq: in, ats: darwinbox, slug: bharatpe, verified: false, checked: '2026-10-07'}
+  - {name: Pine Labs, category: india, hq: in, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-10-07'}
+  - {name: MobiKwik, category: india, hq: in, ats: darwinbox, slug: mobikwik, verified: false, checked: '2026-10-07'}
+  - {name: Go Digit, category: india, hq: in, ats: darwinbox, slug: godigit, verified: false, checked: '2026-10-07'}
+  - {name: smallcase, category: india, hq: in, ats: darwinbox, slug: smallcase, verified: false, checked: '2026-10-07'}
+  - {name: Upstox, category: india, hq: in, ats: smartrecruiters, slug: upstox, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-07'}
+  - {name: Fi Money (epiFi), category: india, hq: in, ats: lever, slug: epifi, verified: true, jobs: 2, ai_jobs: 1, checked: '2026-10-07'}
+  - {name: Dhan, category: india, hq: in, ats: keka, slug: dhan, verified: false, checked: '2026-10-07'}
+  - {name: Myntra, category: india, hq: in, ats: greenhouse, slug: myntra, verified: false, checked: '2026-10-07'}
+  - {name: BigBasket, category: india, hq: in, ats: darwinbox, slug: bigbasket, verified: false, checked: '2026-10-07'}
+  - {name: Delhivery, category: india, hq: in, ats: darwinbox, slug: delhivery, verified: false, checked: '2026-10-07'}
+  - {name: Rapido, category: india, hq: in, ats: darwinbox, slug: rapido, verified: false, checked: '2026-10-07'}
+  - {name: Tiger Analytics, category: consulting, hq: us, ats: workable, slug: tiger-analytics, india_only: true, verified: true, jobs: 218, ai_jobs: 80, checked: '2026-10-07'}
+  - {name: Accenture, category: consulting, hq: global, ats: workday, slug: accenture/wd103/AccentureCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 9, checked: '2026-10-07'}
+  - {name: PwC India (campus), category: consulting, hq: global, ats: workday, slug: pwc/wd3/Global_Campus_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-07'}
+  - {name: Genpact, category: consulting, hq: global, ats: workday, slug: genpact/wd108/External_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-07'}
+  - {name: Cognizant, category: consulting, hq: us, ats: workday, slug: mycts/wd1/CTS, india_only: true, verified: true, jobs: 11, ai_jobs: 0, checked: '2026-10-07'}
+  - {name: Publicis Sapient, category: consulting, hq: global, ats: smartrecruiters, slug: PublicisGroupe, india_only: true, verified: false, checked: '2026-10-07'}
 
   # --- Community hiring threads (one entry covers every company posting there) ---
   - {name: HN Who is hiring, category: community, hq: global, ats: hn, slug: whoishiring, verified: true, jobs: 211, ai_jobs: 41, checked: '2026-10-07'}

@@ -4,6 +4,20 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-07 — Indian fintech, e-commerce and consultancies
+- **Asked (Shrey):** more Indian fintech, consultancy (Accenture, Deloitte...), startup and e-commerce companies.
+- **Added (18, on careers systems we already fetch):** BharatPe, Pine Labs, MobiKwik, Go Digit, smallcase, BigBasket, Delhivery, Rapido (Darwinbox); Upstox, Fi (Lever); Dhan (Keka); Myntra (Greenhouse); Tiger Analytics (Workable); Accenture, PwC campus, Genpact, Cognizant (Workday); Publicis Sapient (SmartRecruiters). Global consultancies are `india_only`. Dream11 retried under the `dream11` Lever slug.
+- **Left out, unsupported systems:** SuccessFactors (EY, Capgemini, HCLTech, Wipro, Globant), Avature (Deloitte USI, IBM), Oracle HCM (KPMG, EXL), Kula (Cashfree, Acko), TurboHire (Navi, skipped earlier), PeopleStrong (MathCo), MyNextHire (ShareChat), Skima (Nykaa), and custom portals (Infosys, TCS, Flipkart, Zerodha, Juspay, Urban Company, Udaan...). Some only take email or LinkedIn applications. SuccessFactors and Oracle HCM cover the most of these and are worth a separate adapter decision later.
+- **Caveat:** Darwinbox refuses GitHub's runners (403), so those 8 stay unverified until that changes.
+
+## 2026-10-07 — Discovering companies automatically, and the default view
+- **Discovery sources. Options:** new YC batches (yc-oss) · board links in HN "Who is hiring?" posts · GitHub new-grad lists (e.g. SimplifyJobs)
+- **Choice (Shrey):** new YC batches and HN board links. `scripts/discover_companies.py` collects candidates from both, probes each board live, and keeps only boards with at least one title that could be a target role.
+- **Approval. Options:** a PR per batch · straight to main · a weekly report only
+- **Choice (Shrey):** a PR once a batch has 10–20 companies. The weekly workflow (`discover-companies.yml`, Mondays) writes nothing below 10, adds at most 20 (most AI/ML titles first), and opens no second PR while one is open. The run keeps no state: rejected candidates are probed again the next week, capped at 200 candidates a run.
+- **Limits:** the repo setting "Allow GitHub Actions to create and approve pull requests" must be on. PRs opened by the workflow's token don't trigger other workflows, so boards are verified before the PR opens. The YC filter is unchanged (team ≥ 10 or India-based), so a tiny new-batch startup is picked up once it grows.
+- **Default view (Shrey):** the page opens on "All levels" instead of "Fresher". Many entry-level posts state no years, so the reader narrows to 0–1, 0–2, 0–3 or Not stated. Only target roles are listed, as before; the fresher rules are unchanged.
+
 ## 2026-10-07 — Old postings, and hiring outside company boards
 - **Old postings. Options:** hide when posted > 60 days ago and show the date · hide > 30 days · only show the date
 - **Choice (Shrey):** hide postings older than 30 days when the source gives a posting date; undated jobs stay. Lists sort by posting date and cards show "Posted 3 days ago". Before this, a job stayed listed for as long as its company left it on the board.
