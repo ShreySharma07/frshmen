@@ -34,7 +34,6 @@ const KIND_LABEL: Record<string, string> = {
   python_stack: "Python stack",
   swe_requirement: "Matches your skills",
   conversion: "Full-time conversion",
-  llm: "AI check (Gemini)",
 };
 
 export const kindLabel = (h: Pick<Highlight, "kind">) => KIND_LABEL[h.kind] ?? h.kind;
@@ -54,11 +53,6 @@ export const cleanSnippet = (text: string) => text.replace(/^\s*[-•*]\s+/, "")
 
 /** The classifier's reasons are terse; say them the way a person would. */
 export function reasonText(level: Level, reason: string): string {
-  // Verdicts from the Gemini check (extract/llm.py) are marked so they read as a second opinion.
-  if (reason === "LLM: welcomes freshers") return "An AI check found the posting welcomes freshers (quoted below). Less certain than a rule match.";
-  if (reason.startsWith("LLM: requires")) return `An AI check found it asks for ${reason.replace("LLM: requires ", "")} of experience.`;
-  const note = reason.match(/ \(LLM: requires (.+)\)$/);
-  if (note) return `${reasonText(level, reason.slice(0, note.index))} An AI check found it asks for ${note[1]}.`;
   if (reason.startsWith("fresher signal")) return "The posting says it's for new grads, freshers or entry level.";
   if (reason.startsWith("batch year")) return "The posting targets a graduation batch that includes yours.";
   if (reason.startsWith("requires at most")) return `It asks for at most ${reason.replace("requires at most ", "")}.`;
