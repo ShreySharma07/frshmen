@@ -386,6 +386,16 @@ companies:
   - {name: Cognizant, category: consulting, hq: us, ats: workday, slug: mycts/wd1/CTS, india_only: true, verified: true, jobs: 11, ai_jobs: 0, checked: '2026-10-07'}
   - {name: Publicis Sapient, category: consulting, hq: global, ats: smartrecruiters, slug: PublicisGroupe, india_only: true, verified: false, checked: '2026-10-07'}
 
+  # --- Company career sites (sources/careersite.py, sources/oracle.py; checked 2026-10-08, see docs/decisions.md) ---
+  - {name: EY, category: consulting, hq: global, ats: careersite, slug: careers.ey.com, india_only: true}
+  - {name: Capgemini, category: consulting, hq: global, ats: careersite, slug: careers.capgemini.com, india_only: true}
+  - {name: HCLTech, category: consulting, hq: in, ats: careersite, slug: careers.hcltech.com, india_only: true}
+  - {name: Wipro, category: consulting, hq: in, ats: careersite, slug: careers.wipro.com, india_only: true}
+  - {name: ZS Associates, category: consulting, hq: us, ats: careersite, slug: jobs.zs.com, india_only: true}
+  - {name: KPMG India, category: consulting, hq: in, ats: oracle, slug: ejgk.fa.em2.oraclecloud.com/CX_1, india_only: true}
+  - {name: KPMG Global Services, category: consulting, hq: in, ats: oracle, slug: ejgk.fa.em2.oraclecloud.com/CX_3, india_only: true}
+  - {name: EXL, category: consulting, hq: us, ats: oracle, slug: fa-ewjt-saasfaprod1.fa.ocs.oraclecloud.com/CX_2, india_only: true}
+
   # --- Community hiring threads (one entry covers every company posting there) ---
   - {name: HN Who is hiring, category: community, hq: global, ats: hn, slug: whoishiring, verified: true, jobs: 211, ai_jobs: 41, checked: '2026-10-07'}
 
