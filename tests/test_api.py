@@ -50,35 +50,37 @@ def client(tmp_path):
     return TestClient(app)
 
 
-def test_default_view_is_open_target_freshers_newest_first(client):
-    body = client.get("/api/jobs").json()
-    titles = [j["title"] for j in body["jobs"]]
-    assert titles == ["ML Engineer - New Grad", "ML Engineer, Fresher"]
-    assert all(j["level"] == "fresher" for j in body["jobs"])
+def test_default_lists_every_open_job_newest_first(client):
+    body = client.get("/api/jobs?per_page=50").json()
+    assert len(body["jobs"]) == 20 and not body["has_more"]  # 18 fixture postings + 2 synthetic, all roles and levels
+    assert {j["level"] for j in body["jobs"]} >= {"fresher", "experienced"}
+    assert body["jobs"][-1]["title"] == "ML Engineer, Fresher"  # first seen 3 days ago, no posting date
     assert "description_text" not in body["jobs"][0]  # list stays light; detail endpoint has it
 
 
-def test_new_view_uses_first_seen_within_24h(client):
-    titles = [j["title"] for j in client.get("/api/jobs?view=new").json()["jobs"]]
-    assert titles == ["ML Engineer - New Grad"]
+def test_pages_and_total_counted_on_request(client):
+    assert client.get("/api/jobs").json()["per_page"] == 20
+    first = client.get("/api/jobs?per_page=15&with_total=true").json()
+    second = client.get("/api/jobs?per_page=15&page=2").json()
+    assert (len(first["jobs"]), first["total"], first["pages"]) == (15, 20, 2)
+    assert first["has_more"] and len(second["jobs"]) == 5 and "total" not in second
+    assert not {j["id"] for j in first["jobs"]} & {j["id"] for j in second["jobs"]}
 
 
-def test_all_roles_includes_non_targets(client):
-    target = client.get("/api/jobs?view=all").json()["jobs"]
-    everything = client.get("/api/jobs?view=all&role=all").json()["jobs"]
-    assert len(everything) == 20 and len(target) < len(everything)
+def test_new_in_24h_uses_first_seen(client):
+    titles = {j["title"] for j in client.get("/api/jobs?posted=24h&experience=fresher").json()["jobs"]}
+    assert "ML Engineer - New Grad" in titles and "ML Engineer, Fresher" not in titles  # first seen 3 days ago
+
+
+def test_role_scope(client):
+    everything = client.get("/api/jobs?per_page=50").json()["jobs"]
+    target = client.get("/api/jobs?role=target&per_page=50").json()["jobs"]
+    assert 0 < len(target) < len(everything) and all(j["role_family"] for j in target)
 
 
 def test_search_and_company_filter(client):
-    assert {j["company"] for j in client.get("/api/jobs?view=all&role=all&q=pinecone").json()["jobs"]} == {"Pinecone"}
-    assert {j["company"] for j in client.get("/api/jobs?view=all&role=all&company=CRED").json()["jobs"]} == {"CRED"}
-
-
-def test_pagination(client):
-    first = client.get("/api/jobs?view=all&role=all&limit=5").json()
-    second = client.get("/api/jobs?view=all&role=all&limit=5&offset=5").json()
-    assert first["has_more"] and len(first["jobs"]) == 5
-    assert not {j["id"] for j in first["jobs"]} & {j["id"] for j in second["jobs"]}
+    assert {j["company"] for j in client.get("/api/jobs?q=pinecone").json()["jobs"]} == {"Pinecone"}
+    assert {j["company"] for j in client.get("/api/jobs?company=CRED").json()["jobs"]} == {"CRED"}
 
 
 def test_detail_has_description_and_parsed_evidence(client):
@@ -92,20 +94,30 @@ def test_detail_404(client):
     assert client.get("/api/jobs/nope").status_code == 404
 
 
-def test_meta_counts(client):
+def test_meta_comes_from_the_snapshot_publish_writes(client):
     meta = client.get("/api/meta").json()
-    assert meta["counts"]["fresher"] == 2 and meta["counts"]["new"] >= 1
+    assert meta["total"] == 20 and meta["levels"]["fresher"] == 3 and meta["snapshot_at"]
     assert {"company": "Acme", "n": 2} in meta["companies"]
-    assert meta["last_run"]["jobs_new"] >= 1
+    assert meta["last_run"]["jobs_new"] >= 1 and meta["fit_check"] is False
+
+
+def test_meta_is_computed_live_before_the_first_snapshot(client):
+    live = client.app.state.db.path
+    import sqlite3
+    with sqlite3.connect(live) as conn:
+        conn.execute("DELETE FROM meta")
+    meta = client.get("/api/meta").json()
+    assert meta["total"] == 20 and meta["snapshot_at"] is None
 
 
 def test_rejects_bad_params(client):
-    assert client.get("/api/jobs?view=bogus").status_code == 422
-    assert client.get("/api/jobs?limit=1000").status_code == 422
+    assert client.get("/api/jobs?experience=bogus").status_code == 422
+    assert client.get("/api/jobs?per_page=1000").status_code == 422
+    assert client.get("/api/jobs?page=0").status_code == 422
 
 
 def test_list_carries_one_highlight_not_full_evidence(client):
-    jobs = client.get("/api/jobs?view=all&role=all").json()["jobs"]
+    jobs = client.get("/api/jobs?per_page=50").json()["jobs"]
     hume = next(j for j in jobs if j["id"] == "greenhouse:humeai:4775962008")
     assert "evidence" not in hume
     assert hume["highlight"]["kind"] == "yoe_required" and "2+ years" in hume["highlight"]["text"]
@@ -124,23 +136,23 @@ def test_unexpected_errors_return_json_with_cause(tmp_path):
 
 
 def test_country_filter_matches_whole_names(client):
-    india = [j["title"] for j in client.get("/api/jobs?country=India").json()["jobs"]]
-    canada = [j["title"] for j in client.get("/api/jobs?country=Canada").json()["jobs"]]
+    india = [j["title"] for j in client.get("/api/jobs?country=India&experience=fresher").json()["jobs"]]
+    canada = [j["title"] for j in client.get("/api/jobs?country=Canada&experience=fresher").json()["jobs"]]
     assert india == ["ML Engineer - New Grad"] and canada == ["ML Engineer, Fresher"]
     assert client.get("/api/jobs?country=Ind").json()["jobs"] == []
 
 
 def test_meta_lists_countries_with_counts(client):
     countries = {c["country"]: c["n"] for c in client.get("/api/meta").json()["countries"]}
-    assert countries["India"] == 1 and countries["Canada"] == 1
+    assert countries["India"] >= 1 and countries["Canada"] >= 1
 
 
 def test_city_filter_and_meta_cities(client):
-    pune = [j["title"] for j in client.get("/api/jobs?country=India&city=Pune").json()["jobs"]]
+    pune = [j["title"] for j in client.get("/api/jobs?country=India&city=Pune&experience=fresher").json()["jobs"]]
     assert pune == ["ML Engineer - New Grad"]
     assert client.get("/api/jobs?city=Mumbai").json()["jobs"] == []
     cities = {c["city"]: c["n"] for c in client.get("/api/meta").json()["cities"]}
-    assert cities == {"Bengaluru": 1, "Pune": 1}
+    assert cities["Bengaluru"] >= 1 and cities["Pune"] == 1
 
 
 @pytest.fixture
@@ -163,27 +175,18 @@ def mixed(tmp_path):
     return TestClient(app)
 
 
-def test_ineligible_locations_are_hidden_unless_asked(mixed):
-    titles = {j["title"] for j in mixed.get("/api/jobs").json()["jobs"]}
-    assert "ML Engineer (US)" not in titles
-    all_titles = {j["title"] for j in mixed.get("/api/jobs?include_ineligible=true").json()["jobs"]}
-    assert "ML Engineer (US)" in all_titles
-    assert mixed.get("/api/meta").json()["counts"]["fresher"] == 3
+def test_location_rules_are_an_opt_in_filter(mixed):
+    assert "ML Engineer (US)" in {j["title"] for j in mixed.get("/api/jobs").json()["jobs"]}
+    mine = {j["title"] for j in mixed.get("/api/jobs?eligible_only=true").json()["jobs"]}
+    assert "ML Engineer (US)" not in mine and len(mine) == 3
+    assert mixed.get("/api/meta").json()["levels"]["fresher"] == 4
 
 
 def test_family_filter_groups_generic_swe_with_ai_ml(mixed):
-    ai = {j["title"] for j in mixed.get("/api/jobs?family=ai_ml").json()["jobs"]}
-    mobile = [j["title"] for j in mixed.get("/api/jobs?family=mobile").json()["jobs"]]
+    ai = {j["title"] for j in mixed.get("/api/jobs?role=ai_ml&eligible_only=true").json()["jobs"]}
+    mobile = [j["title"] for j in mixed.get("/api/jobs?role=mobile").json()["jobs"]]
     assert ai == {"ML Engineer", "Software Engineer"} and mobile == ["Android Developer"]
-    assert mixed.get("/api/meta").json()["families"] == {"ai_ml": 2, "backend": 0, "mobile": 1}
-
-
-def test_level_and_posted_filters_replace_view(client):
-    both = [j["level"] for j in client.get("/api/jobs?level=any").json()["jobs"]]
-    assert set(both) <= {"fresher", "maybe"} and "fresher" in both
-    recent = [j["title"] for j in client.get("/api/jobs?level=fresher&posted=24h").json()["jobs"]]
-    assert recent == ["ML Engineer - New Grad"]  # the 3-day-old fresher is filtered out
-    assert client.get("/api/jobs?view=new").json() == client.get("/api/jobs?level=any&posted=24h").json()
+    assert mixed.get("/api/meta").json()["roles"] == {"target": 4, "ai_ml": 3, "backend": 0, "mobile": 1}
 
 
 @pytest.fixture
@@ -198,6 +201,11 @@ def by_yoe(tmp_path):
         dict(base, id="ashby:acme:2", title="Two years", level="experienced", yoe_min=2, yoe_max=5, content_hash="y3"),
         dict(base, id="ashby:acme:5", title="Five years", level="experienced", yoe_min=5, yoe_max=None, content_hash="y4"),
         dict(base, id="ashby:acme:u", title="Unstated", level="maybe", yoe_min=None, yoe_max=None, content_hash="y5"),
+        dict(base, id="ashby:acme:i", title="ML Intern", level="maybe", yoe_min=3, yoe_max=None, content_hash="y6"),
+        dict(base, id="ashby:acme:t", title="Internal Tools Engineer", level="experienced", yoe_min=3, yoe_max=None,
+             content_hash="y7"),
+        dict(base, id="ashby:acme:d", title="Data Science Trainee", level="maybe", yoe_min=4, yoe_max=None,
+             content_hash="y8"),
     ]
     pub.publish(db, {"jobs": rows, "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc)))
     app = create_app()
@@ -209,16 +217,20 @@ def by_yoe(tmp_path):
     ("fresher", {"Fresher"}),
     ("0-1", {"Fresher", "One year"}),
     ("0-2", {"Fresher", "One year", "Two years"}),
-    ("0-5", {"Fresher", "One year", "Two years", "Five years"}),
+    ("0-5", {"Fresher", "One year", "Two years", "Five years", "ML Intern", "Internal Tools Engineer",
+             "Data Science Trainee"}),
     ("unstated", {"Unstated"}),
-    ("all", {"Fresher", "One year", "Two years", "Five years", "Unstated"}),
+    ("experienced", {"Two years", "Five years", "Internal Tools Engineer"}),
+    ("internship", {"ML Intern", "Data Science Trainee"}),
+    ("all", {"Fresher", "One year", "Two years", "Five years", "Unstated", "ML Intern", "Internal Tools Engineer",
+             "Data Science Trainee"}),
 ])
 def test_experience_buckets(by_yoe, bucket, titles):
     got = {j["title"] for j in by_yoe.get(f"/api/jobs?experience={bucket}").json()["jobs"]}
     assert got == titles
 
 
-def test_postings_older_than_30_days_are_hidden_and_newest_posting_sorts_first(tmp_path):
+def test_old_postings_stay_listed_unless_filtered_and_newest_posting_sorts_first(tmp_path):
     path = tmp_path / "age.db"
     db = pub.SqliteDatabase(path)
     now = datetime.now(timezone.utc)
@@ -235,5 +247,51 @@ def test_postings_older_than_30_days_are_hidden_and_newest_posting_sorts_first(t
     app.state.db = SqliteDatabase(str(path))
     c = TestClient(app)
     titles = [j["title"] for j in c.get("/api/jobs").json()["jobs"]]
-    assert titles == ["Newest", "Recent", "Undated"]  # undated jobs sort by first-seen time (5 days ago)
-    assert c.get("/api/meta").json()["counts"]["fresher"] == 3
+    assert titles == ["Newest", "Recent", "Undated", "Old"]  # undated jobs sort by first-seen time (5 days ago)
+    assert [j["title"] for j in c.get("/api/jobs?posted=30d").json()["jobs"]] == ["Newest", "Recent", "Undated"]
+    assert [j["title"] for j in c.get("/api/jobs?posted=7d").json()["jobs"]] == ["Newest", "Recent", "Undated"]
+
+
+RESUME = "B.Tech CS (AI), 2026. Python, PyTorch, FastAPI. Built a multi-agent LLM system and a RAG pipeline."
+HUME = "greenhouse:humeai:4775962008"
+
+
+def test_fit_check_is_off_by_default(client):
+    assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": RESUME}).status_code == 404
+    assert client.get("/api/meta").json()["fit_check"] is False
+
+
+def gemini_reply(payload):
+    return {"candidates": [{"content": {"parts": [{"text": json.dumps(payload)}]}}]}
+
+
+def test_fit_check_when_switched_on(client):
+    calls = []
+
+    async def post(url, headers, body):
+        calls.append((url, headers, json.loads(body)))
+        if "3.5" in url:
+            return 404, {"error": {"message": "not found"}}
+        return 200, gemini_reply({"fit": "weak", "score": 140, "matched": ["Python"], "missing": ["2+ years"],
+                                  "experience": "Asks for 2+ years; resume shows none.", "advice": "Apply to new-grad roles."})
+
+    client.app.state.fit = ("secret-key", post)
+    res = client.post(f"/api/jobs/{HUME}/fit", json={"resume": RESUME})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["fit"] == "weak" and body["score"] == 100 and body["model"] == "gemini-3.1-flash-lite"
+    url, headers, sent = calls[-1]
+    assert "key=" not in url and headers["x-goog-api-key"] == "secret-key"
+    prompt = sent["contents"][0]["parts"][0]["text"]
+    assert RESUME in prompt and "2+ years" in prompt  # the job's own description goes in
+    assert client.get("/api/meta").json()["fit_check"] is True
+
+
+def test_fit_check_errors(client):
+    async def quota(url, headers, body):
+        return 429, {}
+
+    client.app.state.fit = ("k", quota)
+    assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": RESUME}).status_code == 503
+    assert client.post("/api/jobs/nope/fit", json={"resume": RESUME}).status_code == 404
+    assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": "too short"}).status_code == 422

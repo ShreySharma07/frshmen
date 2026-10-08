@@ -147,6 +147,6 @@ def test_write_budget_puts_new_jobs_first_and_defers_the_rest(db):
     pub.publish(db, payload([job("1"), job("2")]), now="t1")
     # Next run: job 1 changed, jobs 3 and 4 are new, job 2 vanished. Budget fits two indexed writes.
     p = pub.plan([job("1", desc="new text"), job("3"), job("4")], [{"source": "ashby", "company_slug": "acme"}],
-                 db.query("SELECT * FROM jobs"), "t2", budget=4)
+                 db.query("SELECT * FROM jobs"), "t2", budget=6)
     assert (p.new, p.changed, p.missed, p.deferred) == (2, 0, 0, 2)
-    assert p.rows_written == 4
+    assert p.rows_written == 6

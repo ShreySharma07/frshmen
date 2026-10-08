@@ -1,7 +1,9 @@
 """FastAPI app serving the job board's data. Read-only: the pipeline is the only writer.
 
-D1 free tier reads 5M rows/day, so every list query goes through idx_jobs_feed
-(status, role_match, level, first_seen_at) and pages with LIMIT/OFFSET.
+The page lists every open job, newest first, 20 per page; the reader narrows it with filters
+(docs/decisions.md, 2026-10-08). D1's free tier reads 5M rows/day, so lists walk
+idx_jobs_recent / idx_jobs_level in sort order, the total is counted only when asked for,
+and the filter lists come from a snapshot the pipeline writes once per run.
 """
 
 from __future__ import annotations
@@ -14,7 +16,11 @@ import traceback
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
+import fit
+
+from queries import FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
 from storage import D1Database, Database
 
 LIST_COLUMNS = (
@@ -30,16 +36,10 @@ HIGHLIGHT_KINDS = {
 }
 HIGHLIGHT_MAX = 280
 JSON_COLUMNS = ("countries", "cities", "batch_years", "evidence", "skills")
-# The page's Role filter; plain SWE roles that passed the Python + AI/ML check count as AI/ML.
-FAMILIES = {"ai_ml": ("ai_ml", "generic_swe"), "backend": ("backend",), "mobile": ("mobile",)}
-# Every view shows only roles whose location fits the profile, unless asked otherwise.
+# The location rules (India except onsite-only Bengaluru/Hyderabad, abroad with sponsorship)
+# are now a filter the reader turns on, not a hidden default.
 ELIGIBLE = "eligible = 1"
-# Postings older than this are hidden when the source gives a posting date (docs/decisions.md);
-# jobs without one stay, since nothing says they're old.
-MAX_POST_AGE_DAYS = 30
-FRESH = "(posted_at IS NULL OR posted_at >= ?)"
-# What every page count and list starts from: open target roles that fit the profile and aren't stale.
-SHOWN = f"status = 'open' AND role_match = 1 AND {ELIGIBLE} AND {FRESH}"
+PER_PAGE = 20
 # D1 rejects LIKE patterns over 50 bytes.
 MAX_QUERY_CHARS = 40
 
@@ -82,6 +82,26 @@ def _summary(row: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
+def fit_config(request: Request) -> tuple[str, fit.Post] | None:
+    """(api_key, post) when the fit check is switched on, else None. Tests set app.state.fit."""
+    override = getattr(request.app.state, "fit", None)
+    if override:
+        return override
+    env = request.scope.get("env")
+    if env is None or str(getattr(env, "FIT_CHECK", "") or "") != "on":
+        return None
+    key = getattr(env, "GEMINI_API_KEY", None)
+    return (str(key), fit.worker_post) if key else None
+
+
+def fit_check_enabled(request: Request) -> bool:
+    return fit_config(request) is not None
+
+
+class FitRequest(BaseModel):
+    resume: str = Field(min_length=50, max_length=fit.MAX_RESUME_CHARS)
+
+
 def _since(hours: int) -> str:
     t = datetime.now(timezone.utc) - timedelta(hours=hours)
     return t.isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -99,57 +119,53 @@ def create_app() -> FastAPI:
 
     @app.get("/api/jobs")
     async def list_jobs(
-        view: Literal["fresher", "maybe", "new", "all"] = "fresher",
-        # Newer, independent filters; when given they replace `view`.
-        level: Literal["fresher", "maybe", "any"] | None = None,
-        # Experience bucket from the page: "fresher", "0-1".."0-5" (fresher, or a stated minimum within
-        # that many years), "unstated" (no number in the posting), or "all". Replaces `level` when given.
-        experience: Literal["fresher", "0-1", "0-2", "0-3", "0-5", "unstated", "all"] | None = None,
-        posted: Literal["any", "24h"] | None = None,
-        role: Literal["target", "all"] = "target",
+        # "0-N": fresher roles plus any whose stated minimum is within N years. "unstated": no number
+        # in the posting. "internship": intern/trainee/apprentice titles, whatever their label.
+        experience: Literal["all", "fresher", "internship", "0-1", "0-2", "0-3", "0-5", "unstated",
+                            "experienced"] = "all",
+        # "target": the roles in config/profile.yaml (AI/ML, Python backend, Android/React Native).
+        role: Literal["all", "target", "ai_ml", "backend", "mobile"] = "all",
+        # "24h" is new to us (first seen); 7d/30d use the posting date where the source gives one.
+        posted: Literal["any", "24h", "7d", "30d"] = "any",
+        eligible_only: bool = False,
         q: str | None = Query(None, max_length=100),
         company: str | None = None,
         location_type: Literal["remote", "hybrid", "onsite"] | None = None,
         country: str | None = Query(None, max_length=60),
         city: str | None = Query(None, max_length=60),
-        family: Literal["ai_ml", "backend", "mobile"] | None = None,
-        include_ineligible: bool = False,
-        limit: int = Query(50, ge=1, le=100),
-        offset: int = Query(0, ge=0, le=5000),
+        page: int = Query(1, ge=1, le=2000),
+        per_page: int = Query(PER_PAGE, ge=1, le=50),
+        # Counting reads every matching row, so the page asks only when the filters change.
+        with_total: bool = False,
         db: Database = Depends(get_db),
     ) -> dict[str, Any]:
-        where = ["status = 'open'", FRESH]
-        params: list[Any] = [_since(MAX_POST_AGE_DAYS * 24)]
+        where = [OPEN]
+        params: list[Any] = []
+        if experience == "fresher":
+            where.append("level = 'fresher'")
+        elif experience == "experienced":
+            where.append("level = 'experienced'")
+        elif experience == "unstated":
+            where.append("level != 'fresher' AND yoe_min IS NULL")
+        elif experience == "internship":
+            where.append(INTERN)
+        elif experience.startswith("0-"):
+            where.append("(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= ?))")
+            params.append(int(experience[2:]))
         if role == "target":
             where.append("role_match = 1")
-        if not include_ineligible:
-            where.append(ELIGIBLE)
-        if family:
-            fams = FAMILIES[family]
-            where.append(f"role_family IN ({', '.join('?' * len(fams))})")
+        elif role != "all":
+            fams = FAMILIES[role]
+            where.append(f"role_match = 1 AND role_family IN ({', '.join('?' * len(fams))})")
             params += list(fams)
-        if level is None and posted is None:
-            # Legacy `view`: "new" was fresher + maybe seen in the last 24 hours.
-            level = {"fresher": "fresher", "maybe": "maybe", "new": "any"}.get(view)
-            posted = "24h" if view == "new" else "any"
-        if experience is not None:
-            level = None
-            if experience == "fresher":
-                where.append("level = 'fresher'")
-            elif experience == "unstated":
-                where.append("level != 'fresher' AND yoe_min IS NULL")
-            elif experience.startswith("0-"):
-                where.append("(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= ?))")
-                params.append(int(experience[2:]))
-        if level in ("fresher", "maybe"):
-            where.append("level = ?")
-            params.append(level)
-        elif level == "any":
-            where.append("level IN ('fresher', 'maybe')")
+        if eligible_only:
+            where.append(ELIGIBLE)
         if posted == "24h":
-            # "New" means new to us (first_seen_at); many sources have no reliable post date.
             where.append("first_seen_at >= ?")
             params.append(_since(24))
+        elif posted in ("7d", "30d"):
+            where.append(f"{ORDER_KEY} >= ?")
+            params.append(_since(24 * int(posted[:-1])))
         if company:
             where.append("company = ?")
             params.append(company)
@@ -167,16 +183,34 @@ def create_app() -> FastAPI:
             pattern = f"%{q.strip()[:MAX_QUERY_CHARS]}%"
             where.append("(title LIKE ? OR company LIKE ?)")
             params += [pattern, pattern]
-        sql = (f"SELECT {LIST_COLUMNS} FROM jobs WHERE {' AND '.join(where)} "
-               # Newest posting first; first-seen time stands in where the source gives no date.
-               "ORDER BY COALESCE(posted_at, first_seen_at) DESC, id LIMIT ? OFFSET ?")
-        rows = await db.all(sql, [*params, limit + 1, offset])
-        return {
-            "jobs": [_summary(r) for r in rows[:limit]],
-            "limit": limit,
-            "offset": offset,
-            "has_more": len(rows) > limit,
+        cond = " AND ".join(where)
+        offset = (page - 1) * per_page
+        rows = await db.all(f"SELECT {LIST_COLUMNS} FROM jobs WHERE {cond} {ORDER_BY} LIMIT ? OFFSET ?",
+                            [*params, per_page + 1, offset])
+        body: dict[str, Any] = {
+            "jobs": [_summary(r) for r in rows[:per_page]],
+            "page": page,
+            "per_page": per_page,
+            "has_more": len(rows) > per_page,
         }
+        if with_total:
+            total = (await db.all(f"SELECT COUNT(*) AS n FROM jobs WHERE {cond}", params))[0]["n"]
+            body.update(total=total, pages=max(1, -(-total // per_page)))
+        return body
+
+    @app.post("/api/jobs/{job_id:path}/fit")
+    async def check_fit(job_id: str, req: FitRequest, request: Request,
+                        db: Database = Depends(get_db)) -> dict[str, Any]:
+        config = fit_config(request)
+        if config is None:
+            raise HTTPException(status_code=404, detail="fit check is turned off")
+        rows = await db.all("SELECT title, company, description_text FROM jobs WHERE id = ?", [job_id])
+        if not rows:
+            raise HTTPException(status_code=404, detail="job not found")
+        try:
+            return await fit.check(rows[0], req.resume, *config)
+        except fit.FitUnavailable as e:
+            raise HTTPException(status_code=503, detail=str(e)) from None
 
     @app.get("/api/jobs/{job_id:path}")
     async def get_job(job_id: str, db: Database = Depends(get_db)) -> dict[str, Any]:
@@ -186,41 +220,18 @@ def create_app() -> FastAPI:
         return _decode(rows[0])
 
     @app.get("/api/meta")
-    async def meta(db: Database = Depends(get_db)) -> dict[str, Any]:
-        cutoff = [_since(MAX_POST_AGE_DAYS * 24)]
-        listed = f"{SHOWN} AND level IN ('fresher', 'maybe')"
-        counts = await db.all(f"SELECT level, COUNT(*) AS n FROM jobs WHERE {SHOWN} GROUP BY level", cutoff)
-        new = await db.all(f"SELECT COUNT(*) AS n FROM jobs WHERE {listed} AND first_seen_at >= ?", [*cutoff, _since(24)])
-        companies = await db.all(
-            f"SELECT company, COUNT(*) AS n FROM jobs WHERE {listed} GROUP BY company ORDER BY company", cutoff
-        )
-        countries = await db.all(
-            f"SELECT c.value AS country, COUNT(*) AS n FROM jobs, json_each(jobs.countries) AS c WHERE {listed} "
-            "GROUP BY c.value ORDER BY n DESC, c.value", cutoff
-        )
-        cities = await db.all(
-            f"SELECT c.value AS city, COUNT(*) AS n FROM jobs, json_each(jobs.cities) AS c WHERE {listed} "
-            "GROUP BY c.value ORDER BY n DESC, c.value", cutoff
-        )
-        families = await db.all(
-            f"SELECT role_family AS family, COUNT(*) AS n FROM jobs WHERE {listed} GROUP BY role_family", cutoff
-        )
+    async def meta(request: Request, db: Database = Depends(get_db)) -> dict[str, Any]:
+        snap = await db.all("SELECT value, updated_at FROM meta WHERE key = 'filters'")
+        # Before the first pipeline run after migration 0005 there is no snapshot; compute it live.
+        value = snap[0]["value"] if snap else (await db.all(META_SELECT))[0]["value"]
+        filters = json.loads(value)
         last_run = await db.all("SELECT * FROM runs ORDER BY id DESC LIMIT 1")
-        by_level = {r["level"]: r["n"] for r in counts}
         return {
-            "counts": {
-                "fresher": by_level.get("fresher", 0),
-                "maybe": by_level.get("maybe", 0),
-                "experienced": by_level.get("experienced", 0),
-                "new": new[0]["n"] if new else 0,
-            },
-            "companies": companies,
-            "countries": countries,
-            "cities": cities,
-            "families": {
-                name: sum(f["n"] for f in families if f["family"] in members) for name, members in FAMILIES.items()
-            },
+            **filters,
+            "levels": {lvl: (filters.get("levels") or {}).get(lvl, 0) for lvl in ("fresher", "maybe", "experienced")},
+            "snapshot_at": snap[0]["updated_at"] if snap else None,
             "last_run": _decode(last_run[0]) if last_run else None,
+            "fit_check": fit_check_enabled(request),
         }
 
     return app
