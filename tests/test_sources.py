@@ -42,7 +42,8 @@ def test_every_posting_is_normalized(module, fixture, company, count):
 
 
 def test_registry_has_every_adapter():
-    assert set(ADAPTERS) == {"greenhouse", "lever", "ashby", "workday", "darwinbox", "keka", "zoho_recruit", "amazon", "eightfold", "hn"}
+    assert set(ADAPTERS) == {"greenhouse", "lever", "ashby", "workday", "darwinbox", "keka", "zoho_recruit", "amazon", "eightfold", "hn",
+                             "careersite", "oracle"}
 
 
 def test_greenhouse_fields():

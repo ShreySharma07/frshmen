@@ -1,5 +1,7 @@
 """Source adapters: one module per ATS, each exposing NAME, fetch() and parse()."""
 
-from sources import amazon, ashby, darwinbox, eightfold, greenhouse, hn, keka, lever, workday, zoho_recruit
+from sources import (amazon, ashby, careersite, darwinbox, eightfold, greenhouse, hn, keka, lever, oracle, workday,
+                     zoho_recruit)
 
-ADAPTERS = {m.NAME: m for m in (greenhouse, lever, ashby, workday, darwinbox, keka, zoho_recruit, amazon, eightfold, hn)}
+ADAPTERS = {m.NAME: m for m in (greenhouse, lever, ashby, workday, darwinbox, keka, zoho_recruit, amazon, eightfold, hn,
+                                    careersite, oracle)}
