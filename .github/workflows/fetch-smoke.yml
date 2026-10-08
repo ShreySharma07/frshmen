@@ -67,7 +67,14 @@ jobs:
           ]:
               try:
                   titles = ADAPTERS[ats].list_titles(http, slug)
-                  jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug, india_only=True)) if titles else []
+                  company = Company(name, ats, slug, india_only=True)
+                  jobs = ADAPTERS[ats].fetch(http, company) if titles else []
+                  if ats == "oracle" and titles and not jobs:
+                      # The newest few pages may hold no title the role screen keeps (KPMG: audit, SFDC);
+                      # the detail call is what needs proving, so fetch the newest job's text directly.
+                      first = oracle.requisitions(http, slug, 1)[0]
+                      job = oracle.parse_detail(http.get_json(oracle.detail_url(slug, first["Id"])), company, first)
+                      jobs = [job] if job else []
               except FetchError as e:
                   # One blocked host shouldn't hide whether the other adapters work.
                   print(f"{ats} {slug}: FAILED {e}")
