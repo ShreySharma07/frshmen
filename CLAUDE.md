@@ -25,7 +25,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Skills to match against (edit in `config/profile.yaml`): Python, PyTorch, FastAPI, LLMs, knowledge distillation, speculative decoding, CUDA kernels, agents/evals. Add the real resume list there.
 
 ## Pipeline (high level)
-1. **Discover** companies and their ATS (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, plus YC and Hacker News "Who is hiring").
+1. **Discover** companies and their ATS (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Workday, Eightfold, Oracle Recruiting, plus company career sites read through their sitemap and schema.org job data, YC and Hacker News "Who is hiring").
 2. **Fetch** postings via each ATS's public JSON endpoint on a schedule.
 3. **Normalize** to one schema (see below). Dedupe.
 4. **Extract** experience, batch year, location type, visa sponsorship, skills via rules (see `skills.md`). No LLM in the pipeline.
