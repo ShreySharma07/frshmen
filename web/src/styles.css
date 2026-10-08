@@ -420,8 +420,138 @@ mark {
   cursor: pointer;
 }
 
-.button--more {
-  margin-top: 28px;
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.button--quiet {
+  border-color: var(--rule);
+  align-self: flex-end;
+}
+
+.link {
+  font: inherit;
+  color: var(--focus);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.results {
+  margin: 20px 0 4px;
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+/* --- Pages ------------------------------------------------------------------ */
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 32px 0 8px;
+}
+
+.pager__pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pager__page,
+.pager__step {
+  font: 700 var(--step--1) var(--font-body);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.pager__page[aria-current="page"] {
+  background: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+}
+
+.pager__step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pager__gap {
+  align-self: center;
+  color: var(--ink-muted);
+  padding: 0 4px;
+}
+
+/* --- Fit check (off unless the Worker enables it) ----------------------------- */
+
+.fit {
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.fit > .button {
+  justify-self: start;
+}
+
+.fit__resume {
+  display: grid;
+  gap: 6px;
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+.fit__resume textarea {
+  font: var(--step--1) var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.fit__note,
+.fit__model {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+  margin: 0;
+}
+
+.fit__result {
+  display: grid;
+  gap: 6px;
+  border-left: 4px solid var(--experienced);
+  padding-left: 12px;
+}
+
+.fit__result p {
+  margin: 0;
+}
+
+.fit--strong { border-left-color: var(--fresher); }
+.fit--partial { border-left-color: var(--maybe); }
+
+.fit__verdict {
+  font-size: var(--step-1);
 }
 
 /* --- Small screens ---------------------------------------------------------- */

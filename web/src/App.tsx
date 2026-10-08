@@ -1,44 +1,98 @@
-import { useCallback, useEffect, useState } from "react";
-import { fetchJobs, fetchMeta, type Family, type Filters, type JobSummary, type Experience, type Meta } from "./api";
+import { useEffect, useRef, useState } from "react";
+import { fetchJobs, fetchMeta, type Experience, type Filters, type JobSummary, type Meta, type Posted, type Role } from "./api";
 import { JobCard } from "./JobCard";
+import { Pager } from "./Pager";
 import { timeAgo } from "./format";
 
 // "0–N yrs" = fresher roles plus any role whose stated minimum is within N years.
 const EXPERIENCE: { id: Experience; label: string }[] = [
-  { id: "fresher", label: "Fresher" },
+  { id: "all", label: "All levels" },
+  { id: "fresher", label: "Fresher / entry level" },
+  { id: "internship", label: "Internships" },
   { id: "0-1", label: "0–1 yrs" },
   { id: "0-2", label: "0–2 yrs" },
   { id: "0-3", label: "0–3 yrs" },
   { id: "0-5", label: "0–5 yrs" },
-  { id: "unstated", label: "Not stated" },
-  { id: "all", label: "All levels" },
+  { id: "unstated", label: "Years not stated" },
+  { id: "experienced", label: "Experienced" },
 ];
-const EXPERIENCE_IDS = EXPERIENCE.map((x) => x.id) as string[];
 
 // Plain SWE roles that passed the Python + AI/ML check are grouped under AI / ML by the API.
-const FAMILY_OPTIONS: Record<Family, string> = { ai_ml: "AI / ML", backend: "Python backend", mobile: "Android / React Native" };
+const ROLES: { id: Role; label: string }[] = [
+  { id: "all", label: "All roles" },
+  { id: "target", label: "My target roles" },
+  { id: "ai_ml", label: "AI / ML" },
+  { id: "backend", label: "Python backend" },
+  { id: "mobile", label: "Android / React Native" },
+];
 
-// Old links used ?view=fresher|maybe|new or ?level=; they still open sensible filters.
-const initialFilters = (): Pick<Filters, "experience" | "posted"> => {
-  const params = new URLSearchParams(location.search);
-  const view = params.get("view");
-  const posted = params.get("posted") === "24h" || view === "new" ? "24h" : "any";
-  const exp = params.get("experience");
-  if (exp && EXPERIENCE_IDS.includes(exp)) return { experience: exp as Experience, posted };
-  // Default to every level: many entry-level posts state no years, so the reader picks the range.
-  if (view === "fresher" || params.get("level") === "fresher") return { experience: "fresher", posted };
-  return { experience: view === "maybe" || view === "new" ? "0-2" : "all", posted };
+const POSTED: { id: Posted; label: string }[] = [
+  { id: "any", label: "Any time" },
+  { id: "24h", label: "New in the last 24 hours" },
+  { id: "7d", label: "Last 7 days" },
+  { id: "30d", label: "Last 30 days" },
+];
+
+const DEFAULTS: Filters = {
+  experience: "all", role: "all", posted: "any", q: "", company: "", country: "", city: "", eligibleOnly: false, location: "",
 };
 
+const pick = <T extends string>(value: string | null, options: { id: T }[], fallback: T): T =>
+  options.some((o) => o.id === value) ? (value as T) : fallback;
+
+// Filters and page live in the URL, so a filtered view can be bookmarked or shared.
+// Old links (?view=fresher, ?experience=0-2) still open the matching view.
+function fromUrl(): { filters: Filters; page: number } {
+  const p = new URLSearchParams(location.search);
+  const legacy = p.get("view") === "fresher" ? "fresher" : p.get("view") === "new" ? "all" : null;
+  return {
+    filters: {
+      ...DEFAULTS,
+      experience: pick(p.get("experience") ?? legacy, EXPERIENCE, "all"),
+      role: pick(p.get("role"), ROLES, "all"),
+      posted: p.get("view") === "new" ? "24h" : pick(p.get("posted"), POSTED, "any"),
+      q: p.get("q") ?? "",
+      company: p.get("company") ?? "",
+      country: p.get("country") ?? "",
+      city: p.get("city") ?? "",
+      eligibleOnly: p.get("mine") === "1",
+      location: (["remote", "hybrid", "onsite"].includes(p.get("mode") ?? "") ? p.get("mode") : "") as Filters["location"],
+    },
+    page: Math.max(1, Number(p.get("page")) || 1),
+  };
+}
+
+function toUrl(filters: Filters, page: number) {
+  const p = new URLSearchParams();
+  const set = (k: string, v: string, skip: string) => v !== skip && p.set(k, v);
+  set("experience", filters.experience, "all");
+  set("role", filters.role, "all");
+  set("posted", filters.posted, "any");
+  set("q", filters.q, "");
+  set("company", filters.company, "");
+  set("country", filters.country, "");
+  set("city", filters.city, "");
+  set("mode", filters.location, "");
+  if (filters.eligibleOnly) p.set("mine", "1");
+  if (page > 1) p.set("page", String(page));
+  const qs = p.toString();
+  history.replaceState(null, "", `${location.pathname}${qs ? `?${qs}` : ""}`);
+}
+
 export function App() {
-  const [filters, setFilters] = useState<Filters>({ ...initialFilters(), q: "", company: "", country: "", city: "", family: "", includeIneligible: false, location: "" });
-  const [query, setQuery] = useState("");
+  const initial = useRef(fromUrl()).current;
+  const [filters, setFilters] = useState<Filters>(initial.filters);
+  const [page, setPage] = useState(initial.page);
+  const [query, setQuery] = useState(initial.filters.q);
   const [jobs, setJobs] = useState<JobSummary[]>([]);
+  const [total, setTotal] = useState<{ key: string; n: number; pages: number } | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retry, setRetry] = useState(0);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const top = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -52,42 +106,47 @@ export function App() {
     return () => clearTimeout(t);
   }, [query]);
 
+  const change = (patch: Partial<Filters>) => {
+    setOpenId(null);
+    setPage(1);
+    setFilters((f) => ({ ...f, ...patch }));
+  };
+
+  // The total is counted once per set of filters, not on every page turn: counting reads every match.
+  const filterKey = JSON.stringify(filters);
   useEffect(() => {
     const ctrl = new AbortController();
+    const needTotal = total?.key !== filterKey;
     setLoading(true);
     setError(null);
-    fetchJobs(filters, 0, ctrl.signal)
-      .then((page) => {
-        setJobs(page.jobs);
-        setHasMore(page.has_more);
+    fetchJobs(filters, page, needTotal, ctrl.signal)
+      .then((res) => {
+        setJobs(res.jobs);
+        setHasMore(res.has_more);
+        if (res.total !== undefined) setTotal({ key: filterKey, n: res.total, pages: res.pages ?? 1 });
       })
       .catch((e: Error) => e.name !== "AbortError" && setError(e.message))
       .finally(() => !ctrl.signal.aborted && setLoading(false));
-    const url = new URL(location.href);
-    url.searchParams.delete("view");
-    url.searchParams.delete("level");
-    url.searchParams.set("experience", filters.experience);
-    url.searchParams.set("posted", filters.posted);
-    history.replaceState(null, "", url);
+    toUrl(filters, page);
     return () => ctrl.abort();
-  }, [filters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey, page, retry]);
 
-  const loadMore = useCallback(() => {
-    setLoading(true);
-    fetchJobs(filters, jobs.length)
-      .then((page) => {
-        setJobs((prev) => [...prev, ...page.jobs]);
-        setHasMore(page.has_more);
-      })
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [filters, jobs.length]);
+  const goTo = (n: number) => {
+    setOpenId(null);
+    setPage(n);
+    top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
-    const filtered = Boolean(filters.q || filters.company || filters.country || filters.city || filters.family || filters.location || filters.posted !== "any");
+  const filtered = filterKey !== JSON.stringify({ ...DEFAULTS, q: filters.q }) || Boolean(filters.q);
+  const shownTotal = total?.key === filterKey ? total : null;
+  const levelCount = (id: Experience) =>
+    !meta ? "" : id === "fresher" ? ` (${meta.levels.fresher})` : id === "experienced" ? ` (${meta.levels.experienced})`
+      : id === "internship" ? ` (${meta.internships})` : id === "all" ? ` (${meta.total})` : "";
 
   return (
     <div className="page">
-      <header className="masthead">
+      <header className="masthead" ref={top}>
         <h1>Jobs</h1>
         {meta?.last_run && (
           <p className="masthead__status">
@@ -105,81 +164,56 @@ export function App() {
         <div className="filters">
           <label className="field">
             <span>Experience</span>
-            <select
-              value={filters.experience}
-              onChange={(e) => {
-                setOpenId(null);
-                setFilters((f) => ({ ...f, experience: e.target.value as Experience }));
-              }}
-            >
+            <select value={filters.experience} onChange={(e) => change({ experience: e.target.value as Experience })}>
               {EXPERIENCE.map((x) => (
-                <option key={x.id} value={x.id}>
-                  {x.label}
-                  {meta && x.id === "fresher" ? ` (${meta.counts.fresher})` : ""}
-                </option>
+                <option key={x.id} value={x.id}>{x.label}{levelCount(x.id)}</option>
               ))}
             </select>
           </label>
           <label className="field">
             <span>Role</span>
-            <select
-              value={filters.family}
-              onChange={(e) => setFilters((f) => ({ ...f, family: e.target.value as Filters["family"] }))}
-            >
-              <option value="">All roles</option>
-              {(Object.keys(FAMILY_OPTIONS) as Family[]).map((id) => (
-                <option key={id} value={id}>
-                  {FAMILY_OPTIONS[id]}
-                  {meta ? ` (${meta.families[id] ?? 0})` : ""}
+            <select value={filters.role} onChange={(e) => change({ role: e.target.value as Role })}>
+              {ROLES.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.label}
+                  {meta && r.id !== "all" ? ` (${meta.roles[r.id] ?? 0})` : ""}
                 </option>
               ))}
             </select>
           </label>
           <label className="field">
             <span>Company</span>
-            <select value={filters.company} onChange={(e) => setFilters((f) => ({ ...f, company: e.target.value }))}>
+            <select value={filters.company} onChange={(e) => change({ company: e.target.value })}>
               <option value="">All companies</option>
               {meta?.companies.map((c) => (
-                <option key={c.company} value={c.company}>
-                  {c.company} ({c.n})
-                </option>
+                <option key={c.company} value={c.company}>{c.company} ({c.n})</option>
               ))}
             </select>
           </label>
           <label className="field">
             <span>Country</span>
-            <select
-              value={filters.country}
-              // A city belongs to one country, so changing country clears it.
-              onChange={(e) => setFilters((f) => ({ ...f, country: e.target.value, city: "" }))}
-            >
+            {/* A city belongs to one country, so changing country clears it. */}
+            <select value={filters.country} onChange={(e) => change({ country: e.target.value, city: "" })}>
               <option value="">Any country</option>
               {meta?.countries.map((c) => (
-                <option key={c.country} value={c.country}>
-                  {c.country} ({c.n})
-                </option>
+                <option key={c.country} value={c.country}>{c.country} ({c.n})</option>
               ))}
             </select>
           </label>
           {filters.country === "India" && meta && meta.cities.length > 0 && (
             <label className="field">
               <span>City</span>
-              <select value={filters.city} onChange={(e) => setFilters((f) => ({ ...f, city: e.target.value }))}>
+              <select value={filters.city} onChange={(e) => change({ city: e.target.value })}>
                 <option value="">Any city</option>
                 {meta.cities.map((c) => (
-                  <option key={c.city} value={c.city}>
-                    {c.city} ({c.n})
-                  </option>
+                  <option key={c.city} value={c.city}>{c.city} ({c.n})</option>
                 ))}
               </select>
             </label>
           )}
           <label className="field">
             <span>Work mode</span>
-            <select
-              value={filters.location}
-              onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value as Filters["location"] }))}
-            >
+            <select value={filters.location} onChange={(e) => change({ location: e.target.value as Filters["location"] })}>
               <option value="">Any</option>
               <option value="remote">Remote</option>
               <option value="hybrid">Hybrid</option>
@@ -188,50 +222,46 @@ export function App() {
           </label>
           <label className="field">
             <span>Posted</span>
-            <select
-              value={filters.posted}
-              onChange={(e) => setFilters((f) => ({ ...f, posted: e.target.value as Filters["posted"] }))}
-            >
-              <option value="any">Any time</option>
-              <option value="24h">New in the last 24 hours{meta ? ` (${meta.counts.new})` : ""}</option>
+            <select value={filters.posted} onChange={(e) => change({ posted: e.target.value as Posted })}>
+              {POSTED.map((x) => (
+                <option key={x.id} value={x.id}>{x.label}</option>
+              ))}
             </select>
           </label>
           <label className="field field--check">
-            <input
-              type="checkbox"
-              checked={filters.includeIneligible}
-              onChange={(e) => setFilters((f) => ({ ...f, includeIneligible: e.target.checked }))}
-            />
-            <span>Include roles outside my locations</span>
+            <input type="checkbox" checked={filters.eligibleOnly} onChange={(e) => change({ eligibleOnly: e.target.checked })} />
+            <span>Only where I can work (India, remote, or visa sponsored)</span>
           </label>
+          {filtered && (
+            <button type="button" className="button button--quiet" onClick={() => { setQuery(""); change(DEFAULTS); }}>
+              Clear filters
+            </button>
+          )}
         </div>
       </form>
 
       <main>
+        <p className="results" aria-live="polite">
+          {shownTotal ? `${shownTotal.n.toLocaleString()} ${shownTotal.n === 1 ? "job" : "jobs"}` : " "}
+          {shownTotal && shownTotal.pages > 1 && ` · page ${page} of ${shownTotal.pages}`}
+        </p>
         {error && (
           <div className="notice notice--error" role="alert">
             <p>Couldn't load jobs: {error}.</p>
-            <button className="button" onClick={() => setFilters((f) => ({ ...f }))}>
-              Try again
-            </button>
+            <button className="button" onClick={() => setRetry((n) => n + 1)}>Try again</button>
           </div>
         )}
         {!error && !loading && jobs.length === 0 && (
-          <p className="notice">{filtered ? "No roles match these filters. Clear the search, or pick another company, country or city." : filters.experience === "fresher"
-              ? "No fresher roles match right now. Try 0–1 or 0–2 yrs."
-              : "No roles match this experience range right now."}</p>
+          <p className="notice">{filtered ? "No jobs match these filters. Clear some of them to see more." : "No open jobs right now."}</p>
         )}
         <ol className="cards" aria-busy={loading}>
           {jobs.map((job) => (
-            <JobCard key={job.id} job={job} open={openId === job.id} onToggle={() => setOpenId(openId === job.id ? null : job.id)} />
+            <JobCard key={job.id} job={job} open={openId === job.id} fitCheck={Boolean(meta?.fit_check)}
+                     onToggle={() => setOpenId(openId === job.id ? null : job.id)} />
           ))}
         </ol>
-        {loading && <p className="notice">Loading roles…</p>}
-        {hasMore && !loading && (
-          <button className="button button--more" onClick={loadMore}>
-            Show more roles
-          </button>
-        )}
+        {loading && <p className="notice">Loading jobs…</p>}
+        <Pager page={page} pages={shownTotal?.pages ?? (hasMore ? page + 1 : page)} hasMore={hasMore} onPage={goTo} />
       </main>
     </div>
   );
