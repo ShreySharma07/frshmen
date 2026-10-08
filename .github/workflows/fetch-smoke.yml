@@ -44,10 +44,11 @@ jobs:
           from sources.http import FetchError, HttpClient
           from sources.models import Company
 
-          from sources import amazon, eightfold, workday
+          from sources import amazon, careersite, eightfold, oracle, workday
           # Keep the smoke test small: a few pages and details per board are enough to see the shapes.
           amazon.MAX_PAGES = eightfold.MAX_PAGES = 1
-          eightfold.MAX_DETAILS = workday.MAX_DETAILS = 5
+          oracle.MAX_PAGES = 2
+          eightfold.MAX_DETAILS = workday.MAX_DETAILS = careersite.MAX_DETAILS = oracle.MAX_DETAILS = 5
 
           http = HttpClient()
           failed = []
@@ -61,10 +62,19 @@ jobs:
               ("HN Who is hiring", "hn", "whoishiring"),
               ("NetApp", "eightfold", "netapp.eightfold.ai/netapp.com"),  # v2 tenant
               ("Qualcomm", "eightfold", "careers.qualcomm.com/qualcomm.com"),  # PCSX tenant
+              ("EY", "careersite", "careers.ey.com"),  # SuccessFactors: sitemap + microdata
+              ("KPMG India", "oracle", "ejgk.fa.em2.oraclecloud.com/CX_1"),
           ]:
               try:
                   titles = ADAPTERS[ats].list_titles(http, slug)
-                  jobs = ADAPTERS[ats].fetch(http, Company(name, ats, slug, india_only=True)) if titles else []
+                  company = Company(name, ats, slug, india_only=True)
+                  jobs = ADAPTERS[ats].fetch(http, company) if titles else []
+                  if ats == "oracle" and titles and not jobs:
+                      # The newest few pages may hold no title the role screen keeps (KPMG: audit, SFDC);
+                      # the detail call is what needs proving, so fetch the newest job's text directly.
+                      first = oracle.requisitions(http, slug, 1)[0]
+                      job = oracle.parse_detail(http.get_json(oracle.detail_url(slug, first["Id"])), company, first)
+                      jobs = [job] if job else []
               except FetchError as e:
                   # One blocked host shouldn't hide whether the other adapters work.
                   print(f"{ats} {slug}: FAILED {e}")

@@ -1,0 +1,32 @@
+{
+ "items": [
+  {
+   "Id": "INTG10048124",
+   "Title": "Executive - SFDC - Technical",
+   "RequisitionType": "KI Professional",
+   "ExternalPostedStartDate": "2026-07-24T03:27:29+00:00",
+   "JobSchedule": "Full time",
+   "ExternalDescriptionStr": "<p><strong>About KPMG in India</strong></p>\n<p><i><strong>KPMG entities in India are professional services firm(s). These Indian member firms are affiliated with KPMG International Limited.</strong></i></p>",
+   "PrimaryLocation": "Bangalore, Karnataka, India",
+   "PrimaryLocationCountry": "IN",
+   "ExternalQualificationsStr": "<p>Engineering Grad / Postgraduate</p>",
+   "InternalQualificationsStr": "<p>Engineering Grad / Postgraduate</p>",
+   "ExternalResponsibilitiesStr": "<ul><li><span style=\"color:black\"><strong>LWC, Apex, Visualforce Page, Aura Framework, CSS frameworks, Java Scripting, JQuery, and Lightning platform capabilities and limitations.</strong></span></li><li><span style=\"color:black\">4+ years of experience functioning as </span><a href=\"https://urldefense.com/v3/__http:/Salesforce.com__\"><span style=\"color:black\">Salesforce.com</span></a><span style=\"color:black\"> for Enterprise edition or higher</span></li></ul>",
+   "WorkplaceType": "",
+   "secondaryLocations": [],
+   "workLocation": [
+    {
+     "LocationId": 300000007677529,
+     "LocationName": "Bangalore - EGL Pebble Beach -KPMG",
+     "TownOrCity": "Bangalore",
+     "Country": "IN",
+     "Region2": "Karnataka"
+    }
+   ]
+  }
+ ],
+ "count": 1,
+ "hasMore": false,
+ "limit": 499,
+ "offset": 0
+}

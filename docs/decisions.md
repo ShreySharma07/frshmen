@@ -4,6 +4,23 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-08 — More hiring sources: company career sites
+- **Options:** a career-page reader (schema.org job data, SuccessFactors, Oracle Recruiting) · GitHub new-grad lists · Adzuna India API · public Google Sheets lists · Reddit/Telegram. Ruled out: X/Twitter (reading needs the paid API; scraping breaks its terms), and Wellfound, Naukri, Instahyre, Cutshort, YC Work at a Startup (no public API; terms forbid scraping).
+- **Choice (Shrey):** the career-page reader first.
+  - `sources/careersite.py`: the sitemap lists job pages. URL words are screened for India and for titles the role rules could accept, then each page's schema.org JobPosting (JSON-LD or SuccessFactors microdata) is read. Their RSS feeds under `/services/` are robots-disallowed, so they aren't used.
+  - `sources/oracle.py`: the JSON API Oracle Recruiting career sites call themselves.
+  - Both fetch at most 150 job pages per board per run (newest first) and reuse stored pages for 3 days.
+- **Added (all `india_only`):** EY, Capgemini, HCLTech, Wipro, ZS (careersite); KPMG India, KPMG Global Services, EXL (oracle). ZS's robots.txt asks for a 5 s crawl delay, which the per-host pacing honours. HCLTech and ZS URLs don't name a place, so those pages are fetched and their location checked after the India ones.
+- **Checked, not readable:**
+  - Globant: no job data on its pages.
+  - EPAM: gzipped sitemap and `/vacancy/` paths; 0 India roles anyway.
+  - Persistent: its sitemap lists only the homepage.
+  - Infosys: blocked by Akamai.
+  - Flipkart: uses TurboHire.
+  - Urban Company, Zerodha, Swiggy: JavaScript-only sites.
+  - IBM, Deloitte: on Avature, with empty or other-host sitemaps.
+- **Future scope (Shrey):** a "Paste a job link" box, admin only, for jobs seen on X, WhatsApp or Telegram. Not built.
+
 ## 2026-10-08 — Every job on the page; Gemini only on request
 - **Why:** a run found 37 target freshers, but the page showed 4. The location rules and the 30-day age rule hid the rest before the reader chose anything.
 - **Scope. Options:** every job with every filter · target roles at every location · today's role and location rules at every level

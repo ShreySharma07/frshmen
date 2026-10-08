@@ -1,0 +1,52 @@
+{
+ "items": [
+  {
+   "SearchId": 1,
+   "Offset": 0,
+   "Limit": 25,
+   "SortBy": "POSTING_DATES_DESC",
+   "TotalJobsCount": 3,
+   "SiteNumber": "CX_1",
+   "requisitionList": [
+    {
+     "Id": "INTG10040445",
+     "Title": "Manager - Data Engineer",
+     "PostedDate": "2026-07-24",
+     "PrimaryLocationCountry": "IN",
+     "PrimaryLocation": "Hyderabad, Telangana, India",
+     "WorkplaceType": "",
+     "secondaryLocations": []
+    },
+    {
+     "Id": "INTG10047804",
+     "Title": "Senior Manager - Sports Tech",
+     "PostedDate": "2026-07-24",
+     "PrimaryLocationCountry": "IN",
+     "PrimaryLocation": "Gurgaon, Haryana, India",
+     "WorkplaceType": "",
+     "secondaryLocations": []
+    },
+    {
+     "Id": "INTG10048124",
+     "Title": "Executive - SFDC - Technical",
+     "PostedDate": "2026-07-24",
+     "PrimaryLocationCountry": "IN",
+     "PrimaryLocation": "Bangalore, Karnataka, India",
+     "WorkplaceType": "",
+     "secondaryLocations": []
+    }
+   ],
+   "locationsFacet": [
+    {
+     "Id": 300000000296042,
+     "Name": "India",
+     "TotalCount": 472
+    }
+   ]
+  }
+ ],
+ "count": 1,
+ "hasMore": false,
+ "limit": 200,
+ "offset": 0
+}

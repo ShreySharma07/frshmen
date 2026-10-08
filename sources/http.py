@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 USER_AGENT = "frshmen-jobboard/0.1 (personal job board; +https://github.com/ShreySharma07/frshmen)"
 MIN_SECONDS_PER_HOST = 2.0
 # Workable throttles far harder than the others (429 with Retry-After: 0).
-HOST_INTERVAL = {"apply.workable.com": 5.0}
+HOST_INTERVAL = {"apply.workable.com": 5.0, "jobs.zs.com": 5.0}  # ZS: robots.txt crawl-delay 5
 MAX_RETRIES = 4
 RETRY_STATUSES = (429, 500, 502, 503, 504)
 NOT_FOUND_STATUSES = (400, 404, 410)
