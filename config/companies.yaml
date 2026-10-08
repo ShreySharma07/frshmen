@@ -624,3 +624,25 @@ companies:
   - {name: Writesonic, category: yc, hq: in, ats: ashby, slug: writesonic, verified: false, checked: '2026-10-06'}
   - {name: Zensors, category: yc, hq: us, ats: ashby, slug: zensors, verified: true, jobs: 5, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Zuma, category: yc, hq: us, ats: ashby, slug: resident-boost, verified: false, checked: '2026-10-06'}
+
+  # --- Auto-discovered on 2026-10-08 (scripts/discover_companies.py) ---
+  - {name: ClickHouse, category: hn, hq: global, ats: ashby, slug: clickhouse, verified: true, jobs: 197, ai_jobs: 25, checked: '2026-10-08'}
+  - {name: Prior Labs, category: hn, hq: global, ats: ashby, slug: prior-labs, verified: true, jobs: 24, ai_jobs: 9, checked: '2026-10-08'}
+  - {name: SentiLink, category: hn, hq: global, ats: ashby, slug: sentilink, verified: true, jobs: 51, ai_jobs: 8, checked: '2026-10-08'}
+  - {name: Discord, category: hn, hq: global, ats: greenhouse, slug: discord, verified: true, jobs: 47, ai_jobs: 7, checked: '2026-10-08'}
+  - {name: Artificial Analysis, category: hn, hq: global, ats: ashby, slug: artificialanalysis, verified: true, jobs: 18, ai_jobs: 6, checked: '2026-10-08'}
+  - {name: Blackcanyonconsulting, category: hn, hq: global, ats: greenhouse, slug: blackcanyonconsulting, verified: true, jobs: 78, ai_jobs: 4, checked: '2026-10-08'}
+  - {name: Loft Orbital, category: hn, hq: global, ats: lever, slug: loftorbital, verified: true, jobs: 57, ai_jobs: 4, checked: '2026-10-08'}
+  - {name: Longshot Systems, category: hn, hq: global, ats: workable, slug: longshot-systems-ltd, verified: true, jobs: 4, ai_jobs: 3, checked: '2026-10-08'}
+  - {name: ICEYE, category: hn, hq: global, ats: ashby, slug: iceye, verified: true, jobs: 188, ai_jobs: 2, checked: '2026-10-08'}
+  - {name: Solace Health, category: hn, hq: global, ats: ashby, slug: Solace, verified: true, jobs: 27, ai_jobs: 2, checked: '2026-10-08'}
+  - {name: Oscilar.com, category: hn, hq: global, ats: ashby, slug: oscilar, verified: true, jobs: 21, ai_jobs: 2, checked: '2026-10-08'}
+  - {name: Hiya, category: hn, hq: global, ats: ashby, slug: hiya, verified: true, jobs: 20, ai_jobs: 2, checked: '2026-10-08'}
+  - {name: Middesk, category: hn, hq: global, ats: ashby, slug: middesk, verified: true, jobs: 17, ai_jobs: 2, checked: '2026-10-08'}
+  - {name: Rebar, category: hn, hq: global, ats: ashby, slug: rebar, verified: true, jobs: 14, ai_jobs: 2, checked: '2026-10-08'}
+  - {name: LiveKit, category: hn, hq: global, ats: ashby, slug: livekit, verified: true, jobs: 29, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: Aiuc, category: hn, hq: global, ats: ashby, slug: aiuc, verified: true, jobs: 13, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: Wikimedia Foundation, category: hn, hq: global, ats: greenhouse, slug: wikimedia, verified: true, jobs: 12, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: Mastra, category: hn, hq: global, ats: ashby, slug: mastra, verified: true, jobs: 2, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: Modash.io, category: hn, hq: global, ats: workable, slug: modash, verified: true, jobs: 27, ai_jobs: 0, checked: '2026-10-08'}
+  - {name: Mattermost, category: hn, hq: global, ats: greenhouse, slug: mattermost, verified: true, jobs: 14, ai_jobs: 0, checked: '2026-10-08'}
