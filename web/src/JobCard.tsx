@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { fetchJob, type JobDetail, type JobSummary } from "./api";
+import { FitCheck } from "./FitCheck";
 import { FAMILY_LABEL, cleanSnippet, experienceLabel, kindLabel, levelLabel, locationLine, reasonText, timeAgo } from "./format";
 
 interface Props {
   job: JobSummary;
   open: boolean;
+  // Off unless the Worker has the fit check switched on (/api/meta fit_check).
+  fitCheck: boolean;
   onToggle: () => void;
 }
 
-export function JobCard({ job, open, onToggle }: Props) {
+export function JobCard({ job, open, fitCheck, onToggle }: Props) {
   const [detail, setDetail] = useState<JobDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,7 +89,7 @@ export function JobCard({ job, open, onToggle }: Props) {
                 </ul>
               </section>
               <section>
-                <h3>Why it's a role for you</h3>
+                <h3>{detail.role_match ? "Why it's one of your target roles" : "Not one of your target roles"}</h3>
                 <p className="detail__reason">{detail.role_reason}</p>
                 <ul className="evidence-list">
                   {detail.evidence.role
@@ -99,6 +102,7 @@ export function JobCard({ job, open, onToggle }: Props) {
                     ))}
                 </ul>
               </section>
+              {fitCheck && <FitCheck jobId={job.id} />}
               <section>
                 <h3>Description</h3>
                 <div className="detail__description">{detail.description_text}</div>

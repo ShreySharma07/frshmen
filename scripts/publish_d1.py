@@ -37,6 +37,10 @@ from pathlib import Path
 from typing import Any, Protocol
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "api" / "src"))  # SQL shared with the API
+
+from queries import snapshot_sql  # noqa: E402
+
 DEFAULT_JOBS = ROOT / "data" / "jobs.json"
 MIGRATIONS = ROOT / "db" / "migrations"
 
@@ -47,8 +51,9 @@ MAX_DESCRIPTION_CHARS = 60_000
 CLOSE_AFTER_MISSES = 2
 # 8 scheduled runs a day x 12k stays under D1's 100k rows written/day even if every run is busy.
 MAX_ROWS_WRITTEN_PER_RUN = 12_000
-# Rows D1 counts per statement kind: the row itself, plus idx_jobs_feed when an indexed column moves.
-COST_INDEXED, COST_PLAIN = 2, 1
+# Rows D1 counts per statement kind: the row itself, plus idx_jobs_recent and idx_jobs_level
+# when an indexed column (status, level, posted_at) moves.
+COST_INDEXED, COST_PLAIN = 3, 1
 
 TEXT_FIELDS = [
     "source", "company", "company_slug", "title", "url", "location_raw",
@@ -272,7 +277,8 @@ def publish(db: Database, payload: dict[str, Any], now: str | None = None) -> Pl
     existing = db.query("SELECT id, source, company_slug, content_hash, extract_version, extract_hash, status, "
                         "missed_runs FROM jobs")
     p = plan(payload["jobs"], payload.get("boards_ok", []), existing, now)
-    db.execute_script("\n".join(s for s in [p.sql, run_row(p, payload, now)] if s))
+    # The snapshot goes last so its counts include this run's writes.
+    db.execute_script("\n".join(s for s in [p.sql, run_row(p, payload, now), snapshot_sql(now)] if s))
     return p
 
 

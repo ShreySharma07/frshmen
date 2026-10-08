@@ -4,6 +4,27 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-08 — Every job on the page; Gemini only on request
+- **Why:** a run found 37 target freshers, but the page showed 4. The location rules and the 30-day age rule hid the rest before the reader chose anything.
+- **Scope. Options:** every job with every filter · target roles at every location · today's role and location rules at every level
+- **Choice (Shrey):** every open job (~21k), newest first, 20 per page with page numbers.
+  - Experience filter: all, fresher, internships (by title), 0–1 to 0–5 yrs, not stated, experienced.
+  - Role filter: all, my target roles, AI/ML, backend, mobile.
+  - Posted filter: any, new in 24h, 7 days, 30 days. This supersedes "hide postings older than 30 days".
+  - The location and visa rules become an opt-in "Only where I can work" filter.
+  - The rules still label every job; nothing about what counts as fresher changes.
+- **Pipeline LLM:** removed (Shrey). The 2026-10-07 Gemini review of `maybe` jobs is gone; labels come from the rules only.
+- **Gemini fit check:** built, but off (Shrey: "build it as a feature, don't enable it for now"; who may use it is decided later).
+  - `POST /api/jobs/{id}/fit` compares a resume the reader pastes (kept in their browser, never stored) with one job.
+  - It runs only when the Worker has `FIT_CHECK = "on"` and a `GEMINI_API_KEY` secret. Until then it answers 404 and the button is hidden.
+  - Each check is one free-tier Gemini request.
+- **Free-tier reads (D1, 5M rows/day):**
+  - Migration 0005 replaces `idx_jobs_feed` with `idx_jobs_recent` and `idx_jobs_level`, both ending in the sort key, so a page reads about 20 rows.
+  - The total is counted only once per filter set.
+  - The filter lists come from a snapshot that publish writes after each run (one row), instead of ~100k reads per page load.
+  - Rare filters (country, search) still scan more. Building the index writes about one row per job once, in the next run.
+- **Write cost:** each insert now touches two indexes, so `COST_INDEXED` is 3. That's still under 100k rows/day at 8 runs.
+
 ## 2026-10-07 — Gemini model name, and failed calls
 - **Found:** with the key added, every call to `gemini-2.5-flash-lite` answered HTTP 404. The model is still listed, but its Cloud retirement is 2026-10-20 and Google no longer serves it to this key. The first eval reported a false 100%, because unanswered calls counted as "no usable answer". The pipeline would also have cached those failures and never asked again.
 - **Fix:** try `gemini-3.5-flash-lite`, then `gemini-3.1-flash-lite`, then `gemini-2.5-flash-lite`, moving on at each 404 (`GEMINI_MODEL` overrides the list). Still the Flash-Lite tier Shrey chose, so the free-tier limits above apply; check AI Studio's rate-limit page for the exact numbers per model. Failed calls are never cached. Three failures in a row stop that run's reviews. The eval now fails unless every call gets an answer.

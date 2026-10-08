@@ -43,7 +43,7 @@ Decision table:
 - `experienced`: any required YoE min >= 2, or senior-style title.
 - `maybe`: no YoE stated and no fresher signal, or conflicting signals. Show in a separate tab, never mixed into `fresher`.
 
-LLM fallback (only for `maybe`): send the description with a strict JSON schema (`yoe_required_min`, `yoe_required_max`, `fresher_friendly`, `evidence_quote`). Reject any answer whose `evidence_quote` is not a verbatim substring of the description. Cache results by `content_hash`.
+LLM: none in the pipeline (removed 2026-10-08). Gemini is only an opt-in, per-job "Check my fit" in the API (`api/src/fit.py`), off unless the Worker sets `FIT_CHECK=on`.
 
 Checks: every new misclassification becomes a fixture in `tests/fixtures/labeled/postings.jsonl` first. Report precision on the `fresher` bucket after any change: `python scripts/eval_extractor.py` (exits non-zero if fresher precision drops below 100%). Code lives in `extract/` (`sections.py` → clauses with preferred/required section, `yoe.py`, `signals.py`, `classify.py`).
 
@@ -87,7 +87,7 @@ Steps:
 
 Steps:
 1. Page (React on Cloudflare Pages) reads jobs from the FastAPI backend on Cloudflare Python Workers, which queries D1. See `docs/decisions.md`.
-2. Required views: Fresher (default), Maybe, New in last 24h. Required filters: location type, country, visa, skills, company, source.
+2. The page lists every open job, newest first, 20 per page. Filters: experience (fresher, internship, 0–N yrs, not stated, experienced), role, company, country/city, work mode, posted, and "only where I can work" (location/visa rules). Filter lists come from the `meta` snapshot publish writes; keep list queries on `idx_jobs_recent`/`idx_jobs_level` (`api/src/queries.py`).
 3. Each card shows: title, company, location type, level badge with confidence, matched skills, and an "evidence" expander showing why it was labeled fresher (the quoted snippet).
 4. Mobile-friendly, fast, no heavy framework unless chosen in decisions.md. Check accessibility basics.
 
