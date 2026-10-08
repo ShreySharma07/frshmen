@@ -122,3 +122,18 @@ def test_oracle_india_only_drops_other_countries():
         r["Title"], r["PrimaryLocationCountry"] = "Machine Learning Engineer", "US"
     http = FakeHttp({oracle.list_url(KPMG.slug, 0): listing})
     assert oracle.fetch(http, KPMG) == []
+
+
+def test_urls_without_place_or_title_are_kept_after_india_ones():
+    entries = [
+        ("https://careers.hcltech.com/job/Python-AI-Engineer/1357133655/", "2026-10-07"),  # no place (HCLTech)
+        ("https://jobs.zs.com/jobs/68093?lang=en-us", "2026-10-06"),  # no words at all (ZS)
+        ("https://careers.hcltech.com/job/Pune-ML-Engineer/1357133656/", "2026-10-01"),  # India, older
+        ("https://careers.hcltech.com/job/Dallas-ML-Engineer-USA/1357133657/", "2026-10-08"),  # elsewhere
+        ("https://careers.hcltech.com/job/Pune-Tax-Auditor/1357133658/", "2026-10-08"),  # not a target title
+    ]
+    assert careersite.screen(entries, india_only=True) == [
+        "https://careers.hcltech.com/job/Pune-ML-Engineer/1357133656/",
+        "https://careers.hcltech.com/job/Python-AI-Engineer/1357133655/",
+        "https://jobs.zs.com/jobs/68093?lang=en-us",
+    ]

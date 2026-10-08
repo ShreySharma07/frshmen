@@ -46,7 +46,7 @@ def sitemap_url(slug: str) -> str:
 def _words(url: str) -> str:
     """"/ey/job/Bengaluru-Associate-SaT-TMT/1423670533/" -> "Bengaluru Associate SaT TMT"."""
     path = unquote(unescape(urlparse(url).path))
-    tail = path.split("/job/", 1)[-1] if "/job/" in path else path
+    tail = re.split(r"/jobs?/", path, maxsplit=1, flags=re.I)[-1]
     return re.sub(r"[-_/+]+|\d{5,}", " ", tail).strip()
 
 
@@ -74,17 +74,33 @@ def _title_could_fit(words: str) -> bool:
     return m.is_target or m.family is not None
 
 
+def _india_rank(words: str) -> int | None:
+    """0 = URL names India, 1 = names no country (HCLTech, ZS), None = clearly elsewhere.
+
+    fetch_jobs re-checks each fetched job's full location for india_only boards.
+    """
+    countries = extract_location(words).countries
+    if "India" in countries:
+        return 0
+    return 1 if not countries else None
+
+
 def screen(entries: list[tuple[str, str]], india_only: bool) -> list[str]:
-    """Job URLs worth a page fetch: titles that could fit (and India for india_only boards), newest first."""
+    """Job URLs worth a page fetch, best first: India before unknown places (india_only boards),
+    then newest. URLs with no title words (ZS: "/jobs/68093") can't be screened and are kept."""
     keep = []
     for url, lastmod in entries:
         words = _words(url)
-        if not _title_could_fit(words):
+        has_title = bool(re.search(r"[A-Za-z]{3}", words))
+        if has_title and not _title_could_fit(words):
             continue
-        if india_only and "India" not in extract_location(words).countries:
+        rank = _india_rank(words) if india_only else 0
+        if rank is None:
             continue
-        keep.append((lastmod, url))
-    return [url for _, url in sorted(keep, key=lambda e: e[0], reverse=True)]
+        keep.append((rank, lastmod, url))
+    keep.sort(key=lambda e: e[1], reverse=True)  # newest first...
+    keep.sort(key=lambda e: e[0])  # ...within each rank (stable sort)
+    return [url for _, _, url in keep]
 
 
 def list_titles(http: HttpClient, slug: str) -> list[str] | None:
