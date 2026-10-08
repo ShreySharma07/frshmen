@@ -1,7 +1,7 @@
 # CLAUDE.md — Personal AI/ML Fresher Job Board
 
 ## What this project is
-A personal job board for one user (Shrey). It polls company hiring sources continuously, extracts structured data from each posting, and shows only **fresher-level AI/ML roles** on a web page, newest first. Accuracy of filtering is the whole point: if a posting says "2+ years" anywhere in the description, it must NOT show up as a fresher role.
+A personal job board for one user (Shrey). It polls company hiring sources continuously, extracts structured data from each posting, and lists **every open job** on a web page, newest first, 20 per page, with filters for fresher/internship/0–N years/experienced, role, location and visa (decided 2026-10-08, see `docs/decisions.md`). Accuracy of the labels is the whole point: if a posting says "2+ years" anywhere in the description, it must NOT be labelled fresher.
 
 Read `skills.md` before touching extraction, sources, or filtering. It holds the reusable procedures for this repo.
 
@@ -28,7 +28,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 1. **Discover** companies and their ATS (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, plus YC and Hacker News "Who is hiring").
 2. **Fetch** postings via each ATS's public JSON endpoint on a schedule.
 3. **Normalize** to one schema (see below). Dedupe.
-4. **Extract** experience, batch year, location type, visa sponsorship, skills via rules first, LLM only for ambiguous cases (see `skills.md`).
+4. **Extract** experience, batch year, location type, visa sponsorship, skills via rules (see `skills.md`). No LLM in the pipeline.
 5. **Classify** into `fresher` / `maybe` / `experienced` with confidence + evidence.
 6. **Publish** classified jobs to D1; the web page reads them through the Python API (see `docs/decisions.md`). New postings are flagged with first-seen time.
 
