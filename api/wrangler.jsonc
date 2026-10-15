@@ -15,6 +15,11 @@
       "migrations_dir": "../db/migrations"
     }
   ],
+  // Supabase Postgres through Hyperdrive's connection pool (M3). The password lives in the
+  // Hyperdrive config on Cloudflare, not here; the ID alone grants nothing.
+  "hyperdrive": [
+    { "binding": "HYPERDRIVE", "id": "57f743f973844bb2b339af1278604312" }
+  ],
   "assets": {
     // The React build. Served without running Python, so page loads don't use Worker requests.
     "directory": "../web/dist",
