@@ -4,6 +4,18 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-15 — Backend, frontend, platform order (M1, part 1)
+- **Backend. Options:** FastAPI · Django (built-in admin, auth and ORM; the API would be rewritten) · TypeScript (Next.js API routes / Hono)
+- **Choice (Shrey):** FastAPI. It's already built, async and streaming-friendly for AI agents, and shares Python with the pipeline. Where it's hosted is decided together with the database.
+- **Frontend. Options:** Next.js · React + Vite (current)
+- **Choice (Claude, delegated by Shrey):** Next.js (React + TypeScript, App Router).
+  - Server-rendered job pages get indexed and show preview cards on WhatsApp and LinkedIn, which is the main growth channel across colleges.
+  - The motion and graphics libraries (Motion, GSAP, React Three Fiber, Rive) all work, as client components.
+  - The migration from Vite happens in M4.
+- **Platforms (Shrey):** web first; a mobile app later. Shared TypeScript types, API client and design tokens keep a React Native/Expo app cheap to add.
+- **Frontend quality (Shrey):** no "AI slop". `CLAUDE.md` now has a "Frontend standards" section: banned patterns, design tokens first, the motion/graphics toolkit, motion rules, a performance budget and a process.
+- **Still open in M1:** the database and login (options in this conversation: Supabase Postgres + Supabase Auth, Neon + Better Auth, or staying on Cloudflare D1).
+
 ## 2026-10-08 — More hiring sources: company career sites
 - **Options:** a career-page reader (schema.org job data, SuccessFactors, Oracle Recruiting) · GitHub new-grad lists · Adzuna India API · public Google Sheets lists · Reddit/Telegram. Ruled out: X/Twitter (reading needs the paid API; scraping breaks its terms), and Wellfound, Naukri, Instahyre, Cutshort, YC Work at a Startup (no public API; terms forbid scraping).
 - **Choice (Shrey):** the career-page reader first.
