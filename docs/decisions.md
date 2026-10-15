@@ -4,6 +4,21 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-15 — Where FastAPI runs with Supabase (M3)
+- **Options:**
+  - stay on Cloudflare Python Workers and reach Supabase Postgres through Hyperdrive
+  - Render free web service
+  - Google Cloud Run
+- **Choice (Shrey):** Cloudflare Python Workers + Hyperdrive.
+- **Why:** nothing moves (same deploy, same URL), and it never sleeps, so there's no cold start for students on slow phones. Render sleeps after 15 min idle (about a minute to wake); Cloud Run needs a card on file.
+- **Free tier (checked 2026-10-15):** Workers 100k requests/day and 10 ms CPU per request; Hyperdrive 100k database queries/day. Python Workers gained Hyperdrive support in Sept 2026, so examples are few.
+- **Ruled out:** Fly.io and Railway (no free tier for new accounts), Koyeb (card hold, one service, Frankfurt/Washington only).
+- **Consequences:**
+  - The D1 binding is replaced by a Hyperdrive binding with a Postgres driver; the queries move from SQLite to Postgres syntax.
+  - Long-running work (the referral agent, Phase 3+) won't fit 10 ms of CPU and will need its own host then.
+
+---
+
 ## 2026-10-15 — Multi-user schema (M2 done)
 - **Designed by Shrey** over four revisions; Claude reviewed with stress tests. Full table list in `docs/plan.md` §12.
 - **Options for job labels** (level, yoe, evidence):

@@ -38,7 +38,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 ## Architecture (decided; full rationale in `docs/decisions.md`)
 - Pipeline: Python, run by GitHub Actions cron
 - Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows). **Moving to Supabase Postgres + Supabase Auth** (2026-10-15; free tier: 500 MB DB, 50k MAU, pauses after 1 week idle)
-- Backend API: FastAPI on Cloudflare Python Workers, D1 binding today. **FastAPI stays** (2026-10-15); where it runs moves with the database decision (M1)
+- Backend API: FastAPI on Cloudflare Python Workers, D1 binding today. **FastAPI stays on Workers and reaches Supabase Postgres through Hyperdrive** (2026-10-15; free: 100k requests/day, 100k queries/day, 10 ms CPU per request)
 - Frontend: React (Vite + TypeScript) today. **Moving to Next.js (React + TypeScript)** (2026-10-15), web first and a mobile app later; see "Frontend standards" below
 - LLM: none in the pipeline (rules only). An optional, off-by-default "Check my fit" button calls Gemini from the API for one job at a time (see `docs/decisions.md`)
 - Companies: curated list in `config/companies.yaml`, plus hiring YC AI startups imported from the yc-oss dataset (`scripts/import_yc.py`); only verified boards are fetched
