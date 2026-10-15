@@ -350,7 +350,7 @@ Shrey's learning note.
 |---|---|---|
 | M1 ✅ | Tech stack decisions: FastAPI, Next.js, Supabase Postgres + Auth; web first, mobile later (2026-10-15) | Entries in `docs/decisions.md` |
 | M2 ✅ | Schema design for the multi-user product (2026-10-15, §12) | Table definitions reviewed by Shrey |
-| M3 | Data migration plan (current D1 jobs to the new database) | Migration script design, dry run |
+| M3 | Data migration plan (current D1 jobs to the new database; design in §13, host pending) | Migration script design, dry run |
 | M4 | Rebrand + UI foundations (name, design tokens, layout) | Phase 1 begins |
 | M5+ | Phase 1 features one by one (onboarding, mobile layout, job pages…) | |
 
@@ -382,3 +382,43 @@ Rules against duplicates:
 Open for later milestones: university email-domain verification (groups), skills per student
 (match scoring), and dropping descriptions of long-closed jobs (M3).
 
+
+---
+
+## 13. Data migration (M3, designed by Shrey, 2026-10-15)
+
+### What moves
+- D1 only knows jobs, so only `companies`, `jobs` and `job_labels` are filled.
+- `students`, `universities` and `applications` start empty and fill as students sign up.
+- Order: **companies → jobs → job_labels**. Each table only points to tables already filled
+  (foundation, walls, roof).
+- One D1 job row splits in two: the posting goes to `jobs`, the level/yoe/evidence go to
+  `job_labels`. A company's 12 jobs all point to its one `companies` row.
+
+### Making it safe to run twice
+- **Upsert by id.** Every job keeps its source id (e.g. `careersite:careers.ey.com:1423670533`).
+  If the id already exists, the row is updated, not added. Running the migration twice gives
+  the same result as running it once. The 3-hourly pipeline relies on the same rule.
+- **Small batches in transactions** (~500 jobs). If the connection drops, only the unfinished
+  batch rolls back, not all 21,000. Re-running continues safely because of the upsert.
+- **Write only what changed.** `content_hash` already tells the pipeline when a job is
+  unchanged, so it's skipped.
+- **Check after the run:** row counts per company and per level match D1 before the page
+  switches over.
+
+### Open decision: where FastAPI runs (researched 2026-10-15)
+
+| Option | Free tier | Catch |
+|---|---|---|
+| **A. Stay on Cloudflare Python Workers, reach Supabase through Hyperdrive** (Cloudflare's database connection pooler; Python support added Sept 2026) | 100k requests/day, 100k database queries/day, 10 ms CPU per request; no sleeping | Python + Hyperdrive is new, so fewer examples. Long-running work (the referral agent later) won't fit 10 ms of CPU and would need a second host then. |
+| **B. Render free web service** (normal container, any Python library) | 750 instance hours/month | Sleeps after 15 min idle; the first visitor waits about a minute. Render may restart it at any time. |
+| **C. Google Cloud Run** (container) | 2M requests/month, 180k vCPU-seconds/month, scales to zero | Needs a billing account with a card. Cold starts of a few seconds. |
+
+Ruled out: Fly.io and Railway (no free tier for new accounts), Koyeb (card hold, one service,
+Frankfurt/Washington only).
+
+**Recommendation: A.** Nothing moves: same deploy, same URL, no cold start for students on slow
+phones, and the free limits cover far more traffic than we have. Revisit when the referral agent
+(Phase 3+) needs long-running work; that piece can go to B or C alone.
+
+**Shrey's choice:** pending.
