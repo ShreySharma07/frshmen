@@ -37,9 +37,9 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 
 ## Architecture (decided; full rationale in `docs/decisions.md`)
 - Pipeline: Python, run by GitHub Actions cron
-- Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows)
-- Backend API: FastAPI on Cloudflare Python Workers, D1 binding
-- Frontend: React (Vite + TypeScript), served by the same Worker via Workers Static Assets
+- Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows). **Moving to Supabase Postgres + Supabase Auth** (2026-10-15; free tier: 500 MB DB, 50k MAU, pauses after 1 week idle)
+- Backend API: FastAPI on Cloudflare Python Workers, D1 binding today. **FastAPI stays** (2026-10-15); where it runs moves with the database decision (M1)
+- Frontend: React (Vite + TypeScript) today. **Moving to Next.js (React + TypeScript)** (2026-10-15), web first and a mobile app later; see "Frontend standards" below
 - LLM: none in the pipeline (rules only). An optional, off-by-default "Check my fit" button calls Gemini from the API for one job at a time (see `docs/decisions.md`)
 - Companies: curated list in `config/companies.yaml`, plus hiring YC AI startups imported from the yc-oss dataset (`scripts/import_yc.py`); only verified boards are fetched
 - Any change to the above is a new decision: present options, let Shrey choose, log it.
@@ -61,3 +61,82 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Keep modules small: one adapter per source in `sources/`, extraction in `extract/`, nothing source-specific leaks outside adapters.
 - Config in `config/` (profile, company list, keyword lists), not hardcoded.
 - Prefer boring, readable code with type hints. Comment the why, not the what.
+
+## Frontend standards (read before any UI work)
+The site must look designed by a person with taste, not generated. Web first; a mobile app
+(React Native/Expo) comes later and reuses the API client, types and design tokens.
+
+### Banned ("AI slop" tells)
+- Purple/blue gradient heroes, glassmorphism everywhere, glowing blobs, and "bento grid" by default.
+- Generic copy ("Supercharge your career", "Unlock your potential"), emoji bullet lists, and
+  sparkle icons for anything AI.
+- Stock 3D illustrations and random floating shapes.
+- Default shadcn/Tailwind look shipped unstyled, and Inter on everything.
+- Motion with no purpose: everything fading up on scroll, or parallax for its own sake.
+- Placeholder content. Show real jobs, real counts and real evidence snippets.
+
+### Design system first
+- **Tokens are written before components**, in one place (CSS variables, mirrored in a TS file for
+  the future mobile app):
+  - colour: a small palette with one accent and semantic roles, with dark mode designed, not
+    inverted
+  - a type scale
+  - spacing
+  - radius
+  - elevation
+  - motion durations and easings
+- **Typography:** at most two families. A distinctive display face (e.g. from Fontshare or Google
+  Fonts) and a highly legible text face, self-hosted with `next/font`.
+- **Styling:** Tailwind CSS v4 on top of the tokens.
+- **Component behaviour:** Radix Primitives or React Aria (accessible menus, dialogs, tabs).
+  shadcn/ui is fine as a starting point only if it's restyled to our tokens.
+- **Icons:** one set only (Lucide or Phosphor), one stroke weight.
+
+### Motion and graphics toolkit (pick the lightest tool that does the job)
+| Need | Tool |
+|---|---|
+| UI state: enter/exit, layout shifts, shared-element card → detail, gestures | **Motion** (`motion/react`, formerly Framer Motion) |
+| Route/page transitions | **View Transitions API** (supported in Next.js), with Motion as the fallback |
+| Scroll storytelling, pinned sections, text reveals on the landing page | **GSAP** + ScrollTrigger + SplitText (all free for commercial use since GSAP 3.13) |
+| Smooth scrolling | **Lenis**, on the landing page only, never on the job list |
+| Cheap scroll-linked effects | CSS scroll-driven animations (`animation-timeline`) |
+| Interactive vector animation (mascot, empty states, onboarding) | **Rive** (state machines; smaller than Lottie); Lottie only for simple one-off icons |
+| 3D hero moment | **React Three Fiber** + drei, lazy-loaded, with a static image fallback; landing page only |
+| Data visuals (skill heatmaps, trends) | Visx or plain SVG, styled with our tokens |
+
+### Motion rules
+- **Every animation explains something:** where an item came from or went, what changed, what is
+  loading. If it explains nothing, remove it.
+- **Durations:**
+  - 150–250 ms for UI feedback
+  - 300–500 ms for layout and route changes
+  - up to ~800 ms for one-off landing moments
+- **Easing:** consistent curves from the tokens. No linear easing on UI, and no bounce on serious
+  actions.
+- **Animate only `transform` and `opacity`** (and `clip-path` sparingly). Never animate layout
+  properties.
+- **Respect `prefers-reduced-motion`.** Every animation has a reduced or no-motion version.
+
+### Performance budget (students are on budget Android phones and patchy 4G)
+- Job list route:
+  - LCP under 2.5 s on throttled 4G
+  - under ~170 KB of JavaScript (gzip)
+  - INP under 200 ms
+- GSAP, Lenis, Three.js and Rive load **only** on the routes that use them (dynamic import).
+- Test on Chrome DevTools with 4× CPU throttle and "Fast 4G", plus one real low-end Android, before
+  shipping UI.
+
+### Process for every UI change
+1. **Brief:** what the screen is for, the one thing the user must do, and real content samples.
+2. **References:** look at real products for the pattern (Mobbin, Godly, Awwwards, and products
+   like Linear, Vercel, Stripe, Raycast). Borrow the idea, never the look.
+3. **Sketch:** a low-fidelity wireframe, shown to Shrey before styling.
+4. **Build:** tokens → layout → content → motion, last.
+5. **Check:**
+   - Playwright screenshots at 390 px and 1280 px, light and dark
+   - keyboard navigation
+   - WCAG AA contrast
+   - the performance budget above
+6. **Learning:** Shrey builds as much as he can first. Claude explains with an analogy, then gives
+   hints, then (only if needed) the answer, never code first.
+

@@ -4,6 +4,68 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-15 — Multi-user schema (M2 done)
+- **Designed by Shrey** over four revisions; Claude reviewed with stress tests. Full table list in `docs/plan.md` §12.
+- **Options for job labels** (level, yoe, evidence):
+  - columns on the `jobs` row (today's D1 layout)
+  - a separate `job_labels` table
+- **Choice (Shrey):**
+  - Six tables: `universities`, `students`, `companies`, `jobs`, `applications`, `job_labels`.
+  - Things that exist on their own (universities, students, companies, jobs) each get an `id`.
+  - Events between them (a student applying to a job) live in `applications`.
+  - Labels live in `job_labels`, tagged with `rules_version`.
+- **Why:**
+  - One student applies to many jobs, so application status belongs to the application, not the student.
+  - University and company names are stored once, so "Lucknow University" vs "University of Lucknow" can't split a group, and one URL change edits one row.
+  - The posting (written by the company, changes rarely) and the labels (written by our rules, change on every rules update) are kept apart. A re-label never touches `first_seen_at` or the description, and old vs new labels can be compared to check fresher precision didn't regress.
+- **Rules against duplicates (Shrey):**
+  - one `applications` row per (student, job)
+  - one `companies` row per company, one `universities` row per university
+  - a new `job_labels` row only when the label actually changes
+  - keep only the current and previous label per job, to stay inside the 500 MB free tier
+- **Trade-off:** the job list needs one extra join to read the current label.
+
+---
+
+## 2026-10-15 — Database and login (M1, part 2; M1 done)
+- **Options:**
+  - Supabase Postgres + Supabase Auth
+  - Neon Postgres + Better Auth
+  - stay on Cloudflare D1 (SQLite) and add a login provider
+- **Choice (Shrey):** Supabase Postgres + Supabase Auth.
+- **Why:**
+  - Postgres replaces SQLite once there are users. It gives row-level security (each student reads only their own rows, enforced by the database), full-text search, and pgvector for skill↔job matching and the referral agent.
+  - Supabase Auth gives email magic links plus Google and LinkedIn sign-in ("Sign in with LinkedIn" = OpenID Connect profile/email only; see `docs/plan.md` §10).
+  - Supabase Storage holds resumes later.
+- **Free tier (checked on supabase.com/pricing, 2026-10-15):**
+  - 500 MB database
+  - 1 GB file storage
+  - 50,000 monthly active users
+  - 5 GB egress
+  - 2 active projects
+  - no backups
+  - paused after 1 week without activity
+- **Pro ($25/mo):** 8 GB database, 100k MAU, daily backups, no pausing. Budget decision: later (Shrey), so we stay on Free until launch.
+- **Watch the 500 MB:** ~21k jobs with full descriptions (~5 KB each) and evidence is already ~150 MB.
+  - Closed jobs should drop their description after a while (M2/M3 design).
+  - The pipeline keeps writing only changed rows.
+- **Consequences:**
+  - The database and FastAPI move off Cloudflare D1 / Python Workers. The container host is picked in M3 (data migration), where the free options (Render, Railway, Fly) are compared then.
+  - The pipeline (GitHub Actions) writes to Postgres instead of D1.
+  - Cloudflare stays for the domain and CDN.
+
+## 2026-10-15 — Backend, frontend, platform order (M1, part 1)
+- **Backend. Options:** FastAPI · Django (built-in admin, auth and ORM; the API would be rewritten) · TypeScript (Next.js API routes / Hono)
+- **Choice (Shrey):** FastAPI. It's already built, async and streaming-friendly for AI agents, and shares Python with the pipeline. Where it's hosted is decided together with the database.
+- **Frontend. Options:** Next.js · React + Vite (current)
+- **Choice (Claude, delegated by Shrey):** Next.js (React + TypeScript, App Router).
+  - Server-rendered job pages get indexed and show preview cards on WhatsApp and LinkedIn, which is the main growth channel across colleges.
+  - The motion and graphics libraries (Motion, GSAP, React Three Fiber, Rive) all work, as client components.
+  - The migration from Vite happens in M4.
+- **Platforms (Shrey):** web first; a mobile app later. Shared TypeScript types, API client and design tokens keep a React Native/Expo app cheap to add.
+- **Frontend quality (Shrey):** no "AI slop". `CLAUDE.md` now has a "Frontend standards" section: banned patterns, design tokens first, the motion/graphics toolkit, motion rules, a performance budget and a process.
+- **Still open in M1:** the database and login (options in this conversation: Supabase Postgres + Supabase Auth, Neon + Better Auth, or staying on Cloudflare D1).
+
 ## 2026-10-08 — More hiring sources: company career sites
 - **Options:** a career-page reader (schema.org job data, SuccessFactors, Oracle Recruiting) · GitHub new-grad lists · Adzuna India API · public Google Sheets lists · Reddit/Telegram. Ruled out: X/Twitter (reading needs the paid API; scraping breaks its terms), and Wellfound, Naukri, Instahyre, Cutshort, YC Work at a Startup (no public API; terms forbid scraping).
 - **Choice (Shrey):** the career-page reader first.
