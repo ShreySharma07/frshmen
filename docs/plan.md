@@ -349,7 +349,36 @@ Shrey's learning note.
 | # | Milestone | Output |
 |---|---|---|
 | M1 ✅ | Tech stack decisions: FastAPI, Next.js, Supabase Postgres + Auth; web first, mobile later (2026-10-15) | Entries in `docs/decisions.md` |
-| M2 | Schema design for the multi-user product | ER diagram + table definitions reviewed by Shrey |
+| M2 ✅ | Schema design for the multi-user product (2026-10-15, §12) | Table definitions reviewed by Shrey |
 | M3 | Data migration plan (current D1 jobs to the new database) | Migration script design, dry run |
 | M4 | Rebrand + UI foundations (name, design tokens, layout) | Phase 1 begins |
 | M5+ | Phase 1 features one by one (onboarding, mobile layout, job pages…) | |
+
+---
+
+## 12. Schema (M2, designed by Shrey, 2026-10-15)
+
+Things that exist on their own get an `id`. Things that happen between them get their own table
+that points at both. (Like a school register: one page per student, a separate marks sheet for
+"student 14 scored 72 in maths".)
+
+| Table | Columns | Points to |
+|---|---|---|
+| `universities` | id, name (one correct spelling) | |
+| `students` | id, name, university_id, yoe, resume_path | universities |
+| `companies` | id, name, careers_site | |
+| `jobs` | id, company_id, title, url, location, description, posted_at, first_seen_at, status (open/closed) | companies |
+| `applications` | id, student_id, job_id, status (applied/interview/offer/rejected), applied_at | students, jobs |
+| `job_labels` | job_id, level, yoe_min, yoe_max, evidence, rules_version, labelled_at | jobs |
+
+Rules against duplicates:
+- `applications`: one row per (student_id, job_id); applying twice is refused by the database.
+- `companies` and `universities`: one row per real company or university. Students pick from the
+  list rather than typing a name.
+- `job_labels`: a new row only when level, yoe or evidence changes. Keep the current and the
+  previous label per job, enough to compare a rules update, small enough for 500 MB.
+- `students` store `yoe` only. "Fresher" is worked out from it, so two columns can't disagree.
+
+Open for later milestones: university email-domain verification (groups), skills per student
+(match scoring), and dropping descriptions of long-closed jobs (M3).
+

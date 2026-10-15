@@ -4,6 +4,29 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-15 — Multi-user schema (M2 done)
+- **Designed by Shrey** over four revisions; Claude reviewed with stress tests. Full table list in `docs/plan.md` §12.
+- **Options for job labels** (level, yoe, evidence):
+  - columns on the `jobs` row (today's D1 layout)
+  - a separate `job_labels` table
+- **Choice (Shrey):**
+  - Six tables: `universities`, `students`, `companies`, `jobs`, `applications`, `job_labels`.
+  - Things that exist on their own (universities, students, companies, jobs) each get an `id`.
+  - Events between them (a student applying to a job) live in `applications`.
+  - Labels live in `job_labels`, tagged with `rules_version`.
+- **Why:**
+  - One student applies to many jobs, so application status belongs to the application, not the student.
+  - University and company names are stored once, so "Lucknow University" vs "University of Lucknow" can't split a group, and one URL change edits one row.
+  - The posting (written by the company, changes rarely) and the labels (written by our rules, change on every rules update) are kept apart. A re-label never touches `first_seen_at` or the description, and old vs new labels can be compared to check fresher precision didn't regress.
+- **Rules against duplicates (Shrey):**
+  - one `applications` row per (student, job)
+  - one `companies` row per company, one `universities` row per university
+  - a new `job_labels` row only when the label actually changes
+  - keep only the current and previous label per job, to stay inside the 500 MB free tier
+- **Trade-off:** the job list needs one extra join to read the current label.
+
+---
+
 ## 2026-10-15 — Database and login (M1, part 2; M1 done)
 - **Options:**
   - Supabase Postgres + Supabase Auth
