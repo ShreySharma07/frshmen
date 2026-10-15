@@ -307,13 +307,49 @@ sends anything. The student stays the sender.
 
 ---
 
-## 10. Open decisions for Shrey
+## 10. Decisions so far (Shrey, 2026-10-15)
 
-1. **Product name and domain:** keep "frshmen" or rebrand?
-2. **Audience scope:** AI/ML and Python freshers only, or all tech fresher roles (SDE, data,
-   analyst)? Wider means more users, but a weaker "precise for AI/ML" pitch.
-3. **Budget:** OK to spend on a domain now? Roughly how much per month later?
-4. **Side project or company?** (Affects payments, GST, terms, college contracts.)
-5. **University verification:** college email, invite code, or both?
-6. **Referral helper:** confirm the compliant design (CSV import, manual send). No LinkedIn
-   automation, ever.
+1. **Name: rebrand.** A new name is still to be chosen; "frshmen" stays only until then.
+2. **Audience: all tech fresher roles** (SDE, data, analyst, AI/ML, mobile, backend, DevOps, QA…),
+   not only AI/ML and Python.
+   - "Target roles" becomes a per-student choice instead of Shrey's list.
+   - The pitch shifts from "precise for AI/ML" to "precise about experience, for every tech role".
+3. **Budget: later.** Stay on free tiers until a milestone needs money. Each paid step comes back
+   as a decision.
+4. **Company.** It will be registered as a company. That brings payments (Razorpay), GST past the
+   threshold, terms of service, a privacy policy (DPDP Act) and college contracts.
+5. **University verification: skipped for now.** University groups (section 6) wait until it's
+   decided.
+6. **Referral helper: students connect their LinkedIn account** so the agent can find connections
+   at the company they're applying to.
+
+   ⚠️ **Blocker to resolve before this is built.**
+   - **What Sign In with LinkedIn gives:** only the member's own name, photo and email (OpenID
+     Connect scopes `openid`, `profile`, `email`).
+   - **Connections are not available.** LinkedIn closed the connections API (`r_network`) to
+     ordinary apps in 2015; today it's only for approved partners, and job-board-style apps don't
+     get it.
+   - **What "connected LinkedIn" tools actually do:** they use the member's session cookie to
+     scrape. That breaks LinkedIn's User Agreement, risks students' accounts being restricted,
+     and contradicts `CLAUDE.md`.
+   - **Workable version:**
+     1. "Sign in with LinkedIn" for login and profile.
+     2. The student uploads LinkedIn's own `Connections.csv` export, guided in-app.
+     3. Optionally, apply to LinkedIn's partner programme later.
+
+   Revisit when we reach this milestone.
+
+---
+
+## 11. Working in milestones
+
+Small milestones, one at a time. Each one ends with a decision logged, code merged (if any), and
+Shrey's learning note.
+
+| # | Milestone | Output |
+|---|---|---|
+| M1 | Tech stack decisions (database, backend, frontend, auth, hosting) | Entries in `docs/decisions.md` |
+| M2 | Schema design for the multi-user product | ER diagram + table definitions reviewed by Shrey |
+| M3 | Data migration plan (current D1 jobs to the new database) | Migration script design, dry run |
+| M4 | Rebrand + UI foundations (name, design tokens, layout) | Phase 1 begins |
+| M5+ | Phase 1 features one by one (onboarding, mobile layout, job pages…) | |
