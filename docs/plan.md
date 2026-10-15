@@ -348,7 +348,7 @@ Shrey's learning note.
 
 | # | Milestone | Output |
 |---|---|---|
-| M1 | Tech stack decisions (database, backend, frontend, auth, hosting) | Entries in `docs/decisions.md` |
+| M1 ✅ | Tech stack decisions: FastAPI, Next.js, Supabase Postgres + Auth; web first, mobile later (2026-10-15) | Entries in `docs/decisions.md` |
 | M2 | Schema design for the multi-user product | ER diagram + table definitions reviewed by Shrey |
 | M3 | Data migration plan (current D1 jobs to the new database) | Migration script design, dry run |
 | M4 | Rebrand + UI foundations (name, design tokens, layout) | Phase 1 begins |

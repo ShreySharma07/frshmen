@@ -4,6 +4,33 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-15 — Database and login (M1, part 2; M1 done)
+- **Options:**
+  - Supabase Postgres + Supabase Auth
+  - Neon Postgres + Better Auth
+  - stay on Cloudflare D1 (SQLite) and add a login provider
+- **Choice (Shrey):** Supabase Postgres + Supabase Auth.
+- **Why:**
+  - Postgres replaces SQLite once there are users. It gives row-level security (each student reads only their own rows, enforced by the database), full-text search, and pgvector for skill↔job matching and the referral agent.
+  - Supabase Auth gives email magic links plus Google and LinkedIn sign-in ("Sign in with LinkedIn" = OpenID Connect profile/email only; see `docs/plan.md` §10).
+  - Supabase Storage holds resumes later.
+- **Free tier (checked on supabase.com/pricing, 2026-10-15):**
+  - 500 MB database
+  - 1 GB file storage
+  - 50,000 monthly active users
+  - 5 GB egress
+  - 2 active projects
+  - no backups
+  - paused after 1 week without activity
+- **Pro ($25/mo):** 8 GB database, 100k MAU, daily backups, no pausing. Budget decision: later (Shrey), so we stay on Free until launch.
+- **Watch the 500 MB:** ~21k jobs with full descriptions (~5 KB each) and evidence is already ~150 MB.
+  - Closed jobs should drop their description after a while (M2/M3 design).
+  - The pipeline keeps writing only changed rows.
+- **Consequences:**
+  - The database and FastAPI move off Cloudflare D1 / Python Workers. The container host is picked in M3 (data migration), where the free options (Render, Railway, Fly) are compared then.
+  - The pipeline (GitHub Actions) writes to Postgres instead of D1.
+  - Cloudflare stays for the domain and CDN.
+
 ## 2026-10-15 — Backend, frontend, platform order (M1, part 1)
 - **Backend. Options:** FastAPI · Django (built-in admin, auth and ORM; the API would be rewritten) · TypeScript (Next.js API routes / Hono)
 - **Choice (Shrey):** FastAPI. It's already built, async and streaming-friendly for AI agents, and shares Python with the pipeline. Where it's hosted is decided together with the database.
