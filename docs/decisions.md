@@ -4,6 +4,20 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-16 — D1 retired from the pipeline (M3 done)
+- **Options:**
+  - stop writing D1 and delete it now
+  - stop writing D1 now, keep the database a week as a backup, then delete it
+- **Choice (Shrey):** stop writes now; keep the D1 database until ~2026-10-23, then delete it in the Cloudflare dashboard.
+- **Why:** the site has run on Supabase since the API switch and Shrey confirmed it works. A week-old copy costs nothing and covers a surprise. Dual-writing longer would only cost run time.
+- **Removed:**
+  - `publish_d1.py`, the D1 `db/migrations/` and the SQLite `queries.py`
+  - the one-off copy script and its workflow
+  - the D1 binding and its deploy step
+- **Kept:** the row mapping, which moved to `scripts/job_rows.py`. The publisher's D1 tests were ported to run against Postgres in CI.
+
+---
+
 ## 2026-10-16 — API switch to Supabase: how it reads (M3)
 - **Driver options** (Cloudflare's tested list for Python Workers + Hyperdrive): asyncpg, pg8000, psycopg.
 - **Choice:** asyncpg.

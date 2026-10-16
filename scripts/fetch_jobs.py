@@ -1,7 +1,7 @@
 """Fetch every verified company's board and write classified jobs to data/jobs.json.
 
 fetch -> normalize -> dedupe -> classify (fresher / maybe / experienced, with
-evidence). D1 publishing comes later. One broken board never stops the others.
+evidence); scripts/publish_pg.py stores the result. One broken board never stops the others.
 
 Run: python scripts/fetch_jobs.py [--limit N] [--company NAME ...] [--out PATH]
 """
@@ -135,7 +135,7 @@ def main() -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        # Boards that answered: publish_d1.py only closes missing jobs from these.
+        # Boards that answered: publish_pg.py only closes missing jobs from these.
         "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company],
         "errors": errors,
         "jobs": records,
