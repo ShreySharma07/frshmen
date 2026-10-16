@@ -4,6 +4,24 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-16 — API switch to Supabase: how it reads (M3)
+- **Driver options** (Cloudflare's tested list for Python Workers + Hyperdrive): asyncpg, pg8000, psycopg.
+- **Choice:** asyncpg.
+- **Why:** it's Cloudflare's recommended driver, and it's async, which suits FastAPI. One connection per request is cheap because Hyperdrive keeps the pool to Supabase open.
+- **What the API reads:** a `job_cards` view (jobs + company name + current label), so the API stays one simple `SELECT` per page.
+- **Finding each job's current label — options:**
+  - `DISTINCT ON` / a per-job lookup on every query
+  - an `is_current` flag on `job_labels` that the pipeline keeps
+- **Choice:** the flag (`db/postgres/0003_job_cards.sql`).
+- **Why:** measured on 27k jobs, a filtered count took ~3 s with the per-job lookup and 23 ms with the flag; the filter snapshot went from 2.3 s to 0.4 s. A page of 20 takes under 10 ms either way. A unique index allows at most one current label per job.
+- **Keeping the D1 code path in the API — options:**
+  - keep both D1 and Postgres SQL behind a switch
+  - Postgres only
+- **Choice:** Postgres only.
+- **Why:** the SQL differs (arrays, `ILIKE`, booleans), so two copies would drift. Rollback stays easy: D1 is still fed by the dual-write, so reverting the PR puts the site back on D1 within one deploy.
+
+---
+
 ## 2026-10-16 — Switching from D1 to Supabase: order and dual-write (M3)
 - **Order options:**
   - switch the API first, then the pipeline

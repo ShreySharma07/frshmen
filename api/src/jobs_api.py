@@ -1,16 +1,17 @@
 """FastAPI app serving the job board's data. Read-only: the pipeline is the only writer.
 
 The page lists every open job, newest first, 20 per page; the reader narrows it with filters
-(docs/decisions.md, 2026-10-08). D1's free tier reads 5M rows/day, so lists walk
-idx_jobs_recent / idx_jobs_level in sort order, the total is counted only when asked for,
-and the filter lists come from a snapshot the pipeline writes once per run.
+(docs/decisions.md, 2026-10-08). Reads come from Supabase Postgres through Hyperdrive
+(2026-10-16): lists walk jobs_recent_idx in sort order through the job_cards view, the total
+is counted only when asked for, and the filter lists come from a snapshot the pipeline writes
+once per run. Hyperdrive's free tier allows 100k queries/day; a page view costs one or two.
 """
 
 from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta, timezone
-from typing import Any, Literal
+from typing import Any, AsyncIterator, Literal
 
 import traceback
 
@@ -20,8 +21,9 @@ from pydantic import BaseModel, Field
 
 import fit
 
-from queries import FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
-from storage import D1Database, Database
+from pg_queries import INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
+from queries import FAMILIES
+from storage import Database, connect
 
 LIST_COLUMNS = (
     "id, company, title, url, location_raw, location_type, countries, cities, posted_at, first_seen_at, "
@@ -35,20 +37,30 @@ HIGHLIGHT_KINDS = {
     "experienced": ("yoe_required", "senior_title"),
 }
 HIGHLIGHT_MAX = 280
-JSON_COLUMNS = ("countries", "cities", "batch_years", "evidence", "skills")
+JSON_COLUMNS = ("evidence", "errors")  # jsonb arrives as text; arrays arrive as lists
 # The location rules (India except onsite-only Bengaluru/Hyderabad, abroad with sponsorship)
 # are now a filter the reader turns on, not a hidden default.
-ELIGIBLE = "eligible = 1"
+ELIGIBLE = "eligible"
 PER_PAGE = 20
-# D1 rejects LIKE patterns over 50 bytes.
 MAX_QUERY_CHARS = 40
+# A reposted listing's old link still opens its job (job_aliases, docs/decisions.md 2026-10-16).
+RESOLVE = "COALESCE((SELECT job_id FROM job_aliases WHERE alias_id = $1), $1)"
 
 
-def get_db(request: Request) -> Database:
+async def get_db(request: Request) -> AsyncIterator[Database]:
+    """One connection per request: Hyperdrive in the Worker, app.state.dsn locally and in tests."""
     env = request.scope.get("env")
-    if env is not None and hasattr(env, "DB"):
-        return D1Database(env.DB)
-    return request.app.state.db
+    hyperdrive = getattr(env, "HYPERDRIVE", None) if env is not None else None
+    async with connect(hyperdrive=hyperdrive, dsn=None if hyperdrive else request.app.state.dsn) as db:
+        yield db
+
+
+class Params(list):
+    """Collects query parameters and hands back their $n placeholders."""
+
+    def __call__(self, value: Any) -> str:
+        self.append(value)
+        return f"${len(self)}"
 
 
 def _decode(row: dict[str, Any]) -> dict[str, Any]:
@@ -102,9 +114,8 @@ class FitRequest(BaseModel):
     resume: str = Field(min_length=50, max_length=fit.MAX_RESUME_CHARS)
 
 
-def _since(hours: int) -> str:
-    t = datetime.now(timezone.utc) - timedelta(hours=hours)
-    return t.isoformat(timespec="seconds").replace("+00:00", "Z")
+def _since(hours: int) -> datetime:
+    return datetime.now(timezone.utc) - timedelta(hours=hours)
 
 
 def create_app() -> FastAPI:
@@ -140,53 +151,44 @@ def create_app() -> FastAPI:
         db: Database = Depends(get_db),
     ) -> dict[str, Any]:
         where = [OPEN]
-        params: list[Any] = []
+        p = Params()
         if experience == "fresher":
             where.append("level = 'fresher'")
         elif experience == "experienced":
             where.append("level = 'experienced'")
         elif experience == "unstated":
-            where.append("level != 'fresher' AND yoe_min IS NULL")
+            where.append("level <> 'fresher' AND yoe_min IS NULL")
         elif experience == "internship":
             where.append(INTERN)
         elif experience.startswith("0-"):
-            where.append("(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= ?))")
-            params.append(int(experience[2:]))
+            where.append(f"(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= {p(int(experience[2:]))}))")
         if role == "target":
-            where.append("role_match = 1")
+            where.append("role_match")
         elif role != "all":
-            fams = FAMILIES[role]
-            where.append(f"role_match = 1 AND role_family IN ({', '.join('?' * len(fams))})")
-            params += list(fams)
+            where.append(f"role_match AND role_family = ANY({p(list(FAMILIES[role]))})")
         if eligible_only:
             where.append(ELIGIBLE)
         if posted == "24h":
-            where.append("first_seen_at >= ?")
-            params.append(_since(24))
+            where.append(f"first_seen_at >= {p(_since(24))}")
         elif posted in ("7d", "30d"):
-            where.append(f"{ORDER_KEY} >= ?")
-            params.append(_since(24 * int(posted[:-1])))
+            where.append(f"{ORDER_KEY} >= {p(_since(24 * int(posted[:-1])))}")
         if company:
-            where.append("company = ?")
-            params.append(company)
+            where.append(f"company = {p(company)}")
         if location_type:
-            where.append("location_type = ?")
-            params.append(location_type)
+            where.append(f"location_type = {p(location_type)}")
         if country:
-            # countries is a JSON array; json_each matches whole names ("India", not "Indiana").
-            where.append("EXISTS (SELECT 1 FROM json_each(jobs.countries) AS c WHERE c.value = ?)")
-            params.append(country)
+            # Whole names in the array ("India", not "Indiana").
+            where.append(f"{p(country)} = ANY(countries)")
         if city:
-            where.append("EXISTS (SELECT 1 FROM json_each(jobs.cities) AS c WHERE c.value = ?)")
-            params.append(city)
+            where.append(f"{p(city)} = ANY(cities)")
         if q and q.strip():
-            pattern = f"%{q.strip()[:MAX_QUERY_CHARS]}%"
-            where.append("(title LIKE ? OR company LIKE ?)")
-            params += [pattern, pattern]
+            pattern = p(f"%{q.strip()[:MAX_QUERY_CHARS]}%")
+            where.append(f"(title ILIKE {pattern} OR company ILIKE {pattern})")
         cond = " AND ".join(where)
+        filters = list(p)
         offset = (page - 1) * per_page
-        rows = await db.all(f"SELECT {LIST_COLUMNS} FROM jobs WHERE {cond} {ORDER_BY} LIMIT ? OFFSET ?",
-                            [*params, per_page + 1, offset])
+        rows = await db.all(f"SELECT {LIST_COLUMNS} FROM job_cards WHERE {cond} {ORDER_BY} "
+                            f"LIMIT {p(per_page + 1)} OFFSET {p(offset)}", p)
         body: dict[str, Any] = {
             "jobs": [_summary(r) for r in rows[:per_page]],
             "page": page,
@@ -194,7 +196,7 @@ def create_app() -> FastAPI:
             "has_more": len(rows) > per_page,
         }
         if with_total:
-            total = (await db.all(f"SELECT COUNT(*) AS n FROM jobs WHERE {cond}", params))[0]["n"]
+            total = (await db.all(f"SELECT COUNT(*) AS n FROM job_cards WHERE {cond}", filters))[0]["n"]
             body.update(total=total, pages=max(1, -(-total // per_page)))
         return body
 
@@ -204,7 +206,7 @@ def create_app() -> FastAPI:
         config = fit_config(request)
         if config is None:
             raise HTTPException(status_code=404, detail="fit check is turned off")
-        rows = await db.all("SELECT title, company, description_text FROM jobs WHERE id = ?", [job_id])
+        rows = await db.all(f"SELECT title, company, description_text FROM job_cards WHERE id = {RESOLVE}", [job_id])
         if not rows:
             raise HTTPException(status_code=404, detail="job not found")
         try:
@@ -214,15 +216,15 @@ def create_app() -> FastAPI:
 
     @app.get("/api/jobs/{job_id:path}")
     async def get_job(job_id: str, db: Database = Depends(get_db)) -> dict[str, Any]:
-        rows = await db.all("SELECT * FROM jobs WHERE id = ?", [job_id])
+        rows = await db.all(f"SELECT * FROM job_cards WHERE id = {RESOLVE}", [job_id])
         if not rows:
             raise HTTPException(status_code=404, detail="job not found")
         return _decode(rows[0])
 
     @app.get("/api/meta")
     async def meta(request: Request, db: Database = Depends(get_db)) -> dict[str, Any]:
-        snap = await db.all("SELECT value, updated_at FROM meta WHERE key = 'filters'")
-        # Before the first pipeline run after migration 0005 there is no snapshot; compute it live.
+        snap = await db.all("SELECT value::text AS value, updated_at FROM meta WHERE key = 'filters'")
+        # Before the pipeline's first Supabase run there may be no snapshot; compute it live.
         value = snap[0]["value"] if snap else (await db.all(META_SELECT))[0]["value"]
         filters = json.loads(value)
         last_run = await db.all("SELECT * FROM runs ORDER BY id DESC LIMIT 1")

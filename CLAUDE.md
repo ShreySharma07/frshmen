@@ -30,7 +30,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 3. **Normalize** to one schema (see below). Dedupe.
 4. **Extract** experience, batch year, location type, visa sponsorship, skills via rules (see `skills.md`). No LLM in the pipeline.
 5. **Classify** into `fresher` / `maybe` / `experienced` with confidence + evidence.
-6. **Publish** classified jobs to D1; the web page reads them through the Python API (see `docs/decisions.md`). New postings are flagged with first-seen time.
+6. **Publish** classified jobs to Supabase Postgres (and to D1 while the switch-over finishes); the web page reads them through the Python API (see `docs/decisions.md`). New postings are flagged with first-seen time.
 
 ## Core schema (starting point; propose changes via decisions.md)
 `id`, `source`, `company`, `title`, `url`, `location_raw`, `location_type` (remote/hybrid/onsite), `countries`, `posted_at` (if the source gives it), `first_seen_at`, `description_text`, `yoe_min`, `yoe_max`, `yoe_evidence`, `batch_years`, `level` (fresher/maybe/experienced), `level_confidence`, `visa_sponsorship` (yes/no/unknown), `skills`, `match_score`, `status` (open/closed), `content_hash`.
@@ -38,7 +38,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 ## Architecture (decided; full rationale in `docs/decisions.md`)
 - Pipeline: Python, run by GitHub Actions cron
 - Storage: Cloudflare D1 (free tier: 100k rows written/day, so write only new/changed rows). **Moving to Supabase Postgres + Supabase Auth** (2026-10-15; free tier: 500 MB DB, 50k MAU, pauses after 1 week idle)
-- Backend API: FastAPI on Cloudflare Python Workers, D1 binding today. **FastAPI stays on Workers and reaches Supabase Postgres through Hyperdrive** (2026-10-15; free: 100k requests/day, 100k queries/day, 10 ms CPU per request)
+- Backend API: FastAPI on Cloudflare Python Workers, reading Supabase Postgres through Hyperdrive with asyncpg (2026-10-16; free: 100k requests/day, 100k queries/day, 10 ms CPU per request). The pipeline still dual-writes D1 until the switch is confirmed; then D1 is dropped
 - Frontend: React (Vite + TypeScript) today. **Moving to Next.js (React + TypeScript)** (2026-10-15), web first and a mobile app later; see "Frontend standards" below
 - LLM: none in the pipeline (rules only). An optional, off-by-default "Check my fit" button calls Gemini from the API for one job at a time (see `docs/decisions.md`)
 - Companies: curated list in `config/companies.yaml`, plus hiring YC AI startups imported from the yc-oss dataset (`scripts/import_yc.py`); only verified boards are fetched

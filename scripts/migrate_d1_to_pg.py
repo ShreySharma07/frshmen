@@ -41,7 +41,7 @@ LOCATION_TYPES = {"remote", "hybrid", "onsite"}
 VISA = {"yes", "no", "unknown"}
 LABEL_FIELDS = [
     "level", "level_confidence", "level_reason", "yoe_min", "yoe_max", "yoe_evidence", "batch_years",
-    "role_match", "role_family", "location_type", "countries", "cities", "eligible",
+    "role_match", "role_family", "role_reason", "location_type", "countries", "cities", "eligible",
     "visa_sponsorship", "skills", "evidence",
 ]
 
@@ -134,6 +134,7 @@ def label_row(r: dict[str, Any]) -> dict[str, Any]:
         "batch_years": batch,
         "role_match": bool(r.get("role_match")),
         "role_family": r.get("role_family"),
+        "role_reason": r.get("role_reason"),
         "location_type": r.get("location_type") if r.get("location_type") in LOCATION_TYPES else None,
         "countries": _texts(r.get("countries")),
         "cities": _texts(r.get("cities")),
@@ -177,7 +178,23 @@ VALUES ({", ".join(f"%({c})s" for c in _LCOLS)})
 ON CONFLICT (job_id, rules_version) DO UPDATE SET
   {", ".join(f"{c} = EXCLUDED.{c}" for c in ["label_hash", *LABEL_FIELDS])}, labelled_at = now()
 WHERE job_labels.label_hash <> EXCLUDED.label_hash
+   OR job_labels.role_reason IS DISTINCT FROM EXCLUDED.role_reason  -- column added in 0003
 """
+
+# Re-points is_current at each listed job's newest label (two statements, so the unique
+# "one current label per job" index never sees two at once).
+_NEWEST = "(SELECT job_id, MAX(rules_version) AS v FROM job_labels WHERE job_id = ANY(%(ids)s) GROUP BY job_id) m"
+REFRESH_CURRENT = [
+    f"UPDATE job_labels l SET is_current = false FROM {_NEWEST} "
+    "WHERE l.job_id = m.job_id AND l.is_current AND l.rules_version <> m.v",
+    f"UPDATE job_labels l SET is_current = true FROM {_NEWEST} "
+    "WHERE l.job_id = m.job_id AND NOT l.is_current AND l.rules_version = m.v",
+]
+
+
+def refresh_current(cur: psycopg.Cursor, ids: list[str]) -> None:
+    for sql in REFRESH_CURRENT:
+        cur.execute(sql, {"ids": ids})
 
 
 def copy_jobs(db: Database, pg: psycopg.Connection | None) -> tuple[int, int]:
@@ -198,6 +215,7 @@ def copy_jobs(db: Database, pg: psycopg.Connection | None) -> tuple[int, int]:
                 company_ids.update(dict(cur.fetchall()))
             cur.executemany(UPSERT_JOB, [job_row(r, company_ids[r["company"]]) for r in rows])
             cur.executemany(UPSERT_LABEL, [label_row(r) for r in rows])
+            refresh_current(cur, [r["id"] for r in rows])
         batches += 1
         print(f"  batch {batches}: {read} jobs", flush=True)
     return read, batches

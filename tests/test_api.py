@@ -1,21 +1,29 @@
-"""API against a SQLite database filled by the real publish path from fixture postings."""
+"""API against Postgres (the schema in db/postgres/), filled by the real Supabase publish path
+from fixture postings. Needs PG_TEST_URL (CI starts a Postgres service); skipped without it."""
 
 import json
+import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
+import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
-import publish_d1 as pub
+import publish_pg as pub
 from extract.classify import classify
 from extract.profile import load_profile
 from extract.role import match_role
 from jobs_api import create_app
 from sources import ashby, greenhouse, lever
 from sources.models import Company
-from storage import SqliteDatabase
 
 FIX = "tests/fixtures/sources/"
+PG = os.environ.get("PG_TEST_URL")
+pytestmark = pytest.mark.skipif(not PG, reason="set PG_TEST_URL to a throwaway Postgres database")
+# Supabase provides the auth schema; tests stand in for it.
+AUTH_STUB = ("CREATE SCHEMA auth; CREATE TABLE auth.users (id uuid PRIMARY KEY); "
+             "CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS 'SELECT NULL::uuid';")
 
 
 def records():
@@ -32,10 +40,30 @@ def iso(dt):
     return dt.isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def reset(migrate=True):
+    """Empty database with the current schema, like Supabase after the migrations workflow."""
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public")
+        conn.execute(AUTH_STUB)
+        if migrate:
+            for f in sorted(Path("db/postgres").glob("*.sql")):
+                conn.execute(f.read_text())
+
+
+def publish(jobs, now):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        pub.publish(conn, {"jobs": jobs, "boards_ok": [], "errors": {}}, now=now)
+
+
+def app_client():
+    app = create_app()
+    app.state.dsn = PG
+    return TestClient(app)
+
+
 @pytest.fixture
-def client(tmp_path):
-    path = tmp_path / "jobs.db"
-    db = pub.SqliteDatabase(path)
+def client():
+    reset()
     recs = records()
     # A synthetic target fresher, first seen now, plus one seen 3 days ago.
     fresh = dict(recs[0], posted_at=None, id="ashby:acme:new", title="ML Engineer - New Grad", company="Acme", company_slug="acme",
@@ -43,11 +71,9 @@ def client(tmp_path):
                  countries=["India"], cities=["Bengaluru", "Pune"])
     old = dict(fresh, id="ashby:acme:old", title="ML Engineer, Fresher", content_hash="x2",
                countries=["United States", "Canada"], cities=[])
-    pub.publish(db, {"jobs": [old], "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc) - timedelta(days=3)))
-    pub.publish(db, {"jobs": [*recs, fresh, old], "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc)))
-    app = create_app()
-    app.state.db = SqliteDatabase(str(path))
-    return TestClient(app)
+    publish([old], datetime.now(timezone.utc) - timedelta(days=3))
+    publish([*recs, fresh, old], datetime.now(timezone.utc))
+    return app_client()
 
 
 def test_default_lists_every_open_job_newest_first(client):
@@ -102,9 +128,7 @@ def test_meta_comes_from_the_snapshot_publish_writes(client):
 
 
 def test_meta_is_computed_live_before_the_first_snapshot(client):
-    live = client.app.state.db.path
-    import sqlite3
-    with sqlite3.connect(live) as conn:
+    with psycopg.connect(PG, autocommit=True) as conn:
         conn.execute("DELETE FROM meta")
     meta = client.get("/api/meta").json()
     assert meta["total"] == 20 and meta["snapshot_at"] is None
@@ -126,13 +150,18 @@ def test_list_carries_one_highlight_not_full_evidence(client):
                                      "text": "This is intended to be an entry level role for new grads/early career professionals."}
 
 
-def test_unexpected_errors_return_json_with_cause(tmp_path):
-    from storage import SqliteDatabase as S
-
+def test_unexpected_errors_return_json_with_cause():
+    reset(migrate=False)  # no tables: every query fails
     app = create_app()
-    app.state.db = S(str(tmp_path / "empty.db"))  # no tables: every query fails
+    app.state.dsn = PG
     body = TestClient(app, raise_server_exceptions=False).get("/api/meta")
-    assert body.status_code == 500 and body.json()["error"].startswith("OperationalError: no such table")
+    assert body.status_code == 500 and body.json()["error"].startswith("UndefinedTableError")
+
+
+def test_reposted_listing_link_opens_the_original_job(client):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO job_aliases VALUES ('ashby:acme:relisted', 'ashby:acme:new')")
+    assert client.get("/api/jobs/ashby:acme:relisted").json()["id"] == "ashby:acme:new"
 
 
 def test_country_filter_matches_whole_names(client):
@@ -156,9 +185,8 @@ def test_city_filter_and_meta_cities(client):
 
 
 @pytest.fixture
-def mixed(tmp_path):
-    path = tmp_path / "mixed.db"
-    db = pub.SqliteDatabase(path)
+def mixed():
+    reset()
     base = dict(records()[0], posted_at=None, source="ashby", company="Acme", company_slug="acme", level="fresher", role_match=True,
                 countries=["India"], cities=["Pune"])
     rows = [
@@ -169,10 +197,8 @@ def mixed(tmp_path):
              countries=["United States"], cities=[], eligible=False,
              eligibility_reason="United States without visa sponsorship"),
     ]
-    pub.publish(db, {"jobs": rows, "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc)))
-    app = create_app()
-    app.state.db = SqliteDatabase(str(path))
-    return TestClient(app)
+    publish(rows, datetime.now(timezone.utc))
+    return app_client()
 
 
 def test_location_rules_are_an_opt_in_filter(mixed):
@@ -190,9 +216,8 @@ def test_family_filter_groups_generic_swe_with_ai_ml(mixed):
 
 
 @pytest.fixture
-def by_yoe(tmp_path):
-    path = tmp_path / "yoe.db"
-    db = pub.SqliteDatabase(path)
+def by_yoe():
+    reset()
     base = dict(records()[0], posted_at=None, source="ashby", company="Acme", company_slug="acme", role_match=True, role_family="ai_ml",
                 countries=["India"], cities=["Pune"])
     rows = [
@@ -207,10 +232,8 @@ def by_yoe(tmp_path):
         dict(base, id="ashby:acme:d", title="Data Science Trainee", level="maybe", yoe_min=4, yoe_max=None,
              content_hash="y8"),
     ]
-    pub.publish(db, {"jobs": rows, "boards_ok": [], "errors": {}}, now=iso(datetime.now(timezone.utc)))
-    app = create_app()
-    app.state.db = SqliteDatabase(str(path))
-    return TestClient(app)
+    publish(rows, datetime.now(timezone.utc))
+    return app_client()
 
 
 @pytest.mark.parametrize("bucket,titles", [
@@ -230,9 +253,8 @@ def test_experience_buckets(by_yoe, bucket, titles):
     assert got == titles
 
 
-def test_old_postings_stay_listed_unless_filtered_and_newest_posting_sorts_first(tmp_path):
-    path = tmp_path / "age.db"
-    db = pub.SqliteDatabase(path)
+def test_old_postings_stay_listed_unless_filtered_and_newest_posting_sorts_first():
+    reset()
     now = datetime.now(timezone.utc)
     base = dict(records()[0], source="ashby", company="Acme", company_slug="acme", level="fresher", role_match=True,
                 role_family="ai_ml", countries=["India"], cities=[])
@@ -242,10 +264,8 @@ def test_old_postings_stay_listed_unless_filtered_and_newest_posting_sorts_first
         dict(base, id="ashby:acme:newest", title="Newest", posted_at=iso(now - timedelta(hours=2)), content_hash="a3"),
         dict(base, id="ashby:acme:undated", title="Undated", posted_at=None, content_hash="a4"),
     ]
-    pub.publish(db, {"jobs": rows, "boards_ok": [], "errors": {}}, now=iso(now - timedelta(days=5)))
-    app = create_app()
-    app.state.db = SqliteDatabase(str(path))
-    c = TestClient(app)
+    publish(rows, now - timedelta(days=5))
+    c = app_client()
     titles = [j["title"] for j in c.get("/api/jobs").json()["jobs"]]
     assert titles == ["Newest", "Recent", "Undated", "Old"]  # undated jobs sort by first-seen time (5 days ago)
     assert [j["title"] for j in c.get("/api/jobs?posted=30d").json()["jobs"]] == ["Newest", "Recent", "Undated"]
