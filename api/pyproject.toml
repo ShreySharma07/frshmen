@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "FastAPI backend for the frshmen job board, deployed as a Cloudflare Python Worker"
 requires-python = ">=3.13"
 dependencies = [
+    "asyncpg",
     "fastapi",
 ]
 
