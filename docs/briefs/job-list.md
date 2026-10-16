@@ -67,9 +67,8 @@ These show the hard cases: long titles, multiple cities, missing years, and long
 - No motion on the list except what explains a change (a filter result count updating, the new
   items divider).
 
-## Open questions for Shrey
-1. Should "My experience" be asked once on the first visit and remembered (my pick), or shown as
-   just another filter?
-2. On a phone, is a card's evidence snippet hidden behind a tap (my pick: it keeps cards short) or
-   always visible?
-3. Do "Not stated" jobs show by default, or only when the user switches them on?
+## Decided by Shrey (2026-10-16)
+1. **"My experience" is asked once** on the first visit and remembered; it can be changed later
+   from the filter bar.
+2. **The evidence snippet sits behind a tap** on phones, so cards stay short.
+3. **"Not stated" jobs show by default**, with their tag.
