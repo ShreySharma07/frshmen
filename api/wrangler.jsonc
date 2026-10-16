@@ -6,15 +6,6 @@
   "compatibility_flags": ["python_workers"],
   // Workers Logs (free tier): tracebacks from the API show up in the dashboard.
   "observability": { "enabled": true },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "frshmen",
-      // D1 database IDs are not secret; access needs the API token.
-      "database_id": "e711a274-e62b-4f4f-8eda-94151348814e",
-      "migrations_dir": "../db/migrations"
-    }
-  ],
   // Supabase Postgres through Hyperdrive's connection pool (M3). The password lives in the
   // Hyperdrive config on Cloudflare, not here; the ID alone grants nothing.
   "hyperdrive": [

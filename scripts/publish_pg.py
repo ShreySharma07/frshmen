@@ -1,6 +1,6 @@
-"""Sync data/jobs.json into Supabase Postgres, writing only what changed (M3 dual-write).
+"""Sync data/jobs.json into Supabase Postgres, writing only what changed.
 
-Same rules as publish_d1.py, on the multi-user schema (db/postgres/):
+Rules (skills.md §4), on the multi-user schema (db/postgres/):
 - new id            -> INSERT, first_seen_at = now (never overwritten later)
 - content changed   -> UPDATE the posting (content_hash differs)
 - labels changed    -> new job_labels row, only when label_hash differs; the current and the
@@ -39,8 +39,7 @@ from psycopg.types.json import Jsonb
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from migrate_d1_to_pg import _ts, label_row, refresh_current  # noqa: E402
-from publish_d1 import CLOSE_AFTER_MISSES, DEFAULT_JOBS, to_row  # noqa: E402
+from job_rows import CLOSE_AFTER_MISSES, DEFAULT_JOBS, _ts, label_row, refresh_current, to_row  # noqa: E402
 
 sys.path.insert(0, str(ROOT / "api" / "src"))  # SQL shared with the API
 from pg_queries import SNAPSHOT  # noqa: E402

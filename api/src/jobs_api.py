@@ -21,8 +21,7 @@ from pydantic import BaseModel, Field
 
 import fit
 
-from pg_queries import INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
-from queries import FAMILIES
+from pg_queries import FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
 from storage import Database, connect
 
 LIST_COLUMNS = (

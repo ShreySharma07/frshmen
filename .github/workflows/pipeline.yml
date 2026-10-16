@@ -1,7 +1,7 @@
 name: Fetch and publish jobs
 
-# fetch -> classify -> publish changed rows to D1 and Supabase, every 3 hours (docs/decisions.md).
-# Needs CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and SUPABASE_DB_URL.
+# fetch -> classify -> publish changed rows to Supabase, every 3 hours (docs/decisions.md).
+# Needs SUPABASE_DB_URL.
 on:
   schedule:
     # Minute 17, not 0: GitHub delays on-the-hour cron runs the most.
@@ -20,9 +20,6 @@ jobs:
   pipeline:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,10 +27,6 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
 
       - run: pip install -r requirements.txt
 
@@ -47,11 +40,6 @@ jobs:
       - name: Fetch and classify
         run: python -u scripts/fetch_jobs.py
 
-      - name: Publish to D1
-        run: python -u scripts/publish_d1.py --d1 frshmen
-
-      # Dual-write until the API reads Supabase (docs/decisions.md, 2026-10-16). D1 goes first
-      # because the live site still reads it.
       - name: Publish to Supabase
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
