@@ -4,6 +4,19 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-16 — Reposted jobs (schema, M3)
+- **Problem:** a company re-lists the same role under a new ATS id. The pipeline sees a new job, and if the old listing is still up, students see two cards and applications split across them.
+- **Shrey's rules:** one card, showing today's date; applications on the old listing stay on the merged job.
+- **Options:**
+  - A: keep the original row and record the new listing's id in a `job_aliases` table
+  - B: create a row for the new listing, move applications over, close the old row
+- **Choice (Shrey):** A.
+- **Why:** nothing students or the rules depend on moves: applications, labels and `first_seen_at` stay put. B breaks the one-application-per-student-per-job rule when someone applied to both, re-labels the job, and shows it as new.
+- **Matching:** same company + normalised title + location (`jobs.repost_key`), then a near-identical description, checked by the pipeline. Two separate hiring batches with different text stay two jobs.
+- **Schema:** `db/postgres/0002_job_aliases.sql`. The detection code comes with the pipeline's move to Supabase.
+
+---
+
 ## 2026-10-16 — How schema changes reach Supabase (M3)
 - **Options:**
   - paste each `db/postgres/*.sql` file into Supabase's SQL Editor by hand
