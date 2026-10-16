@@ -4,6 +4,21 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-16 — Where the Next.js site runs (M4)
+- **Options:**
+  - A: static export (`output: "export"`) served by the existing Worker next to `/api`
+  - B: full Next.js on Cloudflare Workers via OpenNext, with server rendering
+  - C: Vercel Hobby
+- **Choice (Shrey):** A. When shareable job pages arrive, the Python Worker will add each job's Open Graph tags to `/jobs/{id}` before serving the static page.
+- **Why:**
+  - Nothing new to run, and plain files are the fastest for students on budget phones.
+  - The main reason for B was link preview cards (WhatsApp/LinkedIn bots read the HTML and don't run JavaScript). The Worker adding the tags covers that at a fraction of the moving parts.
+  - B adds a second Worker and a 3 MB free-plan size limit.
+  - C is ruled out: Vercel Hobby is for non-commercial personal use only, and this will be a company.
+- **Revisit:** if whole pages need server rendering, such as personalised pages or search pages that Google must index, move to B; the design work carries over.
+
+---
+
 ## 2026-10-16 — D1 retired from the pipeline (M3 done)
 - **Options:**
   - stop writing D1 and delete it now
