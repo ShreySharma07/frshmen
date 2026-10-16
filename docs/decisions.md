@@ -4,6 +4,35 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-16 — Audience: every experience level, not only freshers
+- **Options:**
+  - keep the product fresher-only
+  - cover every experience level, with a "My experience" filter
+- **Choice (Shrey):** all experience levels. Freshers stay a core group.
+- **Why:** the pipeline already labels every job's years (yoe_min/yoe_max with evidence), so a
+  wider audience costs no new data work. A student who gets a job keeps using Kario a year
+  later instead of leaving.
+- **What doesn't change:** precision over recall. The rule generalises: a job whose stated
+  minimum is above the user's years never shows to them, and a job with no stated years is
+  tagged "Not stated", never entry-level.
+
+---
+
+## 2026-10-16 — Name: Kario (M4.1)
+- **Options:** Batchmate (Claude's pick), ZeroYears, Firstrole, keep frshmen, Kario (Shrey's).
+- **Choice (Shrey):** Kario.
+- **Why over the others:**
+  - Short and easy to type on a phone; it echoes "career" and the Hindi "karo" ("do it").
+  - Batchmate and ZeroYears say "fresher", which no longer fits now that the audience spans
+    experience levels (entry above).
+  - frshmen is hard to spell when said aloud.
+- **Cost:** the name doesn't explain itself, so the tagline must say what Kario does.
+  Pronunciation is ambiguous (KAR-ee-oh vs KAI-ree-oh); pick one and use it everywhere.
+- **Before launch:** Shrey checks the domain and the Indian trademark register. A quick web
+  search found no jobs product with this name (the nearest is Clario, a clinical-trials company).
+
+---
+
 ## 2026-10-16 — Where the Next.js site runs (M4)
 - **Options:**
   - A: static export (`output: "export"`) served by the existing Worker next to `/api`
