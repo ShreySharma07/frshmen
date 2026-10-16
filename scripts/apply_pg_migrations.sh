@@ -7,6 +7,12 @@
 set -euo pipefail
 
 : "${SUPABASE_DB_URL:?set SUPABASE_DB_URL}"
+# Anything else (a leading space, quotes, a "KEY=" prefix) makes psql silently try a local
+# socket instead, with an error that doesn't mention the secret.
+case "$SUPABASE_DB_URL" in
+  postgres://* | postgresql://*) ;;
+  *) echo "SUPABASE_DB_URL must start with postgresql:// (no quotes, spaces or prefix)" >&2; exit 1 ;;
+esac
 dir="$(dirname "$0")/../db/postgres"
 psql_() { psql "$SUPABASE_DB_URL" -X -q -v ON_ERROR_STOP=1 "$@"; }
 
