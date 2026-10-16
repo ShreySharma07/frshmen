@@ -1,0 +1,28 @@
+name: Supabase migrations
+
+# Applies new db/postgres/*.sql files to Supabase Postgres (docs/decisions.md, 2026-10-16).
+# Needs repo secret SUPABASE_DB_URL (the Session pooler connection string, port 5432).
+on:
+  push:
+    branches: [main]
+    paths:
+      - db/postgres/**
+      - scripts/apply_pg_migrations.sh
+      - .github/workflows/supabase-migrate.yml
+  workflow_dispatch:
+
+concurrency:
+  group: supabase-migrate
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      # psql ships with the ubuntu runner image.
+      - name: Apply migrations
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash scripts/apply_pg_migrations.sh

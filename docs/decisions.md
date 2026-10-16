@@ -4,6 +4,16 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-16 — How schema changes reach Supabase (M3)
+- **Options:**
+  - paste each `db/postgres/*.sql` file into Supabase's SQL Editor by hand
+  - a GitHub workflow applies new files automatically
+- **Choice (Shrey):** the workflow (`.github/workflows/supabase-migrate.yml`, running `scripts/apply_pg_migrations.sh`).
+- **Why:** repeatable and logged, like the D1 migrations; no file gets forgotten. The data migration runs from GitHub Actions too, with the same `SUPABASE_DB_URL` secret.
+- **How it works:** runs on pushes to main that touch `db/postgres/`, or by hand. Each new file runs in one transaction with its row in `schema_migrations`, so a failing file leaves nothing half-applied and is retried next time. Files are never edited after they're applied; changes go in a new numbered file.
+
+---
+
 ## 2026-10-15 — Where FastAPI runs with Supabase (M3)
 - **Options:**
   - stay on Cloudflare Python Workers and reach Supabase Postgres through Hyperdrive
