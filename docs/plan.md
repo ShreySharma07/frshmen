@@ -406,6 +406,14 @@ Open for later milestones: university email-domain verification (groups), skills
 - **Check after the run:** row counts per company and per level match D1 before the page
   switches over.
 
+### How to run it
+- **Script:** `scripts/migrate_d1_to_pg.py`
+- **Workflow:** **Actions → Copy D1 to Supabase**.
+  - Runs a dry run by default; untick "dry run" to write.
+  - Shares the pipeline's concurrency group, so the final count check isn't thrown off by a
+    pipeline run writing D1 at the same time.
+- **Safe to run again** until the switch-over: each run only writes what changed since the last.
+
 ### Open decision: where FastAPI runs (researched 2026-10-15)
 
 | Option | Free tier | Catch |
