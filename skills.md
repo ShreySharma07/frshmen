@@ -69,6 +69,7 @@ Steps:
 2. `first_seen_at` is set once and never overwritten. That timestamp, not the source's `posted_at`, drives the "new" badge (many sources have no reliable post date).
 3. A job missing from a later fetch of its source is marked `closed`, not deleted.
 4. If `content_hash` changes, re-run extraction.
+5. A new id with the same company + title + location (`repost_key`) and near-identical text is a repost: it merges into the original job through `job_aliases` (`scripts/publish_pg.py`).
 
 ---
 
@@ -86,8 +87,8 @@ Steps:
 **Use when:** working on the UI.
 
 Steps:
-1. Page (React on Cloudflare Pages) reads jobs from the FastAPI backend on Cloudflare Python Workers, which queries D1. See `docs/decisions.md`.
-2. The page lists every open job, newest first, 20 per page. Filters: experience (fresher, internship, 0–N yrs, not stated, experienced), role, company, country/city, work mode, posted, and "only where I can work" (location/visa rules). Filter lists come from the `meta` snapshot publish writes; keep list queries on `idx_jobs_recent`/`idx_jobs_level` (`api/src/queries.py`).
+1. Page (React, served by the Worker) reads jobs from the FastAPI backend on Cloudflare Python Workers, which queries Supabase Postgres through Hyperdrive (the `job_cards` view). See `docs/decisions.md`.
+2. The page lists every open job, newest first, 20 per page. Filters: experience (fresher, internship, 0–N yrs, not stated, experienced), role, company, country/city, work mode, posted, and "only where I can work" (location/visa rules). Filter lists come from the `meta` snapshot publish writes; keep list queries walking `jobs_recent_idx` in sort order (`api/src/pg_queries.py`).
 3. Each card shows: title, company, location type, level badge with confidence, matched skills, and an "evidence" expander showing why it was labeled fresher (the quoted snippet).
 4. Mobile-friendly, fast, no heavy framework unless chosen in decisions.md. Check accessibility basics.
 

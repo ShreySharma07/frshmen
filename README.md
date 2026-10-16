@@ -9,8 +9,8 @@ sentence from the posting that decided its label. See `CLAUDE.md` for goals and 
 ```
 company boards (Greenhouse / Lever / Ashby)
    └─ scripts/fetch_jobs.py      fetch → normalize → dedupe → classify (extract/) → data/jobs.json
-        └─ scripts/publish_d1.py writes only new/changed/closed jobs to Cloudflare D1
-             └─ api/  (FastAPI on a Python Worker)  /api/jobs, /api/jobs/{id}, /api/meta
+        └─ scripts/publish_pg.py writes only new/changed/closed jobs to Supabase Postgres
+             └─ api/  (FastAPI on a Python Worker, via Hyperdrive)  /api/jobs, /api/jobs/{id}, /api/meta
                   └─ web/ (React)  served by the same Worker as static assets
 ```
 
@@ -18,8 +18,10 @@ company boards (Greenhouse / Lever / Ashby)
 
 ```sh
 pip install -r requirements-dev.txt uvicorn
+export SUPABASE_DB_URL=postgresql://...           # a local or Supabase Postgres
+scripts/apply_pg_migrations.sh                     # creates the tables (db/postgres/)
 python scripts/fetch_jobs.py                       # needs network access to the job boards
-python scripts/publish_d1.py --sqlite data/local.db
+python scripts/publish_pg.py
 (cd web && npm ci && npm run build)
 python scripts/dev_api.py                          # http://127.0.0.1:8000
 ```
@@ -29,16 +31,18 @@ For live-reloading UI work, run `python scripts/dev_api.py` and `npm run dev` in
 ## Checks
 
 ```sh
-pytest                                  # all tests
+PG_TEST_URL=postgresql://... pytest      # all tests; API and publisher tests need a throwaway Postgres
 python scripts/eval_extractor.py        # fresher precision on labeled real postings (must stay 100%)
 (cd web && npm run typecheck)
 ```
 
 ## Deploy (GitHub Actions)
 
-Repo secrets needed: `CLOUDFLARE_API_TOKEN` (Workers + D1 edit) and `CLOUDFLARE_ACCOUNT_ID`.
+Repo secrets needed: `CLOUDFLARE_API_TOKEN` (Workers edit), `CLOUDFLARE_ACCOUNT_ID` and `SUPABASE_DB_URL`
+(Supabase Session pooler connection string).
 
-- **Deploy site** runs on pushes to `main` that touch `api/`, `web/` or migrations: builds the page,
-  applies D1 migrations, deploys the Worker.
-- **Fetch and publish jobs** (Actions tab → Run workflow) fetches every verified board and publishes changes to D1.
+- **Deploy site** runs on pushes to `main` that touch `api/` or `web/`: builds the page and deploys the Worker.
+- **Supabase migrations** applies new `db/postgres/*.sql` files on pushes to `main` that touch them.
+- **Fetch and publish jobs** (every 3 hours, or Actions tab → Run workflow) fetches every verified board and
+  publishes changes to Supabase.
 - **Verify company boards** checks `config/companies.yaml` against the ATS APIs on PRs that edit it.

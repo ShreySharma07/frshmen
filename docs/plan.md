@@ -350,7 +350,7 @@ Shrey's learning note.
 |---|---|---|
 | M1 ✅ | Tech stack decisions: FastAPI, Next.js, Supabase Postgres + Auth; web first, mobile later (2026-10-15) | Entries in `docs/decisions.md` |
 | M2 ✅ | Schema design for the multi-user product (2026-10-15, §12) | Table definitions reviewed by Shrey |
-| M3 | Data migration plan (current D1 jobs to the new database; design in §13; host: Workers + Hyperdrive) | Migration script design, dry run |
+| M3 ✅ | Data migration: D1 → Supabase, API on Workers + Hyperdrive, D1 writes stopped (2026-10-16; §13) | 27,243 jobs copied, counts matched, site live on Supabase |
 | M4 | Rebrand + UI foundations (name, design tokens, layout) | Phase 1 begins |
 | M5+ | Phase 1 features one by one (onboarding, mobile layout, job pages…) | |
 
