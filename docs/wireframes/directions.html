@@ -1,0 +1,199 @@
+<!doctype html>
+<!-- M4.4 round 2: three layout directions for the job list, after Shrey found round 1 too boxy,
+     wrongly shaped and wordy. Open with ?v=a, ?v=b or ?v=c. Fonts and colours here only show each
+     direction's mood; the real tokens are drafted in M4.5. Jobs are real (snapshot 2026-10-06),
+     seen by a user who picked 3 years. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kario directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .v { display: none; min-height: 100vh; }
+  body[data-v="a"] .va, body[data-v="b"] .vb, body[data-v="c"] .vc { display: block; }
+
+  /* ---------- A. Ledger: typography-led rows, no boxes (newspaper classifieds / Linear) ---------- */
+  .va { background: #f5f1e8; color: #1c1a16; font: 15px/1.45 "Instrument Sans", sans-serif; }
+  .va .in { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+  .va header { display: flex; justify-content: space-between; align-items: center; padding: 18px 0 10px; }
+  .va .mark { font: italic 34px/1 "Instrument Serif", serif; letter-spacing: -.01em; }
+  .va .exp { font: 500 13px "Geist Mono", monospace; border: 1px solid #1c1a16; border-radius: 999px; padding: 6px 12px; }
+  .va .exp b { color: #c8441c; font-weight: 500; }
+  .va nav { display: flex; gap: 18px; border-bottom: 1px solid #1c1a16; padding: 8px 0; overflow-x: auto; white-space: nowrap; }
+  .va nav span { font-size: 14px; color: #6d675c; }
+  .va nav span.on { color: #1c1a16; font-weight: 600; }
+  .va nav sup { font: 11px "Geist Mono", monospace; margin-left: 2px; }
+  .va li { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 16px 0; border-bottom: 1px solid #d9d2c3; }
+  .va .t { font: 23px/1.15 "Instrument Serif", serif; }
+  .va .m { font-size: 13.5px; color: #6d675c; grid-column: 1; }
+  .va .y { grid-row: 1 / span 2; grid-column: 2; align-self: start; text-align: right; font: 500 13px "Geist Mono", monospace; }
+  .va .y small { display: block; color: #8b8477; font-weight: 400; margin-top: 4px; }
+  .va .y.ns { color: #8b8477; }
+  .va .new::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #c8441c; margin-right: 6px; vertical-align: 1px; }
+  .va q { grid-column: 1 / -1; font: italic 17px/1.35 "Instrument Serif", serif; color: #4a463e; margin-top: 8px; padding-left: 12px; border-left: 2px solid #c8441c; quotes: "“" "”"; }
+  .va .more { display: flex; justify-content: space-between; padding: 18px 0 40px; font-size: 13.5px; color: #6d675c; }
+  .va .more u { color: #1c1a16; }
+  @media (min-width: 900px) {
+    .va li { grid-template-columns: 90px 1fr 220px 90px; align-items: baseline; }
+    .va .d { display: block !important; font: 12px "Geist Mono", monospace; color: #8b8477; grid-row: 1; }
+    .va .t { grid-column: 2; } .va .m { grid-column: 2; }
+    .va .w { display: block !important; grid-column: 3; grid-row: 1; font-size: 14px; color: #4a463e; }
+    .va .y { grid-column: 4; grid-row: 1; }
+    .va .m .loc, .va .y small { display: none; }
+    .va q { grid-column: 2 / -1; }
+  }
+  .va .d, .va .w { display: none; }
+
+  /* ---------- B. Experience rail: the years control is the hero, soft compact cards ---------- */
+  .vb { background: #eef1ee; color: #14201b; font: 15px/1.45 "IBM Plex Sans", sans-serif; }
+  .vb .shell { max-width: 1160px; margin: 0 auto; padding: 0 16px; display: grid; gap: 20px; }
+  .vb .rail { position: sticky; top: 0; z-index: 2; background: #eef1ee; padding: 14px 0 12px; }
+  .vb .brand { font: 700 22px "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
+  .vb .big, .vb .desk { display: none; }
+  .vb .lbl { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #5c6b64; margin: 12px 0 6px; }
+  .vb .steps { display: grid; grid-template-columns: repeat(6, 1fr); background: #dde3df; border-radius: 12px; padding: 4px; }
+  .vb .steps span { text-align: center; padding: 8px 0; border-radius: 9px; font: 600 15px "Bricolage Grotesque", sans-serif; color: #5c6b64; }
+  .vb .steps .on { background: #0f6b4f; color: #fff; }
+  .vb .side { display: none; }
+  .vb .count { font-size: 13px; color: #5c6b64; margin: 4px 0 10px; }
+  .vb .card { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 10px; display: grid; grid-template-columns: 40px 1fr; gap: 0 12px; }
+  .vb .logo { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font: 700 16px "Bricolage Grotesque", sans-serif; background: #e3ece7; color: #0f6b4f; }
+  .vb .co { font-size: 13px; color: #5c6b64; }
+  .vb .t { font-weight: 600; font-size: 16px; line-height: 1.3; margin-top: 1px; }
+  .vb .chips { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
+  .vb .chip { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: #eef1ee; }
+  .vb .chip.fit { background: #0f6b4f; color: #fff; font-weight: 600; }
+  .vb .chip.ns { background: none; border: 1px dashed #9aa8a1; color: #5c6b64; }
+  .vb .date { margin-left: auto; font-size: 12.5px; color: #5c6b64; }
+  .vb .newtag { color: #0f6b4f; font-weight: 600; font-size: 12.5px; }
+  .vb .ev { grid-column: 2; margin-top: 10px; font-size: 13.5px; color: #33423b; background: #f4f7f5; border-radius: 8px; padding: 8px 10px; }
+  .vb .hid { font-size: 13px; color: #5c6b64; text-align: center; padding: 10px 0 40px; }
+  @media (min-width: 900px) {
+    .vb .shell { grid-template-columns: 280px 1fr; gap: 40px; }
+    .vb .rail { height: 100vh; padding-top: 28px; }
+    .vb .big { display: block; font: 700 120px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.05em; color: #0f6b4f; margin-top: 28px; }
+    .vb .desk { display: block; font-size: 14px; color: #5c6b64; }
+    .vb .side { display: block; font-size: 14px; }
+    .vb .side li { display: flex; justify-content: space-between; padding: 5px 0; }
+    .vb .side li span:last-child { color: #5c6b64; font-size: 13px; }
+    .vb .side li.on { font-weight: 600; }
+    .vb main { padding-top: 28px; }
+    .vb .count { font-size: 14px; }
+  }
+
+  /* ---------- C. Inbox: grouped by when it was posted, dense rows (Gmail / Superhuman) ---------- */
+  .vc { background: #fff; color: #17171a; font: 15px/1.4 "Schibsted Grotesk", sans-serif; }
+  .vc .in { max-width: 860px; margin: 0 auto; }
+  .vc header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 0; }
+  .vc .brand { font-weight: 700; font-size: 21px; letter-spacing: -.03em; }
+  .vc .brand i { font-style: normal; color: #e09a00; }
+  .vc .yrs { font-size: 13px; font-weight: 600; background: #17171a; color: #fff; border-radius: 8px; padding: 6px 10px; }
+  .vc .tabs { display: flex; gap: 22px; padding: 12px 16px 0; border-bottom: 1px solid #e7e7ea; }
+  .vc .tabs span { padding-bottom: 10px; font-size: 14.5px; color: #6c6c75; }
+  .vc .tabs .on { color: #17171a; font-weight: 600; box-shadow: inset 0 -2px #17171a; }
+  .vc .tabs small { color: #9a9aa3; margin-left: 4px; }
+  .vc h3 { position: sticky; top: 0; background: #faf9f6; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: #6c6c75; padding: 8px 16px; border-bottom: 1px solid #efefef; }
+  .vc h3.newh { color: #a86f00; background: #fff7e3; }
+  .vc li { display: grid; grid-template-columns: 36px 1fr auto; gap: 0 12px; padding: 12px 16px; border-bottom: 1px solid #f0f0f2; align-items: center; }
+  .vc .av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #fff; }
+  .vc .t { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vc .s { font-size: 13px; color: #6c6c75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vc .r { text-align: right; font-size: 12.5px; color: #6c6c75; }
+  .vc .r b { display: block; font-size: 13.5px; color: #17171a; }
+  .vc .r b.ns { color: #9a9aa3; font-weight: 500; }
+  .vc .ev { grid-column: 2 / -1; font-size: 13.5px; background: #fff7e3; border-radius: 8px; padding: 8px 10px; margin-top: 8px; color: #4a3b12; }
+  .vc .foot { font-size: 13px; color: #6c6c75; padding: 16px; text-align: center; }
+  @media (min-width: 900px) {
+    .vc li { grid-template-columns: 36px minmax(0, 1fr) 220px 90px; }
+    .vc .w { display: block !important; font-size: 13.5px; color: #44444c; }
+    .vc .s .loc { display: none; }
+  }
+  .vc .w { display: none; }
+</style>
+</head>
+<body data-v="a">
+
+<div class="v va"><div class="in">
+  <header><span class="mark">Kario</span><button class="exp"><b>3</b> yrs ▾</button></header>
+  <nav id="a-nav"></nav>
+  <ol id="a-list"></ol>
+  <div class="more"><span>45 need 4+ yrs, hidden · <u>show</u></span><u>Next 20 →</u></div>
+</div></div>
+
+<div class="v vb"><div class="shell">
+  <aside class="rail">
+    <div class="brand">kario</div>
+    <div class="big">3</div><p class="desk">years of experience</p>
+    <div class="lbl">Your experience</div>
+    <div class="steps"><span>0</span><span>1</span><span>2</span><span class="on">3</span><span>4</span><span>5+</span></div>
+    <div class="side">
+      <div class="lbl">Role</div>
+      <ul><li class="on"><span>All roles</span><span>33</span></li><li><span>AI / ML</span><span>24</span></li><li><span>Backend</span><span>8</span></li><li><span>Mobile</span><span>1</span></li></ul>
+      <div class="lbl">Where</div>
+      <ul><li class="on"><span>Anywhere</span><span>33</span></li><li><span>India</span><span>17</span></li><li><span>Remote</span><span>4</span></li></ul>
+    </div>
+  </aside>
+  <main><p class="count">33 jobs fit 3 years · newest first</p><ol id="b-list"></ol>
+    <p class="hid">45 more ask for 4+ years</p></main>
+</div></div>
+
+<div class="v vc"><div class="in">
+  <header><span class="brand">kario<i>.</i></span><button class="yrs">3 yrs ▾</button></header>
+  <div class="tabs"><span class="on">For you<small>33</small></span><span>Saved<small>2</small></span><span>Applied<small>1</small></span></div>
+  <div id="c-list"></div>
+  <p class="foot">45 more need 4+ years</p>
+</div></div>
+
+<script>
+// Real postings from data/local.db (2026-10-06 snapshot). Evidence is verbatim.
+const JOBS = [
+  { t: "Software Engineer, Public Sector – New Grad", c: "Scale AI", w: "San Francisco, CA", y: "0", yl: "new grad", d: "23 Sep", g: "new", n: true, ev: "“New Grad” in the title" },
+  { t: "Software Engineer – New Grad", c: "Scale AI", w: "Doha, Qatar", y: "0", yl: "new grad", d: "14 Sep", g: "new", n: true },
+  { t: "Machine Learning Research Scientist, Evaluations", c: "Scale AI", w: "San Francisco · Seattle · New York", y: null, d: "26 Aug", g: "August" },
+  { t: "ML Engineer (Data), Foundational Models", c: "Sarvam AI", w: "Bengaluru · Onsite", y: "3+", d: "21 May", g: "May", open: true,
+    ev: "3+ years of experience building large-scale data systems — petabyte-scale processing, distributed data pipelines, or comparable." },
+  { t: "ML Researcher, Foundational Models", c: "Sarvam AI", w: "Bengaluru · Onsite", y: "3+", d: "21 May", g: "May" },
+  { t: "Researcher, Vision", c: "Sarvam AI", w: "Bengaluru · Onsite", y: null, d: "17 Apr", g: "April" },
+  { t: "Data Scientist – Evaluations, Chanakya", c: "Sarvam AI", w: "Bengaluru · Onsite", y: "3–6", d: "17 Apr", g: "April" },
+  { t: "Backend Engineer, Chanakya", c: "Sarvam AI", w: "Bengaluru · Onsite", y: "3–6", d: "17 Apr", g: "April" },
+  { t: "AI Researcher", c: "Hume AI", w: "NYC · San Jose · Remote", y: "2+", d: "20 Jun 2025", g: "2025" },
+];
+const yrs = j => j.y === null ? "Not stated" : j.y === "0" ? "0 yrs" : `${j.y} yrs`;
+const html = (id, s) => document.getElementById(id).innerHTML = s;
+
+html("a-nav", [["All", 33, 1], ["AI / ML", 24], ["Backend", 8], ["Mobile", 1], ["India", 17], ["Remote", 4]]
+  .map(([n, k, on]) => `<span class="${on ? "on" : ""}">${n}<sup>${k}</sup></span>`).join(""));
+html("a-list", JOBS.map(j => `<li>
+  <span class="d ${j.n ? "new" : ""}">${j.d.toUpperCase()}</span>
+  <div class="t">${j.t}</div>
+  <div class="m"><span class="${j.n ? "new" : ""}">${j.c}</span><span class="loc"> · ${j.w}</span></div>
+  <span class="w">${j.w}</span>
+  <div class="y ${j.y === null ? "ns" : ""}">${j.y === null ? "not stated" : yrs(j)}<small>${j.d}</small></div>
+  ${j.open ? `<q>${j.ev}</q>` : ""}</li>`).join(""));
+
+html("b-list", JOBS.map(j => `<li class="card">
+  <div class="logo">${j.c[0]}</div>
+  <div><div class="co">${j.c}</div><div class="t">${j.t}</div></div>
+  <div class="chips"><span class="chip ${j.y === null ? "ns" : "fit"}">${yrs(j)}</span><span class="chip">${j.w}</span>
+    <span class="date">${j.n ? '<span class="newtag">New · </span>' : ""}${j.d}</span></div>
+  ${j.open ? `<div class="ev">“${j.ev}”</div>` : ""}</li>`).join(""));
+
+const tint = { "Scale AI": "#3b3b45", "Sarvam AI": "#c26a00", "Hume AI": "#2f6b5a" };
+const groups = [...new Set(JOBS.map(j => j.g))];
+html("c-list", groups.map(g => `<h3 class="${g === "new" ? "newh" : ""}">${g === "new" ? "New since your last visit" : g}</h3><ul>` +
+  JOBS.filter(j => j.g === g).map(j => `<li>
+    <span class="av" style="background:${tint[j.c]}">${j.c[0]}</span>
+    <div style="min-width:0"><div class="t">${j.t}</div><div class="s">${j.c}<span class="loc"> · ${j.w}</span></div></div>
+    <span class="w">${j.w}</span>
+    <div class="r"><b class="${j.y === null ? "ns" : ""}">${yrs(j)}</b>${j.d}</div>
+    ${j.open ? `<div class="ev">“${j.ev}”</div>` : ""}</li>`).join("") + "</ul>").join(""));
+
+document.body.dataset.v = new URLSearchParams(location.search).get("v") || "a";
+</script>
+</body>
+</html>
