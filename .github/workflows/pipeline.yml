@@ -1,7 +1,7 @@
 name: Fetch and publish jobs
 
-# fetch -> classify -> publish changed rows to D1, every 3 hours (docs/decisions.md).
-# Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+# fetch -> classify -> publish changed rows to D1 and Supabase, every 3 hours (docs/decisions.md).
+# Needs CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and SUPABASE_DB_URL.
 on:
   schedule:
     # Minute 17, not 0: GitHub delays on-the-hour cron runs the most.
@@ -49,6 +49,13 @@ jobs:
 
       - name: Publish to D1
         run: python -u scripts/publish_d1.py --d1 frshmen
+
+      # Dual-write until the API reads Supabase (docs/decisions.md, 2026-10-16). D1 goes first
+      # because the live site still reads it.
+      - name: Publish to Supabase
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: python -u scripts/publish_pg.py
 
       # GitHub disables scheduled workflows after 60 days without repo activity;
       # re-enabling through the API resets that timer.
