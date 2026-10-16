@@ -1,0 +1,195 @@
+<!doctype html>
+<!-- M4.4 low-fidelity wireframe of the job list. Layout and content only: no colour, fonts or
+     motion yet (those come from the M4.5 tokens). Open with ?s=onboard for the first-visit question.
+     Content is real, from the pipeline's local snapshot (2026-10-06), as seen by a user who picked
+     "3 years". -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kario wireframe</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font: 15px/1.4 system-ui, sans-serif; color: #222; background: #fff; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  .box { border: 1.5px solid #222; border-radius: 6px; }
+  .muted { color: #777; }
+  .ph { background: #ddd; display: inline-block; border-radius: 4px; }
+
+  header { border-bottom: 1.5px solid #222; }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-weight: 700; letter-spacing: .02em; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #222; }
+
+  .filters { padding: 16px 0 8px; }
+  .sentence { font-size: 18px; line-height: 2; }
+  .chip { border: 1.5px solid #222; border-radius: 999px; padding: 2px 10px; font-weight: 600; white-space: nowrap; }
+  .chip::after { content: " ▾"; font-weight: 400; }
+  .row-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .btn { border: 1.5px solid #222; border-radius: 6px; padding: 6px 12px; background: #fff; font: inherit; }
+  .btn.primary { background: #222; color: #fff; }
+
+  .list { list-style: none; padding: 0; margin: 8px 0 0; }
+  .card { border: 1.5px solid #222; border-radius: 8px; padding: 12px; margin-bottom: 10px;
+          display: grid; grid-template-columns: 76px 1fr; gap: 4px 12px; }
+  .years { grid-row: span 3; border: 1.5px solid #222; border-radius: 6px; text-align: center;
+           padding: 8px 2px; font-weight: 700; font-size: 17px; line-height: 1.1; align-self: start; }
+  .years small { display: block; font-weight: 400; font-size: 11px; margin-top: 2px; }
+  .years.ns { border-style: dashed; font-size: 13px; }
+  .title { font-weight: 650; }
+  .where { color: #555; font-size: 14px; }
+  .foot { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 13px; color: #555; }
+  .tag { border: 1px solid #999; border-radius: 4px; padding: 0 6px; }
+  .new { border: 1.5px solid #222; font-weight: 700; color: #222; }
+  .why { margin-left: auto; text-decoration: underline; }
+  .evidence { grid-column: 2; border-left: 3px solid #222; padding: 6px 10px; background: #f2f2f2;
+              font-size: 14px; margin-top: 4px; }
+  .evidence cite { display: block; font-style: normal; font-size: 12px; color: #666; margin-top: 4px; }
+
+  .divider { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #555; margin: 14px 0; }
+  .divider::before, .divider::after { content: ""; flex: 1; border-top: 1.5px dashed #888; }
+
+  .hidden-note { border: 1.5px dashed #888; border-radius: 8px; padding: 12px; margin: 14px 0; font-size: 14px; }
+  .pager { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 40px; }
+
+  /* Desktop: rows with fixed columns so years, place and date line up down the list (the
+     Google Flights pattern). */
+  @media (min-width: 900px) {
+    .card { grid-template-columns: 96px 1fr 240px 120px; align-items: center; padding: 10px 14px; }
+    .years { grid-row: auto; }
+    .main { grid-column: 2; }
+    .card .where { grid-column: 3; }
+    .card .foot { grid-column: 4; justify-content: flex-end; }
+    .card .foot .why { margin-left: 0; }
+    .evidence { grid-column: 2 / 5; }
+    .mobile-only { display: none; }
+  }
+  @media (max-width: 899px) { .desktop-only { display: none; } }
+
+  /* First visit: asked once, remembered. */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1.5px solid #222;
+           border-radius: 14px 14px 0 0; padding: 20px 16px 28px; }
+  @media (min-width: 900px) {
+    .sheet { left: 50%; top: 50%; bottom: auto; right: auto; width: 460px; transform: translate(-50%, -50%);
+             border: 1.5px solid #222; border-radius: 12px; }
+  }
+  .sheet h2 { font-size: 20px; margin-bottom: 4px; }
+  .opts { display: grid; gap: 8px; margin: 16px 0; }
+  .opt { border: 1.5px solid #222; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; }
+  .opt.sel { border-width: 3px; font-weight: 700; }
+  body.onboard .overlay { display: block; }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <span class="logo">Kario</span>
+  <span class="avatar" aria-label="Account"></span>
+</div></header>
+
+<main class="wrap">
+  <!-- The filter bar reads as a sentence (the Linear pattern); each chip opens its options with counts. -->
+  <section class="filters">
+    <p class="sentence">Jobs for <span class="chip">3 yrs</span> in <span class="chip">All roles</span>
+      <span class="chip">Anywhere</span></p>
+    <div class="row-meta">
+      <span><b>33 jobs</b> <span class="muted">· newest first</span></span>
+      <button class="btn">More filters</button>
+    </div>
+  </section>
+
+  <ol class="list">
+    <li class="card">
+      <div class="years">0<small>new grad</small></div>
+      <div class="main"><div class="title">Software Engineer, Public Sector – New Grad</div>
+        <div class="muted">Scale AI</div></div>
+      <div class="where">San Francisco, CA</div>
+      <div class="foot"><span class="tag new">New</span> 23 Sep <span class="why">Why 0?</span></div>
+    </li>
+    <li class="card">
+      <div class="years">0<small>new grad</small></div>
+      <div class="main"><div class="title">Software Engineer – New Grad</div><div class="muted">Scale AI</div></div>
+      <div class="where">Doha, Qatar</div>
+      <div class="foot"><span class="tag new">New</span> 14 Sep <span class="why">Why 0?</span></div>
+    </li>
+    <li class="card">
+      <div class="years ns">Not<br>stated</div>
+      <div class="main"><div class="title">Machine Learning Research Scientist, Evaluations</div>
+        <div class="muted">Scale AI</div></div>
+      <div class="where">San Francisco, Seattle, New York <span class="mobile-only">+</span></div>
+      <div class="foot">26 Aug</div>
+    </li>
+  </ol>
+
+  <div class="divider">Seen up to here</div>
+
+  <ol class="list">
+    <li class="card">
+      <div class="years">3+<small>years</small></div>
+      <div class="main"><div class="title">ML Engineer (Data), Foundational Models</div><div class="muted">Sarvam AI</div></div>
+      <div class="where">Bengaluru · Onsite</div>
+      <div class="foot">21 May <span class="why">Hide why ▴</span></div>
+      <!-- Shown after the tap: the exact snippet the label came from. -->
+      <blockquote class="evidence">“3+ years of experience building large-scale data systems — petabyte-scale
+        processing, distributed data pipelines, or comparable.”<cite>From the job description</cite></blockquote>
+    </li>
+    <li class="card">
+      <div class="years">3+<small>years</small></div>
+      <div class="main"><div class="title">ML Researcher, Foundational Models</div><div class="muted">Sarvam AI</div></div>
+      <div class="where">Bengaluru · Onsite</div>
+      <div class="foot">21 May <span class="why">Why 3+?</span></div>
+    </li>
+    <li class="card">
+      <div class="years ns">Not<br>stated</div>
+      <div class="main"><div class="title">Researcher, Vision</div><div class="muted">Sarvam AI</div></div>
+      <div class="where">Bengaluru · Onsite</div>
+      <div class="foot">17 Apr</div>
+    </li>
+    <li class="card">
+      <div class="years">3–6<small>years</small></div>
+      <div class="main"><div class="title">Data Scientist – Evaluations, Chanakya</div><div class="muted">Sarvam AI</div></div>
+      <div class="where">Bengaluru · Onsite</div>
+      <div class="foot">17 Apr <span class="why">Why 3–6?</span></div>
+    </li>
+    <li class="card">
+      <div class="years">3–6<small>years</small></div>
+      <div class="main"><div class="title">Backend Engineer, Chanakya</div><div class="muted">Sarvam AI</div></div>
+      <div class="where">Bengaluru · Onsite</div>
+      <div class="foot">17 Apr <span class="why">Why 3–6?</span></div>
+    </li>
+    <li class="card">
+      <div class="years">2+<small>years</small></div>
+      <div class="main"><div class="title">AI Researcher</div><div class="muted">Hume AI</div></div>
+      <div class="where">NYC, San Jose · Remote</div>
+      <div class="foot">20 Jun 2025 <span class="why">Why 2+?</span></div>
+    </li>
+  </ol>
+
+  <!-- Precision over recall, made visible: what the experience filter removed and why. -->
+  <p class="hidden-note"><b>45 jobs ask for more than 3 years</b> and are hidden.
+    <span class="muted">e.g. “Minimum 6+ years of experience building product software.” — Glean</span>
+    <br><u>Show them anyway</u></p>
+
+  <nav class="pager"><span class="muted">1–20 of 33</span><button class="btn">Next 20 →</button></nav>
+</main>
+
+<div class="overlay"><div class="sheet" role="dialog" aria-labelledby="q">
+  <h2 id="q">How many years have you worked full-time?</h2>
+  <p class="muted">We use this to hide jobs that ask for more. Internships don't count.</p>
+  <div class="opts">
+    <div class="opt">0 <span class="muted">Student or fresher</span></div>
+    <div class="opt">1 year</div>
+    <div class="opt">2 years</div>
+    <div class="opt sel">3 years <span>●</span></div>
+    <div class="opt">4 years</div>
+    <div class="opt">5+ years</div>
+  </div>
+  <button class="btn primary" style="width:100%">Show my jobs</button>
+  <p class="muted" style="font-size:13px;margin-top:10px;text-align:center">You can change this any time from the filter bar.</p>
+</div></div>
+
+<script>
+  if (new URLSearchParams(location.search).get("s") === "onboard") document.body.classList.add("onboard");
+</script>
+</body>
+</html>

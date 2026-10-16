@@ -355,7 +355,7 @@ Shrey's learning note.
 | M4.1 ✅ | Name: **Kario**; audience widened to every experience level, freshers included (2026-10-16) | Entries in `docs/decisions.md` |
 | M4.2 ✅ | Where Next.js runs: static export + Worker-added preview tags | Entry in `docs/decisions.md` |
 | M4.3 | Brief + references for the job list | `docs/briefs/job-list.md`, Shrey reviews |
-| M4.4 | Low-fidelity wireframe, 390 px and 1280 px | Shrey approves before styling |
+| M4.4 | Low-fidelity wireframe, 390 px and 1280 px | `docs/wireframes/`, Shrey approves before styling |
 | M4.5 | Design tokens (colour, type, spacing, radius, elevation, motion) | Shrey drafts, Claude reviews |
 | M4.6 | Next.js scaffold, job list ported, Playwright + performance checks | PR |
 | M5+ | Phase 1 features one by one (onboarding, mobile layout, job pages…) | |

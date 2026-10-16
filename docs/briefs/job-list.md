@@ -28,7 +28,7 @@ trust each label at a glance.
 Description text never appears on the list; it's on the job page.
 
 ## Filters
-- **My experience** (new): 0 / 1 / 2 / 3–5 / 5+ years. A job shows when its minimum is at or
+- **My experience** (new): 0 / 1 / 2 / 3 / 4 / 5+ years (whole years, not ranges, so "3–6 yrs" vs "4 years" has one answer). A job shows when its minimum is at or
   below my years. Jobs that state no years show with a "Not stated" tag, never as entry-level.
   The precision rule stays: a "3+ years" job never shows to someone who picked 0–2 years.
 - Role (AI/ML, Backend, Mobile), location (India city / Remote / abroad with visa), internship.
