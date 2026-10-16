@@ -4,6 +4,38 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-16 — Switching from D1 to Supabase: order and dual-write (M3)
+- **Order options:**
+  - switch the API first, then the pipeline
+  - switch the pipeline first, then the API
+- **Choice (Shrey):** pipeline first.
+- **Why:** an API reading Supabase would show a database that has stopped receiving new jobs; the pipeline has to fill Supabase before anything reads it.
+- **Gap options (between the two switches):**
+  - stop writing D1 as soon as the pipeline moves
+  - dual-write: the pipeline writes to both D1 and Supabase until the API has moved
+- **Choice (Shrey):** dual-write.
+- **Why:** with D1 writes stopped, the live site (still reading D1) would freeze until the API rewrite ships, possibly for days. Dual-writing keeps the site fresh, means the API switch has no downtime, and allows a rollback at any point by pointing the API back at D1.
+- **Cost:** each pipeline run takes a few minutes longer. D1's write budget is unchanged (the same writes as before).
+- **Steps:**
+  1. Pipeline writes D1 + Supabase.
+  2. API reads Supabase through Hyperdrive.
+  3. Drop the D1 write, then D1 itself.
+
+---
+
+## 2026-10-16 — How the one-off D1 → Supabase copy works (M3)
+- **Options:**
+  - one big transaction for all ~27k jobs
+  - small batches (500 jobs) in their own transactions, with upserts
+- **Choice (Shrey's design):** small batches + upserts by stable id, skipping unchanged rows (`content_hash`, `label_hash`), with a count check per status, level and company at the end.
+- **Why:**
+  - One transaction would roll back all the work if the connection dropped near the end.
+  - Batches lose at most one batch, and the upserts make a re-run safe: running twice gives the same result as once. The 3-hourly pipeline relies on the same rule.
+  - The count check proves nothing was lost before anything switches over.
+- **Result:** 27,243 jobs in 55 batches, counts matched (run on 2026-10-16).
+
+---
+
 ## 2026-10-16 — Reposted jobs (schema, M3)
 - **Problem:** a company re-lists the same role under a new ATS id. The pipeline sees a new job, and if the old listing is still up, students see two cards and applications split across them.
 - **Shrey's rules:** one card, showing today's date; applications on the old listing stay on the merged job.
