@@ -33,7 +33,7 @@ For live-reloading UI work, run `python scripts/dev_api.py` and `npm run dev` in
 ```sh
 PG_TEST_URL=postgresql://... pytest      # all tests; API and publisher tests need a throwaway Postgres
 python scripts/eval_extractor.py        # fresher precision on labeled real postings (must stay 100%)
-(cd site && npm run lint && npx tsc --noEmit && npm run check:tokens)
+(cd site && npm run lint && npm run typecheck && npm run check:tokens)
 ```
 
 ## Deploy (GitHub Actions)
