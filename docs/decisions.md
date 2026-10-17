@@ -4,6 +4,26 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-17 — Job-list layout: split view (M4.4)
+- **Rounds:**
+  1. A plain card list. Shrey: too boxy, wrong shape, too wordy.
+  2. Ledger, Experience rail, Inbox.
+  3. Three options built from patterns in Shrey's reference products (Jobright, Careerlift,
+     Tsenta): a fit-panel card, a dark board grid, and a split view.
+- **Choice (Shrey):** split view: a list plus a details panel; on phones the details open
+  full-screen.
+- **Why over the others:**
+  - The most jobs per screen (~8 on a phone, against ~2.5 and ~3.5).
+  - The years badge stays on every row.
+  - The evidence gets a large, readable place in the details, which matches "evidence behind a
+    tap".
+  - The fit-panel cards were the most distinctive but meant the most scrolling. The board grid
+    showed evidence on every card, against the brief, and a grid is harder to compare down.
+- **Kept out on purpose:** match percentages (we don't compute a real one), upsell banners,
+  sparkle icons, salary (not extracted yet).
+
+---
+
 ## 2026-10-16 — Audience: every experience level, not only freshers
 - **Options:**
   - keep the product fresher-only

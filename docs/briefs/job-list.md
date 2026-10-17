@@ -72,3 +72,12 @@ These show the hard cases: long titles, multiple cities, missing years, and long
    from the filter bar.
 2. **The evidence snippet sits behind a tap** on phones, so cards stay short.
 3. **"Not stated" jobs show by default**, with their tag.
+
+## Layout (decided by Shrey, 2026-10-17)
+**Split view** (`docs/wireframes/options.html?v=3`): a list on the left, the selected job's
+details on the right. On phones the list is full width, and a tap opens the details full-screen.
+- Rows: title, then "New · company · place · date", with the years badge on the right
+  (green when it fits, grey when "Not stated").
+- Filters: active ones as dark chips with a count and ×, inactive ones as outlined chips.
+- Details: workplace, type and date facts; a green "Asks 3+ years · fits your 3" box with the
+  quoted evidence; then Apply, Save and the optional "Check my fit".
