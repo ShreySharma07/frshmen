@@ -131,8 +131,11 @@ def create_app() -> FastAPI:
     async def list_jobs(
         # "0-N": fresher roles plus any whose stated minimum is within N years. "unstated": no number
         # in the posting. "internship": intern/trainee/apprentice titles, whatever their label.
-        experience: Literal["all", "fresher", "internship", "0-1", "0-2", "0-3", "0-5", "unstated",
+        experience: Literal["all", "fresher", "internship", "0-0", "0-1", "0-2", "0-3", "0-4", "0-5", "unstated",
                             "experienced"] = "all",
+        # With a "0-N" bucket: also list postings that state no years ("maybe", no number). Jobs
+        # labelled experienced from other signals (e.g. a "Senior" title) stay out: precision first.
+        include_unstated: bool = False,
         # "target": the roles in config/profile.yaml (AI/ML, Python backend, Android/React Native).
         role: Literal["all", "target", "ai_ml", "backend", "mobile"] = "all",
         # "24h" is new to us (first seen); 7d/30d use the posting date where the source gives one.
@@ -160,7 +163,8 @@ def create_app() -> FastAPI:
         elif experience == "internship":
             where.append(INTERN)
         elif experience.startswith("0-"):
-            where.append(f"(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= {p(int(experience[2:]))}))")
+            unstated = " OR (level = 'maybe' AND yoe_min IS NULL)" if include_unstated else ""
+            where.append(f"(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= {p(int(experience[2:]))}){unstated})")
         if role == "target":
             where.append("role_match")
         elif role != "all":

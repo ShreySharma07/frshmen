@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+/*
+ * Kario design tokens (M4.5, docs/decisions.md 2026-10-17). One place for every colour, size,
+ * radius, shadow and motion value; components only use these. Mirrored for the future mobile
+ * app in src/design/tokens.ts: change both together.
+ *
+ * Contrast (WCAG AA needs 4.5:1 for text): ink 19.7 / 16.8, muted 5.3 / 7.1, accent 5.5 / 6.8
+ * (light / dark, on the canvas). `faint` is 2.6 / 3.9, so it is for icons, dividers and
+ * disabled things only, never for text people need to read.
+ */
+
+:root {
+  /* Light theme */
+  --canvas: #ffffff; /* page background */
+  --surface: #fafafb; /* hover, subtle fills */
+  --line: #e7e7ea; /* dividers, input borders */
+  --ink: #0a0a12; /* main text */
+  --muted: #6b6b76; /* secondary text, "Not stated" */
+  --faint: #a1a1aa; /* icons and dividers only */
+  --accent: #5851ec; /* the one brand colour: links, "New", years, primary button */
+  --accent-hover: #4a42d9;
+  --on-accent: #ffffff; /* text on an accent background */
+  --selected: #f6f5ff; /* selected job row */
+  --card: #0a0a12; /* the dark "why it fits" card */
+  --card-text: #ffffff;
+  --card-muted: #d4d4d8;
+  --card-accent: #a5a0ff; /* years number and ticks inside the card */
+  --card-line: rgb(255 255 255 / 0.1);
+  --code: #f4f4f5; /* keyword pills */
+  color-scheme: light;
+}
+
+/* Dark theme: designed, not inverted. The canvas is a blue-black so the purple stays warm; the
+   fit card lifts off the canvas with a lighter surface and a hairline instead of going darker. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #0b0b10;
+    --surface: #121218;
+    --line: #24242c;
+    --ink: #ededf2;
+    --muted: #9b9ba6;
+    --faint: #6e6e78;
+    --accent: #8f8aff;
+    --accent-hover: #a5a0ff;
+    --on-accent: #0b0b10;
+    --selected: #17162a;
+    --card: #17171f;
+    --card-text: #ededf2;
+    --card-muted: #d4d4d8;
+    --card-accent: #a5a0ff;
+    --card-line: rgb(255 255 255 / 0.08);
+    --code: #1c1c24;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --canvas: #0b0b10;
+  --surface: #121218;
+  --line: #24242c;
+  --ink: #ededf2;
+  --muted: #9b9ba6;
+  --faint: #6e6e78;
+  --accent: #8f8aff;
+  --accent-hover: #a5a0ff;
+  --on-accent: #0b0b10;
+  --selected: #17162a;
+  --card: #17171f;
+  --card-text: #ededf2;
+  --card-muted: #d4d4d8;
+  --card-accent: #a5a0ff;
+  --card-line: rgb(255 255 255 / 0.08);
+  --code: #1c1c24;
+  color-scheme: dark;
+}
+
+/* Tailwind reads these to make utilities: bg-canvas, text-ink, border-line, rounded-md,
+   duration-quick, ease-out-soft, text-title... `inline` keeps the var() so themes switch live. */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+  --color-selected: var(--selected);
+  --color-card: var(--card);
+  --color-card-text: var(--card-text);
+  --color-card-muted: var(--card-muted);
+  --color-card-accent: var(--card-accent);
+  --color-card-line: var(--card-line);
+  --color-code: var(--code);
+
+  /* Two families only: Geist for text, Geist Mono for numbers and keywords (set by next/font). */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+@theme {
+  /* Type scale: the six sizes the job screen uses, each with its line height. */
+  --text-caption: 0.6875rem; /* 11px: kbd hints, years in the list */
+  --text-caption--line-height: 1rem;
+  --text-meta: 0.75rem; /* 12px: company · place · date, filter chips */
+  --text-meta--line-height: 1rem;
+  --text-body: 0.84375rem; /* 13.5px: row titles, description */
+  --text-body--line-height: 1.375rem;
+  --text-base: 0.9375rem; /* 15px: default */
+  --text-base--line-height: 1.5rem;
+  --text-title: 1.5rem; /* 24px: job title in the details panel */
+  --text-title--line-height: 1.2;
+  --text-display: 1.875rem; /* 30px: the years number in the fit card */
+  --text-display--line-height: 1;
+
+  /* Spacing: Tailwind's 4px steps (p-1 = 4px, p-4 = 16px) are kept as they are. */
+
+  /* Radius: three steps. sm = keyword pills and kbd, md = chips and buttons, lg = cards. */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Elevation: flat by default. One hairline shadow for raised controls, one for menus. */
+  --shadow-raised: 0 1px 2px rgb(10 10 18 / 0.05);
+  --shadow-menu: 0 8px 24px rgb(10 10 18 / 0.12), 0 1px 2px rgb(10 10 18 / 0.06);
+
+  /* Motion: feedback 150-250 ms, layout 300-500 ms (CLAUDE.md). No linear, no bounce. */
+  --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: var(--ease-out-soft);
+}
+
+/* duration-quick / duration-move / duration-layout as utilities. */
+@utility duration-quick {
+  transition-duration: 150ms;
+}
+@utility duration-move {
+  transition-duration: 250ms;
+}
+@utility duration-layout {
+  transition-duration: 400ms;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* Every animation has a no-motion version. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
