@@ -38,6 +38,15 @@ Newest first. Each entry: date, options considered, choice, why.
   - Job titles are medium weight, not semibold.
   - Years in the list are plain coloured text, without a box.
   - The accent is solid colour only; `CLAUDE.md` bans purple gradients.
+- **Second revision, same day (Shrey):**
+  - No boxes: the details panel sits on the page, and a single vertical line separates it from
+    the list.
+  - The list has no row dividers; the selected row keeps its tint and accent bar.
+  - Company logos replace the letter boxes. In the prototype they load from Google's favicon
+    service, with a plain letter as the fallback.
+  - In production the pipeline will fetch each company's logo once and store it with our own
+    assets, so pages never call a third party (privacy, speed).
+  - "For you", "Saved" and "Applied" moved into the profile menu, under the avatar.
 - **Prototype:** `docs/wireframes/workspace.html`. Static HTML with Tailwind's browser build; the
   Next.js port (M4.6) uses `motion/react` `layoutId` for the row bar.
 - **Open:** `CLAUDE.md` allows at most two font families. This uses Geist and Geist Mono, plus
