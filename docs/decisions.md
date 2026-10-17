@@ -14,6 +14,7 @@ Newest first. Each entry: date, options considered, choice, why.
   - **Choice:** `404-page`, with a branded `not-found` page.
   - **Why:** Next exports one HTML file per page, so a wrong link should say so honestly. A 200 for every URL also confuses search engines and link checkers.
 - **Rollback:** `web/` stays in the repo until the new site is confirmed live. Going back is a one-line change of `assets.directory` plus the deploy path. Delete `web/` after that.
+- **Confirmed live (Shrey, 2026-10-17):** `web/` deleted. Rollback from here means reverting PR #35 from git history.
 - **Built in small steps (Shrey chose to learn step by step):**
   1. scaffold
   2. tokens

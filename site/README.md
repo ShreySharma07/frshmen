@@ -1,6 +1,6 @@
 # Kario site (Next.js)
 
-The new web front end, replacing the Vite app in `web/` once the job list is ported (M4.6).
+Kario's web front end (M4.6), live since 2026-10-17.
 
     npm install
     python ../scripts/dev_api.py --dsn postgresql://...   # the API on :8000, in another terminal
