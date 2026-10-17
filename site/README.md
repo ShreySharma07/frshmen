@@ -3,11 +3,13 @@
 The new web front end, replacing the Vite app in `web/` once the job list is ported (M4.6).
 
     npm install
-    npm run dev      # http://localhost:3000
+    python ../scripts/dev_api.py --dsn postgresql://...   # the API on :8000, in another terminal
+    npm run dev      # http://localhost:3000; /api is forwarded to :8000
     npm run build    # static export into out/, served by the API Worker
 
 It is a static export (`output: "export"` in `next.config.ts`): no Node server runs in
-production. Data comes from the FastAPI Worker under `/api` (see `docs/decisions.md`).
+production. The page is printed at build time, and the browser fetches live jobs from the
+FastAPI Worker under `/api` when it opens (see `docs/decisions.md`).
 
 ## Design tokens
 
