@@ -10,7 +10,7 @@ export function JobRow({ job, selected, isNew, onSelect }: { job: JobSummary; se
         type="button"
         onClick={onSelect}
         aria-current={selected ? "true" : undefined}
-        className={`flex w-full items-start gap-3 rounded-lg px-4 py-3.5 text-left transition-colors duration-quick ${selected ? "bg-selected" : "hover:bg-surface"}`}
+        className={`flex w-full items-start gap-3 rounded-lg px-4 py-3.5 text-left transition-colors duration-quick ${selected ? "lg:bg-selected" : ""} hover:bg-surface`}
       >
         <span aria-hidden className="grid size-8 shrink-0 place-items-center text-body font-semibold text-muted">{job.company[0]}</span>
         <span className="min-w-0 flex-1">

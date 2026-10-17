@@ -49,11 +49,10 @@ export interface JobPage {
   total?: number; // only when asked for: counting reads every matching row
 }
 
-export interface JobQuery {
-  experience: Experience;
-  role: Role;
-  page: number;
-  withTotal: boolean;
+// Filter counts and lists come from a snapshot the pipeline writes once per run.
+export interface Meta {
+  total: number;
+  countries: { country: string; n: number }[];
 }
 
 export const PER_PAGE = 20;
@@ -71,8 +70,10 @@ async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
 export const fetchJob = (id: string, signal?: AbortSignal) =>
   getJson<JobDetail>(`/api/jobs/${encodeURIComponent(id)}`, signal);
 
-export async function fetchJobs(q: JobQuery, signal?: AbortSignal): Promise<JobPage> {
-  const params = new URLSearchParams({ experience: q.experience, role: q.role, page: String(q.page), per_page: String(PER_PAGE) });
-  if (q.withTotal) params.set("with_total", "true");
+export const fetchMeta = (signal?: AbortSignal) => getJson<Meta>("/api/meta", signal);
+
+export async function fetchJobs(filters: Record<string, string>, page: number, withTotal: boolean, signal?: AbortSignal): Promise<JobPage> {
+  const params = new URLSearchParams({ ...filters, page: String(page), per_page: String(PER_PAGE) });
+  if (withTotal) params.set("with_total", "true");
   return getJson<JobPage>(`/api/jobs?${params}`, signal);
 }

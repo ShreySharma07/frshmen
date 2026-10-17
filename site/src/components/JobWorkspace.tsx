@@ -1,16 +1,57 @@
 "use client";
-// The job screen: list on the left, the selected job on the right (a full-screen sheet on phones).
-// The page around it is static; this asks /api for jobs once it opens in the browser.
+// The job screen: header with search, filter chips, then the list on the left and the selected
+// job on the right (a full-screen sheet on phones). The page around it is static; this asks /api
+// for jobs once it opens in the browser.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { fetchJob, fetchJobs, type JobDetail, type JobSummary } from "@/lib/api";
+import { fetchJob, fetchJobs, fetchMeta, type JobDetail, type JobSummary } from "@/lib/api";
+import { DEFAULTS, toApiParams, toSearch, type Filters } from "@/lib/filters";
+import { useUrlFilters } from "@/lib/useUrlFilters";
+import { FilterBar } from "./FilterBar";
 import { JobDetailView } from "./JobDetailView";
 import { JobRow } from "./JobRow";
+import { SearchBox } from "./SearchBox";
 
 const NEW_SINCE_DAYS = 3; // until visits are remembered (with sign-in), "New" = first seen in the last 3 days
 
 type ListState = { status: "loading" } | { status: "error"; message: string } | { status: "ready" };
 
 export function JobWorkspace() {
+  const [filters, navigate] = useUrlFilters();
+  const [countries, setCountries] = useState<string[]>([]);
+
+  // Country choices for the Where chip, from the pipeline's per-run snapshot (one cheap request).
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetchMeta(ctrl.signal).then((m) => setCountries(m.countries.slice(0, 12).map((c) => c.country))).catch(() => {});
+    return () => ctrl.abort();
+  }, []);
+  const onSearch = useCallback((q: string) => { if (filters) navigate({ ...filters, q }, "replace"); }, [filters, navigate]);
+
+  return (
+    <>
+      <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas/90 backdrop-blur-md">
+        <div className="mx-auto flex h-full max-w-[1280px] items-center gap-4 px-4 lg:px-6">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static SVG; next/image needs a loader in export mode */}
+          <img src="/kario-wordmark.svg" alt="kario" className="h-[22px] w-auto shrink-0 dark:invert" />
+          <div className="ml-auto flex w-full justify-end">
+            {filters && <SearchBox value={filters.q} onSearch={onSearch} />}
+          </div>
+        </div>
+      </header>
+      <main className="mx-auto max-w-[1280px] pb-4 lg:px-2">
+        {filters ? (
+          <>
+            <FilterBar filters={filters} countries={countries} onChange={(f) => navigate(f)} />
+            {/* A new key per filter set starts the results fresh: page 1, first job selected. */}
+            <Results key={toSearch(filters)} filters={filters} onClear={() => navigate(DEFAULTS)} />
+          </>
+        ) : <Skeleton />}
+      </main>
+    </>
+  );
+}
+
+function Results({ filters, onClear }: { filters: Filters; onClear: () => void }) {
   const [list, setList] = useState<ListState>({ status: "loading" });
   const [jobs, setJobs] = useState<JobSummary[]>([]);
   const [total, setTotal] = useState<number | null>(null);
@@ -26,7 +67,7 @@ export function JobWorkspace() {
   // Page 1 (with the total) on open and on retry; later pages append.
   useEffect(() => {
     const ctrl = new AbortController();
-    fetchJobs({ experience: "0-3", role: "target", page, withTotal: page === 1 }, ctrl.signal)
+    fetchJobs(toApiParams(filters), page, page === 1, ctrl.signal)
       .then((res) => {
         setJobs((prev) => (page === 1 ? res.jobs : [...prev, ...res.jobs]));
         if (res.total != null) setTotal(res.total);
@@ -35,7 +76,7 @@ export function JobWorkspace() {
       })
       .catch((e: Error) => { if (e.name !== "AbortError") setList({ status: "error", message: e.message }); });
     return () => ctrl.abort();
-  }, [page, attempt]);
+  }, [filters, page, attempt]);
 
   const current = jobs[active];
   const detail = current ? details[current.id] : undefined;
@@ -90,11 +131,18 @@ export function JobWorkspace() {
 
   if (list.status === "loading" && jobs.length === 0) return <Skeleton />;
   if (list.status === "error" && jobs.length === 0) return <ErrorLine message={list.message} onRetry={() => { setList({ status: "loading" }); setAttempt((a) => a + 1); }} />;
+  if (jobs.length === 0)
+    return (
+      <p className="px-4 py-8 text-body text-muted lg:px-6">
+        No jobs match these filters.{" "}
+        <button type="button" className="font-medium text-accent underline" onClick={onClear}>Clear filters</button>
+      </p>
+    );
 
   return (
     <div className="grid grid-cols-1 items-start lg:grid-cols-[420px_1fr]">
       <section aria-label="Jobs" className="min-w-0 lg:pr-6">
-        <p className="mb-2 px-4 text-meta text-muted"><span className="font-mono text-ink">{total ?? jobs.length}</span> jobs · newest first</p>
+        <p className="mb-2 px-4 text-meta text-muted" aria-live="polite"><span className="font-mono text-ink">{total ?? jobs.length}</span> {(total ?? jobs.length) === 1 ? "job" : "jobs"} · newest first</p>
         <div className="relative">
           {bar && (
             <span aria-hidden className="pointer-events-none absolute left-0 top-0 hidden w-[3px] rounded-r-sm bg-accent transition-transform duration-move ease-out-soft lg:block"
