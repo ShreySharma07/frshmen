@@ -26,6 +26,21 @@ export interface JobSummary {
   highlight: { kind: string; text: string } | null;
 }
 
+export interface Evidence {
+  kind: string;
+  snippet: string;
+}
+
+export interface JobDetail extends JobSummary {
+  source: string;
+  department: string | null;
+  employment_type: string | null;
+  description_text: string;
+  role_match: boolean;
+  role_reason: string | null;
+  evidence: { level: Evidence[]; role: Evidence[] } | null;
+}
+
 export interface JobPage {
   jobs: JobSummary[];
   page: number;
@@ -43,14 +58,21 @@ export interface JobQuery {
 
 export const PER_PAGE = 20;
 
-export async function fetchJobs(q: JobQuery, signal?: AbortSignal): Promise<JobPage> {
-  const params = new URLSearchParams({ experience: q.experience, role: q.role, page: String(q.page), per_page: String(PER_PAGE) });
-  if (q.withTotal) params.set("with_total", "true");
-  const res = await fetch(`/api/jobs?${params}`, { signal, headers: { Accept: "application/json" } });
+async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(path, { signal, headers: { Accept: "application/json" } });
   if (!res.ok) {
     // FastAPI puts the reason in `detail` (or `error` from our handler); fall back to the status line.
     const body = await res.json().catch(() => null);
     throw new Error(body?.detail ?? body?.error ?? `${res.status} ${res.statusText}`.trim());
   }
   return res.json();
+}
+
+export const fetchJob = (id: string, signal?: AbortSignal) =>
+  getJson<JobDetail>(`/api/jobs/${encodeURIComponent(id)}`, signal);
+
+export async function fetchJobs(q: JobQuery, signal?: AbortSignal): Promise<JobPage> {
+  const params = new URLSearchParams({ experience: q.experience, role: q.role, page: String(q.page), per_page: String(PER_PAGE) });
+  if (q.withTotal) params.set("with_total", "true");
+  return getJson<JobPage>(`/api/jobs?${params}`, signal);
 }

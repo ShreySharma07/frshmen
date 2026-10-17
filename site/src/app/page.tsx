@@ -1,5 +1,5 @@
-// Static shell, printed at build time; JobList fills in live jobs in the browser.
-import { JobList } from "@/components/JobList";
+// Static shell, printed at build time; JobWorkspace fills in live jobs in the browser.
+import { JobWorkspace } from "@/components/JobWorkspace";
 
 export default function Home() {
   return (
@@ -10,8 +10,8 @@ export default function Home() {
           <img src="/kario-wordmark.svg" alt="kario" className="h-[22px] w-auto dark:invert" />
         </div>
       </header>
-      <main className="mx-auto max-w-[720px] px-2 py-4 lg:px-6">
-        <JobList />
+      <main className="mx-auto max-w-[1280px] py-4 lg:px-2">
+        <JobWorkspace />
       </main>
     </>
   );
