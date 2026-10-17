@@ -4,6 +4,38 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-17 — Visual direction: alabaster + forest workspace (M4.5)
+- **Options shown:** the split view in three styles (Midnight dark/lime, Paper light/mono, Bold
+  warm/orange).
+- **Choice (Shrey, his own spec):**
+  - the warm alabaster canvas `#F7F6F2` with a forest-obsidian accent `#0F221A`
+  - one sticky 56 px header: serif wordmark, view tabs, search with a `/` shortcut
+  - filter chips with an 8 px radius and key–value text (`YOE ≤ 3 yrs`)
+  - one continuous list panel (no floating cards); the selected row gets a soft fill and an
+    animated 3 px forest bar
+  - j/k and arrow-key navigation
+  - a sticky details panel with a dark forest card: the big years number, the quoted evidence,
+    and a fit checklist
+  - forest Apply button, Save and Hide, with A/S/H shortcuts
+  - real Requirements, Tech stack and Responsibilities sections plus the source ATS, never grey
+    placeholder bars
+  - no "Fits your N years" label
+- **Why over the three styles:** it keeps Paper's calm, readable list and brings back the
+  high-contrast "why it fits" card, so the one thing Kario is for (trustworthy labels) is the
+  loudest element on the screen.
+- **Honesty rules kept:**
+  - The checklist only shows what the extractor found. Missing facts show as a grey dash ("Batch
+    not stated", "Visa not mentioned"), never a tick.
+  - Tech terms are only those named in the posting.
+  - There are no match percentages.
+- **Prototype:** `docs/wireframes/workspace.html`. Static HTML with Tailwind's browser build; the
+  Next.js port (M4.6) uses `motion/react` `layoutId` for the row bar.
+- **Open:** `CLAUDE.md` allows at most two font families. This uses Geist and Geist Mono, plus
+  Instrument Serif for the wordmark only. Treat the wordmark as a logo (an SVG) so the rule
+  holds.
+
+---
+
 ## 2026-10-17 — Job-list layout: split view (M4.4)
 - **Rounds:**
   1. A plain card list. Shrey: too boxy, wrong shape, too wordy.
