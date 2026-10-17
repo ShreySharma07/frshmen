@@ -231,6 +231,9 @@ def by_yoe():
              content_hash="y7"),
         dict(base, id="ashby:acme:d", title="Data Science Trainee", level="maybe", yoe_min=4, yoe_max=None,
              content_hash="y8"),
+        # Experienced from a senior title, no number: "Not stated" in years, but never shown to juniors.
+        dict(base, id="ashby:acme:s", title="Senior ML Engineer", level="experienced", yoe_min=None, yoe_max=None,
+             content_hash="y9"),
     ]
     publish(rows, datetime.now(timezone.utc))
     return app_client()
@@ -238,19 +241,26 @@ def by_yoe():
 
 @pytest.mark.parametrize("bucket,titles", [
     ("fresher", {"Fresher"}),
+    ("0-0", {"Fresher"}),
     ("0-1", {"Fresher", "One year"}),
     ("0-2", {"Fresher", "One year", "Two years"}),
     ("0-5", {"Fresher", "One year", "Two years", "Five years", "ML Intern", "Internal Tools Engineer",
              "Data Science Trainee"}),
-    ("unstated", {"Unstated"}),
-    ("experienced", {"Two years", "Five years", "Internal Tools Engineer"}),
+    ("0-4", {"Fresher", "One year", "Two years", "ML Intern", "Internal Tools Engineer", "Data Science Trainee"}),
+    ("unstated", {"Unstated", "Senior ML Engineer"}),
+    ("experienced", {"Two years", "Five years", "Internal Tools Engineer", "Senior ML Engineer"}),
     ("internship", {"ML Intern", "Data Science Trainee"}),
     ("all", {"Fresher", "One year", "Two years", "Five years", "Unstated", "ML Intern", "Internal Tools Engineer",
-             "Data Science Trainee"}),
+             "Data Science Trainee", "Senior ML Engineer"}),
 ])
 def test_experience_buckets(by_yoe, bucket, titles):
     got = {j["title"] for j in by_yoe.get(f"/api/jobs?experience={bucket}").json()["jobs"]}
     assert got == titles
+
+
+def test_include_unstated_adds_maybe_jobs_without_years_but_never_senior_ones(by_yoe):
+    got = {j["title"] for j in by_yoe.get("/api/jobs?experience=0-1&include_unstated=true").json()["jobs"]}
+    assert got == {"Fresher", "One year", "Unstated"}
 
 
 def test_old_postings_stay_listed_unless_filtered_and_newest_posting_sorts_first():
