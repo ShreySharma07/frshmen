@@ -74,6 +74,9 @@
   color-scheme: dark;
 }
 
+/* `dark:` classes follow the chosen theme (data-theme), not only the device setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* Tailwind reads these to make utilities: bg-canvas, text-ink, border-line, rounded-md,
    duration-quick, ease-out-soft, text-title... `inline` keeps the var() so themes switch live. */
 @theme inline {
