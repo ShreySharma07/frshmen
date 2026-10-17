@@ -4,6 +4,21 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-17 — Logo: outlined Instrument Serif wordmark; M4.5 look approved
+- **Options:**
+  - load Instrument Serif as a third font, just for the wordmark
+  - outline the wordmark into an SVG logo
+- **Choice (Shrey):** the SVG logo (`brand/kario-wordmark.svg`), plus a square "k" mark
+  (`brand/kario-mark.svg`) for the favicon and app icon.
+- **Why:** it keeps the site at two font families, as `CLAUDE.md` requires. It also saves a
+  font download on budget phones, and the logo looks the same everywhere.
+- **Licence:** Instrument Serif is under the SIL Open Font License, which allows using it in a
+  logo.
+- **Status:** Shrey approved the workspace look (`docs/wireframes/workspace.html`). M4.5 is done;
+  the next step is the Next.js scaffold (M4.6).
+
+---
+
 ## 2026-10-17 — Visual direction: split-pane workspace, white + purple (M4.5)
 - **Options shown:** the split view in three styles (Midnight dark/lime, Paper light/mono, Bold
   warm/orange).
