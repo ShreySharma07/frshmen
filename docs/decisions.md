@@ -4,7 +4,7 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
-## 2026-10-17 — Visual direction: alabaster + forest workspace (M4.5)
+## 2026-10-17 — Visual direction: split-pane workspace, white + purple (M4.5)
 - **Options shown:** the split view in three styles (Midnight dark/lime, Paper light/mono, Bold
   warm/orange).
 - **Choice (Shrey, his own spec):**
@@ -28,6 +28,16 @@ Newest first. Each entry: date, options considered, choice, why.
     not stated", "Visa not mentioned"), never a tick.
   - Tech terms are only those named in the posting.
   - There are no match percentages.
+- **Revision, same day (Shrey):**
+  - Palette is now a white background, near-black text `#0A0A12`, and one Stripe-like purple
+    accent. It replaces the alabaster and forest.
+  - The purple is `#5851EC`, a shade darker than Stripe's `#635BFF`. `#635BFF` only reaches
+    4.3:1 on the selected-row tint; `#5851EC` reaches 5.1:1 or better, which passes WCAG AA.
+  - The fit card is near-black with a light-purple accent `#A5A0FF` (8.5:1).
+  - All labels are in sentence case ("Experience", "Requirements"), not capitals.
+  - Job titles are medium weight, not semibold.
+  - Years in the list are plain coloured text, without a box.
+  - The accent is solid colour only; `CLAUDE.md` bans purple gradients.
 - **Prototype:** `docs/wireframes/workspace.html`. Static HTML with Tailwind's browser build; the
   Next.js port (M4.6) uses `motion/react` `layoutId` for the row bar.
 - **Open:** `CLAUDE.md` allows at most two font families. This uses Geist and Geist Mono, plus
