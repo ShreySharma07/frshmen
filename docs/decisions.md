@@ -4,6 +4,121 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-17 — Logo: outlined Instrument Serif wordmark; M4.5 look approved
+- **Options:**
+  - load Instrument Serif as a third font, just for the wordmark
+  - outline the wordmark into an SVG logo
+- **Choice (Shrey):** the SVG logo (`brand/kario-wordmark.svg`), plus a square "k" mark
+  (`brand/kario-mark.svg`) for the favicon and app icon.
+- **Why:** it keeps the site at two font families, as `CLAUDE.md` requires. It also saves a
+  font download on budget phones, and the logo looks the same everywhere.
+- **Licence:** Instrument Serif is under the SIL Open Font License, which allows using it in a
+  logo.
+- **Status:** Shrey approved the workspace look (`docs/wireframes/workspace.html`). M4.5 is done;
+  the next step is the Next.js scaffold (M4.6).
+
+---
+
+## 2026-10-17 — Visual direction: split-pane workspace, white + purple (M4.5)
+- **Options shown:** the split view in three styles (Midnight dark/lime, Paper light/mono, Bold
+  warm/orange).
+- **Choice (Shrey, his own spec):**
+  - the warm alabaster canvas `#F7F6F2` with a forest-obsidian accent `#0F221A`
+  - one sticky 56 px header: serif wordmark, view tabs, search with a `/` shortcut
+  - filter chips with an 8 px radius and key–value text (`YOE ≤ 3 yrs`)
+  - one continuous list panel (no floating cards); the selected row gets a soft fill and an
+    animated 3 px forest bar
+  - j/k and arrow-key navigation
+  - a sticky details panel with a dark forest card: the big years number, the quoted evidence,
+    and a fit checklist
+  - forest Apply button, Save and Hide, with A/S/H shortcuts
+  - real Requirements, Tech stack and Responsibilities sections plus the source ATS, never grey
+    placeholder bars
+  - no "Fits your N years" label
+- **Why over the three styles:** it keeps Paper's calm, readable list and brings back the
+  high-contrast "why it fits" card, so the one thing Kario is for (trustworthy labels) is the
+  loudest element on the screen.
+- **Honesty rules kept:**
+  - The checklist only shows what the extractor found. Missing facts show as a grey dash ("Batch
+    not stated", "Visa not mentioned"), never a tick.
+  - Tech terms are only those named in the posting.
+  - There are no match percentages.
+- **Revision, same day (Shrey):**
+  - Palette is now a white background, near-black text `#0A0A12`, and one Stripe-like purple
+    accent. It replaces the alabaster and forest.
+  - The purple is `#5851EC`, a shade darker than Stripe's `#635BFF`. `#635BFF` only reaches
+    4.3:1 on the selected-row tint; `#5851EC` reaches 5.1:1 or better, which passes WCAG AA.
+  - The fit card is near-black with a light-purple accent `#A5A0FF` (8.5:1).
+  - All labels are in sentence case ("Experience", "Requirements"), not capitals.
+  - Job titles are medium weight, not semibold.
+  - Years in the list are plain coloured text, without a box.
+  - The accent is solid colour only; `CLAUDE.md` bans purple gradients.
+- **Second revision, same day (Shrey):**
+  - No boxes: the details panel sits on the page, and a single vertical line separates it from
+    the list.
+  - The list has no row dividers; the selected row keeps its tint and accent bar.
+  - Company logos replace the letter boxes. In the prototype they load from Google's favicon
+    service, with a plain letter as the fallback.
+  - In production the pipeline will fetch each company's logo once and store it with our own
+    assets, so pages never call a third party (privacy, speed).
+  - "For you", "Saved" and "Applied" moved into the profile menu, under the avatar.
+- **Prototype:** `docs/wireframes/workspace.html`. Static HTML with Tailwind's browser build; the
+  Next.js port (M4.6) uses `motion/react` `layoutId` for the row bar.
+- **Open:** `CLAUDE.md` allows at most two font families. This uses Geist and Geist Mono, plus
+  Instrument Serif for the wordmark only. Treat the wordmark as a logo (an SVG) so the rule
+  holds.
+
+---
+
+## 2026-10-17 — Job-list layout: split view (M4.4)
+- **Rounds:**
+  1. A plain card list. Shrey: too boxy, wrong shape, too wordy.
+  2. Ledger, Experience rail, Inbox.
+  3. Three options built from patterns in Shrey's reference products (Jobright, Careerlift,
+     Tsenta): a fit-panel card, a dark board grid, and a split view.
+- **Choice (Shrey):** split view: a list plus a details panel; on phones the details open
+  full-screen.
+- **Why over the others:**
+  - The most jobs per screen (~8 on a phone, against ~2.5 and ~3.5).
+  - The years badge stays on every row.
+  - The evidence gets a large, readable place in the details, which matches "evidence behind a
+    tap".
+  - The fit-panel cards were the most distinctive but meant the most scrolling. The board grid
+    showed evidence on every card, against the brief, and a grid is harder to compare down.
+- **Kept out on purpose:** match percentages (we don't compute a real one), upsell banners,
+  sparkle icons, salary (not extracted yet).
+
+---
+
+## 2026-10-16 — Audience: every experience level, not only freshers
+- **Options:**
+  - keep the product fresher-only
+  - cover every experience level, with a "My experience" filter
+- **Choice (Shrey):** all experience levels. Freshers stay a core group.
+- **Why:** the pipeline already labels every job's years (yoe_min/yoe_max with evidence), so a
+  wider audience costs no new data work. A student who gets a job keeps using Kario a year
+  later instead of leaving.
+- **What doesn't change:** precision over recall. The rule generalises: a job whose stated
+  minimum is above the user's years never shows to them, and a job with no stated years is
+  tagged "Not stated", never entry-level.
+
+---
+
+## 2026-10-16 — Name: Kario (M4.1)
+- **Options:** Batchmate (Claude's pick), ZeroYears, Firstrole, keep frshmen, Kario (Shrey's).
+- **Choice (Shrey):** Kario.
+- **Why over the others:**
+  - Short and easy to type on a phone; it echoes "career" and the Hindi "karo" ("do it").
+  - Batchmate and ZeroYears say "fresher", which no longer fits now that the audience spans
+    experience levels (entry above).
+  - frshmen is hard to spell when said aloud.
+- **Cost:** the name doesn't explain itself, so the tagline must say what Kario does.
+  Pronunciation is ambiguous (KAR-ee-oh vs KAI-ree-oh); pick one and use it everywhere.
+- **Before launch:** Shrey checks the domain and the Indian trademark register. A quick web
+  search found no jobs product with this name (the nearest is Clario, a clinical-trials company).
+
+---
+
 ## 2026-10-16 — Where the Next.js site runs (M4)
 - **Options:**
   - A: static export (`output: "export"`) served by the existing Worker next to `/api`

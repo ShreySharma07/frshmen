@@ -1,0 +1,283 @@
+<!doctype html>
+<!-- M4.4 round 3: three options built from patterns in Shrey's references (Jobright, Careerlift,
+     Tsenta), borrowed as ideas, not looks. Open with ?v=1, ?v=2 or ?v=3. Every "fit" line comes from
+     real extracted fields (years + evidence, batch years, role family, workplace); no invented match
+     percentages, no upsell banners. Fonts and colours show mood only; tokens come in M4.5.
+     Jobs are real (snapshot 2026-10-06), seen by a user who picked 3 years. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kario options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  svg.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .v { display: none; min-height: 100vh; }
+  body[data-v="1"] .v1, body[data-v="2"] .v2, body[data-v="3"] .v3 { display: block; }
+  .row { display: flex; align-items: center; gap: 8px; }
+
+  /* ---------- 1. Fit panel (Jobright pattern: tabs + a "why it fits" panel per card) ---------- */
+  .v1 { background: #f4f4f0; color: #15201c; font: 15px/1.45 "Schibsted Grotesk", sans-serif; }
+  .v1 .in { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  .v1 header { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .v1 .brand { font-weight: 800; font-size: 22px; letter-spacing: -.03em; }
+  .v1 .tabs { display: flex; gap: 22px; }
+  .v1 .tabs span { font-weight: 500; color: #5e6a65; padding: 21px 0; }
+  .v1 .tabs .on { color: #15201c; box-shadow: inset 0 -2px #15201c; }
+  .v1 .tabs b { font-size: 11px; background: #15201c; color: #fff; border-radius: 999px; padding: 1px 6px; margin-left: 4px; }
+  .v1 .search { margin-left: auto; display: flex; gap: 8px; align-items: center; background: #fff; border-radius: 10px; padding: 9px 12px; color: #8a948f; width: 300px; }
+  .v1 .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0; }
+  .v1 .chip { background: #fff; border: 1px solid #e1e3dc; border-radius: 10px; padding: 7px 12px; font-size: 14px; font-weight: 500; }
+  .v1 .chip.on { background: #15201c; color: #fff; border-color: #15201c; }
+  .v1 .card { display: grid; grid-template-columns: 1fr 250px; background: #fff; border-radius: 16px; margin-bottom: 14px; overflow: hidden; }
+  .v1 .body { padding: 18px 20px; display: grid; grid-template-columns: 52px 1fr; gap: 0 14px; }
+  .v1 .logo { width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 20px; color: #fff; }
+  .v1 .meta-top { display: flex; gap: 6px; font-size: 12.5px; }
+  .v1 .pill { background: #eef3ef; border-radius: 6px; padding: 2px 7px; }
+  .v1 .pill.new { background: #ffe9a8; font-weight: 600; }
+  .v1 .t { font-size: 20px; font-weight: 700; letter-spacing: -.01em; margin-top: 6px; line-height: 1.25; }
+  .v1 .co { color: #5e6a65; margin-top: 2px; }
+  .v1 .facts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 8px 28px; border-top: 1px solid #eef0ea; margin-top: 14px; padding-top: 12px; font-size: 14px; color: #36423d; }
+  .v1 .facts span { display: flex; gap: 6px; align-items: center; }
+  .v1 .acts { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+  .v1 .ic { width: 38px; height: 38px; border-radius: 50%; border: 1px solid #e1e3dc; display: grid; place-items: center; }
+  .v1 .apply { background: #15201c; color: #fff; border-radius: 999px; padding: 0 20px; font-weight: 600; height: 38px; }
+  .v1 .fit { background: #15201c; color: #e9f0ec; padding: 18px; display: flex; flex-direction: column; }
+  .v1 .fit .yr { font-size: 40px; font-weight: 800; letter-spacing: -.03em; color: #8ee6b8; line-height: 1; }
+  .v1 .fit .yr small { font-size: 14px; font-weight: 500; color: #b8c7bf; margin-left: 4px; }
+  .v1 .fit .lab { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #8ee6b8; margin: 6px 0 12px; font-weight: 600; }
+  .v1 .fit .lab.ns { color: #c9d2cd; }
+  .v1 .fit li { display: flex; gap: 8px; font-size: 13.5px; padding: 3px 0; color: #d3ddd8; }
+  .v1 .fit li svg { color: #8ee6b8; margin-top: 2px; }
+  .v1 .fit q { font-size: 12.5px; color: #9fb0a8; margin-top: auto; padding-top: 10px; border-top: 1px solid #2c3a34; quotes: "“" "”"; }
+  @media (max-width: 899px) {
+    .v1 header { gap: 12px; height: auto; flex-wrap: wrap; padding-top: 12px; }
+    .v1 .tabs { order: 3; width: 100%; } .v1 .tabs span { padding: 10px 0; }
+    .v1 .search { width: 40px; padding: 10px; } .v1 .search span { display: none; }
+    .v1 .chips { flex-wrap: nowrap; overflow-x: auto; }
+    .v1 .chip { white-space: nowrap; }
+    .v1 .card { grid-template-columns: 1fr; }
+    .v1 .fit { order: -1; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 12px 16px; }
+    .v1 .fit .yr { font-size: 26px; } .v1 .fit .lab { margin: 0; }
+    .v1 .fit ul { width: 100%; display: flex; flex-wrap: wrap; gap: 0 14px; }
+    .v1 .fit q { display: none; }
+    .v1 .body { padding: 14px 16px; grid-template-columns: 40px 1fr; }
+    .v1 .logo { width: 40px; height: 40px; font-size: 16px; }
+    .v1 .t { font-size: 17px; }
+    .v1 .facts { grid-template-columns: auto auto; gap: 6px 18px; }
+  }
+
+  /* ---------- 2. Board (Careerlift pattern: dark grid, "new" strip, time-range switch) ---------- */
+  .v2 { background: #111214; color: #ececee; font: 15px/1.45 "Geist", sans-serif; }
+  .v2 .in { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  .v2 header { display: flex; align-items: center; justify-content: space-between; height: 60px; border-bottom: 1px solid #24262a; }
+  .v2 .brand { font-weight: 700; font-size: 20px; letter-spacing: -.02em; }
+  .v2 .brand i { font-style: normal; color: #f5b544; }
+  .v2 nav { display: flex; gap: 22px; color: #9a9ca3; font-size: 14.5px; }
+  .v2 nav .on { color: #fff; }
+  .v2 h1 { font-size: 30px; letter-spacing: -.02em; font-weight: 600; margin-top: 28px; }
+  .v2 h1 + p { color: #9a9ca3; margin-top: 4px; }
+  .v2 .strip { display: flex; align-items: center; gap: 10px; margin: 20px 0; padding: 14px 18px; border-radius: 12px; background: #1d1a12; border: 1px solid #3d331a; }
+  .v2 .strip b { color: #f5b544; font-size: 18px; }
+  .v2 .strip u { margin-left: auto; color: #f5b544; font-size: 14px; }
+  .v2 .bar { display: grid; grid-template-columns: 1fr 200px 200px; gap: 10px; }
+  .v2 .field { background: #18191c; border: 1px solid #2a2c31; border-radius: 10px; padding: 11px 14px; color: #9a9ca3; display: flex; align-items: center; gap: 8px; }
+  .v2 .field b { color: #ececee; font-weight: 500; }
+  .v2 .sub { display: flex; align-items: center; gap: 10px; margin: 14px 0 18px; color: #9a9ca3; font-size: 14px; }
+  .v2 .seg { display: flex; border: 1px solid #2a2c31; border-radius: 10px; padding: 3px; }
+  .v2 .seg span { padding: 5px 12px; border-radius: 7px; }
+  .v2 .seg .on { background: #26282d; color: #fff; }
+  .v2 .sub .n { margin-left: auto; font-family: "Geist Mono", monospace; font-size: 13px; }
+  .v2 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-bottom: 40px; }
+  .v2 .card { background: #18191c; border: 1px solid #24262a; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .v2 .top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+  .v2 .co { color: #9a9ca3; font-size: 13.5px; }
+  .v2 .t { font-weight: 600; font-size: 17px; line-height: 1.3; margin-top: 2px; }
+  .v2 .when { text-align: right; font-size: 12.5px; color: #9a9ca3; font-family: "Geist Mono", monospace; white-space: nowrap; }
+  .v2 .when b { display: inline-block; font-family: "Geist", sans-serif; background: #3a2f12; color: #f5b544; border-radius: 6px; padding: 1px 8px; margin-bottom: 4px; font-weight: 600; }
+  .v2 .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: #c4c6cc; }
+  .v2 .meta span { display: flex; gap: 6px; align-items: center; }
+  .v2 .meta .fit { color: #f5b544; font-weight: 600; }
+  .v2 .meta .ns { color: #8c8e95; }
+  .v2 .ev { font-size: 13.5px; color: #9a9ca3; line-height: 1.5; }
+  .v2 .ev b { color: #c4c6cc; font-weight: 500; }
+  .v2 .acts { display: flex; gap: 16px; align-items: center; margin-top: auto; padding-top: 6px; font-size: 14px; color: #c4c6cc; }
+  .v2 .apply { background: #f5b544; color: #17130a; border-radius: 9px; padding: 8px 16px; font-weight: 600; }
+  .v2 .acts .det { margin-left: auto; }
+  @media (max-width: 899px) {
+    .v2 nav { display: none; }
+    .v2 h1 { font-size: 24px; margin-top: 18px; }
+    .v2 .strip { margin: 14px 0; } .v2 .strip span.long { display: none; }
+    .v2 .bar { grid-template-columns: 1fr 1fr; } .v2 .bar .field:first-child { grid-column: 1 / -1; }
+    .v2 .sub { flex-wrap: wrap; } .v2 .sub > span:first-child { display: none; }
+    .v2 .grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- 3. Split view (Tsenta pattern: removable chips with counts, list + detail) ---------- */
+  .v3 { background: #f7f5f1; color: #1b1915; font: 15px/1.45 "Instrument Sans", sans-serif; }
+  .v3 .in { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+  .v3 header { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .v3 .brand { font-weight: 700; font-size: 21px; letter-spacing: -.02em; }
+  .v3 header nav { display: flex; gap: 4px; }
+  .v3 header nav span { padding: 6px 12px; border-radius: 8px; color: #6b665c; font-weight: 500; }
+  .v3 header nav .on { background: #ece7dd; color: #1b1915; }
+  .v3 .search { display: flex; gap: 10px; align-items: center; background: #fff; border: 1px solid #e4dfd4; border-radius: 12px; padding: 12px 14px; color: #8f897d; }
+  .v3 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; align-items: center; }
+  .v3 .chip { display: flex; align-items: center; gap: 6px; background: #1b1915; color: #fff; border-radius: 999px; padding: 6px 10px 6px 12px; font-size: 13.5px; font-weight: 500; }
+  .v3 .chip em { font-style: normal; background: #3a362f; border-radius: 6px; padding: 0 6px; font-size: 12px; }
+  .v3 .chip.off { background: #fff; color: #1b1915; border: 1px solid #e4dfd4; }
+  .v3 .chip svg.i { width: 14px; height: 14px; }
+  .v3 .chips .clr { margin-left: auto; color: #6b665c; font-size: 13.5px; }
+  .v3 .split { display: grid; grid-template-columns: 420px 1fr; gap: 16px; align-items: start; padding-bottom: 40px; }
+  .v3 .list li { background: #fff; border: 1px solid #ebe6db; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
+  .v3 .list li.sel { border: 2px solid #1b1915; padding: 11px 13px; }
+  .v3 .list .t { font-weight: 600; line-height: 1.3; }
+  .v3 .list .s { font-size: 13px; color: #6b665c; grid-column: 1; }
+  .v3 .yb { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-weight: 700; font-size: 13px; border-radius: 8px; padding: 6px 8px; text-align: center; min-width: 58px; }
+  .v3 .yb.fit { background: #e3f1e6; color: #1d5b2f; }
+  .v3 .yb.ns { background: #efece6; color: #7c766a; font-weight: 500; }
+  .v3 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #d9481c; margin-right: 6px; vertical-align: 1px; }
+  .v3 .detail { background: #fff; border: 1px solid #ebe6db; border-radius: 16px; padding: 24px; position: sticky; top: 12px; }
+  .v3 .detail .co { color: #6b665c; }
+  .v3 .detail h2 { font-size: 26px; letter-spacing: -.02em; line-height: 1.2; margin: 4px 0 12px; }
+  .v3 .facts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .v3 .facts span { display: flex; align-items: center; gap: 6px; background: #f3f0ea; border-radius: 8px; padding: 5px 10px; font-size: 14px; }
+  .v3 .why { margin-top: 20px; border-radius: 12px; background: #eef6ef; padding: 16px; }
+  .v3 .why h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: #1d5b2f; }
+  .v3 .why blockquote { font-size: 16px; margin: 8px 0; line-height: 1.45; }
+  .v3 .why p { font-size: 13px; color: #4b6b52; }
+  .v3 .dacts { display: flex; gap: 10px; margin-top: 20px; }
+  .v3 .apply { background: #d9481c; color: #fff; border-radius: 10px; padding: 11px 22px; font-weight: 600; }
+  .v3 .sec { border: 1px solid #e4dfd4; border-radius: 10px; padding: 11px 16px; font-weight: 500; display: flex; gap: 6px; align-items: center; }
+  .v3 .desc { margin-top: 22px; color: #4a463e; font-size: 14.5px; }
+  .v3 .desc .ph { height: 10px; background: #efece6; border-radius: 4px; margin: 10px 0; }
+  @media (max-width: 899px) {
+    .v3 header nav { display: none; }
+    .v3 .chips { flex-wrap: nowrap; overflow-x: auto; } .v3 .chip { white-space: nowrap; } .v3 .chips .clr { display: none; }
+    .v3 .split { grid-template-columns: 1fr; }
+    .v3 .detail { display: none; }
+    .v3 .list li.sel { border: 1px solid #ebe6db; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body data-v="1">
+<svg width="0" height="0" style="position:absolute">
+  <!-- Lucide icons, one stroke weight. -->
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="case" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+  <symbol id="cap" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="mark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="hide" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+  <symbol id="share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
+  <symbol id="down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<div class="v v1"><div class="in">
+  <header><span class="brand">kario</span>
+    <div class="tabs"><span class="on">For you<b>33</b></span><span>Saved<b>2</b></span><span>Applied<b>1</b></span></div>
+    <div class="search"><svg class="i"><use href="#search"/></svg><span>Search title or company</span></div></header>
+  <div class="chips" id="c1"></div>
+  <ol id="l1"></ol>
+</div></div>
+
+<div class="v v2"><div class="in">
+  <header><span class="brand">kario<i>.</i></span>
+    <nav><span class="on">Jobs</span><span>Saved</span><span>Applied</span></nav>
+    <svg class="i" style="width:22px;height:22px"><use href="#mark"/></svg></header>
+  <h1>Jobs for 3 years</h1><p>AI/ML, backend and mobile roles. Every label shows its source.</p>
+  <div class="strip"><b>4</b> new since your last visit <span class="long">· all fit 3 years</span><u>See them</u></div>
+  <div class="bar"><div class="field"><svg class="i"><use href="#search"/></svg>Search role, company or skill</div>
+    <div class="field"><b>Anywhere</b><svg class="i" style="margin-left:auto"><use href="#down"/></svg></div>
+    <div class="field"><b>All roles</b><svg class="i" style="margin-left:auto"><use href="#down"/></svg></div></div>
+  <div class="sub"><span>Posted in the last</span><div class="seg"><span>7 days</span><span class="on">30 days</span><span>90 days</span><span>All</span></div><span class="n">33 jobs</span></div>
+  <div class="grid" id="l2"></div>
+</div></div>
+
+<div class="v v3"><div class="in">
+  <header><span class="brand">kario</span><nav><span class="on">Browse</span><span>Saved</span><span>Applied</span></nav></header>
+  <div class="search"><svg class="i"><use href="#search"/></svg>Search by title, company or skill</div>
+  <div class="chips">
+    <span class="chip">Up to 3 yrs <em>33</em><svg class="i"><use href="#x"/></svg></span>
+    <span class="chip">Role <em>AI/ML · Backend</em><svg class="i"><use href="#x"/></svg></span>
+    <span class="chip off">Location</span><span class="chip off">Workplace</span><span class="chip off">Batch</span><span class="chip off">Visa</span>
+    <span class="clr">Clear</span></div>
+  <div class="split"><ol class="list" id="l3"></ol>
+    <aside class="detail">
+      <div class="co">Sarvam AI · Bengaluru</div>
+      <h2>ML Engineer (Data), Foundational Models</h2>
+      <div class="facts"><span><svg class="i"><use href="#pin"/></svg>Bengaluru · Onsite</span><span><svg class="i"><use href="#case"/></svg>Full-time</span><span><svg class="i"><use href="#clock"/></svg>Posted 21 May</span></div>
+      <div class="why"><h3>Asks 3+ years · fits your 3</h3>
+        <blockquote>“3+ years of experience building large-scale data systems — petabyte-scale processing, distributed data pipelines, or comparable.”</blockquote>
+        <p>Quoted from the job description.</p></div>
+      <div class="dacts"><button class="apply">Apply on Sarvam AI</button><button class="sec"><svg class="i"><use href="#mark"/></svg>Save</button><button class="sec">Check my fit</button></div>
+      <div class="desc"><b>About the role</b><div class="ph"></div><div class="ph" style="width:92%"></div><div class="ph" style="width:80%"></div><div class="ph" style="width:86%"></div></div>
+    </aside></div>
+</div></div>
+
+<script>
+// Real postings from data/local.db (2026-10-06 snapshot). Evidence is verbatim.
+const J = [
+  { t: "Machine Learning Engineer, Search Quality", c: "Glean", w: "San Francisco, CA", ty: "Full-time", y: "2+", min: 2, d: "25 Sep", n: true, fam: "AI/ML", ev: "2+ years of experience" },
+  { t: "Software Engineer, Public Sector – New Grad", c: "Scale AI", w: "San Francisco, CA", ty: "Full-time", y: "0", min: 0, d: "23 Sep", n: true, fam: "SWE · Python + AI", batch: "2026, 2027", ev: "“New Grad” in the title" },
+  { t: "Software Engineer – New Grad", c: "Scale AI", w: "London, UK", ty: "Full-time", y: "0", min: 0, d: "14 Sep", n: true, fam: "SWE · Python + AI", batch: "2026, 2027", ev: "“New Grad” in the title" },
+  { t: "Software Engineer – New Grad", c: "Scale AI", w: "Doha, Qatar", ty: "Full-time", y: "0", min: 0, d: "14 Sep", n: true, fam: "SWE · Python + AI", batch: "2026, 2027", ev: "“New Grad” in the title" },
+  { t: "Machine Learning Research Scientist, Evaluations", c: "Scale AI", w: "SF · Seattle · New York", ty: "Full-time", y: null, d: "26 Aug", fam: "AI/ML" },
+  { t: "ML Engineer (Data), Foundational Models", c: "Sarvam AI", w: "Bengaluru · Onsite", ty: "Full-time", y: "3+", min: 3, d: "21 May", fam: "AI/ML", sel: true,
+    ev: "3+ years of experience building large-scale data systems — petabyte-scale processing, distributed data pipelines, or comparable." },
+  { t: "ML Ops Engineer, Chanakya", c: "Sarvam AI", w: "Delhi · Onsite", ty: "Full-time", y: "3–5", min: 3, d: "17 Apr", fam: "AI/ML",
+    ev: "3–5 years in ML engineering or MLOps with at least one production LLM or ML system in continuous operation" },
+  { t: "Embedded Data Scientist, Chanakya", c: "Sarvam AI", w: "Delhi · Onsite", ty: "Full-time", y: "2–5", min: 2, d: "17 Apr", fam: "AI/ML",
+    ev: "2–5 years in data science, applied machine learning, or large-scale data analysis roles" },
+  { t: "Backend Engineer, Chanakya", c: "Sarvam AI", w: "Bengaluru · Onsite", ty: "Full-time", y: "3–6", min: 3, d: "17 Apr", fam: "Backend",
+    ev: "3–6 years in backend engineering with production systems in continuous operation" },
+];
+const ic = id => `<svg class="i"><use href="#${id}"/></svg>`;
+const yrs = j => j.y === null ? "Not stated" : j.y === "0" ? "0 yrs" : `${j.y} yrs`;
+const tint = { "Scale AI": "#2b2b33", "Sarvam AI": "#c26a00", "Glean": "#2459c9" };
+const put = (id, s) => document.getElementById(id).innerHTML = s;
+
+// 1. Fit panel
+put("c1", [["Up to 3 yrs", 1], ["All roles"], ["Anywhere"], ["Full-time"], ["Posted: any time"], ["Batch"], ["Visa"]]
+  .map(([n, on]) => `<span class="chip ${on ? "on" : ""}">${n} ▾</span>`).join(""));
+put("l1", J.slice(0, 6).map(j => `<li class="card">
+  <div class="body">
+    <div class="logo" style="background:${tint[j.c]}">${j.c[0]}</div>
+    <div><div class="meta-top">${j.n ? '<span class="pill new">New</span>' : ""}<span class="pill">${j.d}</span></div>
+      <div class="t">${j.t}</div><div class="co">${j.c}</div></div>
+    <div class="facts"><span>${ic("pin")}${j.w}</span><span>${ic("case")}${j.ty}</span>${j.batch ? `<span>${ic("cap")}${j.batch} batch</span>` : ""}</div>
+    <div class="acts"><button class="ic" aria-label="Hide">${ic("hide")}</button><button class="ic" aria-label="Save">${ic("mark")}</button><button class="apply">Apply</button></div>
+  </div>
+  <aside class="fit">
+    <div class="yr">${j.y === null ? "?" : j.y}<small>${j.y === null ? "" : "years"}</small></div>
+    <div class="lab ${j.y === null ? "ns" : ""}">${j.y === null ? "Years not stated" : "Fits your 3 years"}</div>
+    <ul><li>${ic("check")}${j.fam} role</li>${j.batch ? `<li>${ic("check")}${j.batch} batch</li>` : ""}${j.w.includes("Onsite") ? `<li>${ic("check")}Onsite, stated</li>` : ""}</ul>
+    ${j.ev ? `<q>${(j.ev.length > 90 ? j.ev.slice(0, 88) + "…" : j.ev).replace(/[“”]/g, "")}</q>` : ""}
+  </aside></li>`).join(""));
+
+// 2. Board
+put("l2", J.map(j => `<div class="card">
+  <div class="top"><div><div class="co">${j.c}</div><div class="t">${j.t}</div></div>
+    <div class="when">${j.n ? "<b>New</b><br>" : ""}${j.d}</div></div>
+  <div class="meta"><span>${ic("pin")}${j.w}</span><span class="${j.y === null ? "ns" : "fit"}">${ic("case")}${yrs(j)}</span></div>
+  <p class="ev">${j.batch ? `<b>Batch: ${j.batch}.</b> ` : ""}${j.ev ? (j.ev.startsWith("“") ? j.ev : `“${j.ev}”`) : "No years stated in the posting."}</p>
+  <div class="acts"><button class="apply">Apply</button><span class="row">${ic("mark")}Save</span><span class="row">${ic("share")}</span><span class="row det">Details ${ic("arrow")}</span></div>
+</div>`).join(""));
+
+// 3. Split view
+put("l3", J.map(j => `<li class="${j.sel ? "sel" : ""}">
+  <div class="t">${j.t}</div><div class="s">${j.n ? '<span class="dot"></span>New · ' : ""}${j.c} · ${j.w} · ${j.d}</div>
+  <div class="yb ${j.y === null ? "ns" : "fit"}">${yrs(j)}</div></li>`).join(""));
+
+document.body.dataset.v = new URLSearchParams(location.search).get("v") || "1";
+</script>
+</body>
+</html>
