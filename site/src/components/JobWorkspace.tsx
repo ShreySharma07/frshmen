@@ -10,12 +10,14 @@ import { FilterBar } from "./FilterBar";
 import { JobDetailView } from "./JobDetailView";
 import { JobRow } from "./JobRow";
 import { SearchBox } from "./SearchBox";
+import { ThemeToggle } from "./ThemeToggle";
 
 const NEW_SINCE_DAYS = 3; // until visits are remembered (with sign-in), "New" = first seen in the last 3 days
 
 type ListState = { status: "loading" } | { status: "error"; message: string } | { status: "ready" };
 
-export function JobWorkspace() {
+/** `logo` is rendered by the static page and passed in, so its SVG paths stay out of this bundle. */
+export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
   const [filters, navigate] = useUrlFilters();
   const [countries, setCountries] = useState<string[]>([]);
 
@@ -31,10 +33,10 @@ export function JobWorkspace() {
     <>
       <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex h-full max-w-[1280px] items-center gap-4 px-4 lg:px-6">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static SVG; next/image needs a loader in export mode */}
-          <img src="/kario-wordmark.svg" alt="kario" className="h-[22px] w-auto shrink-0 dark:invert" />
-          <div className="ml-auto flex w-full justify-end">
+          {logo}
+          <div className="ml-auto flex w-full items-center justify-end gap-2">
             {filters && <SearchBox value={filters.q} onSearch={onSearch} />}
+            <ThemeToggle />
           </div>
         </div>
       </header>

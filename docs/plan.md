@@ -357,7 +357,7 @@ Shrey's learning note.
 | M4.3 | Brief + references for the job list | `docs/briefs/job-list.md`, Shrey reviews |
 | M4.4 ✅ | Wireframe: split view (list + detail) picked after 3 rounds (2026-10-17) | `docs/wireframes/options.html?v=3` |
 | M4.5 ✅ | Look approved: white + purple `#5851EC`, Geist + Geist Mono, SVG wordmark (2026-10-17) | `docs/wireframes/workspace.html`, `brand/` |
-| M4.6 | Next.js site in `site/` (scaffold, tokens, live jobs, split view, filters), switched in as the Worker's assets (2026-10-17) | PR #35; delete `web/` once confirmed live |
+| M4.6 ✅ | Next.js site in `site/` (scaffold, tokens, live jobs, split view, filters), live as the Worker's assets (2026-10-17) | PR #35; old `web/` removed |
 | M5+ | Phase 1 features one by one (onboarding, mobile layout, job pages…) | |
 
 ---
