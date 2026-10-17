@@ -1,13 +1,14 @@
 name: Deploy site
 
-# Builds the React page and deploys it with the FastAPI Worker (one Worker, Static Assets).
+# Builds the Next.js site (static export) and deploys it with the FastAPI Worker (one Worker,
+# Static Assets).
 # Needs repo secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
 on:
   push:
     branches: [main]
     paths:
       - api/**
-      - web/**
+      - site/**
       - .github/workflows/deploy.yml
   workflow_dispatch:
 
@@ -29,10 +30,12 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: web/package-lock.json
+          cache-dependency-path: site/package-lock.json
 
-      - name: Build page
-        working-directory: web
+      - name: Build site
+        working-directory: site
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
         run: |
           npm ci
           npm run build

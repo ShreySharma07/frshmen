@@ -12,9 +12,10 @@
     { "binding": "HYPERDRIVE", "id": "57f743f973844bb2b339af1278604312" }
   ],
   "assets": {
-    // The React build. Served without running Python, so page loads don't use Worker requests.
-    "directory": "../web/dist",
-    "not_found_handling": "single-page-application",
+    // The Next.js static export (site/). Served without running Python, so page loads don't use
+    // Worker requests. /design is served from design.html; unknown paths get out/404.html with a 404.
+    "directory": "../site/out",
+    "not_found_handling": "404-page",
     "run_worker_first": ["/api/*"]
   }
 }

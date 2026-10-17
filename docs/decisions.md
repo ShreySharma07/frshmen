@@ -4,6 +4,27 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-17 — Switch-over to the Next.js site (M4.6)
+- **What changed:**
+  - The Worker now serves `site/out` (the Next.js static export) instead of `web/dist`.
+  - Deploys build `site/`.
+  - The Tests workflow gained a `site` job: lint, types, design-token sync and the build.
+- **Unknown paths:**
+  - **Options:** keep `single-page-application` (every unknown URL shows the home page with a 200), or use `404-page`.
+  - **Choice:** `404-page`, with a branded `not-found` page.
+  - **Why:** Next exports one HTML file per page, so a wrong link should say so honestly. A 200 for every URL also confuses search engines and link checkers.
+- **Rollback:** `web/` stays in the repo until the new site is confirmed live. Going back is a one-line change of `assets.directory` plus the deploy path. Delete `web/` after that.
+- **Built in small steps (Shrey chose to learn step by step):**
+  1. scaffold
+  2. tokens
+  3. live data
+  4. split view
+  5. filters
+  6. switch-over
+- **Measured:** 140.5 KB gzipped JS on the job page against the ~170 KB budget. React and the Next runtime are 132 KB of that.
+
+---
+
 ## 2026-10-17 — Logo: outlined Instrument Serif wordmark; M4.5 look approved
 - **Options:**
   - load Instrument Serif as a third font, just for the wordmark

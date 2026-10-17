@@ -39,7 +39,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Pipeline: Python, run by GitHub Actions cron
 - Storage: Supabase Postgres (+ Supabase Auth later) since 2026-10-16; schema in `db/postgres/`, applied by the Supabase migrations workflow. Free tier: 500 MB DB, 50k MAU, pauses after 1 week idle, so write only new/changed rows. D1 is no longer written; its database is kept until ~2026-10-23 as a backup, then deleted
 - Backend API: FastAPI on Cloudflare Python Workers, reading Supabase Postgres through Hyperdrive with asyncpg (2026-10-16; free: 100k requests/day, 100k queries/day, 10 ms CPU per request).
-- Frontend: React (Vite + TypeScript) today. **Moving to Next.js (React + TypeScript)** (2026-10-15), web first and a mobile app later; see "Frontend standards" below
+- Frontend: **Next.js (React + TypeScript) static export in `site/`**, served by the API Worker (2026-10-17; `web/`, the old Vite app, stays until the switch-over is confirmed live). Web first, a mobile app later; see "Frontend standards" below
 - LLM: none in the pipeline (rules only). An optional, off-by-default "Check my fit" button calls Gemini from the API for one job at a time (see `docs/decisions.md`)
 - Companies: curated list in `config/companies.yaml`, plus hiring YC AI startups imported from the yc-oss dataset (`scripts/import_yc.py`); only verified boards are fetched
 - Any change to the above is a new decision: present options, let Shrey choose, log it.
