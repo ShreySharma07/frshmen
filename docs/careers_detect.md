@@ -1,6 +1,6 @@
 # Careers-system detection
 
-310 companies read; 45 now have a readable board. Systems found: not found 184, yc_jobs 27, ashby 20, workday 13, careersite 12, darwinbox 9, icims 6, gem 5, keka 3, oracle 3, successfactors 3, greenhouse 3, dover 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, phenom 2, workable 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, rippling 1, zoho_recruit 1, lever 1.
+320 companies read; 47 now have a readable board. Systems found: not found 184, yc_jobs 29, ashby 20, workday 14, careersite 12, darwinbox 9, gem 6, icims 6, job listing on ycombinator.com 6, keka 3, oracle 3, successfactors 3, greenhouse 3, dover 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, phenom 2, workable 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, rippling 1, zoho_recruit 1, lever 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -90,6 +90,7 @@
 | Goldman Sachs | goldmansachs.com | not found (6 pages read) |  |
 | JPMorgan Chase | jpmorganchase.com | not found (6 pages read) |  |
 | American Express | americanexpress.com | eightfold (no adapter yet): https://www.americanexpress.com/en-us/careers/?inav=en_us_footer_About_Careers |  |
+| Citi | citi.com | workday: https://jobs.citi.com/ | yes |
 | Bank of America | bankofamerica.com | not found (6 pages read) |  |
 | BNY | bny.com | oracle: https://www.bny.com/corporate/global/en.html | yes |
 | State Street | statestreet.com | workday: https://careers.statestreet.com/global/en | yes |
@@ -102,8 +103,8 @@
 | S&P Global | spglobal.com | not found (0 pages read) |  |
 | Moody's | moodys.com | successfactors (no adapter yet): https://careers.moodys.com/en |  |
 | MSCI | msci.com | icims (no adapter yet): https://careers.msci.com/ |  |
-| Intuit | intuit.com | not found (6 pages read) |  |
-| MetLife | metlife.com | not found (1 pages read) |  |
+| Intuit | intuit.com | not found (0 pages read) |  |
+| MetLife | metlife.com | not found (6 pages read) |  |
 | Barclays | barclays.com | not found (6 pages read) |  |
 | HSBC | hsbc.com | not found (6 pages read) |  |
 | Standard Chartered | sc.com | not found (6 pages read) |  |
@@ -147,7 +148,7 @@
 | ZF | zf.com | successfactors (no adapter yet): https://jobs.zf.com/ |  |
 | Airbus | airbus.com | workday: https://www.airbus.com/en/careers | yes |
 | Maersk | maersk.com | not found (0 pages read) |  |
-| Novartis | novartis.com | workday: https://novartis.wd3.myworkdayjobs.com/Novartis_Careers |  |
+| Novartis | novartis.com | workday: https://novartis.wd3.myworkdayjobs.com/Novartis_Careers | yes |
 | Sanofi | sanofi.com | not found (6 pages read) |  |
 | AstraZeneca | astrazeneca.com | not found (0 pages read) |  |
 | GSK | gsk.com | workday: https://jobs.gsk.com/gb/en/search-results | yes |
@@ -178,7 +179,7 @@
 | Bain & Company | bain.com | not found (6 pages read) |  |
 | Deloitte | deloitte.com | not found (6 pages read) |  |
 | BharatPe | bharatpe.com | not found (6 pages read) |  |
-| Pine Labs | pinelabs.com | not found (3 pages read) |  |
+| Pine Labs | pinelabs.com | not found (4 pages read) |  |
 | MobiKwik | mobikwik.com | not found (0 pages read) |  |
 | Go Digit | godigit.com | darwinbox: https://www.godigit.com/careers |  |
 | smallcase | smallcase.com | not found (6 pages read) |  |
@@ -198,6 +199,7 @@
 | Calltree | calltree.ai | not found (6 pages read) |  |
 | Closure | closure-intel.com | not found (6 pages read) |  |
 | ComplyDo | www.complydo.io | not found (6 pages read) |  |
+| Contrario | contrario.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/contrario/jobs/QExVgmb-bizops |  |
 | F2 | f2.ai | ashby: https://f2.ai/ | yes |
 | Forge Automation | www.forgeautomation.ca | not found (6 pages read) |  |
 | Godela | godela.ai | not found (6 pages read) |  |
@@ -219,11 +221,14 @@
 | YouShift | www.you-shift.com | not found (6 pages read) |  |
 | Zalos | www.zalos.ai | gem (no adapter yet): https://www.zalos.ai/careers |  |
 | Alex | alexcodes.app | not found (6 pages read) |  |
+| Arva AI | www.arva.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/arva-ai/jobs/bPPv8fg-head-of-research |  |
 | Assembly HOA | assemblyhoa.com | not found (6 pages read) |  |
 | Brighterway | www.brighterway.ai | not found (0 pages read, 8 disallowed) |  |
 | Capitol AI | www.capitol.ai | yc_jobs (no adapter yet): https://www.capitol.ai |  |
 | Carma | www.joincarma.com | yc_jobs (no adapter yet): https://www.joincarma.com |  |
 | Cartage | cartage.ai | not found (6 pages read) |  |
+| Corgi Insurance | corgi.com | yc_jobs (no adapter yet): https://www.corgi.insure/careers |  |
+| Coval | coval.dev | yc_jobs (no adapter yet): https://www.coval.ai/careers |  |
 | Deepnight | www.deepnight.com | yc_jobs (no adapter yet): https://deepnight.com/pages/careers |  |
 | Domu Technology Inc. | www.domu.ai | not found (6 pages read) |  |
 | Drillbit | www.drillbit.com | yc_jobs (no adapter yet): https://www.drillbit.com |  |
@@ -243,11 +248,14 @@
 | Trellis AI | runtrellis.com | yc_jobs (no adapter yet): https://runtrellis.com |  |
 | Ubicloud | www.ubicloud.com | not found (6 pages read) |  |
 | Unsloth AI | unsloth.ai | not found (6 pages read) |  |
+| Yondu | yondu.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/yondu/jobs/l6z04IP-senior-robotics-engineer |  |
 | Zep AI | www.getzep.com | yc_jobs (no adapter yet): https://www.getzep.com/careers/ |  |
 | 1stCollab | 1stcollab.com | not found (6 pages read) |  |
 | 222 | 222.place | not found (6 pages read) |  |
 | Accend | www.withaccend.com | not found (6 pages read) |  |
 | Alguna | alguna.com | yc_jobs (no adapter yet): https://alguna.com |  |
+| Boundary | www.boundaryml.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/boundary/jobs/f31pAPu-engineers-that-enjoy-hard-things-like-compilers |  |
+| Clearest Health | clearesthealth.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/clearest-health/jobs/vSiCt2K-idr-filing-specialist |  |
 | Credal.ai | credal.ai | ashby: https://credal.ai/careers | yes |
 | Diffuse Bio | diffuse.bio | not found (6 pages read) |  |
 | dili | www.dili.com | yc_jobs (no adapter yet): https://www.dili.com |  |
@@ -268,11 +276,13 @@
 | Variance | www.variance.com | ashby: https://www.variance.com/careers | yes |
 | VectorShift | www.vectorshift.ai | not found (1 pages read) |  |
 | Ankr Health | ankr.us | not found (6 pages read) |  |
+| AstroForge | www.astroforge.io | gem (no adapter yet): https://www.astroforge.com/careers |  |
 | AviaryAI | www.helloaviary.ai | dover (no adapter yet): https://www.helloaviary.ai |  |
 | Axross Pte Ltd | www.axross.co | not found (6 pages read) |  |
 | Bemlo | www.bemlo.com | not found (6 pages read) |  |
 | Broccoli AI | www.broccoli.com | not found (6 pages read) |  |
 | Cerrion | www.cerrion.com | dover (no adapter yet): https://www.cerrion.com |  |
+| Cogram | cogram.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/cogram/jobs/1iW19df-account-executive-full-cycle |  |
 | Coris | coris.ai | yc_jobs (no adapter yet): https://www.coris.ai/ |  |
 | Curacel | curacel.co | yc_jobs (no adapter yet): https://www.curacel.co/careers |  |
 | Dart | www.dartai.com | yc_jobs (no adapter yet): https://www.dartai.com |  |
