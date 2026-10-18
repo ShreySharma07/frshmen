@@ -1,0 +1,58 @@
+name: Detect careers systems
+
+# Phase A of docs/strategy/company-coverage.md: read each unverified company's website, find
+# its careers page and the hiring system behind it (scripts/detect_careers.py), then re-probe
+# the boards that changed (scripts/verify_companies.py). Run it by hand on a PR branch; the
+# results are committed back to that branch for review. Never pushes to the default branch.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Company names to check (space-separated, quoted if needed); empty = all unverified"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detect-careers-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    if: github.ref_name != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Detect careers systems
+        run: python -u scripts/detect_careers.py --report docs/careers_detect.md ${{ inputs.only && format('--only {0}', inputs.only) || '' }}
+
+      # Companies whose board changed lost their verified/checked fields, so this probes exactly those
+      # (plus any other unverified board due its weekly recheck).
+      - name: Verify changed boards
+        run: python -u scripts/verify_companies.py
+
+      - name: Add reports to job summary
+        run: cat docs/careers_detect.md docs/company_check.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit results to this branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898088+github-actions[bot]@users.noreply.github.com"
+          git add config/companies.yaml docs/careers_detect.md docs/company_check.md
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Detect careers systems and re-verify boards"
+            git push
+          fi
