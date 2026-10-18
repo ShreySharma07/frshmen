@@ -157,3 +157,15 @@ def test_a_board_seen_on_another_companys_site_is_not_taken():
     # A board hosted on the hiring system's own domain is still the company's.
     hosted = d.Detection("https://acme.com", found=[d.Found("ashby", "acme", True, "https://jobs.ashbyhq.com/acme")])
     assert d.apply(dict(tabnine, name="Acme"), hosted)["ats"] == "ashby"
+
+
+def test_report_covers_every_company_read_so_far():
+    companies = [
+        {"name": "A", "website": "a.com", "careers": "ashby: https://a.com/careers", "verified": True},
+        {"name": "B", "website": "b.com", "careers": "not found (6 pages read)"},
+        {"name": "C"},  # never read
+    ]
+    text = d.report(companies, ["D"])
+    assert "2 companies read; 1 now have a readable board" in text
+    assert "| A | a.com | ashby: https://a.com/careers | yes |" in text and "| C |" not in text
+    assert "No website on file: D." in text

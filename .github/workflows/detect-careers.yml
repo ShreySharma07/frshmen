@@ -51,6 +51,10 @@ jobs:
       - name: Verify changed boards
         run: python -u scripts/verify_companies.py
 
+      # The detection report shows which boards verify_companies.py could actually read.
+      - name: Refresh detection report
+        run: python scripts/detect_careers.py --report docs/careers_detect.md --report-only
+
       - name: Add reports to job summary
         run: cat docs/careers_detect.md docs/company_check.md >> "$GITHUB_STEP_SUMMARY"
 

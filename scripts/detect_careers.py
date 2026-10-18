@@ -270,6 +270,21 @@ def apply(company: dict[str, Any], d: Detection, owners: dict[tuple[str, str], s
     return updated
 
 
+def report(companies: list[dict[str, Any]], skipped: list[str]) -> str:
+    """Every company detection has read so far (runs resume, so one run sees only part)."""
+    read = [c for c in companies if c.get("careers")]
+    summary = Counter(c["careers"].split(":")[0].split(" (")[0] for c in read)
+    lines = ["# Careers-system detection", "",
+             f"{len(read)} companies read; {sum(1 for c in read if c.get('verified'))} now have a readable board. "
+             "Systems found: " + ", ".join(f"{k} {v}" for k, v in summary.most_common()) + ".", "",
+             "| Company | Website | Careers system | Board readable |", "|---|---|---|---|",
+             *(f"| {c['name']} | {c.get('website', '')} | {c['careers']} | {'yes' if c.get('verified') else ''} |"
+               for c in read)]
+    if skipped:
+        lines += ["", "No website on file: " + ", ".join(skipped) + "."]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> int:
     from verify_companies import rewrite_yaml  # same one-line-per-company format
 
@@ -280,10 +295,16 @@ def main() -> int:
     parser.add_argument("--report", type=Path, help="write a Markdown summary here")
     parser.add_argument("--minutes", type=float, default=0,
                         help="stop starting new companies after this long; the rest wait for the next run")
+    parser.add_argument("--report-only", action="store_true",
+                        help="rewrite the report from companies.yaml (after verify_companies.py) and stop")
     args = parser.parse_args()
 
     text = COMPANIES.read_text()
     companies = yaml.safe_load(text)["companies"]
+    if args.report_only:
+        if args.report:
+            args.report.write_text(report(companies, []))
+        return 0
     if args.only:
         todo = [c for c in companies if c["name"] in set(args.only)]
     elif args.all:
@@ -299,19 +320,13 @@ def main() -> int:
     robots = Robots(http)
     owners = {(c.get("ats"), str(c.get("slug"))): c["name"] for c in companies if c.get("verified")}
     results: dict[str, dict[str, Any]] = {}
-    rows: list[str] = []
+    skipped: list[str] = []  # no website on file
 
     def save() -> None:
         # Saved every few companies, so a run cut off by the job's time limit keeps its work.
         COMPANIES.write_text(rewrite_yaml(text, results))
-        summary = Counter(r["careers"].split(":")[0].split(" (")[0] for r in results.values())
-        lines = ["# Careers-system detection", "",
-                 f"{len(results)} companies read. Systems found: "
-                 + ", ".join(f"{k} {v}" for k, v in summary.most_common()) + ".", "",
-                 "| Company | Website | Careers system | Board changed |", "|---|---|---|---|", *rows]
         if args.report:
-            args.report.write_text("\n".join(lines) + "\n")
-        print("\n" + lines[2], flush=True)
+            args.report.write_text(report(yaml.safe_load(COMPANIES.read_text())["companies"], skipped))
 
     deadline = time.monotonic() + args.minutes * 60 if args.minutes else None
     for i, company in enumerate(todo, 1):
@@ -321,14 +336,13 @@ def main() -> int:
         website = company.get("website") or yc.get(norm(company["name"]))
         if not website:
             print(f"[{i}/{len(todo)}] {company['name']}: no website on file, skipped", flush=True)
-            rows.append(f"| {company['name']} | | no website on file | |")
+            skipped.append(company["name"])
             continue
         d = detect(http, website, robots)
         updated = apply(company, d, owners)
         results[company["name"]] = updated
         changed = (updated.get("ats"), str(updated.get("slug"))) != (company.get("ats"), str(company.get("slug")))
         print(f"[{i}/{len(todo)}] {company['name']}: {updated['careers']}{'  (board changed)' if changed else ''}", flush=True)
-        rows.append(f"| {company['name']} | {updated['website']} | {updated['careers']} | {'yes' if changed else ''} |")
         if i % 10 == 0:
             save()
     save()
