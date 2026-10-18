@@ -44,7 +44,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Detect careers systems
-        run: python -u scripts/detect_careers.py --report docs/careers_detect.md ${{ inputs.only && format('--only {0}', inputs.only) || '' }}
+        run: python -u scripts/detect_careers.py --report docs/careers_detect.md --minutes 80 ${{ inputs.only && format('--only {0}', inputs.only) || '' }}
 
       # Companies whose board changed lost their verified/checked fields, so this probes exactly those
       # (plus any other unverified board due its weekly recheck).

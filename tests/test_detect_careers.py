@@ -1,6 +1,8 @@
 """Careers-system detector: recognising boards in real-world page patterns, finding careers links,
 obeying robots.txt, and updating a company entry. Offline: a fake client serves the pages."""
 
+from urllib.parse import urlparse
+
 import detect_careers as d
 
 FIREWORKS = """<html><body><h1>Careers</h1>
@@ -70,14 +72,17 @@ def test_registrable_domain():
 class FakeHttp:
     """Serves pages by URL; robots.txt and redirects as configured. Records what was fetched."""
 
-    def __init__(self, pages, robots=None, redirects=None):
+    def __init__(self, pages, robots=None, redirects=None, dead=()):
         self.pages, self.robots, self.redirects, self.fetched = pages, robots or {}, redirects or {}, []
+        self.dead = set(dead)
 
     def get_text(self, url, accept=None):
         return self.robots.get(url)
 
     def get_page(self, url):
         self.fetched.append(url)
+        if urlparse(url).netloc in self.dead:
+            raise d.FetchError(url)
         final = self.redirects.get(url, url)
         return (final, self.pages[final]) if final in self.pages else None
 
@@ -99,6 +104,12 @@ def test_detect_obeys_robots_txt():
     result = d.detect(http, "acme.com")
     assert result.best is None and "https://acme.com/careers" in result.blocked
     assert "https://acme.com/careers" not in http.fetched
+
+
+def test_a_site_that_never_answers_is_tried_once_not_once_per_path():
+    http = FakeHttp({}, dead={"acme.com"})
+    result = d.detect(http, "acme.com")
+    assert result.best is None and http.fetched == ["https://acme.com"]
 
 
 def test_detect_reads_a_redirect_to_the_hiring_system():

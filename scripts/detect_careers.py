@@ -20,6 +20,7 @@ import argparse
 import json
 import re
 import sys
+import time
 import urllib.robotparser
 from collections import Counter
 from dataclasses import dataclass, field
@@ -191,9 +192,10 @@ def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Dete
     result = Detection(website=home)
     queue = [home] + [urljoin(home, p) for p in CAREER_PATHS]
     seen: set[str] = set()
+    dead: set[str] = set()  # hosts that never answered: don't wait on them again for each path
     while queue and result.pages < MAX_PAGES:
         url = queue.pop(0)
-        if url in seen:
+        if url in seen or urlparse(url).netloc in dead:
             continue
         seen.add(url)
         if not robots.allowed(url):
@@ -202,6 +204,7 @@ def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Dete
         try:
             page = http.get_page(url)
         except FetchError:
+            dead.add(urlparse(url).netloc)
             continue
         result.pages += 1
         if page is None:
@@ -260,9 +263,11 @@ def main() -> int:
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--only", nargs="*", help="check only these company names")
-    parser.add_argument("--all", action="store_true", help="check every company, not just unverified ones")
+    parser.add_argument("--all", action="store_true", help="check every company, even verified ones and ones read before")
     parser.add_argument("--limit", type=int, default=0, help="stop after N companies")
     parser.add_argument("--report", type=Path, help="write a Markdown summary here")
+    parser.add_argument("--minutes", type=float, default=0,
+                        help="stop starting new companies after this long; the rest wait for the next run")
     args = parser.parse_args()
 
     text = COMPANIES.read_text()
@@ -272,16 +277,34 @@ def main() -> int:
     elif args.all:
         todo = companies
     else:
-        todo = [c for c in companies if not c.get("verified")]
+        # Unverified, and not read by an earlier run: a run cut short by --minutes resumes here.
+        todo = [c for c in companies if not c.get("verified") and not c.get("careers")]
     if args.limit:
         todo = todo[: args.limit]
 
     yc = yc_websites() if any(not c.get("website") and c["category"] == "yc" for c in todo) else {}
-    http = HttpClient()
+    http = HttpClient(retries=1, timeout=15)
     robots = Robots(http)
     results: dict[str, dict[str, Any]] = {}
     rows: list[str] = []
+
+    def save() -> None:
+        # Saved every few companies, so a run cut off by the job's time limit keeps its work.
+        COMPANIES.write_text(rewrite_yaml(text, results))
+        summary = Counter(r["careers"].split(":")[0].split(" (")[0] for r in results.values())
+        lines = ["# Careers-system detection", "",
+                 f"{len(results)} companies read. Systems found: "
+                 + ", ".join(f"{k} {v}" for k, v in summary.most_common()) + ".", "",
+                 "| Company | Website | Careers system | Board changed |", "|---|---|---|---|", *rows]
+        if args.report:
+            args.report.write_text("\n".join(lines) + "\n")
+        print("\n" + lines[2], flush=True)
+
+    deadline = time.monotonic() + args.minutes * 60 if args.minutes else None
     for i, company in enumerate(todo, 1):
+        if deadline and time.monotonic() > deadline:
+            print(f"Time budget reached after {i - 1}/{len(todo)} companies; the rest wait for the next run.")
+            break
         website = company.get("website") or yc.get(norm(company["name"]))
         if not website:
             print(f"[{i}/{len(todo)}] {company['name']}: no website on file, skipped", flush=True)
@@ -293,16 +316,9 @@ def main() -> int:
         changed = (updated.get("ats"), str(updated.get("slug"))) != (company.get("ats"), str(company.get("slug")))
         print(f"[{i}/{len(todo)}] {company['name']}: {updated['careers']}{'  (board changed)' if changed else ''}", flush=True)
         rows.append(f"| {company['name']} | {updated['website']} | {updated['careers']} | {'yes' if changed else ''} |")
-
-    COMPANIES.write_text(rewrite_yaml(text, results))
-    summary = Counter(r["careers"].split(":")[0].split(" (")[0] for r in results.values())
-    lines = ["# Careers-system detection", "",
-             f"{len(results)} companies read. Systems found: "
-             + ", ".join(f"{k} {v}" for k, v in summary.most_common()) + ".", "",
-             "| Company | Website | Careers system | Board changed |", "|---|---|---|---|", *rows]
-    if args.report:
-        args.report.write_text("\n".join(lines) + "\n")
-    print("\n" + lines[2])
+        if i % 10 == 0:
+            save()
+    save()
     return 0
 
 
