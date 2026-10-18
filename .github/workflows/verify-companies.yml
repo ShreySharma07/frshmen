@@ -61,5 +61,7 @@ jobs:
             echo "No changes."
           else
             git commit -m "Update company board check results"
+            # detect-careers may have pushed its own results meanwhile; ours are newer.
+            git pull --rebase -X theirs
             git push
           fi
