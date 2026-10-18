@@ -37,6 +37,9 @@ class HttpClient:
     """GET JSON politely. `cache_dir` enables conditional requests across runs."""
 
     cache_dir: Path | None = None
+    # Discovery (scripts/detect_careers.py) visits many unknown sites; dead ones must fail fast.
+    retries: int = MAX_RETRIES
+    timeout: float = 30.0
     last_hit: dict[str, float] = field(default_factory=dict)
     # Boards are fetched from several threads; pacing must still hold per host across all of them.
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
@@ -85,10 +88,10 @@ class HttpClient:
                 headers["If-Modified-Since"] = cached["last_modified"]
         req = urllib.request.Request(url, headers=headers, data=data, method="POST" if data is not None else "GET")
 
-        for attempt in range(MAX_RETRIES + 1):
+        for attempt in range(self.retries + 1):
             self._pace(host)
             try:
-                with urllib.request.urlopen(req, timeout=30) as resp:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                     raw = resp.read().decode("utf-8", errors="replace")
                     body = decode(raw)
                     if with_url:
@@ -102,11 +105,11 @@ class HttpClient:
                     return cached["body"]
                 if e.code in NOT_FOUND_STATUSES:
                     return None
-                if e.code not in RETRY_STATUSES or attempt == MAX_RETRIES:
+                if e.code not in RETRY_STATUSES or attempt == self.retries:
                     raise FetchError(f"{host}: HTTP {e.code}") from e
                 self._back_off(host, attempt, e.headers.get("Retry-After"))
             except (urllib.error.URLError, TimeoutError) as e:
-                if attempt == MAX_RETRIES:
+                if attempt == self.retries:
                     raise FetchError(f"{host}: {e}") from e
                 self._back_off(host, attempt, None)
             except json.JSONDecodeError:
