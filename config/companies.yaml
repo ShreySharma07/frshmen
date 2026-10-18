@@ -117,7 +117,7 @@ companies:
   - {name: Captions, category: applied, hq: us, website: captions.ai, ats: ashby, slug: mirage, verified: true, jobs: 14, ai_jobs: 3, checked: '2026-10-18', careers: 'ashby: https://captions.ai'}
   - {name: Descript, category: applied, hq: us, ats: greenhouse, slug: descript, verified: true, jobs: 11, ai_jobs: 2}
   - {name: Tavus, category: applied, hq: us, ats: ashby, slug: tavus, verified: true, jobs: 16, ai_jobs: 4}
-  - {name: Moveworks, category: applied, hq: us, website: moveworks.com, ats: smartrecruiters, slug: ServiceNow, verified: true, jobs: 100, ai_jobs: 18, checked: '2026-10-18', careers: 'smartrecruiters: https://www.moveworks.com/us/en/company/careers/position?sr_id=744000155903074'}
+  - {name: Moveworks, category: applied, hq: us, website: moveworks.com, ats: workable, slug: moveworks, verified: false, checked: '2026-10-18', careers: 'same board as ServiceNow (acquired?): https://www.moveworks.com/us/en/company/careers'}
   - {name: Observe.AI, category: applied, hq: us, ats: greenhouse, slug: observeai, verified: true, jobs: 11, ai_jobs: 5}
   - {name: Gong, category: applied, hq: global, ats: greenhouse, slug: gongio, verified: true, jobs: 95, ai_jobs: 4}
   - {name: Notion, category: applied, hq: us, ats: ashby, slug: notion, verified: true, jobs: 135, ai_jobs: 7}
@@ -129,7 +129,7 @@ companies:
   - {name: DeepL, category: applied, hq: eu, ats: ashby, slug: deepl, verified: true, jobs: 18, ai_jobs: 0}
   - {name: Photoroom, category: applied, hq: eu, ats: ashby, slug: photoroom, verified: true, jobs: 15, ai_jobs: 3}
   - {name: Dust, category: applied, hq: eu, ats: ashby, slug: dust, verified: true, jobs: 23, ai_jobs: 1}
-  - {name: Sana, category: applied, hq: eu, website: sanalabs.com, ats: workday, slug: workday/wd5/Workday, verified: true, jobs: 100, ai_jobs: 12, checked: '2026-10-18', careers: 'workday: https://sanalabs.com/careers'}
+  - {name: Sana, category: applied, hq: eu, website: sanalabs.com, ats: workable, slug: sana, verified: false, checked: '2026-10-18', careers: 'same board as Workday (acquired?): https://sanalabs.com/careers'}
   - {name: Lovable, category: applied, hq: eu, ats: ashby, slug: lovable, verified: true, jobs: 78, ai_jobs: 11}
   - {name: Granola, category: applied, hq: uk, ats: ashby, slug: granola, verified: true, jobs: 19, ai_jobs: 1}
   - {name: Synthflow, category: applied, hq: eu, website: synthflow.ai, ats: ashby, slug: synthflow, verified: false, checked: '2026-10-18', careers: not found (6 pages read)}
@@ -145,7 +145,7 @@ companies:
   # --- AI dev tools / coding agents ---
   - {name: Anysphere (Cursor), category: devtools, hq: us, ats: ashby, slug: cursor, verified: true, jobs: 132, ai_jobs: 13}
   - {name: Cognition, category: devtools, hq: us, ats: ashby, slug: cognition, verified: true, jobs: 100, ai_jobs: 14}
-  - {name: Windsurf, category: devtools, hq: us, website: windsurf.com, ats: ashby, slug: cognition, verified: true, jobs: 103, ai_jobs: 15, checked: '2026-10-18', careers: 'ashby: https://jobs.ashbyhq.com/cognition'}
+  - {name: Windsurf, category: devtools, hq: us, website: windsurf.com, ats: ashby, slug: windsurf, verified: false, checked: '2026-10-18', careers: 'same board as Cognition (acquired?): https://jobs.ashbyhq.com/cognition'}
   - {name: Replit, category: devtools, hq: us, ats: ashby, slug: replit, verified: true, jobs: 70, ai_jobs: 3}
   - {name: Sourcegraph, category: devtools, hq: global, ats: greenhouse, slug: sourcegraph91, verified: true, jobs: 10, ai_jobs: 1}
   - {name: GitLab, category: devtools, hq: global, ats: greenhouse, slug: gitlab, verified: true, jobs: 210, ai_jobs: 14}
@@ -153,7 +153,7 @@ companies:
   - {name: Warp, category: devtools, hq: us, ats: ashby, slug: warp, verified: true, jobs: 22, ai_jobs: 1}
   - {name: Factory, category: devtools, hq: us, ats: ashby, slug: factory, verified: true, jobs: 53, ai_jobs: 4}
   - {name: Augment Code, category: devtools, hq: us, website: augmentcode.com, ats: ashby, slug: augmentcode, verified: false, checked: '2026-10-18', careers: not found (6 pages read)}
-  - {name: Tabnine, category: devtools, hq: global, website: tabnine.com, ats: workday, slug: tricentis/wd1/Tricentis_Careers, verified: true, jobs: 20, ai_jobs: 0, checked: '2026-10-18', careers: 'workday: https://www.tricentis.com/company/careers'}
+  - {name: Tabnine, category: devtools, hq: global, website: tabnine.com, ats: greenhouse, slug: tabnine, verified: false, checked: '2026-10-18', careers: 'on another company''s site (acquired?): https://www.tricentis.com/company/careers'}
   - {name: Qodo, category: devtools, hq: global, website: qodo.ai, ats: careersite, slug: www.qodo.ai, verified: false, checked: '2026-10-18', careers: 'careersite: https://www.qodo.ai/careers/co/tel-aviv/45.F68/data-analyst/all/'}
   - {name: Bolt (StackBlitz), category: devtools, hq: us, ats: greenhouse, slug: stackblitz, verified: true, jobs: 7, ai_jobs: 2}
 
