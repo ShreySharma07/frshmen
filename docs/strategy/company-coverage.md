@@ -98,6 +98,18 @@ runs weekly in GitHub Actions; this sandbox can't reach those sites.
 | **D** | New adapters: SuccessFactors, Phenom, iCIMS, Taleo | Unlocks the MNC sites B and C find |
 | **E** | GitHub new-grad lists | Entry-level-heavy companies, mostly US |
 
+## Progress
+
+- **A (2026-10-18):** detector run on 229 of the 236 unverified companies; verified boards went
+  from 376 to 407. A spot check of 14 where nothing was recognised found Gem, own-site job pages
+  with no hiring system, pages that only render in the browser, and LinkedIn-only hiring; no
+  single missing system. The detector now names Gem, Rippling, Dover, Wellfound, Breezy, JazzHR
+  and YC job pages, and re-reads "not found" companies when it learns a new one.
+- **Found on the way:** Workable and SmartRecruiters boards were verified but never fetched (no
+  adapter); 18 companies including PhonePe, Swiggy and Freshworks. Both fetchers added.
+- **B (started 2026-10-18):** 91 global capability centres (banks, chip makers, industrials,
+  pharma, consulting) added with their website and `india_only`; detection finds their systems.
+
 ## Decided (Shrey, 2026-10-18)
 
 1. **Order:** A → B → D → C → E.
