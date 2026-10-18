@@ -37,6 +37,9 @@ class HttpClient:
     """GET JSON politely. `cache_dir` enables conditional requests across runs."""
 
     cache_dir: Path | None = None
+    # Discovery (scripts/detect_careers.py) visits many unknown sites; dead ones must fail fast.
+    retries: int = MAX_RETRIES
+    timeout: float = 30.0
     last_hit: dict[str, float] = field(default_factory=dict)
     # Boards are fetched from several threads; pacing must still hold per host across all of them.
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
@@ -54,6 +57,14 @@ class HttpClient:
         """Body as text (careers pages, sitemaps), or None if it doesn't exist."""
         return self._get(url, accept, lambda raw: raw, fresh_days)
 
+    def get_page(self, url: str) -> tuple[str, str] | None:
+        """(final URL after redirects, HTML) for a web page, or None if it doesn't exist.
+
+        For finding where a company's careers page really lives: "/careers" often redirects to
+        the hiring system (e.g. acme.wd3.myworkdayjobs.com). Never cached.
+        """
+        return self._get(url, "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8", lambda raw: raw, with_url=True)
+
     def post_json(self, url: str, body: Any) -> Any | None:
         """POST a JSON body and parse the JSON answer (search endpoints careers sites call themselves).
 
@@ -62,9 +73,9 @@ class HttpClient:
         return self._get(url, "application/json", json.loads, data=json.dumps(body).encode())
 
     def _get(self, url: str, accept: str, decode: Callable[[str], Any], fresh_days: float | None = None,
-             data: bytes | None = None) -> Any | None:
+             data: bytes | None = None, with_url: bool = False) -> Any | None:
         host = urlparse(url).netloc
-        cached = self._cache_read(url) if data is None else None
+        cached = self._cache_read(url) if data is None and not with_url else None
         if fresh_days and cached and time.time() - cached.get("stored_at", 0) < fresh_days * 86400:
             return cached["body"]
         headers = {"User-Agent": USER_AGENT, "Accept": accept, "Accept-Language": "en-US,en;q=0.8"}
@@ -77,12 +88,14 @@ class HttpClient:
                 headers["If-Modified-Since"] = cached["last_modified"]
         req = urllib.request.Request(url, headers=headers, data=data, method="POST" if data is not None else "GET")
 
-        for attempt in range(MAX_RETRIES + 1):
+        for attempt in range(self.retries + 1):
             self._pace(host)
             try:
-                with urllib.request.urlopen(req, timeout=30) as resp:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                     raw = resp.read().decode("utf-8", errors="replace")
                     body = decode(raw)
+                    if with_url:
+                        return resp.geturl(), body
                     if data is None:
                         self._cache_write(url, resp.headers.get("ETag"), resp.headers.get("Last-Modified"), body,
                                           keep=bool(fresh_days))
@@ -92,11 +105,11 @@ class HttpClient:
                     return cached["body"]
                 if e.code in NOT_FOUND_STATUSES:
                     return None
-                if e.code not in RETRY_STATUSES or attempt == MAX_RETRIES:
+                if e.code not in RETRY_STATUSES or attempt == self.retries:
                     raise FetchError(f"{host}: HTTP {e.code}") from e
                 self._back_off(host, attempt, e.headers.get("Retry-After"))
             except (urllib.error.URLError, TimeoutError) as e:
-                if attempt == MAX_RETRIES:
+                if attempt == self.retries:
                     raise FetchError(f"{host}: {e}") from e
                 self._back_off(host, attempt, None)
             except json.JSONDecodeError:
