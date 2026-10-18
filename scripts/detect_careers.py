@@ -77,7 +77,20 @@ UNSUPPORTED: list[tuple[str, re.Pattern[str]]] = [
     ("recruitee", re.compile(r"\b[a-z0-9-]+\.recruitee\.com")),
     ("teamtailor", re.compile(r"\bteamtailor\.com")),
     ("personio", re.compile(r"jobs\.personio\.(?:de|com)")),
+    # Seen on the 2026-10-18 spot check of companies where nothing was recognised.
+    ("gem", re.compile(r"\bjobs\.gem\.com/[a-z0-9-]+")),
+    ("rippling", re.compile(r"\bats\.rippling\.com/[a-z0-9-]+")),
+    ("dover", re.compile(r"\bapp\.dover\.(?:com|io)/(?:apply|jobs)/")),
+    ("wellfound", re.compile(r"\bwellfound\.com/company/[a-z0-9-]+/jobs")),
+    ("breezy", re.compile(r"\b[a-z0-9-]+\.breezy\.hr")),
+    ("jazzhr", re.compile(r"\b[a-z0-9-]+\.applytojob\.com")),
+    ("yc_jobs", re.compile(r"\bycombinator\.com/companies/[a-z0-9-]+/jobs")),
+    # Recorded so the report says why, never fetched: CLAUDE.md rules out scraping LinkedIn.
+    ("linkedin_only", re.compile(r"\blinkedin\.com/company/[a-z0-9-]+/jobs")),
 ]
+
+# Never fetched, whatever links to them (CLAUDE.md): a link there is only recorded.
+NEVER_FETCH = re.compile(r"(?:^|\.)(?:linkedin\.com|indeed\.[a-z.]+|glassdoor\.[a-z.]+)$")
 
 # Path segments that a board pattern can catch but that are never a company's board.
 NOT_SLUGS = {"embed", "js", "v1", "api", "jobs", "job", "careers", "static", "assets", "en", "en-us", "search", "wday"}
@@ -114,7 +127,9 @@ class Detection:
             counts = Counter((f.system, f.slug) for f in supported)
             (system, slug), _ = counts.most_common(1)[0]
             return next(f for f in supported if (f.system, f.slug) == (system, slug))
-        return self.found[0] if self.found else None
+        # A real hiring system beats a LinkedIn link, which we can only note.
+        ranked = sorted(self.found, key=lambda f: f.system == "linkedin_only")
+        return ranked[0] if ranked else None
 
 
 def fingerprint(html: str, url: str) -> list[Found]:
@@ -146,7 +161,7 @@ def career_links(html: str, base_url: str) -> list[str]:
             continue
         absolute = urljoin(base_url, unescape(href.strip()))
         host = urlparse(absolute).netloc
-        if not host or urlparse(absolute).scheme not in ("http", "https"):
+        if not host or urlparse(absolute).scheme not in ("http", "https") or NEVER_FETCH.search(host.lower()):
             continue
         if registrable(host) == site or any(p.search(absolute) for _, p, _ in SUPPORTED) \
                 or any(p.search(absolute) for _, p in UNSUPPORTED):
@@ -198,6 +213,8 @@ def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Dete
         if url in seen or urlparse(url).netloc in dead:
             continue
         seen.add(url)
+        if NEVER_FETCH.search(urlparse(url).netloc.lower()):
+            continue
         if not robots.allowed(url):
             result.blocked.append(url)
             continue
@@ -295,6 +312,8 @@ def main() -> int:
     parser.add_argument("--report", type=Path, help="write a Markdown summary here")
     parser.add_argument("--minutes", type=float, default=0,
                         help="stop starting new companies after this long; the rest wait for the next run")
+    parser.add_argument("--retry-not-found", action="store_true",
+                        help="also re-read companies where nothing was recognised (after the detector learns a system)")
     parser.add_argument("--report-only", action="store_true",
                         help="rewrite the report from companies.yaml (after verify_companies.py) and stop")
     args = parser.parse_args()
@@ -311,7 +330,10 @@ def main() -> int:
         todo = companies
     else:
         # Unverified, and not read by an earlier run: a run cut short by --minutes resumes here.
-        todo = [c for c in companies if not c.get("verified") and not c.get("careers")]
+        todo = [c for c in companies if not c.get("verified") and (
+            not c.get("careers") or (args.retry_not_found and str(c["careers"]).startswith("not found")))]
+        # Never-read companies first: a run cut short by --minutes must not spend itself on retries.
+        todo.sort(key=lambda c: bool(c.get("careers")))
     if args.limit:
         todo = todo[: args.limit]
 
