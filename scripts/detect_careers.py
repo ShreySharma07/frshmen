@@ -240,14 +240,26 @@ def norm(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
 
-def apply(company: dict[str, Any], d: Detection) -> dict[str, Any]:
-    """The company entry after detection. A readable board resets verification so it is re-probed."""
+def apply(company: dict[str, Any], d: Detection, owners: dict[tuple[str, str], str] | None = None) -> dict[str, Any]:
+    """The company entry after detection. A readable board resets verification so it is re-probed.
+
+    `owners` maps (ats, slug) to the company already listed with that board. Acquired companies
+    often send their careers page to the buyer (Moveworks -> ServiceNow); taking that board would
+    list the buyer's jobs twice, under the wrong name and without its India-only filter.
+    """
     updated = dict(company, website=urlparse(d.website).netloc or d.website)
     best = d.best
     if best is None:
         updated["careers"] = f"not found ({d.pages} pages read" + (f", {len(d.blocked)} disallowed" if d.blocked else "") + ")"
         return updated
-    if best.supported:
+    seen_on = urlparse(best.url).netloc
+    owner = (owners or {}).get((best.system, str(best.slug)))
+    if owner and owner != company["name"]:
+        updated["careers"] = f"same board as {owner} (acquired?): {best.url}"
+    elif registrable(seen_on) != registrable(urlparse(d.website).netloc) and not fingerprint("", best.url):
+        # Found on another company's own site, not on a hiring system: most likely the buyer's.
+        updated["careers"] = f"on another company's site (acquired?): {best.url}"
+    elif best.supported:
         if (best.system, best.slug) != (company.get("ats"), str(company.get("slug"))):
             updated.update(ats=best.system, slug=best.slug)
             for k in ("verified", "jobs", "ai_jobs", "checked"):
@@ -285,6 +297,7 @@ def main() -> int:
     yc = yc_websites() if any(not c.get("website") and c["category"] == "yc" for c in todo) else {}
     http = HttpClient(retries=1, timeout=15)
     robots = Robots(http)
+    owners = {(c.get("ats"), str(c.get("slug"))): c["name"] for c in companies if c.get("verified")}
     results: dict[str, dict[str, Any]] = {}
     rows: list[str] = []
 
@@ -311,7 +324,7 @@ def main() -> int:
             rows.append(f"| {company['name']} | | no website on file | |")
             continue
         d = detect(http, website, robots)
-        updated = apply(company, d)
+        updated = apply(company, d, owners)
         results[company["name"]] = updated
         changed = (updated.get("ats"), str(updated.get("slug"))) != (company.get("ats"), str(company.get("slug")))
         print(f"[{i}/{len(todo)}] {company['name']}: {updated['careers']}{'  (board changed)' if changed else ''}", flush=True)

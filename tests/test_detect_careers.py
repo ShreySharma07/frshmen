@@ -135,3 +135,25 @@ def test_apply_records_unknown_and_missing_careers_systems():
     assert d.apply(company, icims)["careers"] == "icims (no adapter yet): https://acme.com/careers"
     assert d.apply(company, icims)["ats"] == "greenhouse"  # unchanged until an adapter exists
     assert d.apply(company, d.Detection("https://acme.com", pages=6))["careers"] == "not found (6 pages read)"
+
+
+def test_a_board_another_company_owns_is_not_taken():
+    """Acquired companies link to the buyer's board; taking it would list the buyer's jobs twice."""
+    moveworks = {"name": "Moveworks", "category": "applied", "hq": "us", "ats": "workable", "slug": "moveworks"}
+    det = d.Detection("https://www.moveworks.com", found=[
+        d.Found("smartrecruiters", "ServiceNow", True, "https://www.moveworks.com/us/en/company/careers")])
+    updated = d.apply(moveworks, det, owners={("smartrecruiters", "ServiceNow"): "ServiceNow"})
+    assert (updated["ats"], updated["slug"]) == ("workable", "moveworks")
+    assert updated["careers"].startswith("same board as ServiceNow")
+
+
+def test_a_board_seen_on_another_companys_site_is_not_taken():
+    tabnine = {"name": "Tabnine", "category": "devtools", "hq": "us", "ats": "greenhouse", "slug": "tabnine"}
+    det = d.Detection("https://tabnine.com", found=[
+        d.Found("workday", "tricentis/wd1/Tricentis_Careers", True, "https://www.tricentis.com/company/careers")])
+    updated = d.apply(tabnine, det)
+    assert (updated["ats"], updated["slug"]) == ("greenhouse", "tabnine")
+    assert updated["careers"].startswith("on another company's site")
+    # A board hosted on the hiring system's own domain is still the company's.
+    hosted = d.Detection("https://acme.com", found=[d.Found("ashby", "acme", True, "https://jobs.ashbyhq.com/acme")])
+    assert d.apply(dict(tabnine, name="Acme"), hosted)["ats"] == "ashby"
