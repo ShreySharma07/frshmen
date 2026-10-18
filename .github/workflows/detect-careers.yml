@@ -2,9 +2,14 @@ name: Detect careers systems
 
 # Phase A of docs/strategy/company-coverage.md: read each unverified company's website, find
 # its careers page and the hiring system behind it (scripts/detect_careers.py), then re-probe
-# the boards that changed (scripts/verify_companies.py). Run it by hand on a PR branch; the
-# results are committed back to that branch for review. Never pushes to the default branch.
+# the boards that changed (scripts/verify_companies.py). It runs on PRs that change the detector
+# (a manual run needs this file on main first); results are committed back to the PR branch for
+# review. Never pushes to the default branch.
 on:
+  pull_request:
+    paths:
+      - scripts/detect_careers.py
+      - .github/workflows/detect-careers.yml
   workflow_dispatch:
     inputs:
       only:
@@ -16,16 +21,20 @@ permissions:
   contents: write
 
 concurrency:
-  group: detect-careers-${{ github.ref_name }}
+  group: detect-careers-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   detect:
-    if: github.ref_name != github.event.repository.default_branch
+    # Skip the default branch, and the run triggered by this workflow's own results commit.
+    if: (github.head_ref || github.ref_name) != github.event.repository.default_branch && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The branch itself (not the merge commit) so we can push to it.
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - uses: actions/setup-python@v5
         with:
@@ -54,5 +63,7 @@ jobs:
             echo "No changes."
           else
             git commit -m "Detect careers systems and re-verify boards"
+            # verify-companies may have pushed its own results meanwhile; ours are newer.
+            git pull --rebase -X theirs
             git push
           fi
