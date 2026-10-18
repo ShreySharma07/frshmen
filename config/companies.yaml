@@ -431,7 +431,7 @@ companies:
   - {name: ZF, category: mnc, hq: eu, website: zf.com, india_only: true, careers: 'successfactors (no adapter yet): https://jobs.zf.com/'}
   - {name: Airbus, category: mnc, hq: eu, website: airbus.com, ats: workday, slug: ag/wd3/Airbus, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-18', careers: 'workday: https://www.airbus.com/en/careers'}
   - {name: Maersk, category: mnc, hq: eu, website: maersk.com, india_only: true, careers: not found (0 pages read)}
-  - {name: Novartis, category: mnc, hq: eu, website: novartis.com, ats: workday, slug: novartis/wd3/Novartis_Careers, india_only: true, careers: 'workday: https://novartis.wd3.myworkdayjobs.com/Novartis_Careers'}
+  - {name: Novartis, category: mnc, hq: eu, website: novartis.com, ats: workday, slug: novartis/wd3/Novartis_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-18', careers: 'workday: https://novartis.wd3.myworkdayjobs.com/Novartis_Careers'}
   - {name: Sanofi, category: mnc, hq: eu, website: sanofi.com, india_only: true, careers: not found (6 pages read)}
   - {name: AstraZeneca, category: mnc, hq: uk, website: astrazeneca.com, india_only: true, careers: not found (0 pages read)}
   - {name: GSK, category: mnc, hq: uk, website: gsk.com, ats: workday, slug: gsk/wd5/GSKCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-18', careers: 'workday: https://jobs.gsk.com/gb/en/search-results'}
