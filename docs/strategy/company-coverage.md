@@ -80,8 +80,8 @@ runs weekly in GitHub Actions; this sandbox can't reach those sites.
 - **What to fetch:** MNC tenants list thousands of global jobs. Filter by location and title
   *before* fetching each job's detail page (the `sources/prefilter.py` pattern), and keep only
   India, remote, and visa/relocation jobs.
-- **Database (500 MB, ~190 MB used):** store the full description only for jobs that match a
-  target role; for the rest keep the title and labels. This roughly halves storage per company.
+- **Database (500 MB, ~190 MB used):** store only three sections per job (About the role, Required,
+  Preferred), not the whole description; extractors read the full text first.
 - **Run time:** the 3-hourly fetch takes 11–20 minutes now (90-minute limit). Big careers
   systems change slowly: fetch them daily instead of every 3 hours, using ETag caching and
   per-host rate limits (already in `sources/http.py`).
@@ -98,11 +98,11 @@ runs weekly in GitHub Actions; this sandbox can't reach those sites.
 | **D** | New adapters: SuccessFactors, Phenom, iCIMS, Taleo | Unlocks the MNC sites B and C find |
 | **E** | GitHub new-grad lists | Entry-level-heavy companies, mostly US |
 
-## Decisions for Shrey
+## Decided (Shrey, 2026-10-18)
 
-1. **Order:** A → B → D → C → E, i.e. India GCCs before the bulk Common Crawl sweep. Or
-   another order?
-2. **Storage policy:** store full descriptions only for target-role jobs (recommended), or keep
-   every job's full text and move to a paid database tier later? (Free tools only: recommended.)
-3. **Location policy for global companies:** from MNC careers sites, keep only India + remote
-   (+ visa/relocation) jobs (recommended), or every job worldwide?
+1. **Order:** A → B → D → C → E.
+2. **Storage:** keep only About the role, Required and Preferred skills for every job (Shrey's
+   option). Extractors still read the full text first and keep their evidence.
+3. **Global companies:** keep only India, remote, and visa/relocation jobs.
+
+See `docs/decisions.md` (2026-10-18).

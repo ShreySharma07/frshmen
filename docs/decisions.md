@@ -4,6 +4,35 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-18 — Company coverage strategy (`docs/strategy/company-coverage.md`)
+- **Context:** 237 of 612 companies were never found on the shared job boards: they recruit on
+  their own careers sites (Workday, SuccessFactors, iCIMS...). Many are foreign companies hiring
+  through India offices (1,700+ GCCs, Nasscom FY2024).
+- **1. Order (Shrey: Claude's proposal):**
+  - **A** (now): re-check the 237; add company websites; build a careers-system detector
+  - **B:** India GCC lists + Wikidata websites
+  - **D:** new adapters for SuccessFactors, Phenom, iCIMS, Taleo
+  - **C:** the Common Crawl index of careers-system addresses
+  - **E:** GitHub new-grad lists
+  - **Why this order:** India offices first, because they are the audience's employers; the
+    adapters before the bulk sweep, because C mostly finds MNC systems we can't read yet.
+- **2. What we store (Shrey's own option, chosen over "full text only for target roles"):**
+  - Store three sections per job, not the whole description: **About the role**, **Required**
+    and **Preferred** skills. The full posting stays one click away on the company's site.
+  - **Rule:** the experience, batch and role extractors still read the full text first, and
+    keep their evidence snippets, so precision does not drop.
+  - **Why:**
+    - storage drops for every job, not just some
+    - the page shows what a student needs to decide
+    - we don't republish companies' full postings
+- **3. Global companies (Shrey: Claude's pick):** from MNC careers sites, keep only India,
+  remote, and visa/relocation jobs.
+  - **Why:** these are the jobs Kario's users can take.
+  - It also keeps MNC tenants with thousands of global jobs inside the run-time and storage
+    limits.
+
+---
+
 ## 2026-10-17 — Switch-over to the Next.js site (M4.6)
 - **What changed:**
   - The Worker now serves `site/out` (the Next.js static export) instead of `web/dist`.
