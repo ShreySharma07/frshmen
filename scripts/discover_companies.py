@@ -114,7 +114,7 @@ def yc_candidates(dataset: list[dict[str, Any]], existing: list[dict[str, Any]])
 def dedupe(candidates: Iterable[dict[str, Any]], existing: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Drop candidates already on file, by name or by board, and repeats within the batch."""
     names = {norm(c["name"]) for c in existing}
-    boards = {(c["ats"], str(c["slug"]).lower()) for c in existing}
+    boards = {(c["ats"], str(c["slug"]).lower()) for c in existing if c.get("ats")}
     out = []
     for c in candidates:
         key = (c["ats"], str(c["slug"]).lower())

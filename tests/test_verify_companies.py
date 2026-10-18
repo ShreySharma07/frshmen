@@ -153,3 +153,19 @@ def test_careers_site_403_counts_as_checked_not_an_error():
             raise FetchError("zepto.darwinbox.in: HTTP 403")
 
     assert vc.find_board(lambda url: None, {"name": "Zepto", "ats": "darwinbox", "slug": "zepto"}, Http()) is None
+
+
+def test_companies_added_with_only_a_website_wait_for_detection(tmp_path, monkeypatch):
+    cfg = tmp_path / "companies.yaml"
+    cfg.write_text("companies:\n"
+                   "  - {name: Acme, category: mnc, hq: us, website: acme.com, india_only: true}\n"
+                   "  - {name: Beta, category: lab, hq: us, ats: ashby, slug: beta}\n")
+    probed = []
+    monkeypatch.setattr(vc, "ROOT", tmp_path)
+    monkeypatch.setattr(vc, "COMPANIES", cfg)
+    monkeypatch.setattr(vc, "REPORT", tmp_path / "report.md")
+    monkeypatch.setattr(vc, "find_board", lambda get, company, http=None: probed.append(company["name"]))
+    monkeypatch.setattr("sys.argv", ["verify_companies.py"])
+    vc.main()
+    assert probed == ["Beta"]
+    assert "| Acme | mnc | not checked yet |" in (tmp_path / "report.md").read_text()
