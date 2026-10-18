@@ -169,3 +169,26 @@ def test_report_covers_every_company_read_so_far():
     assert "2 companies read; 1 now have a readable board" in text
     assert "| A | a.com | ashby: https://a.com/careers | yes |" in text and "| C |" not in text
     assert "No website on file: D." in text
+
+
+def test_newly_seen_systems_are_recorded():
+    cases = {
+        '<a href="https://jobs.gem.com/promptql/am9icG9zdDqu29Ys">Apply</a>': "gem",
+        '<a href="https://ats.rippling.com/acme/jobs">Jobs</a>': "rippling",
+        '<a href="https://app.dover.com/apply/acme/1234">Apply</a>': "dover",
+        '<a href="https://www.ycombinator.com/companies/acme/jobs">Jobs</a>': "yc_jobs",
+    }
+    for html, system in cases.items():
+        assert [(f.system, f.supported) for f in d.fingerprint(html, "https://acme.com/careers")] == [(system, False)]
+
+
+def test_linkedin_is_noted_but_never_fetched():
+    page = '<a href="https://www.linkedin.com/company/acme/jobs/">See our jobs</a>'
+    assert d.career_links(page, "https://acme.com/careers") == []
+    http = FakeHttp({"https://acme.com": page})
+    result = d.detect(http, "acme.com")
+    assert not any("linkedin" in u for u in http.fetched)
+    assert result.best.system == "linkedin_only"
+    both = d.Detection("https://acme.com", found=[d.Found("linkedin_only", None, False, "https://acme.com"),
+                                                  d.Found("icims", None, False, "https://acme.com/careers")])
+    assert both.best.system == "icims"

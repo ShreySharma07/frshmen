@@ -21,7 +21,7 @@ def test_load_companies_keeps_only_fetchable(tmp_path):
         "  - {name: A, category: lab, ats: ashby, slug: a, verified: true, jobs: 3}\n"
         "  - {name: B, category: lab, ats: ashby, slug: b, verified: true, jobs: 0}\n"
         "  - {name: C, category: lab, ats: ashby, slug: c, verified: false}\n"
-        "  - {name: D, category: lab, ats: workable, slug: d, verified: true, jobs: 5}\n"
+        "  - {name: D, category: lab, ats: icims, slug: d, verified: true, jobs: 5}\n"
         "  - {name: E, category: lab, ats: lever, slug: e}\n"
     )
     assert [c.name for c in fj.load_companies(cfg)] == ["A"]

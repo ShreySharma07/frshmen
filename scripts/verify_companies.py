@@ -252,6 +252,8 @@ def main() -> int:
         companies = [c for c in companies if c["name"] in set(args.only)]
     elif not args.all:
         companies = [c for c in companies if needs_check(c)]
+    # A company added with only its website has no board to probe until detect_careers.py finds one.
+    companies = [c for c in companies if c.get("ats") and c.get("slug")]
 
     http = HttpClient()  # no cache: we want a fresh answer about each board
     boards: dict[str, Board | None] = {}

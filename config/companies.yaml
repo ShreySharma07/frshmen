@@ -4,6 +4,8 @@
 #   name      display name
 #   category  lab | infra | applied | devtools | robotics | india | mnc | yc | community
 #   hq        in | us | eu | uk | ca | global   (pruning hint only; job location is read per posting)
+#   website   the company's site; scripts/detect_careers.py finds its careers system from it. A new
+#             company can be added with only name/category/hq/website: detection fills ats and slug
 #   ats       greenhouse | lever | ashby | workable | smartrecruiters   (guess until verified)
 #             | workday | darwinbox | keka | zoho_recruit | amazon | eightfold | hn   (set by hand, never guessed)
 #   india_only  true on big global boards: only India and remote roles are fetched
@@ -365,6 +367,100 @@ companies:
   - {name: NetApp, category: mnc, hq: us, ats: eightfold, slug: netapp.eightfold.ai/netapp.com, india_only: true, verified: true, jobs: 20, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Netflix, category: mnc, hq: us, ats: eightfold, slug: explore.jobs.netflix.net/netflix.com, india_only: true, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Amazon, category: mnc, hq: us, ats: amazon, slug: IND, india_only: true, verified: true, jobs: 2294, ai_jobs: 153, checked: '2026-10-06'}
+  # --- Global capability centres: India offices of foreign companies (phase B,
+  #     docs/strategy/company-coverage.md). Only the website is known; scripts/detect_careers.py
+  #     finds the careers system and scripts/verify_companies.py checks it. ---
+  - {name: Goldman Sachs, category: mnc, hq: us, website: goldmansachs.com, india_only: true}
+  - {name: JPMorgan Chase, category: mnc, hq: us, website: jpmorganchase.com, india_only: true}
+  - {name: American Express, category: mnc, hq: us, website: americanexpress.com, india_only: true}
+  - {name: Citi, category: mnc, hq: us, website: citigroup.com, india_only: true}
+  - {name: Bank of America, category: mnc, hq: us, website: bankofamerica.com, india_only: true}
+  - {name: BNY, category: mnc, hq: us, website: bny.com, india_only: true}
+  - {name: State Street, category: mnc, hq: us, website: statestreet.com, india_only: true}
+  - {name: Fidelity Investments, category: mnc, hq: us, website: fidelity.com, india_only: true}
+  - {name: Northern Trust, category: mnc, hq: us, website: northerntrust.com, india_only: true}
+  - {name: Synchrony, category: mnc, hq: us, website: synchrony.com, india_only: true}
+  - {name: Fiserv, category: mnc, hq: us, website: fiserv.com, india_only: true}
+  - {name: FIS, category: mnc, hq: us, website: fisglobal.com, india_only: true}
+  - {name: Broadridge, category: mnc, hq: us, website: broadridge.com, india_only: true}
+  - {name: S&P Global, category: mnc, hq: us, website: spglobal.com, india_only: true}
+  - {name: Moody's, category: mnc, hq: us, website: moodys.com, india_only: true}
+  - {name: MSCI, category: mnc, hq: us, website: msci.com, india_only: true}
+  - {name: Intuit, category: mnc, hq: us, website: intuit.com, india_only: true}
+  - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true}
+  - {name: Barclays, category: mnc, hq: uk, website: barclays.com, india_only: true}
+  - {name: HSBC, category: mnc, hq: uk, website: hsbc.com, india_only: true}
+  - {name: Standard Chartered, category: mnc, hq: uk, website: sc.com, india_only: true}
+  - {name: LSEG, category: mnc, hq: uk, website: lseg.com, india_only: true}
+  - {name: Deutsche Bank, category: mnc, hq: eu, website: db.com, india_only: true}
+  - {name: UBS, category: mnc, hq: eu, website: ubs.com, india_only: true}
+  - {name: BNP Paribas, category: mnc, hq: eu, website: bnpparibas.com, india_only: true}
+  - {name: Societe Generale, category: mnc, hq: eu, website: societegenerale.com, india_only: true}
+  - {name: Swiss Re, category: mnc, hq: eu, website: swissre.com, india_only: true}
+  - {name: Nomura, category: mnc, hq: global, website: nomura.com, india_only: true}
+  - {name: Google, category: mnc, hq: us, website: google.com, india_only: true}
+  - {name: Apple, category: mnc, hq: us, website: apple.com, india_only: true}
+  - {name: Meta, category: mnc, hq: us, website: meta.com, india_only: true}
+  - {name: Uber, category: mnc, hq: us, website: uber.com, india_only: true}
+  - {name: Oracle, category: mnc, hq: us, website: oracle.com, india_only: true}
+  - {name: IBM, category: mnc, hq: us, website: ibm.com, india_only: true}
+  - {name: Dell Technologies, category: mnc, hq: us, website: dell.com, india_only: true}
+  - {name: AMD, category: mnc, hq: us, website: amd.com, india_only: true}
+  - {name: Texas Instruments, category: mnc, hq: us, website: ti.com, india_only: true}
+  - {name: Marvell, category: mnc, hq: us, website: marvell.com, india_only: true}
+  - {name: Synopsys, category: mnc, hq: us, website: synopsys.com, india_only: true}
+  - {name: Western Digital, category: mnc, hq: us, website: westerndigital.com, india_only: true}
+  - {name: Palo Alto Networks, category: mnc, hq: us, website: paloaltonetworks.com, india_only: true}
+  - {name: Atlassian, category: mnc, hq: global, website: atlassian.com, india_only: true}
+  - {name: Agoda, category: mnc, hq: global, website: agoda.com, india_only: true}
+  - {name: Booking.com, category: mnc, hq: eu, website: booking.com, india_only: true}
+  - {name: SAP, category: mnc, hq: eu, website: sap.com, india_only: true}
+  - {name: Arm, category: mnc, hq: uk, website: arm.com, india_only: true}
+  - {name: Infineon, category: mnc, hq: eu, website: infineon.com, india_only: true}
+  - {name: NXP, category: mnc, hq: eu, website: nxp.com, india_only: true}
+  - {name: Ericsson, category: mnc, hq: eu, website: ericsson.com, india_only: true}
+  - {name: Nokia, category: mnc, hq: eu, website: nokia.com, india_only: true}
+  - {name: Siemens, category: mnc, hq: eu, website: siemens.com, india_only: true}
+  - {name: Siemens Healthineers, category: mnc, hq: eu, website: siemens-healthineers.com, india_only: true}
+  - {name: Philips, category: mnc, hq: eu, website: philips.com, india_only: true}
+  - {name: ABB, category: mnc, hq: eu, website: abb.com, india_only: true}
+  - {name: Schneider Electric, category: mnc, hq: eu, website: se.com, india_only: true}
+  - {name: Mercedes-Benz R&D India, category: mnc, hq: eu, website: mercedes-benz.com, india_only: true}
+  - {name: Volvo Group, category: mnc, hq: eu, website: volvogroup.com, india_only: true}
+  - {name: Continental, category: mnc, hq: eu, website: continental.com, india_only: true}
+  - {name: ZF, category: mnc, hq: eu, website: zf.com, india_only: true}
+  - {name: Airbus, category: mnc, hq: eu, website: airbus.com, india_only: true}
+  - {name: Maersk, category: mnc, hq: eu, website: maersk.com, india_only: true}
+  - {name: Novartis, category: mnc, hq: eu, website: novartis.com, india_only: true}
+  - {name: Sanofi, category: mnc, hq: eu, website: sanofi.com, india_only: true}
+  - {name: AstraZeneca, category: mnc, hq: uk, website: astrazeneca.com, india_only: true}
+  - {name: GSK, category: mnc, hq: uk, website: gsk.com, india_only: true}
+  - {name: Rolls-Royce, category: mnc, hq: uk, website: rolls-royce.com, india_only: true}
+  - {name: Shell, category: mnc, hq: uk, website: shell.com, india_only: true}
+  - {name: BP, category: mnc, hq: uk, website: bp.com, india_only: true}
+  - {name: Unilever, category: mnc, hq: uk, website: unilever.com, india_only: true}
+  - {name: Tesco, category: mnc, hq: uk, website: tesco.com, india_only: true}
+  - {name: GE HealthCare, category: mnc, hq: us, website: gehealthcare.com, india_only: true}
+  - {name: GE Aerospace, category: mnc, hq: us, website: geaerospace.com, india_only: true}
+  - {name: Honeywell, category: mnc, hq: us, website: honeywell.com, india_only: true}
+  - {name: Caterpillar, category: mnc, hq: us, website: caterpillar.com, india_only: true}
+  - {name: John Deere, category: mnc, hq: us, website: deere.com, india_only: true}
+  - {name: Boeing, category: mnc, hq: us, website: boeing.com, india_only: true}
+  - {name: Ford, category: mnc, hq: us, website: ford.com, india_only: true}
+  - {name: General Motors, category: mnc, hq: us, website: gm.com, india_only: true}
+  - {name: Chevron, category: mnc, hq: us, website: chevron.com, india_only: true}
+  - {name: FedEx, category: mnc, hq: us, website: fedex.com, india_only: true}
+  - {name: Lowe's, category: mnc, hq: us, website: lowes.com, india_only: true}
+  - {name: The Home Depot, category: mnc, hq: us, website: homedepot.com, india_only: true}
+  - {name: UnitedHealth Group (Optum), category: mnc, hq: us, website: unitedhealthgroup.com, india_only: true}
+  - {name: Eli Lilly, category: mnc, hq: us, website: lilly.com, india_only: true}
+  - {name: Medtronic, category: mnc, hq: us, website: medtronic.com, india_only: true}
+  - {name: Stryker, category: mnc, hq: us, website: stryker.com, india_only: true}
+  - {name: Gartner, category: mnc, hq: us, website: gartner.com, india_only: true}
+  - {name: McKinsey & Company, category: mnc, hq: us, website: mckinsey.com, india_only: true}
+  - {name: Boston Consulting Group, category: mnc, hq: us, website: bcg.com, india_only: true}
+  - {name: Bain & Company, category: mnc, hq: us, website: bain.com, india_only: true}
+  - {name: Deloitte, category: mnc, hq: global, website: deloitte.com, india_only: true}
 
   # --- Indian fintech, e-commerce and consultancies (careers systems surveyed 2026-10-07; see docs/decisions.md) ---
   - {name: BharatPe, category: india, hq: in, website: bharatpe.com, ats: darwinbox, slug: bharatpe, verified: false, checked: '2026-10-18', careers: not found (6 pages read)}

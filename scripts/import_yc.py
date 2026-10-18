@@ -78,7 +78,7 @@ def norm(name: str) -> str:
 
 
 def new_entries(dataset: list[dict[str, Any]], existing: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    known = {norm(c["name"]) for c in existing} | {norm(str(c["slug"])) for c in existing}
+    known = {norm(c["name"]) for c in existing} | {norm(str(c["slug"])) for c in existing if c.get("slug")}
     out = []
     for c in sorted(dataset, key=lambda c: (-batch_year(c.get("batch")), c["name"].lower())):
         if not is_candidate(c) or norm(c["name"]) in known or norm(c["slug"]) in known:
