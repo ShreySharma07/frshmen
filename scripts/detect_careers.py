@@ -118,6 +118,11 @@ class Detection:
     found: list[Found] = field(default_factory=list)
     pages: int = 0
     blocked: list[str] = field(default_factory=list)  # pages robots.txt told us not to read
+    moved_to: str | None = None  # where the homepage redirected: the company's current domain
+
+    def own_domains(self) -> set[str]:
+        hosts = [urlparse(self.website).netloc or self.website] + ([self.moved_to] if self.moved_to else [])
+        return {registrable(h) for h in hosts}
 
     @property
     def best(self) -> Found | None:
@@ -141,6 +146,8 @@ def fingerprint(html: str, url: str) -> list[Found]:
             slug = slug_of(m)
             if any(part.lower() in NOT_SLUGS for part in slug.split("/")):
                 continue
+            if system == "workday" and "internal" in slug.lower():
+                continue  # employees' own site (Novartis "Internal_Careers_for_Acquired_Entities")
             out.append(Found(system, slug, True, url))
     if JOB_POSTING.search(html):
         # A careers site publishing schema.org jobs: sources/careersite.py reads it by host.
@@ -227,6 +234,8 @@ def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Dete
         if page is None:
             continue
         final_url, html = page
+        if url == home and registrable(urlparse(final_url).netloc) != registrable(urlparse(home).netloc):
+            result.moved_to = urlparse(final_url).netloc  # e.g. corgi.com -> corgi.insure
         found = fingerprint(html, final_url)
         if found and url != home:
             result.careers_url = result.careers_url or final_url
@@ -270,10 +279,15 @@ def apply(company: dict[str, Any], d: Detection, owners: dict[tuple[str, str], s
         updated["careers"] = f"not found ({d.pages} pages read" + (f", {len(d.blocked)} disallowed" if d.blocked else "") + ")"
         return updated
     seen_on = urlparse(best.url).netloc
+    own = d.own_domains()
     owner = (owners or {}).get((best.system, str(best.slug)))
     if owner and owner != company["name"]:
         updated["careers"] = f"same board as {owner} (acquired?): {best.url}"
-    elif registrable(seen_on) != registrable(urlparse(d.website).netloc) and not fingerprint("", best.url):
+    elif best.system == "careersite" and registrable(seen_on) not in own:
+        # Job data on someone else's site is their listing, not this company's careers site:
+        # YC's company pages carry it, and taking ycombinator.com would read every YC job.
+        updated["careers"] = f"job listing on {registrable(seen_on)}: {best.url}"
+    elif registrable(seen_on) not in own and not fingerprint("", best.url):
         # Found on another company's own site, not on a hiring system: most likely the buyer's.
         updated["careers"] = f"on another company's site (acquired?): {best.url}"
     elif best.supported:
@@ -364,6 +378,9 @@ def main() -> int:
         updated = apply(company, d, owners)
         results[company["name"]] = updated
         changed = (updated.get("ats"), str(updated.get("slug"))) != (company.get("ats"), str(company.get("slug")))
+        if changed:
+            # Claimed for this run too: a second company landing on the same board is noted, not moved.
+            owners.setdefault((updated["ats"], str(updated["slug"])), company["name"])
         print(f"[{i}/{len(todo)}] {company['name']}: {updated['careers']}{'  (board changed)' if changed else ''}", flush=True)
         if i % 10 == 0:
             save()

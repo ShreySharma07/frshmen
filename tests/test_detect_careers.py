@@ -192,3 +192,31 @@ def test_linkedin_is_noted_but_never_fetched():
     both = d.Detection("https://acme.com", found=[d.Found("linkedin_only", None, False, "https://acme.com"),
                                                   d.Found("icims", None, False, "https://acme.com/careers")])
     assert both.best.system == "icims"
+
+
+def test_job_data_on_someone_elses_site_is_not_a_careers_site():
+    """YC company pages carry schema.org jobs; taking ycombinator.com would read every YC job."""
+    company = {"name": "Contrario", "category": "yc", "hq": "us", "ats": "ashby", "slug": "contrario"}
+    det = d.Detection("https://contrario.ai", found=[
+        d.Found("careersite", "www.ycombinator.com", True, "https://www.ycombinator.com/companies/contrario/jobs/x")])
+    updated = d.apply(company, det)
+    assert (updated["ats"], updated["slug"]) == ("ashby", "contrario")
+    assert updated["careers"].startswith("job listing on ycombinator.com")
+
+
+def test_a_homepage_redirect_names_the_companys_current_domain():
+    http = FakeHttp({"https://www.corgi.insure/": "<html></html>",
+                     "https://www.corgi.insure/careers": '<a href="https://jobs.ashbyhq.com/corgi">Jobs</a>'},
+                    redirects={"https://corgi.com": "https://www.corgi.insure/",
+                               "https://corgi.com/careers": "https://www.corgi.insure/careers"})
+    det = d.detect(http, "corgi.com")
+    assert det.moved_to == "www.corgi.insure"
+    hosted_page = d.Detection("https://corgi.com", moved_to="www.corgi.insure", found=[
+        d.Found("careersite", "www.corgi.insure", True, "https://www.corgi.insure/careers")])
+    assert d.apply({"name": "Corgi", "category": "yc", "hq": "us"}, hosted_page)["ats"] == "careersite"
+
+
+def test_employee_only_workday_sites_are_skipped():
+    html = ('<a href="https://novartis.wd3.myworkdayjobs.com/Internal_Careers_for_Acquired_Entities">x</a>'
+            '<a href="https://novartis.wd3.myworkdayjobs.com/Novartis_Careers">y</a>')
+    assert [f.slug for f in d.fingerprint(html, "https://novartis.com/careers")] == ["novartis/wd3/Novartis_Careers"]
