@@ -76,8 +76,10 @@ class FakeHttp:
         self.pages, self.robots, self.redirects, self.fetched = pages, robots or {}, redirects or {}, []
         self.dead = set(dead)
 
-    def get_text(self, url, accept=None):
-        return self.robots.get(url)
+    def get_text(self, url, accept=None, fresh_days=None):
+        if url in self.robots:
+            return self.robots[url]
+        return self.pages.get(url) if url.endswith(".xml") else None
 
     def get_page(self, url):
         self.fetched.append(url)
@@ -220,3 +222,27 @@ def test_employee_only_workday_sites_are_skipped():
     html = ('<a href="https://novartis.wd3.myworkdayjobs.com/Internal_Careers_for_Acquired_Entities">x</a>'
             '<a href="https://novartis.wd3.myworkdayjobs.com/Novartis_Careers">y</a>')
     assert [f.slug for f in d.fingerprint(html, "https://novartis.com/careers")] == ["novartis/wd3/Novartis_Careers"]
+
+
+SITEMAP = """<urlset><url><loc>https://careers.arm.com/job/bengaluru/senior-information-developer/33099/102055909440</loc>
+<lastmod>2026-10-16</lastmod></url></urlset>"""
+
+
+def test_a_sitemap_behind_an_unsupported_system_makes_the_site_readable():
+    page = '<a href="https://careers-arm.icims.com/jobs/search">All jobs</a>'
+    http = FakeHttp({"https://careers.arm.com": page, "https://careers.arm.com/sitemap.xml": SITEMAP})
+    result = d.detect(http, "careers.arm.com")
+    assert (result.best.system, result.best.slug) == ("careersite", "careers.arm.com")
+
+
+def test_without_a_job_sitemap_the_unsupported_system_is_recorded():
+    page = '<a href="https://careers-acme.icims.com/jobs/search">All jobs</a>'
+    result = d.detect(FakeHttp({"https://acme.com": page}), "acme.com")
+    assert (result.best.system, result.best.supported) == ("icims", False)
+
+
+def test_companies_without_a_readable_board_are_retried():
+    assert d.retryable("not found (6 pages read)")
+    assert d.retryable("icims (no adapter yet): https://careers.arm.com/")
+    assert not d.retryable("ashby: https://jobs.ashbyhq.com/acme")
+    assert not d.retryable("same board as ServiceNow (acquired?): https://moveworks.com")

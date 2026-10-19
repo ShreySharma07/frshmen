@@ -1,6 +1,6 @@
 # Careers-system detection
 
-320 companies read; 47 now have a readable board. Systems found: not found 184, yc_jobs 29, ashby 20, workday 14, careersite 12, darwinbox 9, gem 6, icims 6, job listing on ycombinator.com 6, keka 3, oracle 3, successfactors 3, greenhouse 3, dover 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, phenom 2, workable 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, rippling 1, zoho_recruit 1, lever 1.
+320 companies read; 55 now have a readable board. Systems found: not found 184, yc_jobs 29, ashby 20, careersite 20, workday 14, darwinbox 9, gem 6, job listing on ycombinator.com 6, keka 3, oracle 3, icims 3, greenhouse 3, dover 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, rippling 1, zoho_recruit 1, lever 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -101,9 +101,9 @@
 | FIS | fisglobal.com | workday: https://careers.fisglobal.com/us/en | yes |
 | Broadridge | broadridge.com | not found (6 pages read) |  |
 | S&P Global | spglobal.com | not found (0 pages read) |  |
-| Moody's | moodys.com | successfactors (no adapter yet): https://careers.moodys.com/en |  |
-| MSCI | msci.com | icims (no adapter yet): https://careers.msci.com/ |  |
-| Intuit | intuit.com | not found (0 pages read) |  |
+| Moody's | moodys.com | careersite: https://careers.moodys.com/en | yes |
+| MSCI | msci.com | careersite: https://careers.msci.com/ | yes |
+| Intuit | intuit.com | not found (6 pages read) |  |
 | MetLife | metlife.com | not found (6 pages read) |  |
 | Barclays | barclays.com | not found (6 pages read) |  |
 | HSBC | hsbc.com | not found (6 pages read) |  |
@@ -113,7 +113,7 @@
 | UBS | ubs.com | not found (6 pages read) |  |
 | BNP Paribas | bnpparibas.com | not found (0 pages read) |  |
 | Societe Generale | societegenerale.com | taleo (no adapter yet): https://careers.societegenerale.com |  |
-| Swiss Re | swissre.com | successfactors (no adapter yet): https://www.swissre.com/ |  |
+| Swiss Re | swissre.com | careersite: https://www.swissre.com/ | yes |
 | Nomura | nomura.com | not found (6 pages read) |  |
 | Google | google.com | not found (0 pages read, 8 disallowed) |  |
 | Apple | apple.com | not found (6 pages read) |  |
@@ -132,20 +132,20 @@
 | Agoda | agoda.com | not found (6 pages read) |  |
 | Booking.com | booking.com | icims (no adapter yet): https://careers.booking.com/ |  |
 | SAP | sap.com | not found (0 pages read, 8 disallowed) |  |
-| Arm | arm.com | icims (no adapter yet): https://careers.arm.com/ |  |
+| Arm | arm.com | careersite: https://careers.arm.com/ | yes |
 | Infineon | infineon.com | not found (6 pages read, 1 disallowed) |  |
 | NXP | nxp.com | not found (6 pages read) |  |
 | Ericsson | ericsson.com | not found (0 pages read) |  |
 | Nokia | nokia.com | not found (0 pages read) |  |
 | Siemens | siemens.com | not found (6 pages read) |  |
 | Siemens Healthineers | siemens-healthineers.com | workday: https://www.siemens-healthineers.com/careers | yes |
-| Philips | philips.com | phenom (no adapter yet): https://www.careers.philips.com/na/en |  |
+| Philips | philips.com | careersite: https://www.careers.philips.com/na/en | yes |
 | ABB | abb.com | not found (0 pages read) |  |
-| Schneider Electric | se.com | icims (no adapter yet): https://careers.se.com/jobs?lang=en-US |  |
+| Schneider Electric | se.com | careersite: https://careers.se.com/jobs?lang=en-US | yes |
 | Mercedes-Benz R&D India | mercedes-benz.com | not found (0 pages read) |  |
 | Volvo Group | volvogroup.com | not found (6 pages read) |  |
 | Continental | continental.com | not found (6 pages read) |  |
-| ZF | zf.com | successfactors (no adapter yet): https://jobs.zf.com/ |  |
+| ZF | zf.com | careersite: https://jobs.zf.com/ | yes |
 | Airbus | airbus.com | workday: https://www.airbus.com/en/careers | yes |
 | Maersk | maersk.com | not found (0 pages read) |  |
 | Novartis | novartis.com | workday: https://novartis.wd3.myworkdayjobs.com/Novartis_Careers | yes |
@@ -175,11 +175,11 @@
 | Stryker | stryker.com | not found (1 pages read) |  |
 | Gartner | gartner.com | not found (0 pages read) |  |
 | McKinsey & Company | mckinsey.com | not found (0 pages read) |  |
-| Boston Consulting Group | bcg.com | phenom (no adapter yet): https://careers.bcg.com/global/en/ |  |
+| Boston Consulting Group | bcg.com | careersite: https://careers.bcg.com/global/en/ | yes |
 | Bain & Company | bain.com | not found (6 pages read) |  |
 | Deloitte | deloitte.com | not found (6 pages read) |  |
 | BharatPe | bharatpe.com | not found (6 pages read) |  |
-| Pine Labs | pinelabs.com | not found (4 pages read) |  |
+| Pine Labs | pinelabs.com | not found (3 pages read) |  |
 | MobiKwik | mobikwik.com | not found (0 pages read) |  |
 | Go Digit | godigit.com | darwinbox: https://www.godigit.com/careers |  |
 | smallcase | smallcase.com | not found (6 pages read) |  |
