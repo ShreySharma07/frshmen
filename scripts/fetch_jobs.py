@@ -59,6 +59,18 @@ def location_fields(job: Job, hide_onsite_only_in: frozenset[str] = frozenset({"
             "eligible": fit.eligible, "eligibility_reason": fit.reason}
 
 
+def pick(companies: list[Company], names: list[str] | None = None, limit: int | None = None,
+         skip_global: bool = False) -> list[Company]:
+    """The boards this run reads. skip_global leaves out the big global (india_only) boards, which are
+    read once a day: they list thousands of slow-changing jobs, the startups' boards change by the hour.
+    A board left out is missing from boards_ok too, so publish_pg.py leaves its jobs untouched."""
+    if names:
+        companies = [c for c in companies if c.name in set(names)]
+    if skip_global:
+        companies = [c for c in companies if not c.india_only]
+    return companies[:limit] if limit else companies
+
+
 def in_india_or_remote(job: Job) -> bool:
     """For india_only boards: keep India and location-free remote roles, drop the rest before classifying."""
     loc = extract_location(job.location_raw, job.ats_countries)
@@ -86,13 +98,11 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--no-cache", action="store_true", help="skip ETag/If-Modified-Since cache")
     parser.add_argument("--workers", type=int, default=8, help="boards fetched in parallel (different hosts)")
+    parser.add_argument("--skip-global", action="store_true",
+                        help="leave out the big global boards (india_only); they are read once a day (docs/decisions.md)")
     args = parser.parse_args()
 
-    companies = load_companies()
-    if args.company:
-        companies = [c for c in companies if c.name in set(args.company)]
-    if args.limit:
-        companies = companies[: args.limit]
+    companies = pick(load_companies(), args.company, args.limit, args.skip_global)
 
     http = HttpClient(cache_dir=None if args.no_cache else CACHE_DIR)
     started = time.monotonic()

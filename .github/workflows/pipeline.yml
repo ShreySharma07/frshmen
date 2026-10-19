@@ -5,7 +5,10 @@ name: Fetch and publish jobs
 on:
   schedule:
     # Minute 17, not 0: GitHub delays on-the-hour cron runs the most.
-    - cron: "17 */3 * * *"
+    # Every 3 hours; the 03:17 UTC run (08:47 IST) is the daily one that also reads the big global
+    # boards (india_only), the others skip them (docs/decisions.md, 2026-10-19).
+    - cron: "17 3 * * *"
+    - cron: "17 0,6,9,12,15,18,21 * * *"
   workflow_dispatch:
 
 permissions:
@@ -38,7 +41,8 @@ jobs:
           restore-keys: http-cache-
 
       - name: Fetch and classify
-        run: python -u scripts/fetch_jobs.py
+        # A manual run reads everything, like the daily one.
+        run: python -u scripts/fetch_jobs.py ${{ github.event.schedule == '17 0,6,9,12,15,18,21 * * *' && '--skip-global' || '' }}
 
       - name: Publish to Supabase
         env:

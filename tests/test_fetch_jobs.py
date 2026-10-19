@@ -1,5 +1,5 @@
 import fetch_jobs as fj
-from sources.models import Job
+from sources.models import Company, Job
 
 
 def _job(ext_id, title="ML Engineer", url="https://x/1", company="Acme"):
@@ -25,3 +25,10 @@ def test_load_companies_keeps_only_fetchable(tmp_path):
         "  - {name: E, category: lab, ats: lever, slug: e}\n"
     )
     assert [c.name for c in fj.load_companies(cfg)] == ["A"]
+
+
+def test_global_boards_are_skipped_on_the_frequent_runs():
+    boards = [Company("Glean", "greenhouse", "gleanwork"), Company("Siemens", "workday", "siemens/wd3/x", india_only=True)]
+    assert [c.name for c in fj.pick(boards)] == ["Glean", "Siemens"]
+    assert [c.name for c in fj.pick(boards, skip_global=True)] == ["Glean"]
+    assert [c.name for c in fj.pick(boards, names=["Siemens"], skip_global=True)] == []
