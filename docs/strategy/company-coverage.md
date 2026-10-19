@@ -84,7 +84,8 @@ runs weekly in GitHub Actions; this sandbox can't reach those sites.
   Preferred), not the whole description; extractors read the full text first.
 - **Run time:** the 3-hourly fetch takes 11–20 minutes now (90-minute limit). Big careers
   systems change slowly: fetch them daily instead of every 3 hours, using ETag caching and
-  per-host rate limits (already in `sources/http.py`).
+  per-host rate limits (already in `sources/http.py`). Done 2026-10-19: the `india_only` boards
+  are read by the 03:17 UTC run only (`fetch_jobs.py --skip-global` on the others).
 - **GitHub Actions minutes:** free for public repositories. Keep the repo public, or budget
   around 2,000 minutes a month.
 

@@ -4,6 +4,17 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-19 — Big global boards are read once a day
+- **Options:** every board every 3 hours (as before) · the big global boards (`india_only`) once a
+  day, everyone else every 3 hours
+- **Choice (Shrey):** once a day for the 88 `india_only` boards (Workday 46, career sites 13, Oracle,
+  Eightfold, Amazon...), at 03:17 UTC (08:47 IST, so the morning list is fresh); the 7 other runs
+  pass `--skip-global`. A manual run reads everything.
+- **Why:** these boards list thousands of jobs that change slowly and need one request per job, so
+  they take most of each run's time and load on their hosts; startup boards change by the hour.
+- **Safe:** a skipped board is missing from `boards_ok`, so `publish_pg.py` neither closes nor
+  touches its jobs. A job on a big board now closes after 2 daily misses instead of 2 runs.
+
 ## 2026-10-19 — Salary range on the page
 - **Options:** a new salary column (pulled out at fetch time, via a migration) · keep the pay line in
   the stored description; where it shows: detail view and list rows · detail view only
