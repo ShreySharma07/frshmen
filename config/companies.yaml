@@ -384,9 +384,9 @@ companies:
   - {name: FIS, category: mnc, hq: us, website: fisglobal.com, ats: workday, slug: fis/wd5/SearchJobs, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-10-18', careers: 'workday: https://careers.fisglobal.com/us/en'}
   - {name: Broadridge, category: mnc, hq: us, website: broadridge.com, india_only: true, careers: not found (6 pages read)}
   - {name: S&P Global, category: mnc, hq: us, website: spglobal.com, india_only: true, careers: not found (0 pages read)}
-  - {name: Moody's, category: mnc, hq: us, website: moodys.com, india_only: true, careers: 'successfactors (no adapter yet): https://careers.moodys.com/en'}
-  - {name: MSCI, category: mnc, hq: us, website: msci.com, india_only: true, careers: 'icims (no adapter yet): https://careers.msci.com/'}
-  - {name: Intuit, category: mnc, hq: us, website: intuit.com, india_only: true, careers: not found (0 pages read)}
+  - {name: Moody's, category: mnc, hq: us, website: moodys.com, ats: careersite, slug: careers.moodys.com, india_only: true, verified: true, jobs: 334, ai_jobs: 22, checked: '2026-10-19', careers: 'careersite: https://careers.moodys.com/en'}
+  - {name: MSCI, category: mnc, hq: us, website: msci.com, ats: careersite, slug: careers.msci.com, india_only: true, verified: true, jobs: 110, ai_jobs: 5, checked: '2026-10-19', careers: 'careersite: https://careers.msci.com/'}
+  - {name: Intuit, category: mnc, hq: us, website: intuit.com, india_only: true, careers: not found (6 pages read)}
   - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (6 pages read)}
   - {name: Barclays, category: mnc, hq: uk, website: barclays.com, india_only: true, careers: not found (6 pages read)}
   - {name: HSBC, category: mnc, hq: uk, website: hsbc.com, india_only: true, careers: not found (6 pages read)}
@@ -396,7 +396,7 @@ companies:
   - {name: UBS, category: mnc, hq: eu, website: ubs.com, india_only: true, careers: not found (6 pages read)}
   - {name: BNP Paribas, category: mnc, hq: eu, website: bnpparibas.com, india_only: true, careers: not found (0 pages read)}
   - {name: Societe Generale, category: mnc, hq: eu, website: societegenerale.com, india_only: true, careers: 'taleo (no adapter yet): https://careers.societegenerale.com'}
-  - {name: Swiss Re, category: mnc, hq: eu, website: swissre.com, india_only: true, careers: 'successfactors (no adapter yet): https://www.swissre.com/'}
+  - {name: Swiss Re, category: mnc, hq: eu, website: swissre.com, ats: careersite, slug: www.swissre.com, india_only: true, verified: true, jobs: 259, ai_jobs: 3, checked: '2026-10-19', careers: 'careersite: https://www.swissre.com/'}
   - {name: Nomura, category: mnc, hq: global, website: nomura.com, india_only: true, careers: not found (6 pages read)}
   - {name: Google, category: mnc, hq: us, website: google.com, india_only: true, careers: 'not found (0 pages read, 8 disallowed)'}
   - {name: Apple, category: mnc, hq: us, website: apple.com, india_only: true, careers: not found (6 pages read)}
@@ -415,20 +415,20 @@ companies:
   - {name: Agoda, category: mnc, hq: global, website: agoda.com, india_only: true, careers: not found (6 pages read)}
   - {name: Booking.com, category: mnc, hq: eu, website: booking.com, india_only: true, careers: 'icims (no adapter yet): https://careers.booking.com/'}
   - {name: SAP, category: mnc, hq: eu, website: sap.com, india_only: true, careers: 'not found (0 pages read, 8 disallowed)'}
-  - {name: Arm, category: mnc, hq: uk, website: arm.com, india_only: true, careers: 'icims (no adapter yet): https://careers.arm.com/'}
+  - {name: Arm, category: mnc, hq: uk, website: arm.com, ats: careersite, slug: careers.arm.com, india_only: true, verified: true, jobs: 416, ai_jobs: 72, checked: '2026-10-19', careers: 'careersite: https://careers.arm.com/'}
   - {name: Infineon, category: mnc, hq: eu, website: infineon.com, india_only: true, careers: 'not found (6 pages read, 1 disallowed)'}
   - {name: NXP, category: mnc, hq: eu, website: nxp.com, india_only: true, careers: not found (6 pages read)}
   - {name: Ericsson, category: mnc, hq: eu, website: ericsson.com, india_only: true, careers: not found (0 pages read)}
   - {name: Nokia, category: mnc, hq: eu, website: nokia.com, india_only: true, careers: not found (0 pages read)}
   - {name: Siemens, category: mnc, hq: eu, website: siemens.com, india_only: true, careers: not found (6 pages read)}
   - {name: Siemens Healthineers, category: mnc, hq: eu, website: siemens-healthineers.com, ats: workday, slug: onehealthineers/wd3/SHSJB, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-18', careers: 'workday: https://www.siemens-healthineers.com/careers'}
-  - {name: Philips, category: mnc, hq: eu, website: philips.com, india_only: true, careers: 'phenom (no adapter yet): https://www.careers.philips.com/na/en'}
+  - {name: Philips, category: mnc, hq: eu, website: philips.com, ats: careersite, slug: www.careers.philips.com, india_only: true, verified: true, jobs: 794, ai_jobs: 19, checked: '2026-10-19', careers: 'careersite: https://www.careers.philips.com/na/en'}
   - {name: ABB, category: mnc, hq: eu, website: abb.com, india_only: true, careers: not found (0 pages read)}
-  - {name: Schneider Electric, category: mnc, hq: eu, website: se.com, india_only: true, careers: 'icims (no adapter yet): https://careers.se.com/jobs?lang=en-US'}
+  - {name: Schneider Electric, category: mnc, hq: eu, website: se.com, ats: careersite, slug: careers.se.com, india_only: true, verified: true, jobs: 3795, ai_jobs: 0, checked: '2026-10-19', careers: 'careersite: https://careers.se.com/jobs?lang=en-US'}
   - {name: Mercedes-Benz R&D India, category: mnc, hq: eu, website: mercedes-benz.com, india_only: true, careers: not found (0 pages read)}
   - {name: Volvo Group, category: mnc, hq: eu, website: volvogroup.com, india_only: true, careers: not found (6 pages read)}
   - {name: Continental, category: mnc, hq: eu, website: continental.com, india_only: true, careers: not found (6 pages read)}
-  - {name: ZF, category: mnc, hq: eu, website: zf.com, india_only: true, careers: 'successfactors (no adapter yet): https://jobs.zf.com/'}
+  - {name: ZF, category: mnc, hq: eu, website: zf.com, ats: careersite, slug: jobs.zf.com, india_only: true, verified: true, jobs: 793, ai_jobs: 10, checked: '2026-10-19', careers: 'careersite: https://jobs.zf.com/'}
   - {name: Airbus, category: mnc, hq: eu, website: airbus.com, ats: workday, slug: ag/wd3/Airbus, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-18', careers: 'workday: https://www.airbus.com/en/careers'}
   - {name: Maersk, category: mnc, hq: eu, website: maersk.com, india_only: true, careers: not found (0 pages read)}
   - {name: Novartis, category: mnc, hq: eu, website: novartis.com, ats: workday, slug: novartis/wd3/Novartis_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-18', careers: 'workday: https://novartis.wd3.myworkdayjobs.com/Novartis_Careers'}
@@ -458,13 +458,13 @@ companies:
   - {name: Stryker, category: mnc, hq: us, website: stryker.com, india_only: true, careers: not found (1 pages read)}
   - {name: Gartner, category: mnc, hq: us, website: gartner.com, india_only: true, careers: not found (0 pages read)}
   - {name: McKinsey & Company, category: mnc, hq: us, website: mckinsey.com, india_only: true, careers: not found (0 pages read)}
-  - {name: Boston Consulting Group, category: mnc, hq: us, website: bcg.com, india_only: true, careers: 'phenom (no adapter yet): https://careers.bcg.com/global/en/'}
+  - {name: Boston Consulting Group, category: mnc, hq: us, website: bcg.com, ats: careersite, slug: careers.bcg.com, india_only: true, verified: true, jobs: 853, ai_jobs: 297, checked: '2026-10-19', careers: 'careersite: https://careers.bcg.com/global/en/'}
   - {name: Bain & Company, category: mnc, hq: us, website: bain.com, india_only: true, careers: not found (6 pages read)}
   - {name: Deloitte, category: mnc, hq: global, website: deloitte.com, india_only: true, careers: not found (6 pages read)}
 
   # --- Indian fintech, e-commerce and consultancies (careers systems surveyed 2026-10-07; see docs/decisions.md) ---
   - {name: BharatPe, category: india, hq: in, website: bharatpe.com, ats: darwinbox, slug: bharatpe, verified: false, checked: '2026-10-18', careers: not found (6 pages read)}
-  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-10-18', careers: not found (4 pages read)}
+  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-10-18', careers: not found (3 pages read)}
   - {name: MobiKwik, category: india, hq: in, website: mobikwik.com, ats: darwinbox, slug: mobikwik, verified: false, checked: '2026-10-18', careers: not found (0 pages read)}
   - {name: Go Digit, category: india, hq: in, website: godigit.com, ats: darwinbox, slug: godigit, verified: false, checked: '2026-10-18', careers: 'darwinbox: https://www.godigit.com/careers'}
   - {name: smallcase, category: india, hq: in, website: smallcase.com, ats: darwinbox, slug: smallcase, verified: false, checked: '2026-10-18', careers: not found (6 pages read)}
