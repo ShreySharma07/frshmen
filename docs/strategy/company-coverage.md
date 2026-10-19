@@ -110,6 +110,13 @@ runs weekly in GitHub Actions; this sandbox can't reach those sites.
 - **B (started 2026-10-18):** 91 global capability centres (banks, chip makers, industrials,
   pharma, consulting) added with their website and `india_only`; detection finds their systems.
 
+- **B results (2026-10-18):** 15 of the 91 GCCs verified (Workday 12, Oracle 3). Of the rest:
+  iCIMS 5, SuccessFactors 3, Taleo 2, Phenom 2, and 62 not found (mostly pages rendered in the
+  browser, or the company's own system).
+- **D, first step (2026-10-19, Shrey):** before writing adapters, sites on SuccessFactors, Phenom
+  or iCIMS are tried with `careersite.py` through their job sitemap (Arm and Moody's publish
+  one with schema.org job pages). Taleo is left for later.
+
 ## Decided (Shrey, 2026-10-18)
 
 1. **Order:** A → B → D → C → E.
