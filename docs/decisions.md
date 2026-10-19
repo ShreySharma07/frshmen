@@ -4,6 +4,30 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-19 — Home page tells the whole story, launched only when it is all true
+- **Options (purpose):** a pitch for signed-out visitors · a start screen for signed-in users ·
+  both, split by state. **Options (before launch):** a hidden `/preview` route · Cloudflare preview
+  URLs per PR · a long-lived branch
+- **Choice (Shrey):** both, split by state (signed-in part comes with sign-in). The page tells the
+  market story (our own count plus cited reports), the product (labels, fit, resume tailored to the
+  JD, referral outreach), the impact and what you get. It is built at `/preview` (unlinked, noindex)
+  and replaces `/` only when every feature it promises works end to end; then the list moves to
+  `/jobs` and old `/?…` links redirect.
+- **Look:** editorial with motion: a React Three Fiber hero on every device (still image for reduced
+  motion, Save-Data or no WebGL), GSAP scroll story, a sans display face over Geist body text.
+- **Why:** a page that promises unbuilt features would mislead; `/preview` keeps one codebase on
+  `main` with no deploy changes.
+
+## 2026-10-19 — Referral outreach: the agent drafts, the person sends
+- **Options (LinkedIn):** agent drafts, user sends with one tap · a browser extension fills the box ·
+  fully automatic sending. **Options (email):** drafts in the user's Gmail, approved before sending ·
+  auto-send with a daily cap · copy and paste only
+- **Choice (Shrey):** LinkedIn: the agent finds the person and writes the note; one tap copies it and
+  opens the profile. Email: drafts go into the user's own Gmail (Google sign-in), and each is
+  approved before it is sent.
+- **Why:** LinkedIn's terms ban automated messaging and accounts get restricted; CLAUDE.md rules out
+  automating LinkedIn. Nothing goes out under a student's name without them reading it.
+
 ## 2026-10-19 — Big global boards are read once a day
 - **Options:** every board every 3 hours (as before) · the big global boards (`india_only`) once a
   day, everyone else every 3 hours
