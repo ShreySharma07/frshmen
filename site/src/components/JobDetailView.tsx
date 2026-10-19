@@ -1,6 +1,6 @@
-import { ArrowUpRight, Briefcase, ChevronLeft, Clock, MapPin } from "lucide-react";
+import { ArrowUpRight, Banknote, Briefcase, ChevronLeft, Clock, MapPin } from "lucide-react";
 import type { JobDetail } from "@/lib/api";
-import { ATS, blocks, highlightParts, techMentioned } from "@/lib/describe";
+import { ATS, blocks, bodyText, highlightParts, techMentioned } from "@/lib/describe";
 import { shortDate } from "@/lib/format";
 import { FitCard } from "./FitCard";
 
@@ -17,6 +17,9 @@ export function JobDetailView({ job, onBack }: { job: JobDetail; onBack: () => v
         <span className="font-medium text-ink">{job.company}</span> · via {ATS[job.source] ?? job.source}
       </p>
       <h1 className="mt-2 text-title font-medium tracking-tight">{job.title}</h1>
+      {job.salary && (
+        <p className="mt-2 inline-flex items-center gap-1.5 text-body font-medium text-ink"><Banknote className="size-3.5 text-muted" />{job.salary}</p>
+      )}
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-body text-muted">
         <span className="inline-flex items-center gap-1.5"><MapPin className="size-3.5" />{[job.location_raw, mode].filter(Boolean).join(" · ") || "Location not stated"}</span>
         {job.employment_type && <span className="inline-flex items-center gap-1.5"><Briefcase className="size-3.5" />{job.employment_type.replace(/([a-z])([A-Z])/, "$1-$2").replace(/-T/, "-t")}</span>}
@@ -38,7 +41,7 @@ export function JobDetailView({ job, onBack }: { job: JobDetail; onBack: () => v
             {tech.map((t) => <code key={t} className="rounded-sm border border-line bg-code px-1.5 font-mono text-caption leading-5">{t}</code>)}
           </div>
         )}
-        {blocks(job.description_text).map((b, i) =>
+        {blocks(bodyText(job.description_text)).map((b, i) =>
           b.kind === "heading" ? <h2 key={i} className="pt-3 text-meta font-medium text-muted">{b.text}</h2>
           : b.kind === "list" ? (
             <ul key={i} className="list-disc space-y-1.5 pl-4 marker:text-faint">

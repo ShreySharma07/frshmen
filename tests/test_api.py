@@ -13,6 +13,7 @@ from fastapi.testclient import TestClient
 import publish_pg as pub
 from extract.classify import classify
 from extract.profile import load_profile
+from extract.stored_text import compact
 from extract.role import match_role
 from jobs_api import create_app
 from sources import ashby, greenhouse, lever
@@ -32,8 +33,13 @@ def records():
             + lever.parse(json.load(open(FIX + "lever_cred.json")), Company("CRED", "lever", "cred"))
             + ashby.parse(json.load(open(FIX + "ashby_pinecone.json")), Company("Pinecone", "ashby", "pinecone")))
     # Fixture postings are months old; age has its own test, so these carry no posting date.
-    return [{**j.to_dict(), **classify(j.title, j.description_text).to_dict(),
-             **match_role(j.title, j.description_text, profile).to_dict(), "posted_at": None} for j in jobs]
+    out = []
+    for j in jobs:
+        label = classify(j.title, j.description_text)
+        # Stored as the pipeline stores it (scripts/fetch_jobs.py): the compact text.
+        out.append({**j.to_dict(), **label.to_dict(), **match_role(j.title, j.description_text, profile).to_dict(),
+                    "posted_at": None, "description_text": compact(j.description_text, label.evidence)})
+    return out
 
 
 def iso(dt):
@@ -325,3 +331,14 @@ def test_fit_check_errors(client):
     assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": RESUME}).status_code == 503
     assert client.post("/api/jobs/nope/fit", json={"resume": RESUME}).status_code == 404
     assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": "too short"}).status_code == 422
+
+
+def test_salary_shows_on_the_list_and_the_job(client):
+    """Hume AI's postings state a pay band; the list reads it from the stored text's first line."""
+    jobs = client.get("/api/jobs?per_page=50").json()["jobs"]
+    paid = [j for j in jobs if j["salary"]]
+    assert any(j["company"] == "Hume AI" for j in paid)  # (the synthetic "Acme" rows copy Hume postings)
+    assert all(j["salary"] is None for j in jobs if j["company"] == "CRED")
+    detail = client.get(f"/api/jobs/{paid[0]['id']}").json()
+    assert detail["salary"] == paid[0]["salary"]
+    assert detail["description_text"].startswith(f"Salary\n{paid[0]['salary']}\n")

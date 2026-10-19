@@ -27,6 +27,7 @@ from extract.eligibility import check_eligibility  # noqa: E402
 from extract.location import REMOTE_UNSPECIFIED, extract_location  # noqa: E402
 from extract.profile import load_profile  # noqa: E402
 from extract.role import match_role  # noqa: E402
+from extract.stored_text import compact  # noqa: E402
 from extract.visa import extract_visa  # noqa: E402
 from sources import ADAPTERS  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
@@ -123,15 +124,18 @@ def main() -> int:
 
     unique = dedupe(jobs)
     profile = load_profile()
-    records = [
-        {
+    records = []
+    for j in unique:
+        record = {
             **j.to_dict(),
             **classify(j.title, j.description_text, set(profile.exact_batch), set(profile.soft_batch)).to_dict(),
             **match_role(j.title, j.description_text, profile).to_dict(),
             **location_fields(j, profile.hide_onsite_only_in or frozenset({"bengaluru", "hyderabad"})),
         }
-        for j in unique
-    ]
+        # Extractors have read the full text; only the sections a candidate needs are stored
+        # (extract/stored_text.py). content_hash stays that of the full text.
+        record["description_text"] = compact(j.description_text, record["evidence"])
+        records.append(record)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),

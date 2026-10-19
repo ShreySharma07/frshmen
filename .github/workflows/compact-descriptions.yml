@@ -1,0 +1,45 @@
+name: Compact stored descriptions
+
+# One-off (docs/decisions.md, 2026-10-18 storage): rewrite descriptions stored before
+# extract/stored_text.py to the three sections. Run a dry run first, read the saving, then run
+# for real. Shares the pipeline's concurrency group so it never overlaps a publish.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only report the saving"
+        type: boolean
+        default: true
+      vacuum_full:
+        description: "Afterwards rewrite the jobs table to free the space (locks it briefly)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  compact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Compact
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: >-
+          python -u scripts/compact_descriptions.py
+          ${{ inputs.dry_run && '--dry-run' || '' }}
+          ${{ !inputs.dry_run && inputs.vacuum_full && '--vacuum-full' || '' }}

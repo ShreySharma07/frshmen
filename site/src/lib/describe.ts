@@ -4,6 +4,11 @@ import type { JobDetail } from "./api";
 
 export type Block = { kind: "heading"; text: string } | { kind: "para"; text: string } | { kind: "list"; items: string[] };
 
+/** The stored text without its leading "Salary" lines: the page shows pay under the title instead. */
+export function bodyText(text: string): string {
+  return text.replace(/^Salary\n[^\n]*\n*/, "");
+}
+
 /** Short lines without end punctuation read as headings; "-", "•" or "*" lines as bullets. */
 export function blocks(text: string): Block[] {
   const out: Block[] = [];
