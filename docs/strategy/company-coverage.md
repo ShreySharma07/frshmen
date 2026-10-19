@@ -116,6 +116,11 @@ runs weekly in GitHub Actions; this sandbox can't reach those sites.
 - **D, first step (2026-10-19, Shrey):** before writing adapters, sites on SuccessFactors, Phenom
   or iCIMS are tried with `careersite.py` through their job sitemap (Arm and Moody's publish
   one with schema.org job pages). Taleo is left for later.
+- **Storage (2026-10-19):** descriptions are stored as About the role / Required / Preferred
+  (`extract/stored_text.py`), after extraction has read the full text; the YoE line behind each
+  label is always kept. On 455 stored jobs: 37% of the text kept, no label changed when
+  re-classified from the stored text. Older rows are rewritten once by
+  `scripts/compact_descriptions.py` (workflow "Compact stored descriptions").
 
 ## Decided (Shrey, 2026-10-18)
 
