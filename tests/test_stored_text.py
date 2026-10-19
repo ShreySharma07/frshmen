@@ -25,11 +25,11 @@ Acme is an equal opportunity employer."""
 
 def test_keeps_the_three_sections_and_drops_the_rest():
     text = st.compact(POSTING)
-    assert text.startswith("About the role\nYou will build retrieval systems")
+    assert text.startswith("Salary\n$120,000—$150,000 USD\n\nAbout the role\nYou will build retrieval systems")
     assert "- Train ranking models in PyTorch" in text
     assert "Required\n- 0-2 years of experience with Python" in text
     assert "Preferred\n- Experience with LLM evals" in text
-    for dropped in ("We raised", "Free lunch", "$120,000", "equal opportunity employer"):
+    for dropped in ("We raised", "Free lunch", "Compensation", "equal opportunity employer"):
         assert dropped not in text
 
 
@@ -60,3 +60,18 @@ def test_a_posting_without_headings_keeps_its_opening():
     assert text.startswith("About the role\nWe are hiring a backend engineer")
     assert len(text) <= len("About the role\n") + st.LIMITS["about"]
     assert text.endswith(" …")
+
+
+def test_salary_is_a_stated_pay_range_never_a_deal_or_funding_amount():
+    assert st.salary("The base salary range for this position is $185,000 - $260,000.") == "$185,000 - $260,000"
+    assert st.salary("CTC: 12-18 LPA") == "12-18 LPA"
+    assert st.salary("Stipend: ₹40,000 per month") == "₹40,000 per month"
+    assert st.salary("$216,000—$270,000 USD\nLondon\n$180,000—$225,000 USD") == "$216,000—$270,000 USD (+1 more by location)"
+    for not_pay in ("Close agency deals ranging from $10K to $100K+ annual contracts",
+                    "We raised $50M - $100M in funding",
+                    "loan offerings ranging from ₹50,000 to ₹5 Lakh, and pay-later credit lines"):
+        assert st.salary(not_pay) == "", not_pay
+
+
+def test_no_salary_line_when_the_posting_states_none():
+    assert not st.compact("About the role\nBuild things.").startswith("Salary")

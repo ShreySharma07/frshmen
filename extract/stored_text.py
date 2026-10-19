@@ -6,7 +6,8 @@ not the whole description, to stay inside Supabase's 500 MB. Extractors read the
 
 Postings mark sections with short heading lines ("What you'll do", "Nice to haves"). Headings are
 matched against the phrases real postings use (surveyed on 488 stored jobs, 2026-10-19); company
-blurbs, benefits, pay bands, EEO and privacy notices are dropped. A posting with no recognisable
+blurbs, benefits, EEO and privacy notices are dropped; a stated pay range is kept as one "Salary"
+line at the top (Shrey, 2026-10-19), which the API shows under the title and on list rows. A posting with no recognisable
 heading keeps its opening as "About the role". As in extract/sections.py, "Ideally you'd have" is
 required, not preferred: Scale AI uses it for the main requirements.
 """
@@ -16,6 +17,21 @@ from __future__ import annotations
 import re
 
 LIMITS = {"about": 1500, "required": 2000, "preferred": 1000}  # characters per section
+SALARY = "Salary"  # first line of the stored text when the posting states pay; the API reads it
+
+# A pay range as written: "$216,000—$270,000 USD", "₹12-18 LPA", "12 – 18 LPA", "INR 8L - 12L".
+_MONEY = r"(?:US\$|USD|INR|Rs\.?|[$₹€£])\s?\d[\d,]*(?:\.\d+)?\s?[kKmMlL]?"
+_RANGE = re.compile(
+    rf"{_MONEY}\s*(?:-|–|—|to)\s*(?:{_MONEY}|\d[\d,]*(?:\.\d+)?\s?[kKmMlL]?)(?:\s*(?:USD|INR|EUR|GBP|CAD|SGD))?"
+    rf"(?:\s*(?:per|/|a)\s*(?:year|annum|yr|hour|hr|month))?"
+    r"|\d+(?:\.\d+)?\s*(?:-|–|to)\s*\d+(?:\.\d+)?\s*(?:LPA|lpa|lakhs?(?: per annum)?)\b", re.I)
+# Only on a line about pay, or a line that is nothing but the range (Scale AI's pay bands), so
+# "deals from $10K to $100K" or "raised $50M-$100M" never reads as a salary.
+_PAY_WORDS = re.compile(r"salary|compensation|pay (range|band|scale)|base pay|\bctc\b|lpa|per annum|stipend|\bote\b|wage",
+                        re.I)
+# One amount is a salary only when the line names it ("Stipend: ₹40,000 per month").
+_SINGLE = re.compile(rf"(?:salary|stipend|\bctc\b)\b[^\n\d$₹€£]{{0,30}}({_MONEY}(?:\s*(?:per|/|a)\s*(?:year|annum|month|hour))?)",
+                     re.I)
 TITLES = {"about": "About the role", "required": "Required", "preferred": "Preferred"}
 
 _ABOUT = re.compile(
@@ -77,6 +93,25 @@ def split(text: str) -> dict[str, str]:
     return {k: _clip("\n".join(v).strip(), LIMITS[k]) for k, v in parts.items()}
 
 
+def salary(text: str) -> str:
+    """The posting's pay range as written, or "" if it states none. Several (by location) -> the first + count."""
+    lines = (text or "").split("\n")
+    if lines and lines[0].strip() == SALARY and len(lines) > 1:
+        return lines[1].strip()  # already stored
+    found: list[str] = []
+    for line in lines:
+        for m in _RANGE.finditer(line):
+            rest = (line[: m.start()] + line[m.end():]).strip(" :-–—()")
+            if _PAY_WORDS.search(line) or len(rest) < 12:
+                value = re.sub(r"\s+", " ", m.group(0)).strip()
+                if value not in found:
+                    found.append(value)
+    if not found:
+        single = next((m.group(1) for line in lines for m in [_SINGLE.search(line)] if m), "")
+        return re.sub(r"\s+", " ", single).strip()
+    return found[0] + (f" (+{len(found) - 1} more by location)" if len(found) > 1 else "")
+
+
 def compact(text: str, evidence: list[dict[str, str]] | None = None) -> str:
     """The stored description: the three sections under fixed headings, each within its limit.
 
@@ -95,7 +130,9 @@ def compact(text: str, evidence: list[dict[str, str]] | None = None) -> str:
     # Clipped again after adding evidence (which goes first, so it survives): one pass gives the
     # final text, and compacting stored text changes nothing.
     sections = {k: _clip(body, LIMITS[k]) for k, body in sections.items()}
-    return "\n\n".join(f"{TITLES[k]}\n{body}" for k, body in sections.items() if body)
+    pay = salary(text)
+    parts = ([f"{SALARY}\n{pay}"] if pay else []) + [f"{TITLES[k]}\n{body}" for k, body in sections.items() if body]
+    return "\n\n".join(parts)
 
 
 def _clip(text: str, limit: int) -> str:
