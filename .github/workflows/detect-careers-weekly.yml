@@ -1,0 +1,94 @@
+name: Detect careers systems (weekly)
+
+# Weekly: read the careers page of every company without a readable board, verify any board
+# found, and open one PR with the results for review (docs/decisions.md, 2026-10-19). Wrong
+# boards have happened (an acquired company pointing at its buyer's board), so results
+# never go to main unreviewed. Needs Settings > Actions > General > "Allow GitHub Actions to
+# create and approve pull requests", like discover-companies.yml.
+on:
+  schedule:
+    - cron: "13 3 * * 1"  # Mondays 03:13 UTC (08:43 IST), before discovery at 04:41
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: detect-careers-weekly
+  cancel-in-progress: false
+
+env:
+  BRANCH: auto/careers-detection
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # One review at a time: while last week's PR is open, don't stack another on it.
+      - name: Check for an open detection PR
+        id: open
+        run: echo "count=$(gh pr list --head "$BRANCH" --state open --json number --jq length)" >> "$GITHUB_OUTPUT"
+
+      - name: Detect careers systems
+        if: steps.open.outputs.count == '0'
+        run: python -u scripts/detect_careers.py --report docs/careers_detect.md --minutes 80 --retry-not-found
+
+      - name: Verify changed boards
+        if: steps.open.outputs.count == '0'
+        run: python -u scripts/verify_companies.py
+
+      - name: Refresh detection report
+        if: steps.open.outputs.count == '0'
+        run: python scripts/detect_careers.py --report docs/careers_detect.md --report-only
+
+      - name: Open PR
+        if: steps.open.outputs.count == '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898088+github-actions[bot]@users.noreply.github.com"
+          # Only boards that changed or became readable make a PR; the board check also
+          # rewrites "checked" dates every week, which alone isn't worth a review.
+          python - > "$RUNNER_TEMP/changes.md" <<'PY'
+          import subprocess, yaml
+          old = {c["name"]: c for c in yaml.safe_load(subprocess.check_output(["git", "show", "HEAD:config/companies.yaml"]))["companies"]}
+          for c in yaml.safe_load(open("config/companies.yaml"))["companies"]:
+              o = old.get(c["name"], {})
+              if (o.get("ats"), str(o.get("slug")), bool(o.get("verified"))) != (c.get("ats"), str(c.get("slug")), bool(c.get("verified"))):
+                  print(f"| {c['name']} | {o.get('ats') or ''} `{o.get('slug') or ''}` | {c.get('ats') or ''} `{c.get('slug') or ''}` | "
+                        f"{'yes' if c.get('verified') else 'no'} | {c.get('jobs') or ''} | {c.get('careers') or ''} |")
+          PY
+          if [ ! -s "$RUNNER_TEMP/changes.md" ]; then
+            echo "No board changed this week."
+            exit 0
+          fi
+          {
+            echo "Weekly careers detection (\`.github/workflows/detect-careers-weekly.yml\`)."
+            echo
+            sed -n 3p docs/careers_detect.md
+            echo
+            echo "Before merging, check each board belongs to the company: an acquired company can point"
+            echo "at its buyer's board. Full detail: \`docs/careers_detect.md\`, \`docs/company_check.md\`."
+            echo
+            echo "| Company | Before | After | Readable | Jobs | Seen on |"
+            echo "|---|---|---|---|---:|---|"
+            cat "$RUNNER_TEMP/changes.md"
+          } > "$RUNNER_TEMP/pr-body.md"
+          git checkout -B "$BRANCH"
+          git add config/companies.yaml docs/careers_detect.md docs/company_check.md
+          git commit -m "Weekly careers detection: new and changed boards"
+          # The branch only ever holds this bot's latest run, so overwriting it is safe.
+          git push --force -u origin "$BRANCH"
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BRANCH" \
+            --title "Weekly careers detection ($(date -u +%F))" --body-file "$RUNNER_TEMP/pr-body.md"

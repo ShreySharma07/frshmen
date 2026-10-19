@@ -4,6 +4,19 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-19 — Weekly careers detection lands as a PR
+- **Options:** a weekly PR from a bot branch · upload the report only, applied in a later session ·
+  let the bot push straight to the protected `main`
+- **Choice (Shrey):** weekly PR. `.github/workflows/detect-careers-weekly.yml` runs Mondays 03:13 UTC,
+  reads every company without a readable board, verifies what it finds, and opens one PR on
+  `auto/careers-detection` listing only boards that changed or became readable.
+- **Why:** detection has picked wrong boards before (Moveworks onto ServiceNow's, six YC companies
+  onto ycombinator.com), so a person checks each change before it goes live. "Report only" would
+  leave new boards waiting for a session; pushing to `main` would skip that check.
+- **Limits:** needs "Allow GitHub Actions to create and approve pull requests" (already on for
+  discovery). A PR opened with `GITHUB_TOKEN` doesn't run the other workflows, so the boards are
+  verified inside the weekly run. While a detection PR is open, the next week's run is skipped.
+
 ## 2026-10-18 — Company coverage strategy (`docs/strategy/company-coverage.md`)
 - **Context:** 237 of 612 companies were never found on the shared job boards: they recruit on
   their own careers sites (Workday, SuccessFactors, iCIMS...). Many are foreign companies hiring
