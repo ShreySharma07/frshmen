@@ -4,6 +4,18 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-19 — Salary range on the page
+- **Options:** a new salary column (pulled out at fetch time, via a migration) · keep the pay line in
+  the stored description; where it shows: detail view and list rows · detail view only
+- **Choice (Shrey):** keep it in the text, show it in both places. `extract/stored_text.py` puts the
+  posting's stated range on a "Salary" line at the top of the stored description; the API reads that
+  line in SQL (`substring(... '^Salary\n...')`), so list pages still never carry the description.
+- **Why:** no schema change. Cost: pay can't be filtered or sorted until it gets its own column.
+- **Rule:** only a stated range with a currency or LPA, on a line about pay or a line that is just
+  the range; a single amount only when the line says salary, stipend or CTC. Deal sizes, funding
+  rounds and loan amounts never count (precision over recall). Several ranges by location: the first,
+  plus "(+N more by location)".
+
 ## 2026-10-19 — Weekly careers detection lands as a PR
 - **Options:** a weekly PR from a bot branch · upload the report only, applied in a later session ·
   let the bot push straight to the protected `main`
