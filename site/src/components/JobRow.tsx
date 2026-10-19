@@ -19,6 +19,7 @@ export function JobRow({ job, selected, isNew, onSelect }: { job: JobSummary; se
             {isNew && <span className="font-medium text-accent">New · </span>}
             {job.company} · {place(job)} · {shortDate(job.posted_at ?? job.first_seen_at)}
           </span>
+          {job.salary && <span className="mt-0.5 block truncate text-meta text-ink/80">{job.salary}</span>}
         </span>
         <span className={`shrink-0 pt-0.5 font-mono text-caption ${y == null ? "text-muted" : "font-medium text-accent"}`}>
           {y == null ? "Not stated" : `${y} yrs`}

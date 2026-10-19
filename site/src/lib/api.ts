@@ -24,6 +24,8 @@ export interface JobSummary {
   role_family: "ai_ml" | "backend" | "generic_swe" | "mobile" | null;
   visa_sponsorship: "yes" | "no" | "unknown";
   highlight: { kind: string; text: string } | null;
+  /** The posting's pay range as written ("$120,000—$150,000 USD", "12-18 LPA"), when it states one. */
+  salary: string | null;
 }
 
 export interface Evidence {
