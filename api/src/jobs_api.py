@@ -24,10 +24,13 @@ import fit
 from pg_queries import FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
 from storage import Database, connect
 
+# The stored description starts with "Salary\n<range>" when the posting states pay
+# (extract/stored_text.py); Postgres reads that line, so list pages never carry the full text.
+SALARY = r"substring(description_text from '^Salary\n([^\n]+)') AS salary"
 LIST_COLUMNS = (
     "id, company, title, url, location_raw, location_type, countries, cities, posted_at, first_seen_at, "
     "level, level_confidence, level_reason, yoe_min, yoe_max, yoe_evidence, batch_years, role_family, "
-    "visa_sponsorship, eligible, evidence"
+    f"visa_sponsorship, eligible, evidence, {SALARY}"
 )
 # Which evidence decides a label, in order of preference. The page shows this one line per job.
 HIGHLIGHT_KINDS = {
@@ -219,7 +222,7 @@ def create_app() -> FastAPI:
 
     @app.get("/api/jobs/{job_id:path}")
     async def get_job(job_id: str, db: Database = Depends(get_db)) -> dict[str, Any]:
-        rows = await db.all(f"SELECT * FROM job_cards WHERE id = {RESOLVE}", [job_id])
+        rows = await db.all(f"SELECT *, {SALARY} FROM job_cards WHERE id = {RESOLVE}", [job_id])
         if not rows:
             raise HTTPException(status_code=404, detail="job not found")
         return _decode(rows[0])
