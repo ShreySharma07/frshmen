@@ -35,11 +35,15 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import yaml  # noqa: E402
 
+from sources import careersite  # noqa: E402
 from sources.http import USER_AGENT, FetchError, HttpClient  # noqa: E402
 
 COMPANIES = ROOT / "config" / "companies.yaml"
 YC_SOURCE = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
 MAX_PAGES = 6  # homepage + careers candidates per company
+# Careers sites in front of these systems usually also publish a sitemap of job pages with
+# schema.org data (checked 2026-10-19 on Arm and Moody's), which sources/careersite.py reads.
+SITEMAP_FIRST = {"successfactors", "phenom", "icims"}
 
 # --- Recognising systems -----------------------------------------------------------------------
 
@@ -245,6 +249,16 @@ def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Dete
             break
         # Links from this page that look like careers pages jump the queue.
         queue = [u for u in career_links(html, final_url) if u not in seen] + queue
+    best = result.best
+    if best is not None and best.system in SITEMAP_FIRST:
+        host = urlparse(best.url).netloc
+        sitemap = careersite.sitemap_url(host)
+        try:
+            readable = robots.allowed(sitemap) and bool(careersite.list_titles(http, host))
+        except FetchError:
+            readable = False
+        if readable:
+            result.found.append(Found("careersite", host, True, best.url))
     return result
 
 
@@ -301,6 +315,11 @@ def apply(company: dict[str, Any], d: Detection, owners: dict[tuple[str, str], s
     return updated
 
 
+def retryable(careers: str) -> bool:
+    """Nothing found, or a system we couldn't read: worth another look once the detector learns more."""
+    return careers.startswith("not found") or "(no adapter yet)" in careers
+
+
 def report(companies: list[dict[str, Any]], skipped: list[str]) -> str:
     """Every company detection has read so far (runs resume, so one run sees only part)."""
     read = [c for c in companies if c.get("careers")]
@@ -327,7 +346,7 @@ def main() -> int:
     parser.add_argument("--minutes", type=float, default=0,
                         help="stop starting new companies after this long; the rest wait for the next run")
     parser.add_argument("--retry-not-found", action="store_true",
-                        help="also re-read companies where nothing was recognised (after the detector learns a system)")
+                        help="also re-read companies with no readable board yet (after the detector learns a system)")
     parser.add_argument("--report-only", action="store_true",
                         help="rewrite the report from companies.yaml (after verify_companies.py) and stop")
     args = parser.parse_args()
@@ -345,7 +364,7 @@ def main() -> int:
     else:
         # Unverified, and not read by an earlier run: a run cut short by --minutes resumes here.
         todo = [c for c in companies if not c.get("verified") and (
-            not c.get("careers") or (args.retry_not_found and str(c["careers"]).startswith("not found")))]
+            not c.get("careers") or (args.retry_not_found and retryable(str(c["careers"]))))]
         # Never-read companies first: a run cut short by --minutes must not spend itself on retries.
         todo.sort(key=lambda c: bool(c.get("careers")))
     if args.limit:
