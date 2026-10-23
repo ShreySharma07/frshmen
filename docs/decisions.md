@@ -4,6 +4,30 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-23 — Landing page polish: graphite, light orange and white; Geist only
+- **Choice (Shrey):** palette graphite, light orange and white (replaces Night and cornflower from
+  earlier today); every heading in Geist Sans (Bricolage Grotesque dropped). Chapters alternate:
+  graphite for the hero, globe and footer, white for the sources band and How it works. Tokens:
+  `.lp-dark` / `.lp-light` in `globals.css`, `color.landingDark` / `landingLight` in `tokens.ts`.
+  Light orange (#ff9e5e) is a fill under graphite text; as text it is #ffa46e on graphite and
+  #b04a0e on white, to keep 4.5:1.
+- **Brief (Shrey), applied:** no metric repeated across sections (hero badge keeps the fresher count;
+  globe section shows hubs plus a "visa or relocation tagged" count; sources show pipeline numbers:
+  3h between reads, 12+ hiring systems read directly, 0 LinkedIn or Indeed scraping); edge-faded
+  marquees with monospace protocol chips and editorial company names; sticky 4-pill step switcher
+  in How it works; file bar on the sample-resume cards; Git-style diff on step 4; highlighted
+  evidence on step 1; monograms and a tactile button on step 3; the "Browse N fresher jobs" pill
+  always in the top bar.
+- **Where the brief bent a house rule, Shrey's words won:** monospace chips and pill numbers
+  (taste-skill bans both), an arrow on the bar button, a shadow on the tactile buttons.
+- **Changed from the brief, to stay true:** the alumni badge reads "Alumni · 2023 batch", not
+  "Verified Alumni", since Kario verifies nothing about a connection; the file bar says "sample" so
+  the example resume is never read as a real student's. "12+" counts the 13 adapters in `sources/`
+  other than Hacker News.
+- **New API field:** `/api/meta` gains `visa_or_relocation` (open roles with visa sponsorship or a
+  relocation line), in the snapshot from the next pipeline run; until then the page leaves the
+  figure out.
+
 ## 2026-10-23 — Landing page design: Shrey's layout, art-directed with taste-skill
 - **Layout (Shrey):** glass top bar (kario, How it works, Jobs, profile); tagline "Not another job
   board. An agent that gets you your next job." beside a turning globe; on scroll the globe rolls
