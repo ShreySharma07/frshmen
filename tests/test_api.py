@@ -131,6 +131,7 @@ def test_meta_comes_from_the_snapshot_publish_writes(client):
     assert meta["total"] == 20 and meta["levels"]["fresher"] == 3 and meta["snapshot_at"]
     assert {"company": "Acme", "n": 2} in meta["companies"]
     assert meta["last_run"]["jobs_new"] >= 1 and meta["fit_check"] is False
+    assert isinstance(meta["visa_or_relocation"], int)
 
 
 def test_meta_is_computed_live_before_the_first_snapshot(client):
