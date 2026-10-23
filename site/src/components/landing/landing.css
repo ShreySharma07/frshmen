@@ -224,3 +224,10 @@
 /* The hero's highlighter pen hides the system cursor, except over the controls. */
 .hl-pen { cursor: none; }
 .hl-pen :is(a, button, input, label, [role="radio"]) { cursor: pointer; }
+
+/* A quote that links to its posting: no link styling, just a dotted rule that says "there's more". */
+.source-link { text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 0.3em; text-decoration-color: color-mix(in oklab, currentColor 45%, transparent); }
+.source-link:hover, .source-link:focus-visible { text-decoration-color: currentColor; }
+.source-card { animation: source-in 160ms var(--ease-out-soft); }
+@keyframes source-in { from { opacity: 0; transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { .source-card { animation: none; } }

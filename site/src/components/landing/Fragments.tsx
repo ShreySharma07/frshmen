@@ -4,11 +4,13 @@
 // which the section says above the steps.
 import { Check, Copy, CornerDownLeft, ExternalLink, MapPin, Plus } from "lucide-react";
 import type { ReactNode } from "react";
+import { Source } from "./Source";
 
 export const JOB = {
   company: "Palantir",
   title: "Forward Deployed Software Engineer, New Grad",
   url: "jobs.lever.co/palantir/66b4…add7",
+  href: "https://jobs.lever.co/palantir/66b495eb-aaf9-4bf9-a759-41854534add7",
   via: "Lever",
 };
 
@@ -56,7 +58,7 @@ export function JobFragment() {
           <div className="grid grid-cols-[2.25rem_1fr] gap-x-3 px-3 py-3">
             <span className="text-right opacity-60">11</span><span>Required</span>
             <span className="text-right text-lp-term-ink">12</span>
-            <span className="text-lp-term-ink">- <mark data-mark className="term-mark">&ldquo;Must be graduating in December 2026 or Spring 2027&rdquo;</mark></span>
+            <span className="text-lp-term-ink">- <Source company={JOB.company} title={JOB.title} href={JOB.href}><mark data-mark className="term-mark">&ldquo;Must be graduating in December 2026 or Spring 2027&rdquo;</mark></Source></span>
           </div>
           <div data-verdict className="border-t border-lp-term-muted/20 px-3 py-2 text-[11.5px]">
             <span className="text-lp-term-ok">✓ batch 2026, 2027</span> → level fresher, 0 years required
@@ -93,7 +95,9 @@ export function FitFragment() {
             <span className="text-[15px] font-medium">{skill}<span className="sr-only">{ok ? ", matched" : ", missing"}</span></span>
             <span className="col-start-2">
               {ok ? (
-                <span className="inline-block rounded-md bg-lp-window-bar px-2 py-0.5 font-mono text-[12px] text-lp-muted">&ldquo;{quote}&rdquo;</span>
+                <span className="inline-block rounded-md bg-lp-window-bar px-2 py-0.5 font-mono text-[12px] text-lp-muted">
+                  <Source company={JOB.company} title={JOB.title} href={JOB.href}>&ldquo;{quote}&rdquo;</Source>
+                </span>
               ) : (
                 <span className="flex flex-wrap items-center gap-2 text-[13px] text-lp-warn-text">
                   {quote}

@@ -15,6 +15,7 @@ import { fetchEvidence, type EvidenceLine } from "@/lib/api";
 import { introDone } from "./intro";
 import { Pen } from "./Pen";
 import { play } from "./sound";
+import { Source } from "./Source";
 import { fmt, type Counts } from "./places";
 import { clip, fit, rows, STARTER, YEARS } from "./wall";
 import type { WallDrive } from "./WallScene";
@@ -158,7 +159,9 @@ function HeroCard({ line, years, href }: { line: EvidenceLine; years: number; hr
         <div className="rounded-xl border border-lp-window-line bg-lp-raised p-5">
           <p className="text-[14px] text-lp-muted">{line.company}</p>
           <p className="mt-0.5 font-display text-[26px] leading-tight">{line.title}</p>
-          <p className="mt-4 rounded-lg bg-lp-window-bar p-3 font-mono text-[13px] leading-relaxed">&ldquo;<mark>{line.text}</mark>&rdquo;</p>
+          <p className="mt-4 rounded-lg bg-lp-window-bar p-3 font-mono text-[13px] leading-relaxed">
+            <Source company={line.company} title={line.title} href={line.url}>&ldquo;<mark>{line.text}</mark>&rdquo;</Source>
+          </p>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <span className="rounded-full bg-lp-ok px-2.5 py-1 font-mono text-[12px] font-semibold text-lp-term">Takes you · {asks}</span>
             <Link href={href} className="text-[15px] font-medium text-lp-accent-text underline-offset-4 hover:underline">
