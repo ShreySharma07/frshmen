@@ -4,6 +4,29 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-23 — Landing v2: the critique roadmap, for every job seeker
+- **Context:** two design critiques of `/preview` (the second unconstrained, benchmarked against
+  current award sites) scored it about 5.5/10: clean, honest, but every visual borrowed. Shrey:
+  "do all of them in order", and the page is for **everyone looking for a job, not only 2026
+  graduates**.
+- **Constraints Shrey set for the landing page:** treat every feature it shows as built (they
+  ship before launch); the audience is on good laptops, so the landing page is no longer held to
+  CLAUDE.md's budget-phone limits (the 170 KB budget still applies to the job list); the only hard
+  limit is money (free tools and fonts).
+- **Roadmap, one commit each:** fix the critique's bugs; the Highlighter hero (a WebGL wall of
+  real deciding lines, `/api/evidence`); How it works as a pinned sideways track whose cards act
+  out each step; Ink and Marigold with serif and sans type; copy rewritten around the reader's
+  years; a shader globe that dives into India; the micro layer; a departure-board data band.
+- **Palette "Ink and Marigold"** (replaces navy, parchment and cobalt from earlier today): paper
+  #F2EEE4 / #E9E3D6 / #FBF9F4, warm ink #121110, graphite chapters #14130F, one marigold
+  highlighter #FFB21A as the action colour and the evidence mark, strike #B5381F, pass #3FA66A,
+  links #1F4FD8. Why: the brand is evidence, so the page is paper and ink with a highlighter, and
+  navy plus blue-600 was Tailwind's defaults.
+- **Type:** Instrument Serif for headings (the wordmark is drawn from it), Instrument Sans for
+  text, Geist Mono for evidence and data. Fontshare's Satoshi and Switzer were the critique's
+  first pick for text, but Fontshare is unreachable from here; Instrument Sans pairs with the
+  serif and is on Google Fonts.
+
 ## 2026-10-23 — Landing palette: midnight navy, warm parchment, Klein cobalt
 - **Choice (Shrey):** "high-authority enterprise and fintech". Navy chapters #080D1A with #0F172A
   elevated (hero, globe, footer, terminal blocks); parchment chapters #FAF8F5 with #EFECE6 bento
