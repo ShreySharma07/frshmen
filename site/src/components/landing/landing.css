@@ -105,6 +105,17 @@
 .hl[data-mode="flow"] .hl-copy { position: absolute; inset: 0; }
 .hl[data-mode="flow"] .hl-card { position: relative; inset: auto; opacity: 1; padding-block: 3rem 6rem; }
 
+/* How it works. "scroll": a pinned stage; the track of four full-width panels slides sideways.
+   "flow": the panels stack. The deciding line in step 1 is lit by growing its background. */
+.how-pin { position: relative; }
+.how-panel { padding-block: 2rem 4rem; row-gap: 2rem; align-content: center; }
+.how[data-mode="scroll"] .how-pin { height: 400svh; }
+.how[data-mode="scroll"] .how-stage { position: sticky; top: 0; height: 100svh; display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); overflow: hidden; padding-top: calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 3.5rem); }
+.how[data-mode="scroll"] .how-track { display: flex; width: max-content; height: 100%; }
+.how[data-mode="scroll"] .how-panel { width: 100vw; flex: none; }
+.how[data-mode="flow"] .how-pills { position: sticky; top: calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 3.5rem); z-index: 20; background: var(--lp-bg); }
+.landing .how mark[data-mark] { background-image: linear-gradient(color-mix(in srgb, var(--lp-ok) 25%, transparent), color-mix(in srgb, var(--lp-ok) 25%, transparent)); background-repeat: no-repeat; background-size: 100% 100%; background-color: transparent; }
+
 /* The sources band: two rows drifting in opposite directions, fading out at both edges; hover
    holds them. */
 .band-mask { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }

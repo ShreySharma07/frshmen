@@ -11,3 +11,9 @@ export function scrollToMiddle(el: HTMLElement) {
   if (lenis) lenis.scrollTo(el, { offset, duration: 1.1 });
   else window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + offset, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
+
+/** Scrolls to an absolute page offset (a point inside a pinned scene). */
+export function scrollToY(y: number) {
+  if (lenis) lenis.scrollTo(y, { duration: 1.1 });
+  else window.scrollTo({ top: y, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
