@@ -26,12 +26,17 @@ for (const name of ["light", "dark"]) {
   for (const [k, v] of Object.entries(want)) if (themes[name][k] !== v) problems.push(`${name}: --${k} is ${themes[name][k]} in CSS, ${v} in tokens.ts`);
   for (const k of Object.keys(themes[name])) if (!(k in want)) problems.push(`${name}: --${k} is missing from tokens.ts`);
 }
-// The landing palette: every --night-* variable in `.night` matches color.night, both ways.
-const night = Object.fromEntries(Object.entries(vars(block(css, ".night {"))).map(([k, v]) => [k.replace(/^night-/, ""), v]));
-const wantNight = tsTheme("night");
-for (const [k, v] of Object.entries(wantNight)) if (night[k] !== v) problems.push(`night: --night-${k} is ${night[k]} in CSS, ${v} in tokens.ts`);
-for (const k of Object.keys(night)) if (!(k in wantNight)) problems.push(`night: --night-${k} is missing from tokens.ts`);
+// The landing chapters: every --lp-* variable in `.lp-dark` / `.lp-light` matches landingDark /
+// landingLight in tokens.ts, both ways.
+let landingCount = 0;
+for (const [sel, name] of [[".lp-dark {", "landingDark"], [".lp-light {", "landingLight"]]) {
+  const got = Object.fromEntries(Object.entries(vars(block(css, sel))).map(([k, v]) => [k.replace(/^lp-/, ""), v]));
+  const want = tsTheme(name);
+  landingCount = Object.keys(got).length;
+  for (const [k, v] of Object.entries(want)) if (got[k] !== v) problems.push(`${name}: --lp-${k} is ${got[k]} in CSS, ${v} in tokens.ts`);
+  for (const k of Object.keys(got)) if (!(k in want)) problems.push(`${name}: --lp-${k} is missing from tokens.ts`);
+}
 for (const [n, px] of [["sm", 4], ["md", 8], ["lg", 12]]) if (!css.includes(`--radius-${n}: ${px}px`) || !ts.includes(`${n}: ${px}`)) problems.push(`radius ${n} differs`);
 
 if (problems.length) { console.error(problems.join("\n")); process.exit(1); }
-console.log(`tokens in sync: ${Object.keys(themes.light).length} colours × 2 themes, ${Object.keys(night).length} landing colours, 3 radii`);
+console.log(`tokens in sync: ${Object.keys(themes.light).length} colours × 2 themes, ${landingCount} landing colours × 2 chapters, 3 radii`);
