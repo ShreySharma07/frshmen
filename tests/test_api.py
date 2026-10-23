@@ -141,6 +141,7 @@ def test_evidence_is_a_sample_of_real_deciding_lines(client):
     lines = client.get("/api/evidence?limit=50").json()["lines"]
     assert lines and all(l["text"] and l["level"] in ("fresher", "maybe", "experienced") for l in lines)
     assert any("years" in l["text"] for l in lines)
+    assert all(l["url"].startswith("http") for l in lines)  # every quote links to its posting
     assert client.get("/api/evidence?limit=1000").status_code == 422
 
 

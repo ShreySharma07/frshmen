@@ -88,6 +88,7 @@ export interface EvidenceLine {
   id?: string;
   company: string;
   title: string;
+  url?: string; // the posting, for "where this line came from"; absent in the starter snapshot
   level: Level;
   yoe_min: number | null;
   yoe_max: number | null;

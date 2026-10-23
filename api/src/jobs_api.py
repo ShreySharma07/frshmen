@@ -223,9 +223,10 @@ def create_app() -> FastAPI:
     @app.get("/api/evidence")
     async def evidence(limit: int = Query(120, ge=1, le=300), db: Database = Depends(get_db)) -> dict[str, Any]:
         """A random sample of open jobs with the line that decided each label: the landing page's
-        wall of real requirements. Only jobs whose label rests on a stated line are drawn."""
+        wall of real requirements. Only jobs whose label rests on a stated line are drawn. Each line
+        carries its posting's URL so the page can show where a quote came from."""
         rows = await db.all(
-            "SELECT id, company, title, level, yoe_min, yoe_max, evidence FROM job_cards "
+            "SELECT id, company, title, url, level, yoe_min, yoe_max, evidence FROM job_cards "
             f"WHERE {OPEN} AND (yoe_evidence IS NOT NULL OR level = 'fresher') ORDER BY random() LIMIT $1",
             [limit],
         )
@@ -233,7 +234,7 @@ def create_app() -> FastAPI:
         for r in rows:
             h = _highlight(_decode(r))
             if h:
-                lines.append({"id": r["id"], "company": r["company"], "title": r["title"], "level": r["level"],
+                lines.append({"id": r["id"], "company": r["company"], "title": r["title"], "url": r["url"], "level": r["level"],
                               "yoe_min": r["yoe_min"], "yoe_max": r["yoe_max"], "text": h["text"]})
         return {"lines": lines}
 
