@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, MailCheck, ShieldCheck, ScrollText } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { fmt, type Counts } from "./places";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -55,8 +55,28 @@ export function Proof({ counts }: { counts: Counts }) {
             ))}
           </figcaption>
         </figure>
+        <LastRead at={counts.readAt} companies={counts.companies} />
       </div>
     </section>
+  );
+}
+
+// "Read 14 minutes ago": the pulse says the counts above are this morning's, not last month's. The
+// time is relative to the reader's clock, so it's written after load (the static page can't know it).
+const minute = (cb: () => void) => { const t = setInterval(cb, 30_000); return () => clearInterval(t); };
+function LastRead({ at, companies }: { at: string | null; companies: number }) {
+  const now = useSyncExternalStore(minute, () => Math.floor(Date.now() / 60_000), () => null);
+  if (!at) return null;
+  const mins = now == null ? null : Math.max(0, now - Math.floor(Date.parse(at) / 60_000));
+  const ago = mins == null ? "" : mins < 2 ? "just now" : mins < 60 ? `${mins} minutes ago` : mins < 48 * 60 ? `${Math.round(mins / 60)} hour${Math.round(mins / 60) === 1 ? "" : "s"} ago` : `on ${new Date(at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}`;
+  const fresh = mins != null && mins < 4 * 60; // the pipeline reads every three hours
+  return (
+    <p className="col-span-full flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px] text-lp-muted">
+      <span aria-hidden className={`last-read ${fresh ? "is-fresh" : ""}`} />
+      <span>
+        {ago ? <>Read <time dateTime={at} className="text-lp-ink">{ago}</time></> : "Read"} from {companies} companies&rsquo; own boards. Kario reads them again every three hours.
+      </span>
+    </p>
   );
 }
 

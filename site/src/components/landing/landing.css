@@ -233,3 +233,10 @@
 @media (prefers-reduced-motion: reduce) { .source-card { animation: none; } }
 
 .landing .kbd { display: inline-grid; min-width: 1.5em; place-items: center; padding: 0 0.35em; border: 1px solid var(--lp-line); border-bottom-width: 2px; border-radius: 0.3em; background: var(--lp-raised); font-family: var(--font-mono); font-size: 0.85em; color: var(--lp-ink); }
+
+/* The last-read dot: green and breathing while the counts are from the latest run, grey after. */
+.last-read { position: relative; width: 0.625rem; height: 0.625rem; border-radius: 999px; background: var(--lp-muted); }
+.last-read.is-fresh { background: var(--lp-ok); }
+.last-read.is-fresh::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--lp-ok); animation: last-read 2.4s var(--ease-out-soft) infinite; }
+@keyframes last-read { from { transform: scale(1); opacity: 0.6; } to { transform: scale(2.8); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .last-read.is-fresh::after { animation: none; } }
