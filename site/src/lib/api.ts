@@ -57,6 +57,7 @@ export interface Meta {
   levels: Record<Level, number>;
   internships: number;
   visa_or_relocation?: number; // in snapshots written since 2026-10-23
+  within_years?: Record<"0" | "1" | "2" | "3" | "4" | "5", number>; // jobs open to someone with N years
   roles: Partial<Record<Role, number>>;
   companies: { company: string; n: number }[]; // companies with open jobs
   countries: { country: string; n: number }[];
@@ -81,6 +82,21 @@ export const fetchJob = (id: string, signal?: AbortSignal) =>
   getJson<JobDetail>(`/api/jobs/${encodeURIComponent(id)}`, signal);
 
 export const fetchMeta = (signal?: AbortSignal) => getJson<Meta>("/api/meta", signal);
+
+/** One posting's deciding line, as the landing page's wall shows it. */
+export interface EvidenceLine {
+  id?: string;
+  company: string;
+  title: string;
+  url?: string; // the posting, for "where this line came from"; absent in the starter snapshot
+  level: Level;
+  yoe_min: number | null;
+  yoe_max: number | null;
+  text: string;
+}
+
+export const fetchEvidence = (limit: number, signal?: AbortSignal) =>
+  getJson<{ lines: EvidenceLine[] }>(`/api/evidence?limit=${limit}`, signal);
 
 export async function fetchJobs(filters: Record<string, string>, page: number, withTotal: boolean, signal?: AbortSignal): Promise<JobPage> {
   const params = new URLSearchParams({ ...filters, page: String(page), per_page: String(PER_PAGE) });

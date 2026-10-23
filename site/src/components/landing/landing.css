@@ -6,6 +6,7 @@
   --gutter: max(1.25rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   background: var(--lp-bg);
   color: var(--lp-ink);
+  font-family: var(--font-text);
 }
 @media (min-width: 64rem) {
   .landing { --gutter: 2.5rem; }
@@ -29,10 +30,9 @@
   padding-block: 7rem 4rem;
 }
 .story [data-panel="sources"] { padding-bottom: 5rem; }
-.story[data-mode="scroll"] { height: 420svh; }
+.story[data-mode="scroll"] { height: 300svh; }
 .story[data-mode="scroll"] .story-frame { position: sticky; top: 0; height: 100svh; overflow: clip; }
 .story[data-mode="scroll"] .panel { position: absolute; inset: 0; }
-.story[data-mode="scroll"] [data-panel="places"],
 .story[data-mode="scroll"] [data-panel="sources"],
 .story[data-mode="scroll"] [data-field] { visibility: hidden; }
 /* The white field the sources chapter sits on: faded in by the scroll scene, or simply the
@@ -51,58 +51,99 @@
   justify-items: center;
   padding-bottom: 2svh;
 }
-.globe-box > div { width: min(118vw, 34rem); translate: 0 30%; }
+/* Left half on wide screens; above the places on phones. */
+.globe-box > div { width: min(88vw, 26rem); translate: 0 -38%; }
 @media (min-width: 64rem) {
   .globe-box { align-items: center; padding-bottom: 0; }
-  .globe-box > div { width: min(46vw, 46rem); translate: 23vw 4%; }
+  .globe-box > div { width: min(46vw, 46rem); translate: -23vw 4%; }
 }
-.story[data-mode="flow"] .globe-box > div { translate: 0 30%; }
-@media (min-width: 64rem) {
-  .story[data-mode="flow"] .globe-box > div { translate: 23vw 4%; }
-}
-.story [data-panel="hero"] { position: relative; z-index: 1; pointer-events: none; }
-.story [data-panel="hero"] a, .story [data-panel="hero"] button { pointer-events: auto; }
+.story[data-mode="flow"] .globe-box { height: 100svh; }
 @media (max-width: 63.99rem) {
-  .story [data-panel="hero"] { align-content: start; padding-top: 8.5rem; }
   .story [data-panel="places"] { align-content: end; padding-bottom: 3rem; }
 }
 
-/* City labels ride on cobe's anchors where the browser has anchor positioning; elsewhere the
-   list beside the globe carries the same numbers. */
-.globe-label { display: none; }
-@supports (position-anchor: --a) {
-  .globe-label {
-    display: block;
-    position: absolute;
-    position-anchor: var(--a);
-    bottom: anchor(top);
-    left: anchor(center);
-    translate: -50% -0.5rem;
-    padding: 0.25rem 0.625rem;
-    border-radius: 999px;
-    color: var(--lp-ink);
-    font-size: 0.8125rem;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: var(--v);
-    transition: opacity 300ms var(--ease-out-expo);
-  }
-  .globe-label b { color: var(--lp-accent-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* City labels: GlobeScene moves each one onto its light every frame and fades it on the far side. */
+.globe-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  color: var(--lp-ink);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
 }
+.globe-label b { color: var(--lp-accent-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 63.99rem) { .globe-label { display: none; } }
 
-/* The sources band: two rows drifting in opposite directions, fading out at both edges; hover
-   holds them. */
-.band-mask { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
-.band:hover .band-row { animation-play-state: paused; }
-.band-row { animation: band 48s linear infinite; }
-.band-reverse .band-row { animation-direction: reverse; animation-duration: 56s; }
-@keyframes band { to { transform: translateX(-100%); } }
-@media (prefers-reduced-motion: reduce) {
-  .band-mask { mask-image: none; }
-  .band { flex-wrap: wrap; padding-inline: var(--gutter); }
-  .band-row { animation: none; flex-wrap: wrap; flex-shrink: 1; min-width: 0; gap: 0.5rem 1.5rem; padding-right: 0; }
-  .band-row[aria-hidden] { display: none; }
+/* The Highlighter: one sticky screen in "scroll" mode (WebGL wall, the scroll clears it to a
+   card); in "flow" mode the text wall and the card simply stack. */
+.hl-frame { min-height: 100svh; }
+.hl[data-mode="scroll"] { height: 260svh; }
+.hl[data-mode="scroll"] .hl-frame { position: sticky; top: 0; height: 100svh; }
+.hl-copy { min-height: 100svh; align-content: center; padding-block: 7rem 4rem; }
+.hl-dom { overflow: hidden; }
+/* The wall fades in from behind the copy, so the headline sits on clean paper; on phones the
+   copy is on top of a quieter wall. The scroll clears the wall anyway, so the mask can stay. */
+.hl-wall, .hl-dom { mask-image: linear-gradient(180deg, transparent 0%, #000 0%); }
+@media (max-width: 63.99rem) {
+  .hl-wall, .hl-dom { opacity: 0.35; }
+  .hl[data-mode="flow"] .hl-dom { opacity: 1; }
 }
+@media (min-width: 64rem) {
+  /* --hl-fade is lifted to 0% by the scroll as the wall collapses to the hero line. */
+  .hl-wall, .hl[data-mode="scroll"] .hl-dom { mask-image: linear-gradient(90deg, transparent 0%, transparent var(--hl-fade, 44%), #000 calc(var(--hl-fade, 44%) + 16%)); }
+}
+.hl[data-mode="flow"] .hl-dom { position: relative; inset: auto; max-height: 70svh; }
+.hl[data-mode="flow"] .hl-copy { position: absolute; inset: 0; }
+.hl[data-mode="flow"] .hl-card { position: relative; inset: auto; opacity: 1; padding-block: 3rem 6rem; }
+
+/* How it works. "scroll": a pinned stage; the track of four full-width panels slides sideways.
+   "flow": the panels stack. The deciding line in step 1 is lit by growing its background. */
+.how-pin { position: relative; }
+.how-panel { padding-block: 2rem 4rem; row-gap: 2rem; align-content: center; }
+.how[data-mode="scroll"] .how-pin { height: 400svh; }
+.how[data-mode="scroll"] .how-stage { position: sticky; top: 0; height: 100svh; display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); overflow: hidden; padding-top: calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 3.5rem); }
+.how[data-mode="scroll"] .how-track { display: flex; width: max-content; height: 100%; }
+.how[data-mode="scroll"] .how-panel { width: 100vw; flex: none; }
+.how[data-mode="flow"] .how-pills { position: sticky; top: calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 3.5rem); z-index: 20; background: var(--lp-bg); }
+.landing .how mark[data-mark] { background-image: linear-gradient(var(--lp-accent), var(--lp-accent)); background-repeat: no-repeat; background-size: 100% 100%; background-color: transparent; color: var(--lp-on-accent); }
+
+/* The departures board: flaps sized from the board's own width (container query units), so every
+   layout fits without scrolling sideways. One flap is 0.74em wide plus a 1px seam. */
+.board { container-type: inline-size; }
+.board-body { --flap-step: calc(0.74em + 1px); font-family: var(--font-mono); font-size: min(14px, calc(100cqi / (var(--n) * 0.8))); }
+.board-grid { display: flex; gap: 1.1em; align-items: center; }
+/* Head cells take the same widths as the flaps (same font size), and print their label smaller. */
+.board-head { padding: 0 0 0.5em; color: var(--lp-term-muted); }
+.board-head > span { flex: none; overflow: hidden; white-space: nowrap; }
+.board-head b { font-size: 0.7em; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; }
+.board-rows { display: grid; gap: 0.35em; }
+.board-row { border-radius: 0.3em; outline-offset: 3px; }
+.board-row:hover .flap { background: #24221d; }
+.flaps { display: flex; gap: 1px; flex: none; }
+.flap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 0.74em;
+  height: 1.7em;
+  border-radius: 2px;
+  background: #1b1a16;
+  color: var(--lp-term-ink);
+  font-size: 1em;
+  line-height: 1;
+}
+/* The seam across the middle of each flap and a darker lower leaf, drawn behind the letter so a
+   hyphen or the bar of a "+" at mid-height stays readable. */
+.flap { isolation: isolate; }
+.flap::before { content: ""; position: absolute; inset: 50% 0 0; z-index: -1; border-top: 1px solid #0c0b09; background: rgb(0 0 0 / 0.16); border-radius: 0 0 2px 2px; }
+.flap.is-turning { color: var(--lp-term-muted); }
+.tone-fits .flap { color: var(--lp-term-ok); }
+.tone-years .flap { color: var(--lp-accent); }
+.tone-quiet .flap { color: var(--lp-term-muted); }
 
 /* Buttons: one light-orange fill, fully round; they give on press. `btn-tactile` adds a top
    highlight and a hairline drop so the button reads as something to press (Shrey, 2026-10-23). */
@@ -158,8 +199,11 @@
     0 0 0 1px rgb(255 255 255 / 0.12),
     0 24px 48px -12px rgb(0 0 0 / 0.45);
 }
+/* A light tint of the chapter underneath keeps the text at contrast wherever the bar floats. */
+.lp-dark > .machined-glass.glass-white { background-color: color-mix(in srgb, var(--lp-bg) 35%, transparent); }
 .lp-light > .machined-glass.glass-white {
   background: linear-gradient(135deg, rgb(255 255 255 / 0.55) 0%, rgb(255 255 255 / 0.35) 50%, rgb(255 255 255 / 0.25) 100%);
+  background-color: color-mix(in srgb, var(--lp-bg) 45%, transparent);
   box-shadow:
     inset 0 1px 0 0 rgb(255 255 255 / 0.95),
     inset 1px 0 0 0 rgb(255 255 255 / 0.6),
@@ -177,8 +221,9 @@
 
 /* Inside the #how windows: the evidence in the dark inspector, the rewritten tokens in the diff,
    and the dark tactile action that sends from the student's Gmail. */
-.landing mark.term-mark { background: color-mix(in srgb, var(--lp-ok) 25%, transparent); color: var(--lp-term-ok); }
-.landing mark.diff-mark { background: color-mix(in srgb, var(--lp-ok) 18%, transparent); color: var(--lp-ink); font-weight: 500; }
+/* Evidence reads as highlighted text everywhere, the inspector's dark block included. */
+.landing mark.term-mark { background: var(--lp-accent); color: var(--lp-on-accent); }
+.landing mark.diff-mark { background: var(--lp-mark); color: var(--lp-ink); font-weight: 500; }
 .landing .btn-term {
   display: inline-flex;
   align-items: center;
@@ -191,3 +236,27 @@
   font-weight: 600;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 1px 2px rgb(0 0 0 / 0.3);
 }
+
+/* The opening count: gone before paint when skipped; the page holds still while it runs. */
+.intro-skip .intro { display: none; }
+.intro-on, .intro-on body { overflow: hidden; }
+
+/* The hero's highlighter pen hides the system cursor, except over the controls. */
+.hl-pen { cursor: none; }
+.hl-pen :is(a, button, input, label, [role="radio"]) { cursor: pointer; }
+
+/* A quote that links to its posting: no link styling, just a dotted rule that says "there's more". */
+.source-link { text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 0.3em; text-decoration-color: color-mix(in oklab, currentColor 45%, transparent); }
+.source-link:hover, .source-link:focus-visible { text-decoration-color: currentColor; }
+.source-card { animation: source-in 160ms var(--ease-out-soft); }
+@keyframes source-in { from { opacity: 0; transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { .source-card { animation: none; } }
+
+.landing .kbd { display: inline-grid; min-width: 1.5em; place-items: center; padding: 0 0.35em; border: 1px solid var(--lp-line); border-bottom-width: 2px; border-radius: 0.3em; background: var(--lp-raised); font-family: var(--font-mono); font-size: 0.85em; color: var(--lp-ink); }
+
+/* The last-read dot: green and breathing while the counts are from the latest run, grey after. */
+.last-read { position: relative; width: 0.625rem; height: 0.625rem; border-radius: 999px; background: var(--lp-muted); }
+.last-read.is-fresh { background: var(--lp-ok); }
+.last-read.is-fresh::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--lp-ok); animation: last-read 2.4s var(--ease-out-soft) infinite; }
+@keyframes last-read { from { transform: scale(1); opacity: 0.6; } to { transform: scale(2.8); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .last-read.is-fresh::after { animation: none; } }

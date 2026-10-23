@@ -1,0 +1,274 @@
+[
+{
+"company": "Scale AI",
+"title": "Software Engineer - New Grad",
+"level": "fresher",
+"yoe_min": null,
+"yoe_max": null,
+"text": "A graduation date in Fall 2026 or Spring 2027 with a Bachelor's degree (or equivalent) in a relevant field (Computer Science, EECS, Computer Engineering, Statistics)"
+},
+{
+"company": "Glean",
+"title": "Software Engineer, Intern (Summer 2027)",
+"level": "fresher",
+"yoe_min": null,
+"yoe_max": null,
+"text": "Graduating in Fall 2027 or Spring 2028 with a B.S., M.S."
+},
+{
+"company": "Meesho",
+"title": "Assistant Manager - Business Finance",
+"level": "fresher",
+"yoe_min": null,
+"yoe_max": null,
+"text": "Qualified CA Fresher from 2025/2026 batch."
+},
+{
+"company": "Meesho",
+"title": "Assistant Manager Finance – Logistics Intelligence",
+"level": "fresher",
+"yoe_min": 0.0,
+"yoe_max": 1.0,
+"text": "0-1 years of post qualification experience majorly in a startup."
+},
+{
+"company": "Meesho",
+"title": "Trainee - Recruitment Coordinator",
+"level": "fresher",
+"yoe_min": null,
+"yoe_max": null,
+"text": "0-1 years of similar experience(s) are preferred;"
+},
+{
+"company": "Sarvam AI",
+"title": "Growth Marketing Intern",
+"level": "fresher",
+"yoe_min": null,
+"yoe_max": null,
+"text": "Are a final-year student or recent grad (0-1 yr) who's a hungry generalist, not a specialist waiting to be told what to do."
+},
+{
+"company": "Pinecone",
+"title": "Associate Field Engineer",
+"level": "fresher",
+"yoe_min": null,
+"yoe_max": null,
+"text": "This is intended to be an entry level role for new grads/early career professionals."
+},
+{
+"company": "Sarvam AI",
+"title": "ML Researcher, Foundational Models",
+"level": "experienced",
+"yoe_min": 3.0,
+"yoe_max": null,
+"text": "3+ years of research experience post-PhD (or equivalent depth)."
+},
+{
+"company": "Sarvam AI",
+"title": "ML Engineer (Data), Foundational Models",
+"level": "experienced",
+"yoe_min": 3.0,
+"yoe_max": null,
+"text": "3+ years of experience building large-scale data systems — petabyte-scale processing, distributed data pipelines, or comparable."
+},
+{
+"company": "Glean",
+"title": "Machine Learning Engineer, Search Quality",
+"level": "experienced",
+"yoe_min": 2.0,
+"yoe_max": null,
+"text": "2+ years of experience"
+},
+{
+"company": "Scale AI",
+"title": "Research Scientist, Agent Robustness",
+"level": "experienced",
+"yoe_min": 3.0,
+"yoe_max": null,
+"text": "At least three years of experience addressing sophisticated ML problems, whether in a research setting or in product development."
+},
+{
+"company": "Scale AI",
+"title": "Product Manager of AI Applications, Global Public Sector",
+"level": "experienced",
+"yoe_min": null,
+"yoe_max": null,
+"text": "4+ years of experience building products with specific experience within the last 1-2 years building AI-powered products"
+},
+{
+"company": "Sarvam AI",
+"title": "Backend Engineer, Chanakya",
+"level": "experienced",
+"yoe_min": 3.0,
+"yoe_max": 6.0,
+"text": "3–6 years in backend engineering with production systems in continuous operation"
+},
+{
+"company": "Sarvam AI",
+"title": "Data Scientist - Evaluations, Chanakya",
+"level": "experienced",
+"yoe_min": 3.0,
+"yoe_max": 6.0,
+"text": "3–6 years in data science, ML research, or applied AI;"
+},
+{
+"company": "Hume AI",
+"title": "AI Researcher",
+"level": "experienced",
+"yoe_min": 2.0,
+"yoe_max": null,
+"text": "We are looking for talented researchers with relevant publications, 2+ years of experience in a research role in industry, and/or a proven track record of contributions to open source language, audio,"
+},
+{
+"company": "Hume AI",
+"title": "Senior Platform Engineer",
+"level": "experienced",
+"yoe_min": 5.0,
+"yoe_max": null,
+"text": "5+ years of experience in developing backend services."
+},
+{
+"company": "Pinecone",
+"title": "Senior/Staff Software Engineer, Database Team",
+"level": "experienced",
+"yoe_min": 5.0,
+"yoe_max": null,
+"text": "5+ years of work experience - programming in Rust, Go, C++, or a comparable language."
+},
+{
+"company": "Meesho",
+"title": "Product Manager I",
+"level": "experienced",
+"yoe_min": 3.0,
+"yoe_max": null,
+"text": "Overall experience of 3+ yrs with at least 1+ yrs in product management in a tech-led company (consumer internet space is preferred)."
+},
+{
+"company": "Scale AI",
+"title": "Contributor Experience Manager, Community",
+"level": "experienced",
+"yoe_min": 5.0,
+"yoe_max": null,
+"text": "Minimum five years of experience in communications, marketing operations, field operations, program management, or project management"
+},
+{
+"company": "Glean",
+"title": "Talent Sourcer, GTM (Contract)",
+"level": "experienced",
+"yoe_min": 2.0,
+"yoe_max": 3.0,
+"text": "2–3 years of experience in talent sourcing, recruiting, or talent acquisition, preferably supporting US GTM or commercial hiring."
+},
+{
+"company": "Scale AI",
+"title": "Engineering Manager, Customer Platform (GenAI)",
+"level": "experienced",
+"yoe_min": null,
+"yoe_max": null,
+"text": "At least 7-10 years of relevant experience is preferred"
+},
+{
+"company": "Meesho",
+"title": "Senior Associate / Assistant Manager - Program Ops (Fulfilment & Experience)",
+"level": "experienced",
+"yoe_min": 2.0,
+"yoe_max": 4.0,
+"text": "2-4 years of experience, from startups in logistics, e-commerce/ quick commerce, D2C companies"
+},
+{
+"company": "Glean",
+"title": "Quality Assurance Engineer",
+"level": "experienced",
+"yoe_min": 2.0,
+"yoe_max": null,
+"text": "Proven 2+ years of experience as a Automation and Manual Tester, testing responsive web pages"
+},
+{
+"company": "CRED",
+"title": "accounts payable manager",
+"level": "experienced",
+"yoe_min": 4.0,
+"yoe_max": 7.0,
+"text": "Chartered Accountant with 4-7 years of experience"
+},
+{
+"company": "Glean",
+"title": "Recruiting Coordinator (Contract)",
+"level": "maybe",
+"yoe_min": 1.0,
+"yoe_max": 2.0,
+"text": "1-2 years of relevant experience"
+},
+{
+"company": "Sarvam AI",
+"title": "Developer Relations Engineer - Developer Advocate",
+"level": "maybe",
+"yoe_min": 1.0,
+"yoe_max": 3.0,
+"text": "1–3 years of experience as a software engineer, developer advocate, or in a technical content role — with real code shipped to real users."
+},
+{
+"company": "Hume AI",
+"title": "Senior/Staff AI Research Engineer",
+"level": "experienced",
+"yoe_min": 2.0,
+"yoe_max": null,
+"text": "2+ years of experience training and/or fine-tuning transformer models with large-scale datasets of text, audio, image, and/or video data"
+},
+{
+"company": "CRED",
+"title": "business development & partnerships",
+"level": "experienced",
+"yoe_min": 4.0,
+"yoe_max": null,
+"text": "4+ years of experience in partnerships, business development, merchant growth, enterprise sales, category or account management within consumer internet, fintech, commerce, loyalty, or digital busines"
+},
+{
+"company": "CRED",
+"title": "business development & partnerships – commercial lead",
+"level": "experienced",
+"yoe_min": 7.0,
+"yoe_max": 12.0,
+"text": "have 7-12yrs of experience in Business Development, Enterprise Sales, or Strategic Partnerships within payments, fintech, or banking infrastructure."
+},
+{
+"company": "CRED",
+"title": "business development & strategic partnerships - d2c",
+"level": "experienced",
+"yoe_min": 4.0,
+"yoe_max": null,
+"text": "4+ years in quota-carrying sales, business development, partnerships or key account roles within d2c, consumer internet, ecommerce, fintech or high-growth startups."
+},
+{
+"company": "CRED",
+"title": "credit card bill payments growth",
+"level": "experienced",
+"yoe_min": 4.0,
+"yoe_max": 7.0,
+"text": "4–7 years of experience in user growth/ category management roles, with prior ownership of high-frequency consumer transaction/payment categories or 3-5 years of experience in management consulting, i"
+},
+{
+"company": "CRED",
+"title": "lead – on deck payments",
+"level": "experienced",
+"yoe_min": 6.0,
+"yoe_max": 10.0,
+"text": "6–10 years of experience in payments or fintech, with prior ownership of high-frequency consumer payment categories in India"
+},
+{
+"company": "Pinecone",
+"title": "Senior/Staff Software Engineer, Search & Retrieval Infrastructure",
+"level": "experienced",
+"yoe_min": 6.0,
+"yoe_max": null,
+"text": "Architectural Depth: You have a proven track record (typically 6+ years) of shipping production-grade backends for large-scale systems."
+},
+{
+"company": "Pinecone",
+"title": "Technical Product Marketing Manager (Staff)",
+"level": "experienced",
+"yoe_min": 7.0,
+"yoe_max": null,
+"text": "7+ years of experience in product marketing, ideally at a developer-focused or AI/ML infrastructure company."
+}
+]

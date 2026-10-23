@@ -32,6 +32,10 @@ def _list(col: str, key: str, order: str, source: str) -> str:
 
 _OPEN_CARDS = f"job_cards WHERE {OPEN}"
 
+
+def _within(years: int) -> str:
+    return f"level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= {years}) OR (level = 'maybe' AND yoe_min IS NULL)"
+
 # One SELECT returning the page's whole filter snapshot as JSON text; the pipeline stores it once
 # per run (SNAPSHOT) and the API runs it live when no snapshot exists yet.
 META_SELECT = f"""SELECT jsonb_build_object(
@@ -39,6 +43,10 @@ META_SELECT = f"""SELECT jsonb_build_object(
   'levels', (SELECT COALESCE(jsonb_object_agg(level, n), '{{}}')
              FROM (SELECT level, COUNT(*) AS n FROM {_OPEN_CARDS} AND level IS NOT NULL GROUP BY level) s),
   'internships', (SELECT COUNT(*) FROM {_OPEN_CARDS} AND {INTERN}),
+  -- Jobs open to someone with N years, counted the way /api/jobs?experience=0-N&include_unstated
+  -- filters them (the landing page's "your experience" picker shows these).
+  'within_years', (SELECT jsonb_build_object({', '.join(f"'{n}', COUNT(*) FILTER (WHERE {_within(n)})" for n in range(6))})
+                   FROM {_OPEN_CARDS}),
   -- Open roles that sponsor a visa or offer relocation (the landing page's globe section).
   'visa_or_relocation', (SELECT COUNT(*) FROM {_OPEN_CARDS} AND (visa_sponsorship = 'yes'
                          OR evidence -> 'location' @> '[{{"kind": "relocation"}}]')),

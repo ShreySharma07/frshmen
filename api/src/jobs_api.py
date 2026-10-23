@@ -220,6 +220,24 @@ def create_app() -> FastAPI:
         except fit.FitUnavailable as e:
             raise HTTPException(status_code=503, detail=str(e)) from None
 
+    @app.get("/api/evidence")
+    async def evidence(limit: int = Query(120, ge=1, le=300), db: Database = Depends(get_db)) -> dict[str, Any]:
+        """A random sample of open jobs with the line that decided each label: the landing page's
+        wall of real requirements. Only jobs whose label rests on a stated line are drawn. Each line
+        carries its posting's URL so the page can show where a quote came from."""
+        rows = await db.all(
+            "SELECT id, company, title, url, level, yoe_min, yoe_max, evidence FROM job_cards "
+            f"WHERE {OPEN} AND (yoe_evidence IS NOT NULL OR level = 'fresher') ORDER BY random() LIMIT $1",
+            [limit],
+        )
+        lines = []
+        for r in rows:
+            h = _highlight(_decode(r))
+            if h:
+                lines.append({"id": r["id"], "company": r["company"], "title": r["title"], "url": r["url"], "level": r["level"],
+                              "yoe_min": r["yoe_min"], "yoe_max": r["yoe_max"], "text": h["text"]})
+        return {"lines": lines}
+
     @app.get("/api/jobs/{job_id:path}")
     async def get_job(job_id: str, db: Database = Depends(get_db)) -> dict[str, Any]:
         rows = await db.all(f"SELECT *, {SALARY} FROM job_cards WHERE id = {RESOLVE}", [job_id])

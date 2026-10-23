@@ -36,9 +36,13 @@ const COUNTRIES: Record<string, [string, number, number]> = {
 export interface Counts {
   total: number;
   fresher: number;
+  unclear: number; // labelled maybe: the posting never says how many years
+  experienced: number;
   companies: number;
   india: number;
   visa: number | null; // open roles that sponsor a visa or offer relocation; null until the API says
+  within: Record<string, number> | null; // jobs open to someone with N years (0–5); null until the API says
+  readAt: string | null; // when the pipeline last finished reading every board (ISO time)
   cities: Place[];
   abroad: Place[];
 }
@@ -46,9 +50,13 @@ export interface Counts {
 export const SNAPSHOT: Counts = {
   total: 23390,
   fresher: 356,
+  unclear: 4053,
+  experienced: 18981,
   companies: 415,
   india: 5625,
   visa: null,
+  within: null,
+  readAt: "2026-10-23T08:53:00Z",
   cities: place(CITIES, { Bengaluru: 3236, Hyderabad: 954, Pune: 429, Mumbai: 408, Noida: 303, Chennai: 258, Gurugram: 240 }),
   abroad: place(COUNTRIES, {
     "United States": 12599, "United Kingdom": 1204, Germany: 569, Canada: 546, Japan: 264,
@@ -62,9 +70,13 @@ export function fromMeta(meta: Meta): Counts {
   return {
     total: meta.total,
     fresher: meta.levels.fresher,
+    unclear: meta.levels.maybe,
+    experienced: meta.levels.experienced,
     companies: meta.last_run?.companies_ok ?? SNAPSHOT.companies,
     india: byCountry.India ?? 0,
     visa: meta.visa_or_relocation ?? null,
+    within: meta.within_years ?? null,
+    readAt: meta.last_run?.finished_at ?? meta.snapshot_at,
     cities: place(CITIES, byCity),
     abroad: place(COUNTRIES, byCountry),
   };
