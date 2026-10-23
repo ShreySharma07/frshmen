@@ -54,6 +54,7 @@ export function Highlighter({ counts }: { counts: Counts }) {
       tl.to({}, { duration: 0.18 })
         .to(q("[data-hl-copy]"), { autoAlpha: 0, y: -40, duration: 0.16, ease: "power2.in" }, 0.18)
         .to(drive.current, { collapse: 1, duration: 0.36, ease: "power2.inOut" }, 0.22)
+        .fromTo(q(".hl-wall"), { "--hl-fade": "44%" }, { "--hl-fade": "-16%", duration: 0.3, ease: "power1.inOut" }, 0.22)
         .to(q("[data-hl-dom]"), { autoAlpha: 0, duration: 0.2 }, 0.22)
         .fromTo(q("[data-hl-card]"), { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.6)
         .to({}, { duration: 0.24 });
@@ -79,8 +80,9 @@ export function Highlighter({ counts }: { counts: Counts }) {
 
         <div data-hl-copy className="hl-copy relative z-10 grid-page">
           <div className="col-span-full grid max-w-[44rem] gap-6 lg:col-span-6">
-            <h1 id="hl-title" className="text-[clamp(2.75rem,6.2vw,5.75rem)] leading-[0.95] font-semibold tracking-[-0.05em] text-balance">
-              Not another job board. An agent that gets you your next job.
+            <h1 id="hl-title" className="grid gap-3 text-balance">
+              <span className="text-[clamp(1.25rem,1.8vw,1.6rem)] font-medium tracking-[-0.01em] text-lp-muted">Not another job board.</span>
+              <span className="font-display text-[clamp(3.25rem,7vw,7rem)] leading-[0.9] tracking-[-0.025em] italic">An agent that gets you your next job.</span>
             </h1>
             <p className="max-w-[34rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed">
               Kario reads every opening to the line that says who it&rsquo;s for. Tell it your years; it marks what takes you and strikes what doesn&rsquo;t.
@@ -142,7 +144,7 @@ function HeroCard({ line, years, href }: { line: EvidenceLine; years: number; hr
       <div className="pointer-events-auto col-span-full rounded-2xl border border-lp-line bg-lp-surface p-2 shadow-sm lg:col-span-6 lg:col-start-4">
         <div className="rounded-xl border border-lp-window-line bg-lp-raised p-5">
           <p className="text-[14px] text-lp-muted">{line.company}</p>
-          <p className="mt-0.5 text-[19px] font-medium leading-snug">{line.title}</p>
+          <p className="mt-0.5 font-display text-[26px] leading-tight">{line.title}</p>
           <p className="mt-4 rounded-lg bg-lp-window-bar p-3 font-mono text-[13px] leading-relaxed">&ldquo;<mark>{line.text}</mark>&rdquo;</p>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <span className="rounded-full bg-lp-ok px-2.5 py-1 font-mono text-[12px] font-semibold text-lp-term">Takes you · {asks}</span>

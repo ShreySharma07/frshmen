@@ -110,7 +110,7 @@ export function HowItWorks() {
   return (
     <section ref={root} id="how" data-mode={mode} aria-labelledby="how-title" className="how scroll-mt-20 lp-light bg-lp-bg text-lp-ink">
       <div className="grid-page pt-[clamp(6rem,12vw,10rem)]">
-        <h2 id="how-title" className="col-span-full text-[clamp(2.5rem,5.6vw,5rem)] leading-[0.95] font-semibold tracking-[-0.05em]">How it works</h2>
+        <h2 id="how-title" className="col-span-full font-display text-[clamp(3rem,6.6vw,6rem)] leading-[0.92] tracking-[-0.02em]">How it works</h2>
         <p className="col-span-full mt-4 max-w-[38rem] text-[16px] text-lp-muted">One real Palantir posting, start to finish. The job and every quote from it are real; the resume and the people are a sample profile.</p>
       </div>
 
@@ -143,7 +143,7 @@ export function HowItWorks() {
             {STEPS.map(({ title, body, Fragment }, i) => (
               <article key={title} data-panel-step={i} aria-label={`Step ${i + 1}: ${title}`} className="how-panel grid-page">
                 <div className="col-span-full grid content-center gap-4 lg:col-span-5">
-                  <h3 className="text-[clamp(1.75rem,3vw,2.75rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance">{title}</h3>
+                  <h3 className="font-display text-[clamp(2.25rem,3.6vw,3.5rem)] leading-[1] tracking-[-0.015em] text-balance">{title}</h3>
                   <p className="max-w-[32rem] text-[17px] leading-relaxed">{body}</p>
                 </div>
                 <div className="col-span-full min-w-0 content-center lg:col-span-6 lg:col-start-7 lg:grid">

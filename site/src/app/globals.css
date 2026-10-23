@@ -74,62 +74,61 @@
   color-scheme: dark;
 }
 
-/* Landing palette (docs/decisions.md 2026-10-23): "high-authority enterprise and fintech".
-   Midnight navy chapters (`.lp-dark`: hero, globe, footer; #0F172A elevated) and warm parchment
-   chapters (`.lp-light`: sources, How it works; #EFECE6 bento, #FFFFFF inner), Klein cobalt as
-   the one action colour, emerald as the pass signal. Both scopes set the same roles. Contrast:
-   every text role is 4.5:1 or more on its scope's bg and raised; cobalt carries white text
-   (5.2), and as text on navy it lightens to accent-text (7.6). Pass and warn are fills under
-   navy text (5.1, 6.1). */
+/* Landing palette "Ink and Marigold" (docs/decisions.md 2026-10-23, from the design critique):
+   the brand is evidence, so the page is paper and ink with one highlighter. Paper chapters
+   (`.lp-light`) carry the story; graphite chapters (`.lp-dark`) the globe and the footer.
+   Marigold is a fill under ink text (10.5:1): buttons look like highlighted text, and so does
+   evidence. As text it can't sit on paper, so links use accent-text. Every text role is 4.5:1
+   or more on its scope's bg and raised; pass and warn are fills under ink (6.2, 8.3). */
 .lp-dark {
-  --lp-bg: #080d1a;
-  --lp-surface: #0f172a;
-  --lp-raised: #1e293b;
-  --lp-line: #273449;
-  --lp-ink: #f1f5f9;
-  --lp-muted: #94a3b8;
-  --lp-accent: #2563eb;
-  --lp-on-accent: #ffffff;
-  --lp-accent-text: #60a5fa;
-  --lp-add: #34d399;
-  --lp-add-bg: #0b2a24;
-  --lp-del: #f87171;
-  --lp-del-bg: #2a1418;
-  --lp-mark: #1e3a8a;
-  --lp-window-bar: #111a2e;
-  --lp-window-line: #273449;
-  --lp-ok: #059669;
-  --lp-warn: #d97706;
-  --lp-warn-text: #fbbf24;
-  --lp-term: #080d1a;
-  --lp-term-ink: #e2e8f0;
-  --lp-term-muted: #94a3b8;
-  --lp-term-ok: #34d399;
+  --lp-bg: #14130f;
+  --lp-surface: #1c1b17;
+  --lp-raised: #26241f;
+  --lp-line: #34312a;
+  --lp-ink: #ece7db;
+  --lp-muted: #a39d90;
+  --lp-accent: #ffb21a;
+  --lp-on-accent: #121110;
+  --lp-accent-text: #ffc24d;
+  --lp-add: #7fd49b;
+  --lp-add-bg: #1b2a1f;
+  --lp-del: #f08a75;
+  --lp-del-bg: #33201b;
+  --lp-mark: #4a3a12;
+  --lp-window-bar: #1f1e1a;
+  --lp-window-line: #34312a;
+  --lp-ok: #3fa66a;
+  --lp-warn: #e0a100;
+  --lp-warn-text: #ffc24d;
+  --lp-term: #0c0b09;
+  --lp-term-ink: #ece7db;
+  --lp-term-muted: #a39d90;
+  --lp-term-ok: #7fd49b;
 }
 .lp-light {
-  --lp-bg: #faf8f5; /* warm parchment canvas */
-  --lp-surface: #efece6; /* bento cards */
-  --lp-raised: #ffffff; /* inner surfaces and windows */
-  --lp-line: #e2ded5;
-  --lp-ink: #0f172a;
-  --lp-muted: #5b6475;
-  --lp-accent: #2563eb; /* Klein cobalt: the one action colour */
-  --lp-on-accent: #ffffff;
-  --lp-accent-text: #1d4ed8;
-  --lp-add: #047857;
-  --lp-add-bg: #e6f6f0;
-  --lp-del: #9b3b3b;
-  --lp-del-bg: #fdf0f0;
-  --lp-mark: #dbe7ff;
-  --lp-window-bar: #faf9f7;
-  --lp-window-line: #e5e7eb;
-  --lp-ok: #059669; /* pass signal (fill under navy text) */
-  --lp-warn: #d97706; /* missing signal (fill under navy text) */
-  --lp-warn-text: #b45309;
-  --lp-term: #080d1a; /* midnight navy terminal blocks, dark buttons, status bars */
-  --lp-term-ink: #e2e8f0;
-  --lp-term-muted: #94a3b8;
-  --lp-term-ok: #34d399;
+  --lp-bg: #f2eee4; /* paper */
+  --lp-surface: #e9e3d6; /* bento frames */
+  --lp-raised: #fbf9f4; /* raised paper: windows, cards */
+  --lp-line: #d9d3c5;
+  --lp-ink: #121110; /* warm near-black, not navy */
+  --lp-muted: #625d53;
+  --lp-accent: #ffb21a; /* marigold: the highlighter, and the one action colour */
+  --lp-on-accent: #121110;
+  --lp-accent-text: #1f4fd8; /* links (marigold can't be text on paper) */
+  --lp-add: #276b43;
+  --lp-add-bg: #e4efe4;
+  --lp-del: #b5381f; /* strike: what asks for more than you have */
+  --lp-del-bg: #f6e2dc;
+  --lp-mark: #ffd27a; /* marigold highlight behind evidence */
+  --lp-window-bar: #f6f3ec;
+  --lp-window-line: #e3ddd0;
+  --lp-ok: #3fa66a;
+  --lp-warn: #e0a100;
+  --lp-warn-text: #8a5300;
+  --lp-term: #0c0b09; /* ink terminal blocks, dark buttons */
+  --lp-term-ink: #ece7db;
+  --lp-term-muted: #a39d90;
+  --lp-term-ok: #7fd49b;
 }
 
 /* `dark:` classes follow the chosen theme (data-theme), not only the device setting. */
@@ -182,6 +181,10 @@
      chips (set by next/font). */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Landing only (loaded by app/preview/page.tsx): Instrument Serif for headings, the face the
+     wordmark is drawn from, and Instrument Sans for text. */
+  --font-display: var(--font-instrument-serif), Georgia, serif;
+  --font-text: var(--font-instrument-sans), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme {

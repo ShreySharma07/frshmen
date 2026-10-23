@@ -79,7 +79,7 @@ export function GlobeStory({ counts }: { counts: Counts }) {
 
         <div data-panel="places" className="panel">
           <div className="col-span-full grid gap-7 lg:col-span-5 lg:col-start-8">
-            <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] leading-[0.95] font-semibold tracking-[-0.05em] text-balance">Find jobs all around the globe.</h2>
+            <h2 className="font-display text-[clamp(3rem,6vw,5.5rem)] leading-[0.92] tracking-[-0.02em] text-balance">Find jobs all around the globe.</h2>
             <p className="max-w-[30rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed">
               India&rsquo;s tech hubs first, then the cities abroad that hire graduates. Roles outside India are tagged when they sponsor a visa or help you relocate.
             </p>
@@ -102,7 +102,7 @@ export function GlobeStory({ counts }: { counts: Counts }) {
 
         <div data-panel="sources" className="panel lp-light text-lp-ink">
           <div className="col-span-full grid gap-10 lg:col-span-7">
-            <h2 className="max-w-[16ch] text-[clamp(2.5rem,5.6vw,5rem)] leading-[0.95] font-semibold tracking-[-0.05em] text-balance">
+            <h2 className="max-w-[16ch] font-display text-[clamp(3rem,6.6vw,6rem)] leading-[0.92] tracking-[-0.02em] text-balance">
               Every opening, straight from the companies hiring.
             </h2>
             <p className="max-w-[36rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed">

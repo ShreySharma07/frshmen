@@ -6,6 +6,7 @@
   --gutter: max(1.25rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   background: var(--lp-bg);
   color: var(--lp-ink);
+  font-family: var(--font-text);
 }
 @media (min-width: 64rem) {
   .landing { --gutter: 2.5rem; }
@@ -99,7 +100,8 @@
   .hl[data-mode="flow"] .hl-dom { opacity: 1; }
 }
 @media (min-width: 64rem) {
-  .hl-wall, .hl[data-mode="scroll"] .hl-dom { mask-image: linear-gradient(90deg, transparent 0%, transparent 44%, #000 60%); }
+  /* --hl-fade is lifted to 0% by the scroll as the wall collapses to the hero line. */
+  .hl-wall, .hl[data-mode="scroll"] .hl-dom { mask-image: linear-gradient(90deg, transparent 0%, transparent var(--hl-fade, 44%), #000 calc(var(--hl-fade, 44%) + 16%)); }
 }
 .hl[data-mode="flow"] .hl-dom { position: relative; inset: auto; max-height: 70svh; }
 .hl[data-mode="flow"] .hl-copy { position: absolute; inset: 0; }
@@ -114,7 +116,7 @@
 .how[data-mode="scroll"] .how-track { display: flex; width: max-content; height: 100%; }
 .how[data-mode="scroll"] .how-panel { width: 100vw; flex: none; }
 .how[data-mode="flow"] .how-pills { position: sticky; top: calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 3.5rem); z-index: 20; background: var(--lp-bg); }
-.landing .how mark[data-mark] { background-image: linear-gradient(color-mix(in srgb, var(--lp-ok) 25%, transparent), color-mix(in srgb, var(--lp-ok) 25%, transparent)); background-repeat: no-repeat; background-size: 100% 100%; background-color: transparent; }
+.landing .how mark[data-mark] { background-image: linear-gradient(var(--lp-accent), var(--lp-accent)); background-repeat: no-repeat; background-size: 100% 100%; background-color: transparent; color: var(--lp-on-accent); }
 
 /* The sources band: two rows drifting in opposite directions, fading out at both edges; hover
    holds them. */
@@ -206,8 +208,9 @@
 
 /* Inside the #how windows: the evidence in the dark inspector, the rewritten tokens in the diff,
    and the dark tactile action that sends from the student's Gmail. */
-.landing mark.term-mark { background: color-mix(in srgb, var(--lp-ok) 25%, transparent); color: var(--lp-term-ok); }
-.landing mark.diff-mark { background: color-mix(in srgb, var(--lp-ok) 18%, transparent); color: var(--lp-ink); font-weight: 500; }
+/* Evidence reads as highlighted text everywhere, the inspector's dark block included. */
+.landing mark.term-mark { background: var(--lp-accent); color: var(--lp-on-accent); }
+.landing mark.diff-mark { background: var(--lp-mark); color: var(--lp-ink); font-weight: 500; }
 .landing .btn-term {
   display: inline-flex;
   align-items: center;
