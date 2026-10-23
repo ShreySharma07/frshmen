@@ -4,6 +4,64 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-23 — Landing page design: Shrey's layout, art-directed with taste-skill
+- **Layout (Shrey):** glass top bar (kario, How it works, Jobs, profile); tagline "Not another job
+  board. An agent that gets you your next job." beside a turning globe; on scroll the globe rolls
+  left, turns to India and lights cities with live job counts ("Find jobs all around the globe");
+  then a moving band of the hiring systems and companies we read; then How it works in four steps;
+  a full-width kario wordmark closes the page. Built at `/preview` (`site/src/components/landing/`).
+- **Globe options:** dotted (cobe, ~5 KB) · realistic textured (three.js, 150 KB+) · line drawing
+  (d3-geo). **Choice:** dotted; a 37 KB still (`site/public/landing/globe.webp`) replaces it without
+  WebGL or with Save-Data on.
+- **Palette options** (taste-skill library; it bans indigo, so #5851ec had to be decided): keep
+  indigo light · keep indigo on a dark page · new palette. Then Night and cornflower · Graphite and
+  orange · Bottle ink and yellow. **Choice:** new palette, Night and cornflower (`.night` tokens in
+  `globals.css`, mirrored as `color.night` in `tokens.ts`, checked by `check:tokens`). For now only
+  the landing page uses it; the job list is restyled to match in its own change.
+- **Headline face options:** Schibsted Grotesk Heavy · Bricolage Grotesque · Unbounded with Onest.
+  **Choice:** Bricolage Grotesque 600, loaded by `app/preview/page.tsx` only, so the job list never
+  downloads it; Geist stays for text.
+- **Pictures options:** real Kario interface pieces in HTML · those plus credited city photos ·
+  flat illustrations. **Choice:** interface pieces (`landing/Fragments.tsx`), following one real
+  posting (Palantir new grad, 2026-10-23) with its real evidence; the profile behind fit, people and
+  resume lines is an example and labelled so.
+- **Glass:** taste-skill bans it and CLAUDE.md bans it "everywhere"; Shrey wants it on the top bar.
+  Kept to that one bar.
+- **What the steps promise** (copy must be true at launch): applying is prepared by the agent and
+  submitted by you (options were: you submit · agent submits where an apply API exists · fully
+  automatic); people to ask come from your uploaded LinkedIn export first, then public team pages
+  (options: export · public pages · both). Email goes from your Gmail after approval; LinkedIn notes
+  are sent by you.
+- **Libraries (landing only):** cobe 2.0.1, GSAP 3.15 with ScrollTrigger and SplitText, Lenis
+  1.3.25. Motion and React Three Fiber were not needed. The job list's JavaScript is unchanged.
+- **taste-skill:** its rules and library were used by hand; its `draw`, `lint` and `inspect`
+  scripts were blocked in this environment (external code), so checks were Playwright screenshots
+  at 390, 768 and 1440 px, reduced motion, overflow and keyboard order.
+
+## 2026-10-19 — Home page tells the whole story, launched only when it is all true
+- **Options (purpose):** a pitch for signed-out visitors · a start screen for signed-in users ·
+  both, split by state. **Options (before launch):** a hidden `/preview` route · Cloudflare preview
+  URLs per PR · a long-lived branch
+- **Choice (Shrey):** both, split by state (signed-in part comes with sign-in). The page tells the
+  market story (our own count plus cited reports), the product (labels, fit, resume tailored to the
+  JD, referral outreach), the impact and what you get. It is built at `/preview` (unlinked, noindex)
+  and replaces `/` only when every feature it promises works end to end; then the list moves to
+  `/jobs` and old `/?…` links redirect.
+- **Look:** editorial with motion: a React Three Fiber hero on every device (still image for reduced
+  motion, Save-Data or no WebGL), GSAP scroll story, a sans display face over Geist body text.
+- **Why:** a page that promises unbuilt features would mislead; `/preview` keeps one codebase on
+  `main` with no deploy changes.
+
+## 2026-10-19 — Referral outreach: the agent drafts, the person sends
+- **Options (LinkedIn):** agent drafts, user sends with one tap · a browser extension fills the box ·
+  fully automatic sending. **Options (email):** drafts in the user's Gmail, approved before sending ·
+  auto-send with a daily cap · copy and paste only
+- **Choice (Shrey):** LinkedIn: the agent finds the person and writes the note; one tap copies it and
+  opens the profile. Email: drafts go into the user's own Gmail (Google sign-in), and each is
+  approved before it is sent.
+- **Why:** LinkedIn's terms ban automated messaging and accounts get restricted; CLAUDE.md rules out
+  automating LinkedIn. Nothing goes out under a student's name without them reading it.
+
 ## 2026-10-19 — Big global boards are read once a day
 - **Options:** every board every 3 hours (as before) · the big global boards (`india_only`) once a
   day, everyone else every 3 hours

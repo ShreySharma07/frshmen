@@ -54,7 +54,14 @@ export interface JobPage {
 // Filter counts and lists come from a snapshot the pipeline writes once per run.
 export interface Meta {
   total: number;
+  levels: Record<Level, number>;
+  internships: number;
+  roles: Partial<Record<Role, number>>;
+  companies: { company: string; n: number }[]; // companies with open jobs
   countries: { country: string; n: number }[];
+  cities: { city: string; n: number }[];
+  snapshot_at: string | null;
+  last_run: { finished_at: string; companies_ok: number; jobs_new: number } | null;
 }
 
 export const PER_PAGE = 20;

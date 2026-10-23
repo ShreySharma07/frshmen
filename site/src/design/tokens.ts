@@ -36,6 +36,19 @@ export const color = {
     cardAccent: "#a5a0ff",
     code: "#1c1c24",
   },
+  /** The landing page's one dark look ("Night and cornflower"), `.night` in globals.css. */
+  night: {
+    bg: "#0a0d14",
+    surface: "#131824",
+    raised: "#1b2233",
+    line: "#262f43",
+    ink: "#e9edf3",
+    muted: "#8891a1",
+    accent: "#5a9bfc",
+    onAccent: "#0a0d14",
+    good: "#6fd3a0",
+    miss: "#f0a35e",
+  },
 } as const;
 
 /** Font sizes in px with line heights (unitless ratios), matching the --text-* scale. */
@@ -60,6 +73,8 @@ export const motion = {
   layout: 400,
   easeOutSoft: [0.2, 0.8, 0.2, 1],
   easeInOutSoft: [0.4, 0, 0.2, 1],
+  landing: 800,
+  easeOutExpo: [0.16, 1, 0.3, 1],
 } as const;
 
-export const font = { sans: "Geist", mono: "Geist Mono" } as const;
+export const font = { sans: "Geist", mono: "Geist Mono", display: "Bricolage Grotesque" } as const;
