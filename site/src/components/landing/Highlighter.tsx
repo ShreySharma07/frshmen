@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { fetchEvidence, type EvidenceLine } from "@/lib/api";
+import { introDone } from "./intro";
 import { fmt, type Counts } from "./places";
 import { clip, fit, rows, STARTER, YEARS } from "./wall";
 import type { WallDrive } from "./WallScene";
@@ -41,9 +42,13 @@ export function Highlighter({ counts }: { counts: Counts }) {
   const first = useRef(true);
   useEffect(() => {
     if (mode !== "scroll") { drive.current.sweep = 1; return; }
-    const tween = gsap.fromTo(drive.current, { sweep: 0 }, { sweep: 1, duration: first.current ? 2.6 : 1.1, delay: first.current ? 0.5 : 0, ease: "power2.inOut" });
+    // The first sweep waits for the opening count to clear, so it runs where the reader can see it.
+    const isFirst = first.current;
     first.current = false;
-    return () => { tween.kill(); };
+    let tween: gsap.core.Tween | null = null, dead = false;
+    const run = () => { if (!dead) tween = gsap.fromTo(drive.current, { sweep: 0 }, { sweep: 1, duration: isFirst ? 2.6 : 1.1, delay: isFirst ? 0.2 : 0, ease: "power2.inOut" }); };
+    if (isFirst) introDone.then(run); else run();
+    return () => { dead = true; tween?.kill(); };
   }, [years, mode, lines]);
 
   useEffect(() => {

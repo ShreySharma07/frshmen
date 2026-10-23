@@ -14,6 +14,7 @@ import { Wordmark } from "../Wordmark";
 import { GlobeStory } from "./GlobeStory";
 import { Highlighter } from "./Highlighter";
 import { HowItWorks } from "./HowItWorks";
+import { Intro } from "./Intro";
 import { fmt, fromMeta, SNAPSHOT } from "./places";
 import { setLenis } from "./scroll";
 import { FinalCall, Proof, Trust } from "./Story";
@@ -44,6 +45,7 @@ export function Landing() {
 
   return (
     <div className="landing lp-dark min-h-svh">
+      <Intro total={counts.total} />
       <Nav total={counts.total} />
       <main>
         <Highlighter counts={counts} />
