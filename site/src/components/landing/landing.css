@@ -29,10 +29,9 @@
   padding-block: 7rem 4rem;
 }
 .story [data-panel="sources"] { padding-bottom: 5rem; }
-.story[data-mode="scroll"] { height: 420svh; }
+.story[data-mode="scroll"] { height: 300svh; }
 .story[data-mode="scroll"] .story-frame { position: sticky; top: 0; height: 100svh; overflow: clip; }
 .story[data-mode="scroll"] .panel { position: absolute; inset: 0; }
-.story[data-mode="scroll"] [data-panel="places"],
 .story[data-mode="scroll"] [data-panel="sources"],
 .story[data-mode="scroll"] [data-field] { visibility: hidden; }
 /* The white field the sources chapter sits on: faded in by the scroll scene, or simply the
@@ -51,19 +50,14 @@
   justify-items: center;
   padding-bottom: 2svh;
 }
-.globe-box > div { width: min(118vw, 34rem); translate: 0 30%; }
+/* Left half on wide screens; above the places on phones. */
+.globe-box > div { width: min(88vw, 26rem); translate: 0 -38%; }
 @media (min-width: 64rem) {
   .globe-box { align-items: center; padding-bottom: 0; }
-  .globe-box > div { width: min(46vw, 46rem); translate: 23vw 4%; }
+  .globe-box > div { width: min(46vw, 46rem); translate: -23vw 4%; }
 }
-.story[data-mode="flow"] .globe-box > div { translate: 0 30%; }
-@media (min-width: 64rem) {
-  .story[data-mode="flow"] .globe-box > div { translate: 23vw 4%; }
-}
-.story [data-panel="hero"] { position: relative; z-index: 1; pointer-events: none; }
-.story [data-panel="hero"] a, .story [data-panel="hero"] button { pointer-events: auto; }
+.story[data-mode="flow"] .globe-box { height: 100svh; }
 @media (max-width: 63.99rem) {
-  .story [data-panel="hero"] { align-content: start; padding-top: 8.5rem; }
   .story [data-panel="places"] { align-content: end; padding-bottom: 3rem; }
 }
 
@@ -89,6 +83,27 @@
   }
   .globe-label b { color: var(--lp-accent-text); font-weight: 600; font-variant-numeric: tabular-nums; }
 }
+
+/* The Highlighter: one sticky screen in "scroll" mode (WebGL wall, the scroll clears it to a
+   card); in "flow" mode the text wall and the card simply stack. */
+.hl-frame { min-height: 100svh; }
+.hl[data-mode="scroll"] { height: 260svh; }
+.hl[data-mode="scroll"] .hl-frame { position: sticky; top: 0; height: 100svh; }
+.hl-copy { min-height: 100svh; align-content: center; padding-block: 7rem 4rem; }
+.hl-dom { overflow: hidden; }
+/* The wall fades in from behind the copy, so the headline sits on clean paper; on phones the
+   copy is on top of a quieter wall. The scroll clears the wall anyway, so the mask can stay. */
+.hl-wall, .hl-dom { mask-image: linear-gradient(180deg, transparent 0%, #000 0%); }
+@media (max-width: 63.99rem) {
+  .hl-wall, .hl-dom { opacity: 0.35; }
+  .hl[data-mode="flow"] .hl-dom { opacity: 1; }
+}
+@media (min-width: 64rem) {
+  .hl-wall, .hl[data-mode="scroll"] .hl-dom { mask-image: linear-gradient(90deg, transparent 0%, transparent 44%, #000 60%); }
+}
+.hl[data-mode="flow"] .hl-dom { position: relative; inset: auto; max-height: 70svh; }
+.hl[data-mode="flow"] .hl-copy { position: absolute; inset: 0; }
+.hl[data-mode="flow"] .hl-card { position: relative; inset: auto; opacity: 1; padding-block: 3rem 6rem; }
 
 /* The sources band: two rows drifting in opposite directions, fading out at both edges; hover
    holds them. */

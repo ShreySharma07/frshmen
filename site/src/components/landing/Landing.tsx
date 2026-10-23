@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { fetchMeta } from "@/lib/api";
 import { Wordmark } from "../Wordmark";
 import { GlobeStory } from "./GlobeStory";
+import { Highlighter } from "./Highlighter";
 import { HowItWorks } from "./HowItWorks";
 import { fmt, fromMeta, SNAPSHOT } from "./places";
 import { setLenis } from "./scroll";
@@ -44,6 +45,7 @@ export function Landing() {
     <div className="landing lp-dark min-h-svh">
       <Nav fresher={counts.fresher} />
       <main>
+        <Highlighter counts={counts} />
         <GlobeStory counts={counts} />
         <HowItWorks />
       </main>

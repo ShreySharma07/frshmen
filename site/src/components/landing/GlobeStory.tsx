@@ -1,18 +1,15 @@
 "use client";
 
-// The first three screens as one scroll scene: the tagline with the globe on the right; the globe
-// rolls left and turns to India while the places light up; then the graphite gives way to a white
-// field for the sources band. Without script, or with reduced motion, the three panels simply stack (mode "flow"), so
+// After the Highlighter, one scroll scene: the globe on the left turns to India while the places
+// with jobs light up beside it; then the navy gives way to a parchment field for the sources band. Without script, or with reduced motion, the three panels simply stack (mode "flow"), so
 // nothing is ever hidden behind an animation that didn't run.
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
-import Link from "next/link";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { Globe, type GlobeView } from "./Globe";
 import { fmt, type Counts } from "./places";
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(ScrollTrigger);
 
 // Indian cities sit close together on the globe, so only places far apart get a label.
 const LABELLED = new Set(["blr", "us", "uk", "jp", "sg"]);
@@ -37,11 +34,6 @@ export function GlobeStory({ counts }: { counts: Counts }) {
     if (mode !== "scroll" || !root.current) return;
     const ctx = gsap.context(() => {
       const q = gsap.utils.selector(root);
-      // The tagline rises line by line from behind a mask, once, on load: the page's signature move.
-      const split = SplitText.create(q("[data-tagline]"), { type: "lines", mask: "lines", autoSplit: true });
-      gsap.from(split.lines, { yPercent: 110, duration: 0.9, ease: "expo.out", stagger: 0.08, delay: 0.15 });
-      gsap.from(q("[data-hero-after]"), { y: 20, opacity: 0, duration: 0.7, ease: "expo.out", stagger: 0.08, delay: 0.45 });
-
       const mm = gsap.matchMedia();
       mm.add({ wide: "(min-width: 64rem)", narrow: "(max-width: 63.99rem)" }, (c) => {
         const wide = c.conditions?.wide;
@@ -49,19 +41,15 @@ export function GlobeStory({ counts }: { counts: Counts }) {
           defaults: { ease: "power2.inOut" },
           scrollTrigger: { trigger: root.current, start: "top top", end: "bottom bottom", scrub: 0.6 },
         });
-        tl.set(q("[data-panel=places], [data-panel=sources]"), { autoAlpha: 0 }, 0)
-          .to({}, { duration: 0.1 })
-          // Hand-offs never overlap: one panel is gone before the next arrives, so text is never
-          // half-faded under another.
-          .to(q("[data-panel=hero]"), { autoAlpha: 0, y: -48, duration: 0.12 }, 0.1)
-          .to(q("[data-globe]"), wide ? { x: () => -window.innerWidth * 0.46, duration: 0.34 } : { y: () => -window.innerHeight * 0.4, scale: 0.6, duration: 0.34 }, 0.1)
-          .to(view.current, { focus: 1, duration: 0.34 }, 0.1)
-          .fromTo(q("[data-panel=places]"), { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.3)
-          .to({}, { duration: 0.14 })
-          .to(q("[data-globe], [data-panel=places]"), { autoAlpha: 0, scale: 0.9, duration: 0.08, ease: "power2.in" }, 0.58)
-          .fromTo(q("[data-field]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06, ease: "none" }, 0.64)
-          .fromTo(q("[data-panel=sources]"), { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.7)
-          .to({}, { duration: 0.14 });
+        // The globe turns to India while its places are on screen, then hands over to the sources.
+        // Hand-offs never overlap, so text is never half-faded under another.
+        tl.set(q("[data-panel=sources]"), { autoAlpha: 0 }, 0)
+          .to(view.current, { focus: 1, duration: 0.4 }, 0.04)
+          .to(q("[data-globe]"), wide ? { scale: 1.08, duration: 0.4 } : { scale: 1, duration: 0.4 }, 0.04)
+          .to(q("[data-globe], [data-panel=places]"), { autoAlpha: 0, scale: 0.9, duration: 0.08, ease: "power2.in" }, 0.54)
+          .fromTo(q("[data-field]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06, ease: "none" }, 0.6)
+          .fromTo(q("[data-panel=sources]"), { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.66)
+          .to({}, { duration: 0.18 });
         return () => { view.current.focus = 0; };
       });
     }, root);
@@ -86,20 +74,6 @@ export function GlobeStory({ counts }: { counts: Counts }) {
                 {p.name} <b>{fmt(p.n)}</b>
               </span>
             ))}
-          </div>
-        </div>
-
-        <div data-panel="hero" className="panel">
-          <div className="col-span-full grid gap-7 lg:col-span-6">
-            <h1 data-tagline className="text-[clamp(2.75rem,6.4vw,5.75rem)] leading-[0.95] font-semibold tracking-[-0.05em] text-balance">
-              Not another job board. An agent that gets you your next job.
-            </h1>
-            <p data-hero-after className="max-w-[34rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed text-lp-ink">
-              Kario finds the jobs that really take freshers, checks your fit, finds people to ask for a referral and prepares each application with you.
-            </p>
-            <div data-hero-after className="flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link href="/?yrs=0" className="btn-primary btn-tactile">Find fresher jobs</Link>
-            </div>
           </div>
         </div>
 
