@@ -4,6 +4,40 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-23 — Landing page design: Shrey's layout, art-directed with taste-skill
+- **Layout (Shrey):** glass top bar (kario, How it works, Jobs, profile); tagline "Not another job
+  board. An agent that gets you your next job." beside a turning globe; on scroll the globe rolls
+  left, turns to India and lights cities with live job counts ("Find jobs all around the globe");
+  then a moving band of the hiring systems and companies we read; then How it works in four steps;
+  a full-width kario wordmark closes the page. Built at `/preview` (`site/src/components/landing/`).
+- **Globe options:** dotted (cobe, ~5 KB) · realistic textured (three.js, 150 KB+) · line drawing
+  (d3-geo). **Choice:** dotted; a 37 KB still (`site/public/landing/globe.webp`) replaces it without
+  WebGL or with Save-Data on.
+- **Palette options** (taste-skill library; it bans indigo, so #5851ec had to be decided): keep
+  indigo light · keep indigo on a dark page · new palette. Then Night and cornflower · Graphite and
+  orange · Bottle ink and yellow. **Choice:** new palette, Night and cornflower (`.night` tokens in
+  `globals.css`, mirrored as `color.night` in `tokens.ts`, checked by `check:tokens`). For now only
+  the landing page uses it; the job list is restyled to match in its own change.
+- **Headline face options:** Schibsted Grotesk Heavy · Bricolage Grotesque · Unbounded with Onest.
+  **Choice:** Bricolage Grotesque 600, loaded by `app/preview/page.tsx` only, so the job list never
+  downloads it; Geist stays for text.
+- **Pictures options:** real Kario interface pieces in HTML · those plus credited city photos ·
+  flat illustrations. **Choice:** interface pieces (`landing/Fragments.tsx`), following one real
+  posting (Palantir new grad, 2026-10-23) with its real evidence; the profile behind fit, people and
+  resume lines is an example and labelled so.
+- **Glass:** taste-skill bans it and CLAUDE.md bans it "everywhere"; Shrey wants it on the top bar.
+  Kept to that one bar.
+- **What the steps promise** (copy must be true at launch): applying is prepared by the agent and
+  submitted by you (options were: you submit · agent submits where an apply API exists · fully
+  automatic); people to ask come from your uploaded LinkedIn export first, then public team pages
+  (options: export · public pages · both). Email goes from your Gmail after approval; LinkedIn notes
+  are sent by you.
+- **Libraries (landing only):** cobe 2.0.1, GSAP 3.15 with ScrollTrigger and SplitText, Lenis
+  1.3.25. Motion and React Three Fiber were not needed. The job list's JavaScript is unchanged.
+- **taste-skill:** its rules and library were used by hand; its `draw`, `lint` and `inspect`
+  scripts were blocked in this environment (external code), so checks were Playwright screenshots
+  at 390, 768 and 1440 px, reduced motion, overflow and keyboard order.
+
 ## 2026-10-19 — Home page tells the whole story, launched only when it is all true
 - **Options (purpose):** a pitch for signed-out visitors · a start screen for signed-in users ·
   both, split by state. **Options (before launch):** a hidden `/preview` route · Cloudflare preview
