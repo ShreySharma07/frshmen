@@ -132,6 +132,16 @@ def test_meta_comes_from_the_snapshot_publish_writes(client):
     assert {"company": "Acme", "n": 2} in meta["companies"]
     assert meta["last_run"]["jobs_new"] >= 1 and meta["fit_check"] is False
     assert isinstance(meta["visa_or_relocation"], int)
+    within = meta["within_years"]
+    assert [within[str(n)] for n in range(6)] == sorted(within[str(n)] for n in range(6))  # more years, more jobs
+    assert within["0"] >= meta["levels"]["fresher"]
+
+
+def test_evidence_is_a_sample_of_real_deciding_lines(client):
+    lines = client.get("/api/evidence?limit=50").json()["lines"]
+    assert lines and all(l["text"] and l["level"] in ("fresher", "maybe", "experienced") for l in lines)
+    assert any("years" in l["text"] for l in lines)
+    assert client.get("/api/evidence?limit=1000").status_code == 422
 
 
 def test_meta_is_computed_live_before_the_first_snapshot(client):
