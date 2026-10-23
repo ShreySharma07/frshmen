@@ -74,6 +74,24 @@
   color-scheme: dark;
 }
 
+/* Landing palette "Night and cornflower" (docs/decisions.md 2026-10-23), from taste-skill's
+   library. One deliberate dark look for the landing page only (`.night` on its root); the job
+   list keeps its light and dark themes until it is redesigned to match. Contrast on night-bg:
+   ink 16.5, muted 6.1, accent 7.0, good 10.6, miss 9.4; on night-raised every text role stays
+   above 5:1. `night-line` is for interface fragments only (inputs, table rules), never ornament. */
+.night {
+  --night-bg: #0a0d14; /* page */
+  --night-surface: #131824; /* product fragments */
+  --night-raised: #1b2233; /* a step up inside a fragment */
+  --night-line: #262f43;
+  --night-ink: #e9edf3;
+  --night-muted: #8891a1;
+  --night-accent: #5a9bfc; /* actions, live city markers, the years line */
+  --night-on-accent: #0a0d14;
+  --night-good: #6fd3a0; /* matched skill */
+  --night-miss: #f0a35e; /* missing skill, struck title */
+}
+
 /* `dark:` classes follow the chosen theme (data-theme), not only the device setting. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
@@ -96,10 +114,22 @@
   --color-card-accent: var(--card-accent);
   --color-card-line: var(--card-line);
   --color-code: var(--code);
+  --color-night-bg: var(--night-bg);
+  --color-night-surface: var(--night-surface);
+  --color-night-raised: var(--night-raised);
+  --color-night-line: var(--night-line);
+  --color-night-ink: var(--night-ink);
+  --color-night-muted: var(--night-muted);
+  --color-night-accent: var(--night-accent);
+  --color-night-on-accent: var(--night-on-accent);
+  --color-night-good: var(--night-good);
+  --color-night-miss: var(--night-miss);
 
   /* Two families only: Geist for text, Geist Mono for numbers and keywords (set by next/font). */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Landing headings only: Bricolage Grotesque, loaded by app/preview/page.tsx. */
+  --font-display: var(--font-bricolage), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme {
@@ -131,6 +161,7 @@
   /* Motion: feedback 150-250 ms, layout 300-500 ms (CLAUDE.md). No linear, no bounce. */
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-out-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* landing: arrivals and the globe */
   --default-transition-duration: 150ms;
   --default-transition-timing-function: var(--ease-out-soft);
 }
@@ -144,6 +175,9 @@
 }
 @utility duration-layout {
   transition-duration: 400ms;
+}
+@utility duration-landing {
+  transition-duration: 800ms; /* one-off landing moments (CLAUDE.md: up to ~800 ms) */
 }
 
 body {
