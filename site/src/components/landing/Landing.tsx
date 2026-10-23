@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { ArrowRight, UserRound, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { fetchMeta } from "@/lib/api";
 import { Wordmark } from "../Wordmark";
@@ -16,7 +17,7 @@ import { Highlighter } from "./Highlighter";
 import { HowItWorks } from "./HowItWorks";
 import { Intro } from "./Intro";
 import { fmt, fromMeta, SNAPSHOT } from "./places";
-import { setLenis } from "./scroll";
+import { scrollToY, setLenis } from "./scroll";
 import { setSound, soundOn, soundOnServer, subscribeSound } from "./sound";
 import { FinalCall, Proof, Trust } from "./Story";
 import "./landing.css";
@@ -43,6 +44,27 @@ export function Landing() {
     gsap.ticker.lagSmoothing(0);
     return () => { gsap.ticker.remove(raf); setLenis(null); lenis.destroy(); };
   }, []);
+
+  // Keys: J and K step through the chapters, / goes to the job list with its search box ready.
+  const router = useRouter();
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || (e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable]"))) return;
+      if (e.key === "/") {
+        e.preventDefault();
+        try { sessionStorage.setItem("kario:search", "1"); } catch {}
+        router.push("/");
+        return;
+      }
+      if (e.key !== "j" && e.key !== "k") return;
+      const tops = [...document.querySelectorAll("main > section")].map((el) => Math.round(el.getBoundingClientRect().top + scrollY));
+      const y = scrollY + 2;
+      const to = e.key === "j" ? tops.find((t) => t > y) : [...tops].reverse().find((t) => t < y - 4);
+      if (to !== undefined) { e.preventDefault(); scrollToY(to); }
+    };
+    addEventListener("keydown", onKey);
+    return () => removeEventListener("keydown", onKey);
+  }, [router]);
 
   return (
     <div className="landing lp-dark min-h-svh">

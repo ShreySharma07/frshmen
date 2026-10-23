@@ -231,3 +231,5 @@
 .source-card { animation: source-in 160ms var(--ease-out-soft); }
 @keyframes source-in { from { opacity: 0; transform: translateY(4px); } }
 @media (prefers-reduced-motion: reduce) { .source-card { animation: none; } }
+
+.landing .kbd { display: inline-grid; min-width: 1.5em; place-items: center; padding: 0 0.35em; border: 1px solid var(--lp-line); border-bottom-width: 2px; border-radius: 0.3em; background: var(--lp-raised); font-family: var(--font-mono); font-size: 0.85em; color: var(--lp-ink); }

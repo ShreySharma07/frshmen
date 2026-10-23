@@ -123,6 +123,9 @@ export function Highlighter({ counts }: { counts: Counts }) {
                 {within != null ? `See ${fmt(within)} jobs that take ${label === "Fresher" ? "freshers" : label}` : "See the jobs that take you"}
                 <ArrowRight aria-hidden className="size-4" strokeWidth={2} />
               </Link>
+              <p className="mt-5 hidden text-[13px] text-lp-muted lg:block">
+                <kbd className="kbd">J</kbd> <kbd className="kbd">K</kbd> to move through the story, <kbd className="kbd">/</kbd> to search the jobs
+              </p>
             </div>
           </div>
         </div>

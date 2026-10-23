@@ -22,6 +22,10 @@ export function SearchBox({ value, onSearch }: { value: string; onSearch: (q: st
       input.current?.focus();
     };
     addEventListener("keydown", onKey);
+    // Arrived from the landing page's "/": the reader wants to type straight away.
+    try {
+      if (sessionStorage.getItem("kario:search")) { sessionStorage.removeItem("kario:search"); input.current?.focus(); }
+    } catch {}
     return () => removeEventListener("keydown", onKey);
   }, []);
 
