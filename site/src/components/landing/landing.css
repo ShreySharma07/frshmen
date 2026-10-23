@@ -4,8 +4,8 @@
 
 .landing {
   --gutter: max(1.25rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
-  background: var(--night-bg);
-  color: var(--night-ink);
+  background: var(--lp-bg);
+  color: var(--lp-ink);
 }
 @media (min-width: 64rem) {
   .landing { --gutter: 2.5rem; }
@@ -28,12 +28,17 @@
   align-content: center;
   padding-block: 7rem 4rem;
 }
-.story [data-panel="sources"] { align-content: space-between; padding-bottom: 0; }
+.story [data-panel="sources"] { padding-bottom: 5rem; }
 .story[data-mode="scroll"] { height: 420svh; }
 .story[data-mode="scroll"] .story-frame { position: sticky; top: 0; height: 100svh; overflow: clip; }
 .story[data-mode="scroll"] .panel { position: absolute; inset: 0; }
 .story[data-mode="scroll"] [data-panel="places"],
-.story[data-mode="scroll"] [data-panel="sources"] { visibility: hidden; }
+.story[data-mode="scroll"] [data-panel="sources"],
+.story[data-mode="scroll"] [data-field] { visibility: hidden; }
+/* The white field the sources chapter sits on: faded in by the scroll scene, or simply the
+   section's own background when the screens stack. */
+.story[data-mode="flow"] [data-field] { display: none; }
+.story[data-mode="flow"] [data-panel="sources"] { background: var(--lp-bg); }
 
 /* The globe: right half on wide screens, under the tagline on phones. `translate` places it, so
    GSAP's transform can move it from there without fighting the layout. */
@@ -75,41 +80,57 @@
     translate: -50% -0.5rem;
     padding: 0.25rem 0.5rem;
     border-radius: 999px;
-    background: var(--night-raised);
-    color: var(--night-ink);
+    background: var(--lp-raised);
+    color: var(--lp-ink);
     font-size: 0.8125rem;
     white-space: nowrap;
     pointer-events: none;
     opacity: var(--v);
     transition: opacity 300ms var(--ease-out-expo);
   }
-  .globe-label b { color: var(--night-accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .globe-label b { color: var(--lp-accent-text); font-weight: 600; font-variant-numeric: tabular-nums; }
 }
 
-/* The sources band: two rows drifting in opposite directions; hover holds them. */
+/* The sources band: two rows drifting in opposite directions, fading out at both edges; hover
+   holds them. */
+.band-mask { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
 .band:hover .band-row { animation-play-state: paused; }
 .band-row { animation: band 48s linear infinite; }
 .band-reverse .band-row { animation-direction: reverse; animation-duration: 56s; }
 @keyframes band { to { transform: translateX(-100%); } }
 @media (prefers-reduced-motion: reduce) {
+  .band-mask { mask-image: none; }
   .band { flex-wrap: wrap; padding-inline: var(--gutter); }
-  .band-row { animation: none; flex-wrap: wrap; flex-shrink: 1; min-width: 0; gap: 0.5rem 2rem; padding-right: 0; }
+  .band-row { animation: none; flex-wrap: wrap; flex-shrink: 1; min-width: 0; gap: 0.5rem 1.5rem; padding-right: 0; }
   .band-row[aria-hidden] { display: none; }
 }
 
-/* Buttons: flat, one fill, fully round; they give on press. */
+/* Buttons: one light-orange fill, fully round; they give on press. `btn-tactile` adds a top
+   highlight and a hairline drop so the button reads as something to press (Shrey, 2026-10-23). */
 .landing .btn-primary {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  background: var(--night-accent);
-  color: var(--night-on-accent);
+  background: var(--lp-accent);
+  color: var(--lp-on-accent);
   padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
   transition: transform 150ms var(--ease-out-expo), background-color 150ms;
 }
-.landing .btn-primary:hover { background: color-mix(in srgb, var(--night-accent) 88%, white); }
+.landing .btn-primary.btn-sm { padding: 0.625rem 1rem; font-size: 0.9375rem; }
+.landing .btn-primary:hover { background: color-mix(in srgb, var(--lp-accent) 90%, white); }
 .landing .btn-primary:active { transform: scale(0.97); }
-.landing :focus-visible { outline: 2px solid var(--night-accent); outline-offset: 3px; border-radius: 6px; }
-.landing ::selection { background: var(--night-accent); color: var(--night-on-accent); }
+.landing .btn-tactile {
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 45%, transparent),
+    0 1px 2px color-mix(in srgb, var(--lp-on-accent) 30%, transparent);
+}
+.landing .btn-tactile:active { box-shadow: inset 0 1px 2px color-mix(in srgb, var(--lp-on-accent) 25%, transparent); }
+
+/* The "open now" dot breathes once every few seconds: it says the count is live. */
+.live-dot { animation: live 2.4s var(--ease-out-expo) infinite; }
+@keyframes live { 0%, 60%, 100% { opacity: 1; } 30% { opacity: 0.35; } }
+
+.landing :focus-visible { outline: 2px solid var(--lp-accent); outline-offset: 3px; border-radius: 6px; }
+.landing ::selection { background: var(--lp-accent); color: var(--lp-on-accent); }
+.landing mark { background: var(--lp-mark); color: inherit; border-radius: 4px; padding: 0 0.25rem; }

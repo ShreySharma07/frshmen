@@ -56,6 +56,7 @@ export interface Meta {
   total: number;
   levels: Record<Level, number>;
   internships: number;
+  visa_or_relocation?: number; // in snapshots written since 2026-10-23
   roles: Partial<Record<Role, number>>;
   companies: { company: string; n: number }[]; // companies with open jobs
   countries: { country: string; n: number }[];

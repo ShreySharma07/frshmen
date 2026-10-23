@@ -39,6 +39,9 @@ META_SELECT = f"""SELECT jsonb_build_object(
   'levels', (SELECT COALESCE(jsonb_object_agg(level, n), '{{}}')
              FROM (SELECT level, COUNT(*) AS n FROM {_OPEN_CARDS} AND level IS NOT NULL GROUP BY level) s),
   'internships', (SELECT COUNT(*) FROM {_OPEN_CARDS} AND {INTERN}),
+  -- Open roles that sponsor a visa or offer relocation (the landing page's globe section).
+  'visa_or_relocation', (SELECT COUNT(*) FROM {_OPEN_CARDS} AND (visa_sponsorship = 'yes'
+                         OR evidence -> 'location' @> '[{{"kind": "relocation"}}]')),
   'roles', (SELECT jsonb_build_object('target', COUNT(*) FILTER (WHERE role_match),
                                       {', '.join(_family(f) for f in FAMILIES)}) FROM {_OPEN_CARDS}),
   'companies', {_list('company', 'company', 'company', _OPEN_CARDS)},

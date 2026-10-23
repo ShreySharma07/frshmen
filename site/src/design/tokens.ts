@@ -36,18 +36,38 @@ export const color = {
     cardAccent: "#a5a0ff",
     code: "#1c1c24",
   },
-  /** The landing page's one dark look ("Night and cornflower"), `.night` in globals.css. */
-  night: {
-    bg: "#0a0d14",
-    surface: "#131824",
-    raised: "#1b2233",
-    line: "#262f43",
-    ink: "#e9edf3",
-    muted: "#8891a1",
-    accent: "#5a9bfc",
-    onAccent: "#0a0d14",
-    good: "#6fd3a0",
-    miss: "#f0a35e",
+  /** Landing chapters ("Graphite, light orange and white"), `.lp-dark` and `.lp-light` in globals.css. */
+  landingDark: {
+    bg: "#18191b",
+    surface: "#222427",
+    raised: "#2c2f33",
+    line: "#3a3d42",
+    ink: "#f4f4f5",
+    muted: "#a1a4aa",
+    accent: "#ff9e5e",
+    onAccent: "#18191b",
+    accentText: "#ffa46e",
+    add: "#5fd4a0",
+    addBg: "#17302a",
+    del: "#ff8f8f",
+    delBg: "#3a2224",
+    mark: "#4a3426",
+  },
+  landingLight: {
+    bg: "#ffffff",
+    surface: "#f6f6f7",
+    raised: "#ececee",
+    line: "#d9d9de",
+    ink: "#18191b",
+    muted: "#5f6168",
+    accent: "#ff9e5e",
+    onAccent: "#18191b",
+    accentText: "#b04a0e",
+    add: "#047857",
+    addBg: "#ecfdf5",
+    del: "#b91c1c",
+    delBg: "#fef2f2",
+    mark: "#ffe2cc",
   },
 } as const;
 
@@ -77,4 +97,4 @@ export const motion = {
   easeOutExpo: [0.16, 1, 0.3, 1],
 } as const;
 
-export const font = { sans: "Geist", mono: "Geist Mono", display: "Bricolage Grotesque" } as const;
+export const font = { sans: "Geist", mono: "Geist Mono" } as const;

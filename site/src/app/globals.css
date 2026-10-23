@@ -74,22 +74,44 @@
   color-scheme: dark;
 }
 
-/* Landing palette "Night and cornflower" (docs/decisions.md 2026-10-23), from taste-skill's
-   library. One deliberate dark look for the landing page only (`.night` on its root); the job
-   list keeps its light and dark themes until it is redesigned to match. Contrast on night-bg:
-   ink 16.5, muted 6.1, accent 7.0, good 10.6, miss 9.4; on night-raised every text role stays
-   above 5:1. `night-line` is for interface fragments only (inputs, table rules), never ornament. */
-.night {
-  --night-bg: #0a0d14; /* page */
-  --night-surface: #131824; /* product fragments */
-  --night-raised: #1b2233; /* a step up inside a fragment */
-  --night-line: #262f43;
-  --night-ink: #e9edf3;
-  --night-muted: #8891a1;
-  --night-accent: #5a9bfc; /* actions, live city markers, the years line */
-  --night-on-accent: #0a0d14;
-  --night-good: #6fd3a0; /* matched skill */
-  --night-miss: #f0a35e; /* missing skill, struck title */
+/* Landing palette "Graphite, light orange and white" (docs/decisions.md 2026-10-23, replaces
+   Night and cornflower). The landing page alternates chapters: `.lp-dark` (graphite) for the hero,
+   globe and footer, `.lp-light` (white) for the sources and How it works. Both scopes set the same
+   roles, so a component styled with bg-lp-bg / text-lp-ink works in either. Light orange is the one
+   accent: a fill under graphite text (8.6:1), and as text it is accent-text (orange on graphite 9.0,
+   burnt orange on white 5.5). Every text role is 4.5:1 or more on its scope's bg, surface and raised.
+   `lp-line` is for interface fragments and chips only, never ornament. */
+.lp-dark {
+  --lp-bg: #18191b;
+  --lp-surface: #222427;
+  --lp-raised: #2c2f33;
+  --lp-line: #3a3d42;
+  --lp-ink: #f4f4f5;
+  --lp-muted: #a1a4aa;
+  --lp-accent: #ff9e5e;
+  --lp-on-accent: #18191b;
+  --lp-accent-text: #ffa46e;
+  --lp-add: #5fd4a0;
+  --lp-add-bg: #17302a;
+  --lp-del: #ff8f8f;
+  --lp-del-bg: #3a2224;
+  --lp-mark: #4a3426;
+}
+.lp-light {
+  --lp-bg: #ffffff;
+  --lp-surface: #f6f6f7;
+  --lp-raised: #ececee;
+  --lp-line: #d9d9de;
+  --lp-ink: #18191b;
+  --lp-muted: #5f6168;
+  --lp-accent: #ff9e5e;
+  --lp-on-accent: #18191b;
+  --lp-accent-text: #b04a0e;
+  --lp-add: #047857;
+  --lp-add-bg: #ecfdf5;
+  --lp-del: #b91c1c;
+  --lp-del-bg: #fef2f2;
+  --lp-mark: #ffe2cc;
 }
 
 /* `dark:` classes follow the chosen theme (data-theme), not only the device setting. */
@@ -114,22 +136,25 @@
   --color-card-accent: var(--card-accent);
   --color-card-line: var(--card-line);
   --color-code: var(--code);
-  --color-night-bg: var(--night-bg);
-  --color-night-surface: var(--night-surface);
-  --color-night-raised: var(--night-raised);
-  --color-night-line: var(--night-line);
-  --color-night-ink: var(--night-ink);
-  --color-night-muted: var(--night-muted);
-  --color-night-accent: var(--night-accent);
-  --color-night-on-accent: var(--night-on-accent);
-  --color-night-good: var(--night-good);
-  --color-night-miss: var(--night-miss);
+  --color-lp-bg: var(--lp-bg);
+  --color-lp-surface: var(--lp-surface);
+  --color-lp-raised: var(--lp-raised);
+  --color-lp-line: var(--lp-line);
+  --color-lp-ink: var(--lp-ink);
+  --color-lp-muted: var(--lp-muted);
+  --color-lp-accent: var(--lp-accent);
+  --color-lp-on-accent: var(--lp-on-accent);
+  --color-lp-accent-text: var(--lp-accent-text);
+  --color-lp-add: var(--lp-add);
+  --color-lp-add-bg: var(--lp-add-bg);
+  --color-lp-del: var(--lp-del);
+  --color-lp-del-bg: var(--lp-del-bg);
+  --color-lp-mark: var(--lp-mark);
 
-  /* Two families only: Geist for text, Geist Mono for numbers and keywords (set by next/font). */
+  /* Two families only: Geist for text and headings, Geist Mono for numbers, keywords and protocol
+     chips (set by next/font). */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  /* Landing headings only: Bricolage Grotesque, loaded by app/preview/page.tsx. */
-  --font-display: var(--font-bricolage), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme {

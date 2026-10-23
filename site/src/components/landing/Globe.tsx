@@ -59,9 +59,9 @@ export function Globe({ places, view, className = "" }: { places: Place[]; view:
       mapSamples: 16000,
       mapBrightness: 5.5,
       mapBaseBrightness: 0.04,
-      baseColor: rgb(color.night.raised).map((v) => Math.min(1, v * 2.2)) as [number, number, number],
-      markerColor: rgb(color.night.accent),
-      glowColor: rgb(color.night.surface).map((v) => v * 1.6) as [number, number, number],
+      baseColor: rgb(color.landingDark.raised).map((v) => Math.min(1, v * 2.2)) as [number, number, number],
+      markerColor: rgb(color.landingDark.accent),
+      glowColor: rgb(color.landingDark.surface).map((v) => v * 1.6) as [number, number, number],
       markers: places.map((p) => ({ location: [p.lat, p.lng], size: 0.025 + 0.07 * Math.sqrt(p.n / max), id: p.id })),
       markerElevation: 0.01,
     });
