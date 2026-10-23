@@ -76,13 +76,8 @@ export function GlobeStory({ counts }: { counts: Counts }) {
         <div data-field aria-hidden className="lp-light absolute inset-0 bg-lp-bg" />
         <div data-globe className="globe-box pointer-events-none absolute">
           <div className="pointer-events-auto relative">
-            {/* The HUD: a frosted status bar above the globe and viewfinder ticks at its corners. */}
+            {/* Viewfinder ticks at the globe's corners. */}
             <div className="reticle hidden lg:block" aria-hidden><i /><i /><i /><i /></div>
-            <div className="machined-glass absolute top-[6%] left-1/2 z-10 hidden -translate-x-1/2 lg:flex items-center gap-3 rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wider whitespace-nowrap text-lp-ink uppercase">
-              <span className="flex items-center gap-1.5"><span aria-hidden className="live-dot size-1.5 rounded-full bg-lp-ok" />Live</span>
-              <span className="text-lp-muted">Refreshed every 3h</span>
-              <span className="tabular-nums">{fmt(counts.cities.reduce((n, p) => n + p.n, 0) + counts.abroad.reduce((n, p) => n + p.n, 0))} on the map</span>
-            </div>
             <Globe places={[...counts.cities, ...counts.abroad]} view={view} />
             {labelled.map((p) => (
               <span key={p.id} className="globe-label machined-glass tabular-nums" style={{ ["--a" as string]: `--cobe-${p.id}`, ["--v" as string]: `var(--cobe-visible-${p.id}, 0)` }}>
@@ -102,10 +97,6 @@ export function GlobeStory({ counts }: { counts: Counts }) {
             </p>
             <div data-hero-after className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href="/?yrs=0" className="btn-primary btn-tactile">Find fresher jobs</Link>
-              <span className="inline-flex items-center gap-2 rounded-full bg-lp-surface px-3.5 py-2 text-[14px]">
-                <span aria-hidden className="live-dot size-2 rounded-full bg-lp-accent" />
-                {fmt(counts.fresher)} fresher roles open now
-              </span>
             </div>
           </div>
         </div>

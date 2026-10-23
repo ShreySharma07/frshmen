@@ -74,62 +74,62 @@
   color-scheme: dark;
 }
 
-/* Landing palette (docs/decisions.md 2026-10-23): carbon chapters (`.lp-dark`: hero, globe,
-   footer) and warm limestone chapters (`.lp-light`: sources, How it works), with deep pine for
-   terminal blocks, emerald for matched or verified and amber for missing. Both scopes set the same
-   roles, so a component styled with bg-lp-bg / text-lp-ink works in either. Contrast: every text
-   role is 4.5:1 or more on its scope's bg, surface and raised. Emerald and amber are fills under
-   pine text (7.3 and 5.8); as text on limestone they are add (5.0) and warn-text (4.6); on term,
-   term-ok (9.6). Light orange stays the one action colour. */
+/* Landing palette (docs/decisions.md 2026-10-23): "high-authority enterprise and fintech".
+   Midnight navy chapters (`.lp-dark`: hero, globe, footer; #0F172A elevated) and warm parchment
+   chapters (`.lp-light`: sources, How it works; #EFECE6 bento, #FFFFFF inner), Klein cobalt as
+   the one action colour, emerald as the pass signal. Both scopes set the same roles. Contrast:
+   every text role is 4.5:1 or more on its scope's bg and raised; cobalt carries white text
+   (5.2), and as text on navy it lightens to accent-text (7.6). Pass and warn are fills under
+   navy text (5.1, 6.1). */
 .lp-dark {
-  --lp-bg: #18191b;
-  --lp-surface: #222427;
-  --lp-raised: #2c2f33;
-  --lp-line: #3a3d42;
-  --lp-ink: #f4f4f5;
-  --lp-muted: #a1a4aa;
-  --lp-accent: #ff9e5e;
-  --lp-on-accent: #18191b;
-  --lp-accent-text: #ffa46e;
-  --lp-add: #5fd4a0;
-  --lp-add-bg: #17302a;
-  --lp-del: #ff8f8f;
-  --lp-del-bg: #3a2224;
-  --lp-mark: #4a3426;
-  --lp-window-bar: #26282c;
-  --lp-window-line: #3a3d42;
-  --lp-ok: #10b981;
+  --lp-bg: #080d1a;
+  --lp-surface: #0f172a;
+  --lp-raised: #1e293b;
+  --lp-line: #273449;
+  --lp-ink: #f1f5f9;
+  --lp-muted: #94a3b8;
+  --lp-accent: #2563eb;
+  --lp-on-accent: #ffffff;
+  --lp-accent-text: #60a5fa;
+  --lp-add: #34d399;
+  --lp-add-bg: #0b2a24;
+  --lp-del: #f87171;
+  --lp-del-bg: #2a1418;
+  --lp-mark: #1e3a8a;
+  --lp-window-bar: #111a2e;
+  --lp-window-line: #273449;
+  --lp-ok: #059669;
   --lp-warn: #d97706;
-  --lp-warn-text: #f5a524;
-  --lp-term: #0b1612;
-  --lp-term-ink: #e6efe9;
-  --lp-term-muted: #8fa69a;
+  --lp-warn-text: #fbbf24;
+  --lp-term: #080d1a;
+  --lp-term-ink: #e2e8f0;
+  --lp-term-muted: #94a3b8;
   --lp-term-ok: #34d399;
 }
 .lp-light {
-  --lp-bg: #f6f5f0; /* page */
-  --lp-surface: #eceae2; /* stone frames and bento cards */
-  --lp-raised: #ffffff; /* crisp inner windows and receipt cards */
-  --lp-line: #ddd9ce; /* frame borders, chips */
-  --lp-ink: #18191b;
-  --lp-muted: #5f6168;
-  --lp-accent: #ff9e5e;
-  --lp-on-accent: #18191b;
-  --lp-accent-text: #b04a0e;
+  --lp-bg: #faf8f5; /* warm parchment canvas */
+  --lp-surface: #efece6; /* bento cards */
+  --lp-raised: #ffffff; /* inner surfaces and windows */
+  --lp-line: #e2ded5;
+  --lp-ink: #0f172a;
+  --lp-muted: #5b6475;
+  --lp-accent: #2563eb; /* Klein cobalt: the one action colour */
+  --lp-on-accent: #ffffff;
+  --lp-accent-text: #1d4ed8;
   --lp-add: #047857;
-  --lp-add-bg: #e7f8f2;
+  --lp-add-bg: #e6f6f0;
   --lp-del: #9b3b3b;
   --lp-del-bg: #fdf0f0;
-  --lp-mark: #ffe2cc;
-  --lp-window-bar: #faf9f5; /* window title bar */
-  --lp-window-line: #e4e4e7; /* window borders and table rules */
-  --lp-ok: #10b981; /* matched / verified fill (pine text on it) */
-  --lp-warn: #d97706; /* missing / warning fill (pine text on it) */
-  --lp-warn-text: #b45309; /* warning as text */
-  --lp-term: #0b1612; /* terminal blocks, dark buttons, status bars */
-  --lp-term-ink: #e6efe9;
-  --lp-term-muted: #8fa69a;
-  --lp-term-ok: #34d399; /* matched as text on term */
+  --lp-mark: #dbe7ff;
+  --lp-window-bar: #faf9f7;
+  --lp-window-line: #e5e7eb;
+  --lp-ok: #059669; /* pass signal (fill under navy text) */
+  --lp-warn: #d97706; /* missing signal (fill under navy text) */
+  --lp-warn-text: #b45309;
+  --lp-term: #080d1a; /* midnight navy terminal blocks, dark buttons, status bars */
+  --lp-term-ink: #e2e8f0;
+  --lp-term-muted: #94a3b8;
+  --lp-term-ok: #34d399;
 }
 
 /* `dark:` classes follow the chosen theme (data-theme), not only the device setting. */
