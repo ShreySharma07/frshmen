@@ -36,6 +36,8 @@ const COUNTRIES: Record<string, [string, number, number]> = {
 export interface Counts {
   total: number;
   fresher: number;
+  unclear: number; // labelled maybe: the posting never says how many years
+  experienced: number;
   companies: number;
   india: number;
   visa: number | null; // open roles that sponsor a visa or offer relocation; null until the API says
@@ -47,6 +49,8 @@ export interface Counts {
 export const SNAPSHOT: Counts = {
   total: 23390,
   fresher: 356,
+  unclear: 4053,
+  experienced: 18981,
   companies: 415,
   india: 5625,
   visa: null,
@@ -64,6 +68,8 @@ export function fromMeta(meta: Meta): Counts {
   return {
     total: meta.total,
     fresher: meta.levels.fresher,
+    unclear: meta.levels.maybe,
+    experienced: meta.levels.experienced,
     companies: meta.last_run?.companies_ok ?? SNAPSHOT.companies,
     india: byCountry.India ?? 0,
     visa: meta.visa_or_relocation ?? null,

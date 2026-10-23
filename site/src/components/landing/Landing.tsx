@@ -16,6 +16,7 @@ import { Highlighter } from "./Highlighter";
 import { HowItWorks } from "./HowItWorks";
 import { fmt, fromMeta, SNAPSHOT } from "./places";
 import { setLenis } from "./scroll";
+import { FinalCall, Proof, Trust } from "./Story";
 import "./landing.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -43,11 +44,14 @@ export function Landing() {
 
   return (
     <div className="landing lp-dark min-h-svh">
-      <Nav fresher={counts.fresher} />
+      <Nav total={counts.total} />
       <main>
         <Highlighter counts={counts} />
+        <Proof counts={counts} />
         <GlobeStory counts={counts} />
         <HowItWorks />
+        <Trust />
+        <FinalCall counts={counts} />
       </main>
       <Footer />
     </div>
@@ -56,7 +60,7 @@ export function Landing() {
 
 // The top bar: clear white machined glass (Shrey, 2026-10-23). The page shows through it, so its
 // text follows what is underneath: light over the navy chapters, dark over the parchment ones.
-function Nav({ fresher }: { fresher: number }) {
+function Nav({ total }: { total: number }) {
   const bar = useRef<HTMLElement>(null);
   const [overLight, setOverLight] = useState(false);
 
@@ -88,8 +92,8 @@ function Nav({ fresher }: { fresher: number }) {
         <button type="button" disabled title="Sign-in comes next" aria-label="Your profile (sign-in comes next)" className="hidden size-10 place-items-center rounded-full bg-lp-raised/60 text-lp-ink sm:grid">
           <UserRound aria-hidden className="size-5" strokeWidth={1.75} />
         </button>
-        <Link href="/?yrs=0" className="btn-primary btn-tactile btn-sm ml-1 gap-1.5">
-          <span><span className="hidden sm:inline">Browse </span>{fmt(fresher)} fresher jobs</span>
+        <Link href="/" className="btn-primary btn-tactile btn-sm ml-1 gap-1.5">
+          <span><span className="hidden sm:inline">Browse </span>{fmt(total)} jobs</span>
           <ArrowRight aria-hidden className="size-4" strokeWidth={2} />
         </Link>
       </nav>
@@ -107,7 +111,7 @@ function Footer() {
   return (
     <footer className="lp-dark overflow-hidden bg-lp-bg px-[var(--gutter)] pt-[clamp(6rem,12vw,10rem)] text-lp-ink">
       <div className="flex flex-wrap items-end justify-between gap-6 pb-10">
-        <p className="max-w-[28rem] text-[15px] text-lp-muted">No LinkedIn, Indeed or Glassdoor scraping. Nothing goes out in your name until you approve it.</p>
+        <p className="max-w-[28rem] text-[15px] text-lp-muted">Kario reads every opening to the line that decides who it&rsquo;s for, then does the legwork with you.</p>
         <ul className="flex gap-6 text-[15px]">
           <li><Link href="/" className="hover:text-lp-accent-text">Jobs</Link></li>
           <li><a href="#how" className="hover:text-lp-accent-text">How it works</a></li>

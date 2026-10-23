@@ -10,7 +10,7 @@ const sans = Instrument_Sans({ variable: "--font-instrument-sans", subsets: ["la
 
 export const metadata: Metadata = {
   title: "Kario: an agent that gets you your next job",
-  description: "Kario finds the jobs that really take freshers, checks your fit, finds people to ask for a referral and prepares each application with you.",
+  description: "Kario reads every opening to the line that decides who it's for, checks your fit, finds people to ask for a referral and prepares each application with you.",
   robots: { index: false },
 };
 
