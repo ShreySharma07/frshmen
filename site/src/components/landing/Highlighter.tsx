@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { fetchEvidence, type EvidenceLine } from "@/lib/api";
 import { introDone } from "./intro";
 import { Pen } from "./Pen";
+import { play } from "./sound";
 import { fmt, type Counts } from "./places";
 import { clip, fit, rows, STARTER, YEARS } from "./wall";
 import type { WallDrive } from "./WallScene";
@@ -48,7 +49,11 @@ export function Highlighter({ counts }: { counts: Counts }) {
     const isFirst = first.current;
     first.current = false;
     let tween: gsap.core.Tween | null = null, dead = false;
-    const run = () => { if (!dead) tween = gsap.fromTo(drive.current, { sweep: 0 }, { sweep: 1, duration: isFirst ? 2.6 : 1.1, delay: isFirst ? 0.2 : 0, ease: "power2.inOut" }); };
+    const run = () => {
+      if (dead) return;
+      tween = gsap.fromTo(drive.current, { sweep: 0 }, { sweep: 1, duration: isFirst ? 2.6 : 1.1, delay: isFirst ? 0.2 : 0, ease: "power2.inOut" });
+      if (!isFirst) play("swipe");
+    };
     if (isFirst) introDone.then(run); else run();
     return () => { dead = true; tween?.kill(); };
   }, [years, mode, lines]);
@@ -104,7 +109,7 @@ export function Highlighter({ counts }: { counts: Counts }) {
                     type="button"
                     role="radio"
                     aria-checked={years === y.years}
-                    onClick={() => setYears(y.years)}
+                    onClick={() => { setYears(y.years); play("tick"); }}
                     className={`rounded-full border px-4 py-2 text-[15px] transition-colors duration-quick ${years === y.years ? "border-lp-ink bg-lp-ink text-lp-bg" : "border-lp-line bg-lp-raised hover:border-lp-ink"}`}
                   >
                     {y.label}

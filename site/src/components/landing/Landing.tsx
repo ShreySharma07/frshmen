@@ -6,9 +6,9 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { ArrowRight, UserRound } from "lucide-react";
+import { ArrowRight, UserRound, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { fetchMeta } from "@/lib/api";
 import { Wordmark } from "../Wordmark";
 import { GlobeStory } from "./GlobeStory";
@@ -17,6 +17,7 @@ import { HowItWorks } from "./HowItWorks";
 import { Intro } from "./Intro";
 import { fmt, fromMeta, SNAPSHOT } from "./places";
 import { setLenis } from "./scroll";
+import { setSound, soundOn, soundOnServer, subscribeSound } from "./sound";
 import { FinalCall, Proof, Trust } from "./Story";
 import "./landing.css";
 
@@ -91,6 +92,7 @@ function Nav({ total }: { total: number }) {
         <Link href="/preview" aria-label="Kario home" className="mr-auto"><Wordmark className="h-[24px] w-auto text-lp-ink" /></Link>
         <a href="#how" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">How it works</a>
         <Link href="/" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">Jobs</Link>
+        <SoundToggle />
         <button type="button" disabled title="Sign-in comes next" aria-label="Your profile (sign-in comes next)" className="hidden size-10 place-items-center rounded-full bg-lp-raised/60 text-lp-ink sm:grid">
           <UserRound aria-hidden className="size-5" strokeWidth={1.75} />
         </button>
@@ -100,6 +102,24 @@ function Nav({ total }: { total: number }) {
         </Link>
       </nav>
     </header>
+  );
+}
+
+// Sound is off until asked for; the icon shows the state and the label says what a press does.
+function SoundToggle() {
+  const on = useSyncExternalStore(subscribeSound, soundOn, soundOnServer);
+  const Icon = on ? Volume2 : VolumeX;
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      aria-label="Sound"
+      title={on ? "Turn sound off" : "Turn sound on"}
+      onClick={() => setSound(!on)}
+      className="grid size-10 place-items-center rounded-full text-lp-ink transition-colors duration-quick hover:bg-lp-raised/60"
+    >
+      <Icon aria-hidden className="size-5" strokeWidth={1.75} />
+    </button>
   );
 }
 

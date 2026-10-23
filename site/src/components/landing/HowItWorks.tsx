@@ -10,6 +10,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ApplyFragment, FitFragment, JobFragment, PeopleFragment } from "./Fragments";
+import { play } from "./sound";
 import { scrollToY } from "./scroll";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -168,7 +169,8 @@ function actJob(tl: gsap.core.Timeline, q: Q) {
     .fromTo(q("[data-mark]"), { backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%", duration: 0.25, ease: "power2.out" })
     .to(q("[data-scan]"), { autoAlpha: 0, duration: 0.1 })
     .fromTo(q("[data-verdict]"), { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.15 }, "<")
-    .fromTo(q("[data-stamp]"), { autoAlpha: 0, scale: 1.6, rotate: -8 }, { autoAlpha: 1, scale: 1, rotate: 0, duration: 0.2, ease: "back.out(2)" });
+    .fromTo(q("[data-stamp]"), { autoAlpha: 0, scale: 1.6, rotate: -8 }, { autoAlpha: 1, scale: 1, rotate: 0, duration: 0.2, ease: "back.out(2)" })
+    .call(() => play("stamp"), undefined, "<0.05");
 }
 
 // Step 2: the rows come in one by one, the meter fills with each match.
@@ -183,7 +185,8 @@ function actPeople(tl: gsap.core.Timeline, q: Q) {
   tl.fromTo(q("[data-row]"), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, stagger: 0.12, duration: 0.15 })
     .fromTo(words, { autoAlpha: 0 }, { autoAlpha: 1, stagger: 0.012, duration: 0.01, ease: "none" })
     .to(q("[data-send]"), { autoAlpha: 0, y: -6, duration: 0.08 })
-    .fromTo(q("[data-sent]"), { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.08 }, "<");
+    .fromTo(q("[data-sent]"), { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.08 }, "<")
+    .call(() => play("chime"), undefined, "<");
 }
 
 // Step 4: the old line is struck out, the new one is written in, and the form fills.
