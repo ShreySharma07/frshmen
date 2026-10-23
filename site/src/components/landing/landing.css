@@ -1,0 +1,115 @@
+/* Landing page layout and the few things Tailwind classes can't say (anchor positioning, the
+   scroll scene's two modes, the band). Colours and easing come from the tokens in globals.css. */
+@import "lenis/dist/lenis.css";
+
+.landing {
+  --gutter: max(1.25rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+  background: var(--night-bg);
+  color: var(--night-ink);
+}
+@media (min-width: 64rem) {
+  .landing { --gutter: 2.5rem; }
+}
+
+/* One grid for every screen: 12 columns inside equal outer margins. */
+.landing .panel,
+.landing .grid-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 1.5rem;
+  padding-inline: var(--gutter);
+}
+
+/* The scroll scene. "flow": panels stack like normal sections; the globe sits in the first one.
+   "scroll": one sticky screen, the panels layered, GSAP moves between them. */
+.story { overflow-x: clip; } /* the phone globe is wider than the screen on purpose */
+.story .panel {
+  min-height: 100svh;
+  align-content: center;
+  padding-block: 7rem 4rem;
+}
+.story [data-panel="sources"] { align-content: space-between; padding-bottom: 0; }
+.story[data-mode="scroll"] { height: 420svh; }
+.story[data-mode="scroll"] .story-frame { position: sticky; top: 0; height: 100svh; overflow: clip; }
+.story[data-mode="scroll"] .panel { position: absolute; inset: 0; }
+.story[data-mode="scroll"] [data-panel="places"],
+.story[data-mode="scroll"] [data-panel="sources"] { visibility: hidden; }
+
+/* The globe: right half on wide screens, under the tagline on phones. `translate` places it, so
+   GSAP's transform can move it from there without fighting the layout. */
+.globe-box {
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding-bottom: 2svh;
+}
+.globe-box > div { width: min(118vw, 34rem); translate: 0 30%; }
+@media (min-width: 64rem) {
+  .globe-box { align-items: center; padding-bottom: 0; }
+  .globe-box > div { width: min(46vw, 46rem); translate: 23vw 4%; }
+}
+.story[data-mode="flow"] .globe-box > div { translate: 0 30%; }
+@media (min-width: 64rem) {
+  .story[data-mode="flow"] .globe-box > div { translate: 23vw 4%; }
+}
+.story [data-panel="hero"] { position: relative; z-index: 1; pointer-events: none; }
+.story [data-panel="hero"] a, .story [data-panel="hero"] button { pointer-events: auto; }
+@media (max-width: 63.99rem) {
+  .story [data-panel="hero"] { align-content: start; padding-top: 8.5rem; }
+  .story [data-panel="places"] { align-content: end; padding-bottom: 3rem; }
+}
+
+/* City labels ride on cobe's anchors where the browser has anchor positioning; elsewhere the
+   list beside the globe carries the same numbers. */
+.globe-label { display: none; }
+@supports (position-anchor: --a) {
+  .globe-label {
+    display: block;
+    position: absolute;
+    position-anchor: var(--a);
+    bottom: anchor(top);
+    left: anchor(center);
+    translate: -50% -0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    background: var(--night-raised);
+    color: var(--night-ink);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: var(--v);
+    transition: opacity 300ms var(--ease-out-expo);
+  }
+  .globe-label b { color: var(--night-accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+}
+
+/* The sources band: two rows drifting in opposite directions; hover holds them. */
+.band:hover .band-row { animation-play-state: paused; }
+.band-row { animation: band 48s linear infinite; }
+.band-reverse .band-row { animation-direction: reverse; animation-duration: 56s; }
+@keyframes band { to { transform: translateX(-100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .band { flex-wrap: wrap; padding-inline: var(--gutter); }
+  .band-row { animation: none; flex-wrap: wrap; flex-shrink: 1; min-width: 0; gap: 0.5rem 2rem; padding-right: 0; }
+  .band-row[aria-hidden] { display: none; }
+}
+
+/* Buttons: flat, one fill, fully round; they give on press. */
+.landing .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--night-accent);
+  color: var(--night-on-accent);
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 150ms var(--ease-out-expo), background-color 150ms;
+}
+.landing .btn-primary:hover { background: color-mix(in srgb, var(--night-accent) 88%, white); }
+.landing .btn-primary:active { transform: scale(0.97); }
+.landing :focus-visible { outline: 2px solid var(--night-accent); outline-offset: 3px; border-radius: 6px; }
+.landing ::selection { background: var(--night-accent); color: var(--night-on-accent); }
