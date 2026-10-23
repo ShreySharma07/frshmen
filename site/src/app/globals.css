@@ -74,13 +74,13 @@
   color-scheme: dark;
 }
 
-/* Landing palette "Graphite, light orange and white" (docs/decisions.md 2026-10-23, replaces
-   Night and cornflower). The landing page alternates chapters: `.lp-dark` (graphite) for the hero,
-   globe and footer, `.lp-light` (white) for the sources and How it works. Both scopes set the same
-   roles, so a component styled with bg-lp-bg / text-lp-ink works in either. Light orange is the one
-   accent: a fill under graphite text (8.6:1), and as text it is accent-text (orange on graphite 9.0,
-   burnt orange on white 5.5). Every text role is 4.5:1 or more on its scope's bg, surface and raised.
-   `lp-line` is for interface fragments and chips only, never ornament. */
+/* Landing palette (docs/decisions.md 2026-10-23): carbon chapters (`.lp-dark`: hero, globe,
+   footer) and warm limestone chapters (`.lp-light`: sources, How it works), with deep pine for
+   terminal blocks, emerald for matched or verified and amber for missing. Both scopes set the same
+   roles, so a component styled with bg-lp-bg / text-lp-ink works in either. Contrast: every text
+   role is 4.5:1 or more on its scope's bg, surface and raised. Emerald and amber are fills under
+   pine text (7.3 and 5.8); as text on limestone they are add (5.0) and warn-text (4.6); on term,
+   term-ok (9.6). Light orange stays the one action colour. */
 .lp-dark {
   --lp-bg: #18191b;
   --lp-surface: #222427;
@@ -96,22 +96,40 @@
   --lp-del: #ff8f8f;
   --lp-del-bg: #3a2224;
   --lp-mark: #4a3426;
+  --lp-window-bar: #26282c;
+  --lp-window-line: #3a3d42;
+  --lp-ok: #10b981;
+  --lp-warn: #d97706;
+  --lp-warn-text: #f5a524;
+  --lp-term: #0b1612;
+  --lp-term-ink: #e6efe9;
+  --lp-term-muted: #8fa69a;
+  --lp-term-ok: #34d399;
 }
 .lp-light {
-  --lp-bg: #ffffff;
-  --lp-surface: #f6f6f7;
-  --lp-raised: #ececee;
-  --lp-line: #d9d9de;
+  --lp-bg: #f6f5f0; /* page */
+  --lp-surface: #eceae2; /* stone frames and bento cards */
+  --lp-raised: #ffffff; /* crisp inner windows and receipt cards */
+  --lp-line: #ddd9ce; /* frame borders, chips */
   --lp-ink: #18191b;
   --lp-muted: #5f6168;
   --lp-accent: #ff9e5e;
   --lp-on-accent: #18191b;
   --lp-accent-text: #b04a0e;
   --lp-add: #047857;
-  --lp-add-bg: #ecfdf5;
-  --lp-del: #b91c1c;
-  --lp-del-bg: #fef2f2;
+  --lp-add-bg: #e7f8f2;
+  --lp-del: #9b3b3b;
+  --lp-del-bg: #fdf0f0;
   --lp-mark: #ffe2cc;
+  --lp-window-bar: #faf9f5; /* window title bar */
+  --lp-window-line: #e4e4e7; /* window borders and table rules */
+  --lp-ok: #10b981; /* matched / verified fill (pine text on it) */
+  --lp-warn: #d97706; /* missing / warning fill (pine text on it) */
+  --lp-warn-text: #b45309; /* warning as text */
+  --lp-term: #0b1612; /* terminal blocks, dark buttons, status bars */
+  --lp-term-ink: #e6efe9;
+  --lp-term-muted: #8fa69a;
+  --lp-term-ok: #34d399; /* matched as text on term */
 }
 
 /* `dark:` classes follow the chosen theme (data-theme), not only the device setting. */
@@ -150,6 +168,15 @@
   --color-lp-del: var(--lp-del);
   --color-lp-del-bg: var(--lp-del-bg);
   --color-lp-mark: var(--lp-mark);
+  --color-lp-window-bar: var(--lp-window-bar);
+  --color-lp-window-line: var(--lp-window-line);
+  --color-lp-ok: var(--lp-ok);
+  --color-lp-warn: var(--lp-warn);
+  --color-lp-warn-text: var(--lp-warn-text);
+  --color-lp-term: var(--lp-term);
+  --color-lp-term-ink: var(--lp-term-ink);
+  --color-lp-term-muted: var(--lp-term-muted);
+  --color-lp-term-ok: var(--lp-term-ok);
 
   /* Two families only: Geist for text and headings, Geist Mono for numbers, keywords and protocol
      chips (set by next/font). */

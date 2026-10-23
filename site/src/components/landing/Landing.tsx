@@ -52,16 +52,16 @@ export function Landing() {
   );
 }
 
-// The one glass surface on the page (Shrey's call, 2026-10-23): a graphite bar that blurs what
-// scrolls under it, with the way into the jobs always in reach on the right.
+// The top bar: frosted white machined glass (Shrey, 2026-10-23). The page shows through it,
+// blurred; its text is dark so it reads the same over the carbon and the limestone chapters.
 function Nav({ fresher }: { fresher: number }) {
   return (
-    <header className="lp-dark fixed inset-x-0 top-0 z-30 px-[var(--gutter)] pt-[max(0.75rem,env(safe-area-inset-top,0px))]">
-      <nav aria-label="Main" className="mx-auto flex h-14 items-center gap-1 rounded-full bg-lp-bg/90 pr-2 pl-5 text-lp-ink backdrop-blur-xl backdrop-saturate-150 sm:gap-2">
+    <header className="lp-light fixed inset-x-0 top-0 z-30 px-[var(--gutter)] pt-[max(0.75rem,env(safe-area-inset-top,0px))]">
+      <nav aria-label="Main" className="machined-glass glass-white mx-auto flex h-14 items-center gap-1 rounded-full pr-2 pl-5 text-lp-ink sm:gap-2">
         <Link href="/preview" aria-label="Kario home" className="mr-auto"><Wordmark className="h-[24px] w-auto text-lp-ink" /></Link>
-        <a href="#how" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised md:block">How it works</a>
-        <Link href="/" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised md:block">Jobs</Link>
-        <button type="button" disabled title="Sign-in comes next" aria-label="Your profile (sign-in comes next)" className="hidden size-10 place-items-center rounded-full bg-lp-raised text-lp-muted sm:grid">
+        <a href="#how" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">How it works</a>
+        <Link href="/" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">Jobs</Link>
+        <button type="button" disabled title="Sign-in comes next" aria-label="Your profile (sign-in comes next)" className="hidden size-10 place-items-center rounded-full bg-lp-raised/60 text-lp-ink sm:grid">
           <UserRound aria-hidden className="size-5" strokeWidth={1.75} />
         </button>
         <Link href="/?yrs=0" className="btn-primary btn-tactile btn-sm ml-1 gap-1.5">

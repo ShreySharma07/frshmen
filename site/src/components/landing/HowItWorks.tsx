@@ -66,6 +66,7 @@ export function HowItWorks() {
     <section id="how" aria-labelledby="how-title" className="lp-light bg-lp-bg pt-[clamp(6rem,12vw,10rem)] pb-[clamp(4rem,8vw,6rem)] text-lp-ink">
       <div className="grid-page">
         <h2 id="how-title" className="col-span-full text-[clamp(2.5rem,5.6vw,5rem)] leading-[0.95] font-semibold tracking-[-0.05em]">How it works</h2>
+        <p className="col-span-full mt-4 max-w-[38rem] text-[16px] text-lp-muted">One real Palantir posting, start to finish. The job and every quote from it are real; the resume and the people are a sample profile.</p>
       </div>
 
       <nav aria-label="Steps" className="sticky top-[calc(max(0.75rem,env(safe-area-inset-top,0px))+4rem)] z-20 mt-8 px-[var(--gutter)] lg:mt-12">
@@ -92,17 +93,17 @@ export function HowItWorks() {
       </nav>
 
       <div className="grid-page">
-        <ol className="col-span-full lg:col-span-5">
+        <ol className="col-span-full min-w-0 lg:col-span-5">
           {STEPS.map(({ title, body, Fragment }, i) => (
             <li
               key={title}
               ref={(el) => { steps.current[i] = el; }}
               data-step={i}
-              className={`grid scroll-mt-40 gap-4 py-10 transition-opacity duration-move lg:min-h-[76svh] lg:content-center lg:py-0 ${active === i ? "" : "lg:opacity-40"}`}
+              className={`grid min-w-0 scroll-mt-40 gap-4 py-10 transition-opacity duration-move lg:min-h-[76svh] lg:content-center lg:py-0 ${active === i ? "" : "lg:opacity-40"}`}
             >
               <h3 className="text-[clamp(1.75rem,3vw,2.75rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance">{title}</h3>
               <p className="max-w-[32rem] text-[17px] leading-relaxed">{body}</p>
-              <div className="mt-4 lg:hidden"><Fragment /></div>
+              <div className="mt-4 min-w-0 lg:hidden"><Fragment /></div>
             </li>
           ))}
         </ol>

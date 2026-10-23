@@ -78,9 +78,8 @@
     bottom: anchor(top);
     left: anchor(center);
     translate: -50% -0.5rem;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.625rem;
     border-radius: 999px;
-    background: var(--lp-raised);
     color: var(--lp-ink);
     font-size: 0.8125rem;
     white-space: nowrap;
@@ -134,3 +133,54 @@
 .landing :focus-visible { outline: 2px solid var(--lp-accent); outline-offset: 3px; border-radius: 6px; }
 .landing ::selection { background: var(--lp-accent); color: var(--lp-on-accent); }
 .landing mark { background: var(--lp-mark); color: inherit; border-radius: 4px; padding: 0 0.25rem; }
+
+/* Machined optical glass (Shrey, 2026-10-23): a diagonal sheen instead of a flat tint, a heavy
+   blur, and layered specular edges: a bright top lip, a softer left lip, a dark 1px outline and a
+   long drop. Used on the top bar and the globe's HUD, nowhere else. The white and black here are
+   light itself, not palette colours, so they stay literal. */
+.machined-glass {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0.04) 50%, rgb(255 255 255 / 0.01) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.38),
+    inset 1px 0 0 0 rgb(255 255 255 / 0.14),
+    0 0 0 1px rgb(0 0 0 / 0.45),
+    0 24px 48px -12px rgb(0 0 0 / 0.6);
+}
+/* Frosted white glass for the top bar: the same sheen direction, but white enough to carry dark
+   text over the carbon hero (about 7:1) while the page still shows through, blurred. Its edges
+   go light, since a dark outline would read as a border on white. */
+.machined-glass.glass-white {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.78) 0%, rgb(255 255 255 / 0.62) 50%, rgb(255 255 255 / 0.54) 100%);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.95),
+    inset 1px 0 0 0 rgb(255 255 255 / 0.6),
+    0 0 0 1px rgb(255 255 255 / 0.25),
+    0 24px 48px -12px rgb(0 0 0 / 0.45);
+}
+
+/* 1px corner reticle ticks framing the globe, like a viewfinder. */
+.reticle { position: absolute; inset: 0; pointer-events: none; }
+.reticle i { position: absolute; width: 0.5rem; height: 0.5rem; border-color: var(--lp-muted); }
+.reticle i:nth-child(1) { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+.reticle i:nth-child(2) { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+.reticle i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+.reticle i:nth-child(4) { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
+
+/* Inside the #how windows: the evidence in the dark inspector, the rewritten tokens in the diff,
+   and the dark tactile action that sends from the student's Gmail. */
+.landing mark.term-mark { background: color-mix(in srgb, var(--lp-ok) 25%, transparent); color: var(--lp-term-ok); }
+.landing mark.diff-mark { background: color-mix(in srgb, var(--lp-ok) 18%, transparent); color: var(--lp-ink); font-weight: 500; }
+.landing .btn-term {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  background: var(--lp-term);
+  color: var(--lp-term-ink);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 1px 2px rgb(0 0 0 / 0.3);
+}

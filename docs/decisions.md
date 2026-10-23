@@ -4,6 +4,26 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-23 — Landing craft pass: limestone and pine, machined glass, windowed cards
+- **Choice (Shrey):** the white chapters become warm limestone (#F6F5F0 page, #ECEAE2 stone frames
+  with #DDD9CE borders, #FFFFFF windows); terminal blocks and dark buttons are deep pine (#0B1612);
+  emerald-500 marks matched or verified and amber-600 marks missing. Carbon stays for the hero,
+  globe and footer, light orange stays the one action colour. New `--lp-*` roles: window-bar,
+  window-line, ok, warn, warn-text, term, term-ink, term-muted, term-ok.
+- **Machined glass** (`.machined-glass` in `landing.css`): 135° sheen, 24px blur with 180%
+  saturation, layered specular edges. On the top bar (over an 88% carbon body so it stays legible
+  on limestone), the globe's status bar and the city counters. Corner reticle ticks frame the globe.
+  There is no separate hero panel, so these are the panels it went on.
+- **How it works cards** are application windows (stone frame, white window, 36px mono title bar):
+  the posting with a pine inspector showing the evidence line, a 4-row fit matrix with verbatim
+  quotes, a referral composer with a Gmail draft, and a resume diff with a form-fill status bar.
+- **Changed from the brief, to stay true:** the status bar says "Live · refreshed every 3h", not
+  "Live D1 stream" (D1 is retired and the page reads a 3-hourly snapshot); the inspector shows line
+  12, where the requirement sits in the stored posting, not 42; the title bar shows the posting's
+  real Lever URL; the draft is addressed to "Rohan K." with no made-up address at a real company;
+  emerald and amber are fills under pine text, with darker shades for text (emerald-500 on white is
+  2.5:1). One line above the steps says the resume and the people are a sample.
+
 ## 2026-10-23 — Landing page polish: graphite, light orange and white; Geist only
 - **Choice (Shrey):** palette graphite, light orange and white (replaces Night and cornflower from
   earlier today); every heading in Geist Sans (Bricolage Grotesque dropped). Chapters alternate:
