@@ -111,19 +111,39 @@
 .how[data-mode="flow"] .how-pills { position: sticky; top: calc(max(0.75rem, env(safe-area-inset-top, 0px)) + 3.5rem); z-index: 20; background: var(--lp-bg); }
 .landing .how mark[data-mark] { background-image: linear-gradient(var(--lp-accent), var(--lp-accent)); background-repeat: no-repeat; background-size: 100% 100%; background-color: transparent; color: var(--lp-on-accent); }
 
-/* The sources band: two rows drifting in opposite directions, fading out at both edges; hover
-   holds them. */
-.band-mask { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
-.band:hover .band-row { animation-play-state: paused; }
-.band-row { animation: band 48s linear infinite; }
-.band-reverse .band-row { animation-direction: reverse; animation-duration: 56s; }
-@keyframes band { to { transform: translateX(-100%); } }
-@media (prefers-reduced-motion: reduce) {
-  .band-mask { mask-image: none; }
-  .band { flex-wrap: wrap; padding-inline: var(--gutter); }
-  .band-row { animation: none; flex-wrap: wrap; flex-shrink: 1; min-width: 0; gap: 0.5rem 1.5rem; padding-right: 0; }
-  .band-row[aria-hidden] { display: none; }
+/* The departures board: flaps sized from the board's own width (container query units), so every
+   layout fits without scrolling sideways. One flap is 0.74em wide plus a 1px seam. */
+.board { container-type: inline-size; }
+.board-body { --flap-step: calc(0.74em + 1px); font-family: var(--font-mono); font-size: min(14px, calc(100cqi / (var(--n) * 0.8))); }
+.board-grid { display: flex; gap: 1.1em; align-items: center; }
+/* Head cells take the same widths as the flaps (same font size), and print their label smaller. */
+.board-head { padding: 0 0 0.5em; color: var(--lp-term-muted); }
+.board-head > span { flex: none; overflow: hidden; white-space: nowrap; }
+.board-head b { font-size: 0.7em; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; }
+.board-rows { display: grid; gap: 0.35em; }
+.board-row { border-radius: 0.3em; outline-offset: 3px; }
+.board-row:hover .flap { background: #24221d; }
+.flaps { display: flex; gap: 1px; flex: none; }
+.flap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 0.74em;
+  height: 1.7em;
+  border-radius: 2px;
+  background: #1b1a16;
+  color: var(--lp-term-ink);
+  font-size: 1em;
+  line-height: 1;
 }
+/* The seam across the middle of each flap and a darker lower leaf, drawn behind the letter so a
+   hyphen or the bar of a "+" at mid-height stays readable. */
+.flap { isolation: isolate; }
+.flap::before { content: ""; position: absolute; inset: 50% 0 0; z-index: -1; border-top: 1px solid #0c0b09; background: rgb(0 0 0 / 0.16); border-radius: 0 0 2px 2px; }
+.flap.is-turning { color: var(--lp-term-muted); }
+.tone-fits .flap { color: var(--lp-term-ok); }
+.tone-years .flap { color: var(--lp-accent); }
+.tone-quiet .flap { color: var(--lp-term-muted); }
 
 /* Buttons: one light-orange fill, fully round; they give on press. `btn-tactile` adds a top
    highlight and a hairline drop so the button reads as something to press (Shrey, 2026-10-23). */

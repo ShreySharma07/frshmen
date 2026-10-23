@@ -2,13 +2,14 @@
 
 // After the Highlighter, one scroll scene: the globe turns to India while arcs from hubs abroad land
 // on it, then dives in, and the city lights fly into the table beside it; then the dark gives way to
-// a paper field for the sources band. Without script, or with reduced motion, the panels simply
+// a paper field for the arrivals board. Without script, or with reduced motion, the panels simply
 // stack (mode "flow") with the globe facing India, so nothing hides behind an animation that didn't
 // run. Without WebGL, or with Save-Data on, a still picture of the globe stands in.
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Board } from "./Board";
 import type { GlobeView } from "./GlobeScene";
 import { fmt, type Counts } from "./places";
 
@@ -18,18 +19,6 @@ const GlobeScene = dynamic(() => import("./GlobeScene"), { ssr: false });
 
 // Indian cities sit close together on the globe, so only places far apart get a label.
 const LABELLED = new Set(["blr", "us", "uk", "jp", "sg"]);
-// What we read, as the band shows it: the hiring systems with an adapter in sources/ (Darwinbox
-// is left out while its boards refuse us), then companies with open jobs now.
-const SYSTEMS = ["Greenhouse", "Lever", "Ashby", "Workday", "Workable", "SmartRecruiters", "Oracle Recruiting", "Eightfold", "Keka", "Zoho Recruit", "Amazon Jobs", "Sitemap + schema.org"];
-// The numbers behind "how we read": the pipeline's 3-hourly cron, adapters in sources/ (13, not
-// counting Hacker News), and the scrapers CLAUDE.md rules out.
-const TELEMETRY: [string, string][] = [
-  ["3h", "between reads of every board"],
-  ["12+", "hiring systems read directly"],
-  ["0", "LinkedIn or Indeed scraping"],
-];
-const COMPANIES = ["Anthropic", "OpenAI", "Databricks", "NVIDIA", "Razorpay", "Sarvam AI", "Meesho", "Paytm", "Groww", "CRED", "PhonePe", "Zomato", "Stripe", "Cloudflare", "Scale AI", "Perplexity", "Glean", "Atlan", "Postman", "BrowserStack", "Freshworks", "Notion"];
-
 export function GlobeStory({ counts }: { counts: Counts }) {
   const root = useRef<HTMLElement>(null);
   const view = useRef<GlobeView>({ focus: 0, arcs: 0, dive: 0, morph: 0, drag: 0 });
@@ -166,25 +155,19 @@ export function GlobeStory({ counts }: { counts: Counts }) {
         </div>
 
         <div data-panel="sources" className="panel lp-light text-lp-ink">
-          <div className="col-span-full grid gap-10 lg:col-span-7">
-            <h2 className="max-w-[16ch] font-display text-[clamp(3rem,6.6vw,6rem)] leading-[0.92] tracking-[-0.02em] text-balance">
+          <div className="col-span-full grid gap-10 lg:col-span-5">
+            <h2 className="max-w-[16ch] font-display text-[clamp(2.75rem,4.8vw,4.75rem)] leading-[0.92] tracking-[-0.02em] text-balance">
               Every opening, straight from the companies hiring.
             </h2>
             <p className="max-w-[36rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed">
               Kario reads each company&rsquo;s own hiring page, so a role shows up here the day it opens, with the line that says who it&rsquo;s for.
             </p>
           </div>
-          <dl className="col-span-full mt-10 grid grid-cols-3 gap-6 self-center lg:col-span-4 lg:col-start-9 lg:mt-0 lg:grid-cols-1 lg:gap-8">
-            {TELEMETRY.map(([n, label]) => (
-              <div key={label} className="grid gap-1">
-                <dt className="order-2 text-[15px] text-lp-muted lg:text-[16px]">{label}</dt>
-                <dd className="font-mono text-[clamp(2.25rem,4.6vw,4rem)] leading-none font-medium tracking-[-0.04em] tabular-nums">{n}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="band-mask col-span-full -mx-[var(--gutter)] mt-16 grid gap-5 lg:mt-24">
-            <Band items={SYSTEMS} kind="chips" />
-            <Band items={COMPANIES} kind="names" reverse />
+          <div className="col-span-full mt-10 grid gap-3 self-center lg:col-span-7 lg:col-start-6 lg:mt-0">
+            <Board />
+            <p className="px-1 font-mono text-[12px] leading-relaxed text-lp-muted">
+              Read from Greenhouse, Lever, Ashby, Workday, Workable, SmartRecruiters, Oracle Recruiting, Eightfold, Keka, Zoho Recruit, Amazon Jobs and company sites.
+            </p>
           </div>
         </div>
       </div>
@@ -209,22 +192,4 @@ function onMotionChange(cb: () => void) {
   const m = reducedMotion();
   m.addEventListener("change", cb);
   return () => m.removeEventListener("change", cb);
-}
-
-// Row 1: the hiring systems as protocol chips. Row 2: the companies, set as names.
-function Band({ items, kind, reverse = false }: { items: string[]; kind: "chips" | "names"; reverse?: boolean }) {
-  const item = kind === "chips"
-    ? "rounded-md border border-lp-line bg-lp-bg/60 px-3 py-1 font-mono text-xs tracking-wider uppercase"
-    : "text-lg font-semibold tracking-tight";
-  const row = (hidden: boolean) => (
-    <ul aria-hidden={hidden || undefined} className={`band-row flex shrink-0 items-center ${kind === "chips" ? "gap-3 pr-3" : "gap-10 pr-10"}`}>
-      {items.map((s) => <li key={s} className={`whitespace-nowrap ${item}`}>{s}</li>)}
-    </ul>
-  );
-  return (
-    <div className={`band flex overflow-hidden ${reverse ? "band-reverse" : ""}`}>
-      {row(false)}
-      {row(true)}
-    </div>
-  );
 }
