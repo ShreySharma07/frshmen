@@ -21,6 +21,7 @@ import { scrollToY, setLenis } from "./scroll";
 import { setSound, soundOn, soundOnServer, subscribeSound } from "./sound";
 import { FinalCall, Proof, Trust } from "./Story";
 import "./landing.css";
+import { JobsLink } from "./JobsLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -113,15 +114,15 @@ function Nav({ total }: { total: number }) {
       <nav aria-label="Main" className="machined-glass glass-white mx-auto flex h-14 items-center gap-1 rounded-full pr-2 pl-5 text-lp-ink sm:gap-2">
         <Link href="/preview" aria-label="Kario home" className="mr-auto"><Wordmark className="h-[24px] w-auto text-lp-ink" /></Link>
         <a href="#how" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">How it works</a>
-        <Link href="/" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">Jobs</Link>
+        <JobsLink href="/" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">Jobs</JobsLink>
         <SoundToggle />
         <button type="button" disabled title="Sign-in comes next" aria-label="Your profile (sign-in comes next)" className="hidden size-10 place-items-center rounded-full bg-lp-raised/60 text-lp-ink sm:grid">
           <UserRound aria-hidden className="size-5" strokeWidth={1.75} />
         </button>
-        <Link href="/" className="btn-primary btn-tactile btn-sm ml-1 gap-1.5">
+        <JobsLink href="/" className="btn-primary btn-tactile btn-sm ml-1 gap-1.5">
           <span><span className="hidden sm:inline">Browse </span>{fmt(total)} jobs</span>
           <ArrowRight aria-hidden className="size-4" strokeWidth={2} />
-        </Link>
+        </JobsLink>
       </nav>
     </header>
   );
@@ -157,7 +158,7 @@ function Footer() {
       <div className="flex flex-wrap items-end justify-between gap-6 pb-10">
         <p className="max-w-[28rem] text-[15px] text-lp-muted">Kario reads every opening to the line that decides who it&rsquo;s for, then does the legwork with you.</p>
         <ul className="flex gap-6 text-[15px]">
-          <li><Link href="/" className="hover:text-lp-accent-text">Jobs</Link></li>
+          <li><JobsLink href="/" className="hover:text-lp-accent-text">Jobs</JobsLink></li>
           <li><a href="#how" className="hover:text-lp-accent-text">How it works</a></li>
           <li><a href="https://github.com/ShreySharma07/frshmen" className="hover:text-lp-accent-text">GitHub</a></li>
         </ul>

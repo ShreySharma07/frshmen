@@ -9,7 +9,6 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { fetchEvidence, type EvidenceLine } from "@/lib/api";
 import { introDone } from "./intro";
@@ -19,6 +18,7 @@ import { Source } from "./Source";
 import { fmt, type Counts } from "./places";
 import { clip, fit, rows, STARTER, YEARS } from "./wall";
 import type { WallDrive } from "./WallScene";
+import { JobsLink } from "./JobsLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -119,10 +119,10 @@ export function Highlighter({ counts }: { counts: Counts }) {
               </div>
             </fieldset>
             <div>
-              <Link href={jobsHref} className="btn-primary btn-tactile gap-2">
+              <JobsLink href={jobsHref} className="btn-primary btn-tactile gap-2">
                 {within != null ? `See ${fmt(within)} jobs that take ${label === "Fresher" ? "freshers" : label}` : "See the jobs that take you"}
                 <ArrowRight aria-hidden className="size-4" strokeWidth={2} />
-              </Link>
+              </JobsLink>
               <p className="mt-5 hidden text-[13px] text-lp-muted lg:block">
                 <kbd className="kbd">J</kbd> <kbd className="kbd">K</kbd> to move through the story, <kbd className="kbd">/</kbd> to search the jobs
               </p>
@@ -167,9 +167,9 @@ function HeroCard({ line, years, href }: { line: EvidenceLine; years: number; hr
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <span className="rounded-full bg-lp-ok px-2.5 py-1 font-mono text-[12px] font-semibold text-lp-term">Takes you · {asks}</span>
-            <Link href={href} className="text-[15px] font-medium text-lp-accent-text underline-offset-4 hover:underline">
+            <JobsLink href={href} className="text-[15px] font-medium text-lp-accent-text underline-offset-4 hover:underline">
               {years <= 5 ? "More like this" : "Browse all jobs"}
-            </Link>
+            </JobsLink>
           </div>
         </div>
       </div>

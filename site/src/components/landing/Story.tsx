@@ -6,9 +6,9 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, MailCheck, ShieldCheck, ScrollText } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { fmt, type Counts } from "./places";
+import { JobsLink } from "./JobsLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -115,9 +115,9 @@ export function FinalCall({ counts }: { counts: Counts }) {
           Your next job is in here.
         </h2>
         <div className="col-span-full flex flex-wrap items-center gap-x-8 gap-y-4">
-          <Link href="/" className="btn-primary btn-tactile gap-2">
+          <JobsLink href="/" className="btn-primary btn-tactile gap-2">
             Browse {fmt(counts.total)} open jobs <ArrowRight aria-hidden className="size-4" strokeWidth={2} />
-          </Link>
+          </JobsLink>
           <span className="text-[16px] text-lp-muted">From {counts.companies} companies, read every three hours.</span>
         </div>
       </div>
