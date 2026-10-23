@@ -64,9 +64,10 @@ function Nav({ fresher }: { fresher: number }) {
       frame = 0;
       const el = bar.current;
       if (!el) return;
-      // The first element under the bar's middle that isn't the bar itself decides.
+      // What the reader sees under the bar's middle decides: the topmost element that isn't the
+      // bar and isn't mostly faded out (scroll scenes cross-fade whole panels).
       const y = el.getBoundingClientRect().bottom - 28;
-      const under = document.elementsFromPoint(window.innerWidth / 2, y).find((n) => !el.contains(n));
+      const under = document.elementsFromPoint(window.innerWidth / 2, y).find((n) => !el.contains(n) && shown(n));
       setOverLight(Boolean(under?.closest(".lp-light")));
     };
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(check); };
@@ -92,6 +93,12 @@ function Nav({ fresher }: { fresher: number }) {
       </nav>
     </header>
   );
+}
+
+/** False when the element, or anything around it, is at less than half opacity. */
+function shown(el: Element) {
+  for (let n: Element | null = el; n; n = n.parentElement) if (Number(getComputedStyle(n).opacity) < 0.5) return false;
+  return true;
 }
 
 function Footer() {

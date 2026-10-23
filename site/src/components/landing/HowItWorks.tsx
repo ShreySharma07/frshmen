@@ -63,14 +63,14 @@ export function HowItWorks() {
   };
 
   return (
-    <section id="how" aria-labelledby="how-title" className="lp-light bg-lp-bg pt-[clamp(6rem,12vw,10rem)] pb-[clamp(4rem,8vw,6rem)] text-lp-ink">
+    <section id="how" aria-labelledby="how-title" className="scroll-mt-20 lp-light bg-lp-bg pt-[clamp(6rem,12vw,10rem)] pb-[clamp(4rem,8vw,6rem)] text-lp-ink">
       <div className="grid-page">
         <h2 id="how-title" className="col-span-full text-[clamp(2.5rem,5.6vw,5rem)] leading-[0.95] font-semibold tracking-[-0.05em]">How it works</h2>
         <p className="col-span-full mt-4 max-w-[38rem] text-[16px] text-lp-muted">One real Palantir posting, start to finish. The job and every quote from it are real; the resume and the people are a sample profile.</p>
       </div>
 
-      <nav aria-label="Steps" className="sticky top-[calc(max(0.75rem,env(safe-area-inset-top,0px))+4rem)] z-20 mt-8 px-[var(--gutter)] lg:mt-12">
-        <ol ref={pills} className="flex items-center gap-0 overflow-x-auto rounded-full bg-lp-bg/85 py-2 backdrop-blur-md [scrollbar-width:none]">
+      <nav aria-label="Steps" className="sticky top-[calc(max(0.75rem,env(safe-area-inset-top,0px))+3.5rem)] z-20 mt-8 bg-lp-bg px-[var(--gutter)] pt-3 pb-2 lg:mt-12">
+        <ol ref={pills} className="flex items-center gap-0 overflow-x-auto py-1 [scrollbar-width:none]">
           {STEPS.map(({ pill }, i) => (
             <li key={pill} className="flex shrink-0 items-center lg:flex-1 lg:last:flex-none">
               <button
@@ -99,7 +99,7 @@ export function HowItWorks() {
               key={title}
               ref={(el) => { steps.current[i] = el; }}
               data-step={i}
-              className={`grid min-w-0 scroll-mt-40 gap-4 py-10 transition-opacity duration-move lg:min-h-[76svh] lg:content-center lg:py-0 ${active === i ? "" : "lg:opacity-40"}`}
+              className={`grid min-w-0 scroll-mt-44 gap-4 py-10 transition-opacity duration-move lg:min-h-[62svh] lg:content-center lg:py-0 ${active === i ? "" : "lg:opacity-40"}`}
             >
               <h3 className="text-[clamp(1.75rem,3vw,2.75rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance">{title}</h3>
               <p className="max-w-[32rem] text-[17px] leading-relaxed">{body}</p>
@@ -108,7 +108,7 @@ export function HowItWorks() {
           ))}
         </ol>
         <div className="relative hidden lg:col-span-6 lg:col-start-7 lg:block">
-          <div className="sticky top-32 grid h-[calc(100svh-8rem)] items-center">
+          <div className="sticky top-36 grid h-[calc(100svh-10rem)] items-center">
             {STEPS.map(({ title, Fragment }, i) => (
               <div
                 key={title}

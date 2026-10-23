@@ -51,14 +51,16 @@ export function GlobeStory({ counts }: { counts: Counts }) {
         });
         tl.set(q("[data-panel=places], [data-panel=sources]"), { autoAlpha: 0 }, 0)
           .to({}, { duration: 0.1 })
-          .to(q("[data-panel=hero]"), { autoAlpha: 0, y: -48, duration: 0.16 }, 0.1)
+          // Hand-offs never overlap: one panel is gone before the next arrives, so text is never
+          // half-faded under another.
+          .to(q("[data-panel=hero]"), { autoAlpha: 0, y: -48, duration: 0.12 }, 0.1)
           .to(q("[data-globe]"), wide ? { x: () => -window.innerWidth * 0.46, duration: 0.34 } : { y: () => -window.innerHeight * 0.4, scale: 0.6, duration: 0.34 }, 0.1)
           .to(view.current, { focus: 1, duration: 0.34 }, 0.1)
-          .fromTo(q("[data-panel=places]"), { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, duration: 0.16 }, 0.3)
+          .fromTo(q("[data-panel=places]"), { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.3)
           .to({}, { duration: 0.14 })
-          .to(q("[data-globe], [data-panel=places]"), { autoAlpha: 0, scale: 0.9, duration: 0.14 }, 0.62)
-          .fromTo(q("[data-field]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08, ease: "none" }, 0.6)
-          .fromTo(q("[data-panel=sources]"), { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.68)
+          .to(q("[data-globe], [data-panel=places]"), { autoAlpha: 0, scale: 0.9, duration: 0.08, ease: "power2.in" }, 0.58)
+          .fromTo(q("[data-field]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06, ease: "none" }, 0.64)
+          .fromTo(q("[data-panel=sources]"), { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.7)
           .to({}, { duration: 0.14 });
         return () => { view.current.focus = 0; };
       });
