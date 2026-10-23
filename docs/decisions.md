@@ -4,6 +4,16 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-23 — Landing palette: midnight navy, warm parchment, Klein cobalt
+- **Choice (Shrey):** "high-authority enterprise and fintech". Navy chapters #080D1A with #0F172A
+  elevated (hero, globe, footer, terminal blocks); parchment chapters #FAF8F5 with #EFECE6 bento
+  cards and #FFFFFF inner surfaces (sources, How it works); Klein cobalt #2563EB as the one action
+  colour (white text on it, 5.2:1; #60A5FA where cobalt is text or a marker on navy); #059669 as
+  the pass signal. Replaces carbon, limestone and light orange from earlier today.
+- **Also:** the globe's "Live" status bar and the hero's "356 fresher roles open now" badge are
+  gone (the count stays on the top bar's button). The top bar is clearer white glass, and its text
+  follows what is underneath: light over navy, dark over parchment.
+
 ## 2026-10-23 — Landing craft pass: limestone and pine, machined glass, windowed cards
 - **Choice (Shrey):** the white chapters become warm limestone (#F6F5F0 page, #ECEAE2 stone frames
   with #DDD9CE borders, #FFFFFF windows); terminal blocks and dark buttons are deep pine (#0B1612);
