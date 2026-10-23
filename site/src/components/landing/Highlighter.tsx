@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { fetchEvidence, type EvidenceLine } from "@/lib/api";
 import { introDone } from "./intro";
+import { Pen } from "./Pen";
 import { fmt, type Counts } from "./places";
 import { clip, fit, rows, STARTER, YEARS } from "./wall";
 import type { WallDrive } from "./WallScene";
@@ -23,6 +24,7 @@ const WallScene = dynamic(() => import("./WallScene"), { ssr: false });
 
 export function Highlighter({ counts }: { counts: Counts }) {
   const root = useRef<HTMLElement>(null);
+  const frame = useRef<HTMLDivElement>(null);
   const drive = useRef<WallDrive>({ sweep: 0, collapse: 0, pointerX: 0, pointerY: 0 });
   const [years, setYears] = useState(0);
   const [lines, setLines] = useState<EvidenceLine[]>(STARTER);
@@ -78,7 +80,8 @@ export function Highlighter({ counts }: { counts: Counts }) {
 
   return (
     <section ref={root} data-mode={mode} aria-labelledby="hl-title" className="hl lp-light relative bg-lp-bg text-lp-ink">
-      <div className="hl-frame relative overflow-clip">
+      <div ref={frame} className="hl-frame relative overflow-clip">
+        <Pen area={frame} />
         {/* The wall as text: the printed page, the fallback, and what shows until WebGL is up. */}
         <DomWall lines={lines} years={years} hidden={glReady && mode === "scroll"} />
         {mode === "scroll" && <div className="hl-wall absolute inset-0"><WallScene lines={lines} years={years} hero={hero} drive={drive} onReady={() => setGlReady(true)} /></div>}

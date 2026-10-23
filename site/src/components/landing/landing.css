@@ -220,3 +220,7 @@
 /* The opening count: gone before paint when skipped; the page holds still while it runs. */
 .intro-skip .intro { display: none; }
 .intro-on, .intro-on body { overflow: hidden; }
+
+/* The hero's highlighter pen hides the system cursor, except over the controls. */
+.hl-pen { cursor: none; }
+.hl-pen :is(a, button, input, label, [role="radio"]) { cursor: pointer; }
