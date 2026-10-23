@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { ArrowRight, UserRound } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchMeta } from "@/lib/api";
 import { Wordmark } from "../Wordmark";
 import { GlobeStory } from "./GlobeStory";
@@ -52,11 +52,32 @@ export function Landing() {
   );
 }
 
-// The top bar: frosted white machined glass (Shrey, 2026-10-23). The page shows through it,
-// blurred; its text is dark so it reads the same over the carbon and the limestone chapters.
+// The top bar: clear white machined glass (Shrey, 2026-10-23). The page shows through it, so its
+// text follows what is underneath: light over the navy chapters, dark over the parchment ones.
 function Nav({ fresher }: { fresher: number }) {
+  const bar = useRef<HTMLElement>(null);
+  const [overLight, setOverLight] = useState(false);
+
+  useEffect(() => {
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const el = bar.current;
+      if (!el) return;
+      // The first element under the bar's middle that isn't the bar itself decides.
+      const y = el.getBoundingClientRect().bottom - 28;
+      const under = document.elementsFromPoint(window.innerWidth / 2, y).find((n) => !el.contains(n));
+      setOverLight(Boolean(under?.closest(".lp-light")));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(check); };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, []);
+
   return (
-    <header className="lp-light fixed inset-x-0 top-0 z-30 px-[var(--gutter)] pt-[max(0.75rem,env(safe-area-inset-top,0px))]">
+    <header ref={bar} className={`${overLight ? "lp-light" : "lp-dark"} fixed inset-x-0 top-0 z-30 px-[var(--gutter)] pt-[max(0.75rem,env(safe-area-inset-top,0px))]`}>
       <nav aria-label="Main" className="machined-glass glass-white mx-auto flex h-14 items-center gap-1 rounded-full pr-2 pl-5 text-lp-ink sm:gap-2">
         <Link href="/preview" aria-label="Kario home" className="mr-auto"><Wordmark className="h-[24px] w-auto text-lp-ink" /></Link>
         <a href="#how" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">How it works</a>
