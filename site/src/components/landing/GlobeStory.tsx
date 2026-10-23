@@ -77,8 +77,8 @@ export function GlobeStory({ counts }: { counts: Counts }) {
         <div data-globe className="globe-box pointer-events-none absolute">
           <div className="pointer-events-auto relative">
             {/* The HUD: a frosted status bar above the globe and viewfinder ticks at its corners. */}
-            <div className="reticle" aria-hidden><i /><i /><i /><i /></div>
-            <div className="machined-glass absolute top-[6%] left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wider whitespace-nowrap text-lp-ink uppercase">
+            <div className="reticle hidden lg:block" aria-hidden><i /><i /><i /><i /></div>
+            <div className="machined-glass absolute top-[6%] left-1/2 z-10 hidden -translate-x-1/2 lg:flex items-center gap-3 rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wider whitespace-nowrap text-lp-ink uppercase">
               <span className="flex items-center gap-1.5"><span aria-hidden className="live-dot size-1.5 rounded-full bg-lp-ok" />Live</span>
               <span className="text-lp-muted">Refreshed every 3h</span>
               <span className="tabular-nums">{fmt(counts.cities.reduce((n, p) => n + p.n, 0) + counts.abroad.reduce((n, p) => n + p.n, 0))} on the map</span>

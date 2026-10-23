@@ -148,8 +148,17 @@
     0 0 0 1px rgb(0 0 0 / 0.45),
     0 24px 48px -12px rgb(0 0 0 / 0.6);
 }
-/* Over the limestone chapters the bar needs a carbon body under the sheen to stay legible. */
-.machined-glass.on-carbon { background-color: color-mix(in srgb, var(--lp-bg) 88%, transparent); }
+/* Frosted white glass for the top bar: the same sheen direction, but white enough to carry dark
+   text over the carbon hero (about 7:1) while the page still shows through, blurred. Its edges
+   go light, since a dark outline would read as a border on white. */
+.machined-glass.glass-white {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.78) 0%, rgb(255 255 255 / 0.62) 50%, rgb(255 255 255 / 0.54) 100%);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.95),
+    inset 1px 0 0 0 rgb(255 255 255 / 0.6),
+    0 0 0 1px rgb(255 255 255 / 0.25),
+    0 24px 48px -12px rgb(0 0 0 / 0.45);
+}
 
 /* 1px corner reticle ticks framing the globe, like a viewfinder. */
 .reticle { position: absolute; inset: 0; pointer-events: none; }
