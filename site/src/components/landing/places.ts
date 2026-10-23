@@ -38,6 +38,7 @@ export interface Counts {
   fresher: number;
   companies: number;
   india: number;
+  visa: number | null; // open roles that sponsor a visa or offer relocation; null until the API says
   cities: Place[];
   abroad: Place[];
 }
@@ -47,6 +48,7 @@ export const SNAPSHOT: Counts = {
   fresher: 356,
   companies: 415,
   india: 5625,
+  visa: null,
   cities: place(CITIES, { Bengaluru: 3236, Hyderabad: 954, Pune: 429, Mumbai: 408, Noida: 303, Chennai: 258, Gurugram: 240 }),
   abroad: place(COUNTRIES, {
     "United States": 12599, "United Kingdom": 1204, Germany: 569, Canada: 546, Japan: 264,
@@ -62,6 +64,7 @@ export function fromMeta(meta: Meta): Counts {
     fresher: meta.levels.fresher,
     companies: meta.last_run?.companies_ok ?? SNAPSHOT.companies,
     india: byCountry.India ?? 0,
+    visa: meta.visa_or_relocation ?? null,
     cities: place(CITIES, byCity),
     abroad: place(COUNTRIES, byCountry),
   };
