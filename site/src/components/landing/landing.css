@@ -62,28 +62,21 @@
   .story [data-panel="places"] { align-content: end; padding-bottom: 3rem; }
 }
 
-/* City labels ride on cobe's anchors where the browser has anchor positioning; elsewhere the
-   list beside the globe carries the same numbers. */
-.globe-label { display: none; }
-@supports (position-anchor: --a) {
-  .globe-label {
-    display: block;
-    position: absolute;
-    position-anchor: var(--a);
-    bottom: anchor(top);
-    left: anchor(center);
-    translate: -50% -0.5rem;
-    padding: 0.25rem 0.625rem;
-    border-radius: 999px;
-    color: var(--lp-ink);
-    font-size: 0.8125rem;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: var(--v);
-    transition: opacity 300ms var(--ease-out-expo);
-  }
-  .globe-label b { color: var(--lp-accent-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* City labels: GlobeScene moves each one onto its light every frame and fades it on the far side. */
+.globe-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  color: var(--lp-ink);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
 }
+.globe-label b { color: var(--lp-accent-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 63.99rem) { .globe-label { display: none; } }
 
 /* The Highlighter: one sticky screen in "scroll" mode (WebGL wall, the scroll clears it to a
    card); in "flow" mode the text wall and the card simply stack. */
