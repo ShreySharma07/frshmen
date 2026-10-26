@@ -1,6 +1,6 @@
 # Careers-system detection
 
-320 companies read; 55 now have a readable board. Systems found: not found 184, yc_jobs 29, ashby 20, careersite 20, workday 14, darwinbox 9, gem 6, job listing on ycombinator.com 6, keka 3, oracle 3, icims 3, greenhouse 3, dover 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, rippling 1, zoho_recruit 1, lever 1.
+320 companies read; 57 now have a readable board. Systems found: not found 184, yc_jobs 28, careersite 21, ashby 20, workday 14, darwinbox 9, gem 6, job listing on ycombinator.com 6, keka 3, oracle 3, icims 3, greenhouse 3, dover 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, rippling 1, zoho_recruit 1, lever 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -39,7 +39,7 @@
 | Covariant | covariant.ai | not found (6 pages read) |  |
 | Krutrim | olakrutrim.com | not found (6 pages read) |  |
 | Haptik | haptik.ai | careersite: https://haptik.freshteam.com/jobs/68V3608ei65Q/devops-engineer-2 |  |
-| Gupshup | gupshup.io | not found (6 pages read) |  |
+| Gupshup | gupshup.io | not found (0 pages read) |  |
 | Vue.ai (Mad Street Den) | vue.ai | not found (6 pages read) |  |
 | SigTuple | sigtuple.com | not found (6 pages read) |  |
 | Simplismart | simplismart.ai | not found (6 pages read) |  |
@@ -121,7 +121,7 @@
 | Uber | uber.com | oracle: https://jobs.uber.com/en/ | yes |
 | Oracle | oracle.com | not found (0 pages read) |  |
 | IBM | ibm.com | not found (6 pages read) |  |
-| Dell Technologies | dell.com | not found (1 pages read) |  |
+| Dell Technologies | dell.com | not found (6 pages read) |  |
 | AMD | amd.com | not found (0 pages read) |  |
 | Texas Instruments | ti.com | not found (6 pages read) |  |
 | Marvell | marvell.com | workday: https://www.marvell.com/company/careers.html | yes |
@@ -179,7 +179,7 @@
 | Bain & Company | bain.com | not found (6 pages read) |  |
 | Deloitte | deloitte.com | not found (6 pages read) |  |
 | BharatPe | bharatpe.com | not found (6 pages read) |  |
-| Pine Labs | pinelabs.com | not found (3 pages read) |  |
+| Pine Labs | pinelabs.com | not found (0 pages read) |  |
 | MobiKwik | mobikwik.com | not found (0 pages read) |  |
 | Go Digit | godigit.com | darwinbox: https://www.godigit.com/careers |  |
 | smallcase | smallcase.com | not found (6 pages read) |  |
@@ -223,11 +223,11 @@
 | Alex | alexcodes.app | not found (6 pages read) |  |
 | Arva AI | www.arva.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/arva-ai/jobs/bPPv8fg-head-of-research |  |
 | Assembly HOA | assemblyhoa.com | not found (6 pages read) |  |
-| Brighterway | www.brighterway.ai | not found (0 pages read, 8 disallowed) |  |
+| Brighterway | www.brighterway.ai | not found (0 pages read, 8 disallowed) | yes |
 | Capitol AI | www.capitol.ai | yc_jobs (no adapter yet): https://www.capitol.ai |  |
 | Carma | www.joincarma.com | yc_jobs (no adapter yet): https://www.joincarma.com |  |
 | Cartage | cartage.ai | not found (6 pages read) |  |
-| Corgi Insurance | corgi.com | yc_jobs (no adapter yet): https://www.corgi.insure/careers |  |
+| Corgi Insurance | corgi.com | careersite: https://www.corgi.insure/careers/business-development-representative-san-francisco-ca-jzys6k |  |
 | Coval | coval.dev | yc_jobs (no adapter yet): https://www.coval.ai/careers |  |
 | Deepnight | www.deepnight.com | yc_jobs (no adapter yet): https://deepnight.com/pages/careers |  |
 | Domu Technology Inc. | www.domu.ai | not found (6 pages read) |  |
@@ -286,7 +286,7 @@
 | Coris | coris.ai | yc_jobs (no adapter yet): https://www.coris.ai/ |  |
 | Curacel | curacel.co | yc_jobs (no adapter yet): https://www.curacel.co/careers |  |
 | Dart | www.dartai.com | yc_jobs (no adapter yet): https://www.dartai.com |  |
-| Dynamo AI | dynamo.ai | rippling (no adapter yet): https://www.dynamo.ai/ |  |
+| Dynamo AI | dynamo.ai | rippling (no adapter yet): https://www.dynamo.ai/ | yes |
 | Flagright | flagright.com | ashby: https://jobs.ashbyhq.com/flagright.com | yes |
 | Gym Class | gymclass.com | yc_jobs (no adapter yet): https://www.gymclass.com/ |  |
 | HOMLI | thehomli.com | not found (0 pages read) |  |
