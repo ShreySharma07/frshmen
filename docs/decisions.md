@@ -4,6 +4,21 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-10-29 — Part B.1: sign-in and resume storage
+- **Sign-in. Options:** Google only (one button, no email deliverability work; Google OAuth is
+  needed anyway for the `gmail.compose` drafts in B.5) · Google plus an email magic link (covers
+  people without a Google account or on a work address).
+- **Choice (Shrey):** Google plus an email link. Limit to note: Supabase's built-in mailer sends
+  about 2 auth emails an hour on the free tier, so email sign-in needs a free SMTP sender before
+  launch (decided separately).
+- **Resume storage. Options:** PDF in Supabase Storage plus the extracted text in Postgres · text
+  only (nothing private in a file bucket, but B.3 would rebuild the layout from plain text and
+  users can't re-download their original).
+- **Choice (Shrey):** PDF plus extracted text. The PDF sits in a private Storage bucket, one folder
+  per user, guarded by row-level security; the text goes in Postgres for the fit check and the
+  tailored resume. Free tier: 1 GB Storage, 50 MB per file.
+- **D1 backup:** Shrey chose to keep it for now (it costs nothing); ask again before deleting.
+
 ## 2026-10-23 — Landing v2: the critique roadmap, for every job seeker
 - **Context:** two design critiques of `/preview` (the second unconstrained, benchmarked against
   current award sites) scored it about 5.5/10: clean, honest, but every visual borrowed. Shrey:
