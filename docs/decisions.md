@@ -4,7 +4,7 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
-## 2026-10-29 — Part B.1: sign-in and resume storage
+## 2026-10-30 — Part B.1: sign-in and resume storage
 - **Sign-in. Options:** Google only (one button, no email deliverability work; Google OAuth is
   needed anyway for the `gmail.compose` drafts in B.5) · Google plus an email magic link (covers
   people without a Google account or on a work address).
@@ -17,6 +17,19 @@ Newest first. Each entry: date, options considered, choice, why.
 - **Choice (Shrey):** PDF plus extracted text. The PDF sits in a private Storage bucket, one folder
   per user, guarded by row-level security; the text goes in Postgres for the fit check and the
   tailored resume. Free tier: 1 GB Storage, 50 MB per file.
+- **Auth client. Options:** supabase-js, loaded only on the sign-in and profile pages (about
+  45 KB gzip; handles PKCE, token refresh and Storage uploads; the mobile app can reuse it) ·
+  our own PKCE and refresh code against Supabase's REST API (about 3 KB, but we'd own the edge
+  cases). **Choice (Shrey):** supabase-js, lazy-loaded. The job list's 170 KB budget is untouched.
+- **Resume text. Options:** pdf.js in the browser on the profile page (instant, and the user can
+  check the text before saving) · a GitHub Actions job running pypdf on new uploads (no extra JS,
+  but minutes late). The Worker's 10 ms CPU limit rules out parsing there. **Choice (Shrey):** in
+  the browser, pdf.js lazy-loaded on the profile page only.
+- **Email sender. Options:** decide at launch (Supabase's mailer meanwhile) · Brevo free (300 a
+  day, single verified sender, no domain, but likely spam-foldered) · Resend (free: 3,000 a month,
+  100 a day) on our own domain. **Choice (Shrey):** Resend with a domain. The domain is the
+  project's first paid item (about $10 a year), an explicit exception to "free tools only".
+  Until it exists, email links go through Supabase's mailer (about 2 an hour), enough for testing.
 - **D1 backup:** Shrey chose to keep it for now (it costs nothing); ask again before deleting.
 
 ## 2026-10-23 — Landing v2: the critique roadmap, for every job seeker
