@@ -36,11 +36,18 @@ jobs:
         working-directory: site
         env:
           NEXT_TELEMETRY_DISABLED: "1"
-          # Sign-in (src/lib/supabase.ts). Repo *variables*, not secrets: both are public by design.
+          # Sign-in (src/lib/supabase.ts). Both are public by design and end up in the page's JS, so
+          # a repo variable is the natural home; a repo secret of the same name works too.
           # Unset, /login and /profile say sign-in isn't switched on yet.
-          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
+        # Fail loudly instead of shipping a site whose sign-in is silently off.
+        # (Remove this guard if sign-in should ever be deliberately off.)
         run: |
+          if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ] || [ -z "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY is missing. Add both under Settings > Secrets and variables > Actions (Variables or Secrets tab, repository level)."
+            exit 1
+          fi
           npm ci
           npm run build
 
