@@ -53,7 +53,7 @@ export function Landing() {
       if (e.metaKey || e.ctrlKey || e.altKey || (e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable]"))) return;
       if (e.key === "/") {
         e.preventDefault();
-        try { sessionStorage.setItem("kario:search", "1"); } catch {}
+        try { sessionStorage.setItem("aventra:search", "1"); } catch {}
         router.push("/");
         return;
       }
@@ -112,7 +112,7 @@ function Nav({ total }: { total: number }) {
   return (
     <header ref={bar} className={`${overLight ? "lp-light" : "lp-dark"} fixed inset-x-0 top-0 z-30 px-[var(--gutter)] pt-[max(0.75rem,env(safe-area-inset-top,0px))]`}>
       <nav aria-label="Main" className="machined-glass glass-white mx-auto flex h-14 items-center gap-1 rounded-full pr-2 pl-5 text-lp-ink sm:gap-2">
-        <Link href="/preview" aria-label="Kario home" className="mr-auto"><Wordmark className="h-[24px] w-auto text-lp-ink" /></Link>
+        <Link href="/preview" aria-label="Aventra home" className="mr-auto"><Wordmark className="h-[24px] w-auto text-lp-ink" /></Link>
         <a href="#how" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">How it works</a>
         <JobsLink href="/" className="hidden rounded-full px-3 py-2 text-[15px] transition-colors duration-quick hover:bg-lp-raised/60 md:block">Jobs</JobsLink>
         <SoundToggle />
@@ -156,7 +156,7 @@ function Footer() {
   return (
     <footer className="lp-dark overflow-hidden bg-lp-bg px-[var(--gutter)] pt-[clamp(6rem,12vw,10rem)] text-lp-ink">
       <div className="flex flex-wrap items-end justify-between gap-6 pb-10">
-        <p className="max-w-[28rem] text-[15px] text-lp-muted">Kario reads every opening to the line that decides who it&rsquo;s for, then does the legwork with you.</p>
+        <p className="max-w-[28rem] text-[15px] text-lp-muted">Aventra reads every opening to the line that decides who it&rsquo;s for, then does the legwork with you.</p>
         <ul className="flex gap-6 text-[15px]">
           <li><JobsLink href="/" className="hover:text-lp-accent-text">Jobs</JobsLink></li>
           <li><a href="#how" className="hover:text-lp-accent-text">How it works</a></li>

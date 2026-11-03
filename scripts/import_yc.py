@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 COMPANIES = ROOT / "config" / "companies.yaml"
 # raw.githubusercontent.com rather than yc-oss.github.io: same file, and reachable from more networks.
 SOURCE = "https://raw.githubusercontent.com/yc-oss/api/main/companies/hiring.json"
-USER_AGENT = "frshmen-job-board/0.1 (personal fresher job board; +https://github.com/ShreySharma07/frshmen)"
+USER_AGENT = "aventra-jobboard/0.1 (Aventra job board; +https://github.com/ShreySharma07/frshmen)"
 
 AI_TAGS = {
     "Artificial Intelligence", "AI", "Generative AI", "Machine Learning", "Computer Vision", "Deep Learning",

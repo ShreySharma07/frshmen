@@ -1,6 +1,6 @@
 # Brief: the job list (M4.3)
 
-Kario's main screen. Step 1 of the UI process in `CLAUDE.md`: what the screen is for, the one
+Aventra's main screen. Step 1 of the UI process in `CLAUDE.md`: what the screen is for, the one
 thing the user must do, real content, and products whose *patterns* we borrow (never their look).
 Shrey reviews this before the wireframe (M4.4).
 
@@ -18,7 +18,7 @@ trust each label at a glance.
 
 ## What each card must answer, in priority order
 1. **Can I apply with my experience?** The years asked ("0–1 yrs", "3+ yrs", "Not stated") and
-   the exact snippet behind it, one tap away. This is what Kario is for; it must be the
+   the exact snippet behind it, one tap away. This is what Aventra is for; it must be the
    loudest thing after the title.
 2. **What and where:** title, company, city or Remote/Hybrid/Onsite.
 3. **How fresh:** "2 days ago", plus a "New" mark for jobs since my last visit.

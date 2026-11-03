@@ -1,5 +1,5 @@
 """Writes the landing page's starter wall: the deciding line of every real posting in the test
-fixtures, labelled by Kario's own extractor. The page shows these before /api/evidence answers
+fixtures, labelled by Aventra's own extractor. The page shows these before /api/evidence answers
 (and when it can't), so the wall is real text even offline.
 
   python scripts/landing_wall_snapshot.py   # writes site/src/components/landing/wall-snapshot.json

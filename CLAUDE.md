@@ -1,6 +1,8 @@
 # CLAUDE.md — Personal AI/ML Fresher Job Board
 
 ## What this project is
+The product is called **Aventra** (renamed from Kario on 2026-11-03; the repo keeps the name `frshmen`). Live at `https://aventra.getaventra.workers.dev` until it gets its own domain.
+
 A personal job board for one user (Shrey). It polls company hiring sources continuously, extracts structured data from each posting, and lists **every open job** on a web page, newest first, 20 per page, with filters for fresher/internship/0–N years/experienced, role, location and visa (decided 2026-10-08, see `docs/decisions.md`). Accuracy of the labels is the whole point: if a posting says "2+ years" anywhere in the description, it must NOT be labelled fresher.
 
 Read `skills.md` before touching extraction, sources, or filtering. It holds the reusable procedures for this repo.

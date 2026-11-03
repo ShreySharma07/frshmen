@@ -6,8 +6,8 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
 
 type Theme = "light" | "dark";
-const KEY = "kario.theme";
-const EVENT = "kario:theme";
+const KEY = "aventra.theme";
+const EVENT = "aventra:theme";
 
 const read = (): Theme => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
 function subscribe(onChange: () => void) {

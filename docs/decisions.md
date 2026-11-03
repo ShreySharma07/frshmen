@@ -4,6 +4,57 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-03 — Rename to Aventra; a new address now, our own domain later
+- **Name (Shrey):** the product is **Aventra**, its only name. Replaces Kario everywhere a
+  person or a fetched server sees it: the wordmark and the "a" mark (regenerated from Instrument
+  Serif by `brand/make_logo.py`), page titles, copy, the Worker, the API title, the User-Agent
+  and browser storage keys (saved theme choices reset once). The GitHub repo keeps the name
+  `frshmen`; older entries below keep the name they were written with.
+- **Address. Options:** our own domain (the one being bought for Resend; the workers.dev link
+  could keep working) · rename on workers.dev (free and immediate, but the old link breaks) ·
+  both, workers.dev now and the domain at launch. **Choice (Shrey):** both. The Worker becomes
+  `aventra` and the Cloudflare account subdomain `getaventra`, so the site moves to
+  `https://aventra.getaventra.workers.dev`. Google and Supabase settings get the new address
+  now, and are updated once more when the domain arrives.
+- **Caution raised:** "Aventra" may already be used by a Finnish identity company (Aventra Oy).
+  Shrey to check the domain and the IP India and EUIPO trademark registers before launch.
+
+## 2026-10-30 — Part B.1: sign-in and resume storage
+- **Sign-in. Options:** Google only (one button, no email deliverability work; Google OAuth is
+  needed anyway for the `gmail.compose` drafts in B.5) · Google plus an email magic link (covers
+  people without a Google account or on a work address).
+- **Choice (Shrey):** Google plus an email link. Limit to note: Supabase's built-in mailer sends
+  about 2 auth emails an hour on the free tier, so email sign-in needs a free SMTP sender before
+  launch (decided separately).
+- **Resume storage. Options:** PDF in Supabase Storage plus the extracted text in Postgres · text
+  only (nothing private in a file bucket, but B.3 would rebuild the layout from plain text and
+  users can't re-download their original).
+- **Choice (Shrey):** PDF plus extracted text. The PDF sits in a private Storage bucket, one folder
+  per user, guarded by row-level security; the text goes in Postgres for the fit check and the
+  tailored resume. Free tier: 1 GB Storage, 50 MB per file.
+- **Auth client. Options:** supabase-js, loaded only on the sign-in and profile pages (about
+  45 KB gzip; handles PKCE, token refresh and Storage uploads; the mobile app can reuse it) ·
+  our own PKCE and refresh code against Supabase's REST API (about 3 KB, but we'd own the edge
+  cases). **Choice (Shrey):** supabase-js, lazy-loaded. The job list's 170 KB budget is untouched.
+- **Resume text. Options:** pdf.js in the browser on the profile page (instant, and the user can
+  check the text before saving) · a GitHub Actions job running pypdf on new uploads (no extra JS,
+  but minutes late). The Worker's 10 ms CPU limit rules out parsing there. **Choice (Shrey):** in
+  the browser, pdf.js lazy-loaded on the profile page only.
+- **Email sender. Options:** decide at launch (Supabase's mailer meanwhile) · Brevo free (300 a
+  day, single verified sender, no domain, but likely spam-foldered) · Resend (free: 3,000 a month,
+  100 a day) on our own domain. **Choice (Shrey):** Resend with a domain. The domain is the
+  project's first paid item (about $10 a year), an explicit exception to "free tools only".
+  Until it exists, email links go through Supabase's mailer (about 2 an hour), enough for testing.
+- **Profile data path. Options:** the browser reads and writes its own profile row and resume
+  file in Supabase directly, guarded by RLS (no Worker requests or CPU; supabase-js already does
+  it) · everything through the FastAPI Worker (one door, but Worker CPU and a token check on every
+  call). **Choice (Shrey):** directly, with RLS. Condition he set: the RLS tests are
+  non-negotiable. `tests/test_rls.py` runs as Supabase's `anon` and `authenticated` roles with
+  Supabase's default grants, and must prove that nobody can read or change another person's
+  profile or resume, and that every public table has RLS on.
+- **Profile fields (Shrey):** name, years of experience, graduation year, target roles, resume.
+- **D1 backup:** Shrey chose to keep it for now (it costs nothing); ask again before deleting.
+
 ## 2026-10-23 — Landing v2: the critique roadmap, for every job seeker
 - **Context:** two design critiques of `/preview` (the second unconstrained, benchmarked against
   current award sites) scored it about 5.5/10: clean, honest, but every visual borrowed. Shrey:

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Kario design tokens (M4.5, docs/decisions.md 2026-10-17). One place for every colour, size,
+ * Aventra design tokens (M4.5, docs/decisions.md 2026-10-17). One place for every colour, size,
  * radius, shadow and motion value; components only use these. Mirrored for the future mobile
  * app in src/design/tokens.ts: change both together.
  *

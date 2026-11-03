@@ -2,7 +2,7 @@
 // A Server Component, so it ships no JavaScript of its own.
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Design tokens · Kario", robots: { index: false } };
+export const metadata: Metadata = { title: "Design tokens · Aventra", robots: { index: false } };
 
 const COLOURS = [
   ["canvas", "Page background"], ["surface", "Hover, subtle fills"], ["line", "Dividers, borders"],

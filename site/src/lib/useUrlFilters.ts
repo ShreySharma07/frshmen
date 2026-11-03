@@ -4,7 +4,7 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { fromSearch, toSearch, type Filters } from "./filters";
 
-const EVENT = "kario:navigate";
+const EVENT = "aventra:navigate";
 
 function subscribe(onChange: () => void) {
   addEventListener("popstate", onChange);

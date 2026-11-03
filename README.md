@@ -1,4 +1,6 @@
-# frshmen
+# Aventra
+
+(The repository keeps its old name, `frshmen`.)
 
 A personal job board that shows only fresher-level AI/ML and Python backend roles, each with the
 sentence from the posting that decided its label. See `CLAUDE.md` for goals and rules and

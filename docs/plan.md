@@ -352,7 +352,7 @@ Shrey's learning note.
 | M2 ✅ | Schema design for the multi-user product (2026-10-15, §12) | Table definitions reviewed by Shrey |
 | M3 ✅ | Data migration: D1 → Supabase, API on Workers + Hyperdrive, D1 writes stopped (2026-10-16; §13) | 27,243 jobs copied, counts matched, site live on Supabase |
 | M4 | Rebrand + UI foundations (name, design tokens, layout); hosting: static export on the Worker (2026-10-16) | Phase 1 begins |
-| M4.1 ✅ | Name: **Kario**; audience widened to every experience level, freshers included (2026-10-16) | Entries in `docs/decisions.md` |
+| M4.1 ✅ | Name: **Kario** (renamed **Aventra** on 2026-11-03); audience widened to every experience level, freshers included (2026-10-16) | Entries in `docs/decisions.md` |
 | M4.2 ✅ | Where Next.js runs: static export + Worker-added preview tags | Entry in `docs/decisions.md` |
 | M4.3 | Brief + references for the job list | `docs/briefs/job-list.md`, Shrey reviews |
 | M4.4 ✅ | Wireframe: split view (list + detail) picked after 3 rounds (2026-10-17) | `docs/wireframes/options.html?v=3` |

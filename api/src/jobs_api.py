@@ -121,7 +121,7 @@ def _since(hours: int) -> datetime:
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="frshmen", docs_url="/api/docs", openapi_url="/api/openapi.json")
+    app = FastAPI(title="Aventra", docs_url="/api/docs", openapi_url="/api/openapi.json")
 
     @app.exception_handler(Exception)
     async def report_errors(request: Request, exc: Exception) -> JSONResponse:

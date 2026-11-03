@@ -1,7 +1,7 @@
 "use client";
 
 // The opening count (critique 2026-10-23, the micro layer): a paper screen counts the openings
-// Kario has read while a highlighter runs under the number, then wipes up to the hero. Once per
+// Aventra has read while a highlighter runs under the number, then wipes up to the hero. Once per
 // visit, about 1.6 s, and never with reduced motion or without script: an inline script hides it
 // before the first paint in those cases, so nobody watches a loader for a page that's ready.
 import { gsap } from "gsap";
@@ -10,7 +10,7 @@ import { Wordmark } from "../Wordmark";
 import { finishIntro } from "./intro";
 import { fmt } from "./places";
 
-const SEEN = "kario:intro";
+const SEEN = "aventra:intro";
 // Runs while the page parses, before paint (sessionStorage can throw in private modes).
 const SKIP = `try{if(sessionStorage.getItem("${SEEN}")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro-skip")}catch(e){document.documentElement.classList.add("intro-skip")}`;
 

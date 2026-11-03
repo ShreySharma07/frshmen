@@ -18,13 +18,11 @@ from extract.role import match_role
 from jobs_api import create_app
 from sources import ashby, greenhouse, lever
 from sources.models import Company
+import supabase_stub
 
 FIX = "tests/fixtures/sources/"
 PG = os.environ.get("PG_TEST_URL")
 pytestmark = pytest.mark.skipif(not PG, reason="set PG_TEST_URL to a throwaway Postgres database")
-# Supabase provides the auth schema; tests stand in for it.
-AUTH_STUB = ("CREATE SCHEMA auth; CREATE TABLE auth.users (id uuid PRIMARY KEY); "
-             "CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS 'SELECT NULL::uuid';")
 
 
 def records():
@@ -49,8 +47,8 @@ def iso(dt):
 def reset(migrate=True):
     """Empty database with the current schema, like Supabase after the migrations workflow."""
     with psycopg.connect(PG, autocommit=True) as conn:
-        conn.execute("DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public")
-        conn.execute(AUTH_STUB)
+        conn.execute(supabase_stub.DROP)
+        supabase_stub.install(conn)
         if migrate:
             for f in sorted(Path("db/postgres").glob("*.sql")):
                 conn.execute(f.read_text())

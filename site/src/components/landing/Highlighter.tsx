@@ -99,7 +99,7 @@ export function Highlighter({ counts }: { counts: Counts }) {
               <span className="font-display text-[clamp(3.25rem,7vw,7rem)] leading-[0.9] tracking-[-0.025em] italic">An agent that gets you your next job.</span>
             </h1>
             <p className="max-w-[34rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed">
-              Job titles don&rsquo;t tell you the years. The requirements do. Kario reads every opening to the line that decides who it&rsquo;s for. Tell it your experience: it marks what takes you and strikes what doesn&rsquo;t.
+              Job titles don&rsquo;t tell you the years. The requirements do. Aventra reads every opening to the line that decides who it&rsquo;s for. Tell it your experience: it marks what takes you and strikes what doesn&rsquo;t.
             </p>
             <fieldset className="grid gap-3">
               <legend className="mb-3 text-[15px] text-lp-muted">How long have you worked?</legend>

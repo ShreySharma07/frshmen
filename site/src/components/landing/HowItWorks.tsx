@@ -33,7 +33,7 @@ const STEPS = [
   {
     pill: "Warm Referral",
     title: "It finds people to ask for a referral.",
-    body: "Your own connections at the company first, from your LinkedIn export, then engineers on the team's public pages. Once someone accepts, you write the message; Kario sends email from your Gmail after you approve it, and hands you the LinkedIn note to send yourself.",
+    body: "Your own connections at the company first, from your LinkedIn export, then engineers on the team's public pages. Once someone accepts, you write the message; Aventra sends email from your Gmail after you approve it, and hands you the LinkedIn note to send yourself.",
     Fragment: PeopleFragment,
     act: actPeople,
   },

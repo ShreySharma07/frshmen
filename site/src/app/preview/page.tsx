@@ -9,8 +9,8 @@ const serif = Instrument_Serif({ variable: "--font-instrument-serif", subsets: [
 const sans = Instrument_Sans({ variable: "--font-instrument-sans", subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export const metadata: Metadata = {
-  title: "Kario: an agent that gets you your next job",
-  description: "Kario reads every opening to the line that decides who it's for, checks your fit, finds people to ask for a referral and prepares each application with you.",
+  title: "Aventra: an agent that gets you your next job",
+  description: "Aventra reads every opening to the line that decides who it's for, checks your fit, finds people to ask for a referral and prepares each application with you.",
   robots: { index: false },
 };
 

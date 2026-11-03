@@ -1,4 +1,4 @@
-"""Outline 'kario' in Instrument Serif into SVG paths (the wordmark becomes a logo, not a font)."""
+"""Outline 'aventra' in Instrument Serif into SVG paths (the wordmark becomes a logo, not a font)."""
 import sys
 from fontTools.ttLib import TTFont
 from fontTools.pens.svgPathPen import SVGPathPen
@@ -21,21 +21,21 @@ def outline(text, x0=0.0, y0=0.0, scale=1.0):
     return pen.getCommands(), bounds.bounds
 
 # Wordmark: tight viewBox around the ink, fill = currentColor so it follows the text colour.
-d, (x1, y1, x2, y2) = outline("kario", y0=upm)
+d, (x1, y1, x2, y2) = outline("aventra", y0=upm)
 pad = 0.02 * upm
 vb = f"{x1 - pad:.0f} {y1 - pad:.0f} {x2 - x1 + 2 * pad:.0f} {y2 - y1 + 2 * pad:.0f}"
-open(f"{out}/kario-wordmark.svg", "w").write(
-    f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" role="img" aria-label="kario">'
+open(f"{out}/aventra-wordmark.svg", "w").write(
+    f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" role="img" aria-label="aventra">'
     f'<path fill="currentColor" d="{d}"/></svg>\n')
 
-# Mark: a lowercase 'k' centred in a rounded square, for the favicon and app icon.
+# Mark: a lowercase 'a' centred in a rounded square, for the favicon and app icon.
 S = 512
-k_d, (a1, b1, a2, b2) = outline("k", scale=1.0, y0=0)
+a_d, (a1, b1, a2, b2) = outline("a", scale=1.0, y0=0)
 sc = 0.62 * S / (b2 - b1)
-k_d, (a1, b1, a2, b2) = outline("k", scale=sc, y0=0)
+a_d, (a1, b1, a2, b2) = outline("a", scale=sc, y0=0)
 dx, dy = (S - (a2 - a1)) / 2 - a1, (S - (b2 - b1)) / 2 - b1
-open(f"{out}/kario-mark.svg", "w").write(
-    f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {S} {S}" role="img" aria-label="kario">'
+open(f"{out}/aventra-mark.svg", "w").write(
+    f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {S} {S}" role="img" aria-label="aventra">'
     f'<rect width="{S}" height="{S}" rx="{S * 0.22:.0f}" fill="#0A0A12"/>'
-    f'<g transform="translate({dx:.1f} {dy:.1f})"><path fill="#FFFFFF" d="{k_d}"/></g></svg>\n')
+    f'<g transform="translate({dx:.1f} {dy:.1f})"><path fill="#FFFFFF" d="{a_d}"/></g></svg>\n')
 print("viewBox", vb)

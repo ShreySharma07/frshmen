@@ -1,6 +1,6 @@
-# Kario site (Next.js)
+# Aventra site (Next.js)
 
-Kario's web front end (M4.6), live since 2026-10-17.
+Aventra's web front end (M4.6), live since 2026-10-17.
 
     npm install
     python ../scripts/dev_api.py --dsn postgresql://...   # the API on :8000, in another terminal
