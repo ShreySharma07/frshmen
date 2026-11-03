@@ -1,7 +1,7 @@
 [project]
-name = "frshmen-api"
+name = "aventra-api"
 version = "0.1.0"
-description = "FastAPI backend for the frshmen job board, deployed as a Cloudflare Python Worker"
+description = "FastAPI backend for the Aventra job board, deployed as a Cloudflare Python Worker"
 requires-python = ">=3.13"
 dependencies = [
     "asyncpg",

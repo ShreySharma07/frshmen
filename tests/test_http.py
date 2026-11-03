@@ -72,7 +72,7 @@ def test_sends_identifying_user_agent(monkeypatch, no_sleep):
     seen = []
     _serve(monkeypatch, [_Resp(b"[]")], seen)
     HttpClient().get_json("https://api.lever.co/x")
-    assert "frshmen-jobboard" in seen[0].get_header("User-agent")
+    assert "aventra-jobboard" in seen[0].get_header("User-agent")
 
 
 def test_etag_revalidation_serves_cached_body_on_304(monkeypatch, no_sleep, tmp_path):
