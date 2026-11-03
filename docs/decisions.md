@@ -30,6 +30,14 @@ Newest first. Each entry: date, options considered, choice, why.
   100 a day) on our own domain. **Choice (Shrey):** Resend with a domain. The domain is the
   project's first paid item (about $10 a year), an explicit exception to "free tools only".
   Until it exists, email links go through Supabase's mailer (about 2 an hour), enough for testing.
+- **Profile data path. Options:** the browser reads and writes its own profile row and resume
+  file in Supabase directly, guarded by RLS (no Worker requests or CPU; supabase-js already does
+  it) · everything through the FastAPI Worker (one door, but Worker CPU and a token check on every
+  call). **Choice (Shrey):** directly, with RLS. Condition he set: the RLS tests are
+  non-negotiable. `tests/test_rls.py` runs as Supabase's `anon` and `authenticated` roles with
+  Supabase's default grants, and must prove that nobody can read or change another person's
+  profile or resume, and that every public table has RLS on.
+- **Profile fields (Shrey):** name, years of experience, graduation year, target roles, resume.
 - **D1 backup:** Shrey chose to keep it for now (it costs nothing); ask again before deleting.
 
 ## 2026-10-23 — Landing v2: the critique roadmap, for every job seeker
