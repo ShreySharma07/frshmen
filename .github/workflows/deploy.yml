@@ -36,6 +36,10 @@ jobs:
         working-directory: site
         env:
           NEXT_TELEMETRY_DISABLED: "1"
+          # Sign-in (src/lib/supabase.ts). Repo *variables*, not secrets: both are public by design.
+          # Unset, /login and /profile say sign-in isn't switched on yet.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
         run: |
           npm ci
           npm run build
