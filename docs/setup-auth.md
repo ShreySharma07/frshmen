@@ -9,18 +9,18 @@ isn't switched on yet.
 
 ## 1. Supabase: where sign-in may return to
 Supabase dashboard → **Authentication → URL Configuration**
-- Site URL: `https://frshmen.shrey7shrey.workers.dev`
-- Redirect URLs: add `https://frshmen.shrey7shrey.workers.dev/profile` and, for local work,
+- Site URL: `https://aventra.getaventra.workers.dev`
+- Redirect URLs: add `https://aventra.getaventra.workers.dev/profile` and, for local work,
   `http://localhost:3000/profile`
 
 Any other address is refused, so a sign-in link can't be bounced to someone else's site.
 
 ## 2. Google sign-in
 In [Google Cloud Console](https://console.cloud.google.com/):
-1. **APIs & Services → OAuth consent screen**: External, app name Kario, your support email.
+1. **APIs & Services → OAuth consent screen**: External, app name Aventra, your support email.
    Scopes: only the defaults (email, profile, openid). Gmail scopes come later, in B.5.
 2. **APIs & Services → Credentials → Create credentials → OAuth client ID** → Web application.
-   - Authorized JavaScript origins: `https://frshmen.shrey7shrey.workers.dev`
+   - Authorized JavaScript origins: `https://aventra.getaventra.workers.dev`
    - Authorized redirect URIs: `https://<ref>.supabase.co/auth/v1/callback`
 3. Copy the client ID and client secret into Supabase → **Authentication → Sign In / Providers →
    Google** and turn it on. The secret stays in Supabase; never put it in the repo.

@@ -4,6 +4,21 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-03 — Rename to Aventra; a new address now, our own domain later
+- **Name (Shrey):** the product is **Aventra**, its only name. Replaces Kario everywhere a
+  person or a fetched server sees it: the wordmark and the "a" mark (regenerated from Instrument
+  Serif by `brand/make_logo.py`), page titles, copy, the Worker, the API title, the User-Agent
+  and browser storage keys (saved theme choices reset once). The GitHub repo keeps the name
+  `frshmen`; older entries below keep the name they were written with.
+- **Address. Options:** our own domain (the one being bought for Resend; the workers.dev link
+  could keep working) · rename on workers.dev (free and immediate, but the old link breaks) ·
+  both, workers.dev now and the domain at launch. **Choice (Shrey):** both. The Worker becomes
+  `aventra` and the Cloudflare account subdomain `getaventra`, so the site moves to
+  `https://aventra.getaventra.workers.dev`. Google and Supabase settings get the new address
+  now, and are updated once more when the domain arrives.
+- **Caution raised:** "Aventra" may already be used by a Finnish identity company (Aventra Oy).
+  Shrey to check the domain and the IP India and EUIPO trademark registers before launch.
+
 ## 2026-10-30 — Part B.1: sign-in and resume storage
 - **Sign-in. Options:** Google only (one button, no email deliverability work; Google OAuth is
   needed anyway for the `gmail.compose` drafts in B.5) · Google plus an email magic link (covers
