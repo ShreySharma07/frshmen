@@ -8,7 +8,7 @@ export function AccountShell({ actions, children }: { actions?: React.ReactNode;
     <>
       <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex h-full max-w-[1280px] items-center gap-4 px-4 lg:px-6">
-          <Link href="/" aria-label="Kario, open jobs"><Wordmark className="h-[22px] w-auto shrink-0 text-ink" /></Link>
+          <Link href="/" aria-label="Aventra, open jobs"><Wordmark className="h-[22px] w-auto shrink-0 text-ink" /></Link>
           <div className="ml-auto flex items-center gap-2">
             {actions}
             <ThemeToggle />

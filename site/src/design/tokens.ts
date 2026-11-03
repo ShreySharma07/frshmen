@@ -1,4 +1,4 @@
-// Kario design tokens for code that can't read CSS, such as the future React Native app.
+// Aventra design tokens for code that can't read CSS, such as the future React Native app.
 // Mirrors the CSS variables in src/app/globals.css; `npm run check:tokens` fails if they differ.
 
 export const color = {

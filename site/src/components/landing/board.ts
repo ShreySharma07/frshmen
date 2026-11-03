@@ -7,7 +7,7 @@ export interface BoardRow {
   company: string;
   title: string;
   city: string;
-  posted: string | null; // ISO time the company posted it (or Kario first saw it)
+  posted: string | null; // ISO time the company posted it (or Aventra first saw it)
   asks: string; // what it asks for, as the board prints it
   tone: "fits" | "years" | "quiet";
   url: string;

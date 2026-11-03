@@ -1,4 +1,4 @@
-// Real pieces of the Kario interface for the "How it works" steps, each in an application window
+// Real pieces of the Aventra interface for the "How it works" steps, each in an application window
 // (stone frame, white window, 36px title bar). The job is a real posting from the 2026-10-23 run
 // and every quote is verbatim from it; the resume, the people and the rewrite are a sample profile,
 // which the section says above the steps.
@@ -52,7 +52,7 @@ export function JobFragment() {
           <Pill>Relocation assistance</Pill>
           <Pill><MapPin aria-hidden className="size-3" strokeWidth={2} />New York · Onsite</Pill>
         </div>
-        {/* The line in the stored posting that decided the label, as Kario's inspector shows it. */}
+        {/* The line in the stored posting that decided the label, as Aventra's inspector shows it. */}
         <div data-inspector className="relative mt-5 overflow-hidden rounded-lg bg-lp-term font-mono text-[12.5px] leading-relaxed text-lp-term-muted">
           <span data-scan aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-lp-term-ok/15 opacity-0" />
           <div className="grid grid-cols-[2.25rem_1fr] gap-x-3 px-3 py-3">

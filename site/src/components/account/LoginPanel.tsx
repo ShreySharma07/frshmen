@@ -42,7 +42,7 @@ export function LoginPanel() {
   return (
     <AccountShell>
       <h1 className="text-title font-medium">Sign in</h1>
-      <p className="mt-2 text-body text-muted">Your profile keeps your years, roles and resume in one place, so Kario can check each job against you.</p>
+      <p className="mt-2 text-body text-muted">Your profile keeps your years, roles and resume in one place, so Aventra can check each job against you.</p>
 
       <button type="button" onClick={google} disabled={busy}
         className="mt-8 flex h-11 w-full items-center justify-center rounded-md border border-line bg-canvas text-base font-medium shadow-raised transition-colors duration-quick hover:bg-surface disabled:opacity-60">

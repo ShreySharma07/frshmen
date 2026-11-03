@@ -113,7 +113,7 @@ export function ProfileForm() {
   }
 
   async function deleteEverything() {
-    if (!confirm("Delete your profile and resume from Kario? This can't be undone.")) return;
+    if (!confirm("Delete your profile and resume from Aventra? This can't be undone.")) return;
     const sb = supabase();
     setSave({ kind: "saving" });
     const files = await sb.storage.from(RESUME_BUCKET).remove([resumePath(user.id)]);
@@ -195,8 +195,8 @@ export function ProfileForm() {
           </div>
         </div>
 
-        <Field label="What Kario reads from your resume" htmlFor="resume-text"
-          hint={save.kind === "reading" ? "Reading your PDF…" : "Fix anything the PDF garbled. Kario checks jobs against this text, never adds to it."}>
+        <Field label="What Aventra reads from your resume" htmlFor="resume-text"
+          hint={save.kind === "reading" ? "Reading your PDF…" : "Fix anything the PDF garbled. Aventra checks jobs against this text, never adds to it."}>
           <textarea id="resume-text" rows={10} maxLength={RESUME_TEXT_MAX} value={form.resume_text ?? ""} onChange={(e) => set({ resume_text: e.target.value })}
             aria-busy={save.kind === "reading"} placeholder="Upload a PDF, or paste your resume's text here."
             className="w-full rounded-md border border-line bg-canvas px-3 py-2.5 font-mono text-meta leading-5 outline-none transition-colors duration-quick placeholder:font-sans placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/30" />

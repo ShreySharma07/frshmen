@@ -5,7 +5,7 @@
 //   stamp  a verdict lands                chime  the note to a referrer is sent
 type Kind = "tick" | "swipe" | "stamp" | "chime";
 
-const KEY = "kario:sound";
+const KEY = "aventra:sound";
 let on = false;
 let ctx: AudioContext | null = null;
 const listeners = new Set<() => void>();

@@ -93,14 +93,14 @@ export function GlobeStory({ counts }: { counts: Counts }) {
   const labelled = [...counts.cities, ...counts.abroad].filter((p) => LABELLED.has(p.id));
 
   return (
-    <section ref={root} data-mode={mode} aria-label="Kario" className="story relative">
+    <section ref={root} data-mode={mode} aria-label="Aventra" className="story relative">
       <div className="story-frame relative">
         <div data-field aria-hidden className="lp-light absolute inset-0 bg-lp-bg" />
         <div data-globe className="globe-box pointer-events-none absolute">
           <div
             data-globe-anchor
             role={still ? undefined : "img"}
-            aria-label={still ? undefined : "The earth as dots, with lights where Kario has open jobs and arcs from hubs abroad to India. Drag to turn it."}
+            aria-label={still ? undefined : "The earth as dots, with lights where Aventra has open jobs and arcs from hubs abroad to India. Drag to turn it."}
             onPointerDown={still ? undefined : onDown}
             onPointerMove={still ? undefined : onMove}
             onPointerUp={onUp}
@@ -160,7 +160,7 @@ export function GlobeStory({ counts }: { counts: Counts }) {
               Every opening, straight from the companies hiring.
             </h2>
             <p className="max-w-[36rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed">
-              Kario reads each company&rsquo;s own hiring page, so a role shows up here the day it opens, with the line that says who it&rsquo;s for.
+              Aventra reads each company&rsquo;s own hiring page, so a role shows up here the day it opens, with the line that says who it&rsquo;s for.
             </p>
           </div>
           <div className="col-span-full mt-10 grid gap-3 self-center lg:col-span-7 lg:col-start-6 lg:mt-0">

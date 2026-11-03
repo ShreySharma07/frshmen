@@ -36,7 +36,7 @@ export function Proof({ counts }: { counts: Counts }) {
           The title says junior. The requirements say otherwise.
         </h2>
         <p className="col-span-full max-w-[38rem] text-[clamp(1.0625rem,1.4vw,1.25rem)] leading-relaxed lg:col-span-6">
-          Kario has read {fmt(counts.total)} open jobs, every line of each. Here is what they really ask for, so you never open twenty tabs to find the two that take you.
+          Aventra has read {fmt(counts.total)} open jobs, every line of each. Here is what they really ask for, so you never open twenty tabs to find the two that take you.
         </p>
         <figure className="col-span-full grid gap-5">
           <div className="flex h-14 w-full overflow-hidden rounded-md" role="img" aria-label={parts.map((p) => `${fmt(p.n)} ${p.label}`).join(", ")}>
@@ -74,15 +74,15 @@ function LastRead({ at, companies }: { at: string | null; companies: number }) {
     <p className="col-span-full flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px] text-lp-muted">
       <span aria-hidden className={`last-read ${fresh ? "is-fresh" : ""}`} />
       <span>
-        {ago ? <>Read <time dateTime={at} className="text-lp-ink">{ago}</time></> : "Read"} from {companies} companies&rsquo; own boards. Kario reads them again every three hours.
+        {ago ? <>Read <time dateTime={at} className="text-lp-ink">{ago}</time></> : "Read"} from {companies} companies&rsquo; own boards. Aventra reads them again every three hours.
       </span>
     </p>
   );
 }
 
 const PROMISES = [
-  { Icon: MailCheck, title: "Nothing goes out without you.", body: "Every email waits in your Gmail drafts until you approve it, and LinkedIn notes are yours to send. Kario never applies, messages or signs anything in your name on its own." },
-  { Icon: ScrollText, title: "Your resume, never padded.", body: "Kario rewords what is already on your resume toward each posting. It does not add a skill, a number or a project you didn't give it." },
+  { Icon: MailCheck, title: "Nothing goes out without you.", body: "Every email waits in your Gmail drafts until you approve it, and LinkedIn notes are yours to send. Aventra never applies, messages or signs anything in your name on its own." },
+  { Icon: ScrollText, title: "Your resume, never padded.", body: "Aventra rewords what is already on your resume toward each posting. It does not add a skill, a number or a project you didn't give it." },
   { Icon: ShieldCheck, title: "Read at the source.", body: "Jobs come from each company's own hiring page. No LinkedIn, Indeed or Glassdoor scraping, and every label shows the line it came from." },
 ];
 
