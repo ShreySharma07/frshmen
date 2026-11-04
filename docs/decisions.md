@@ -5,16 +5,20 @@ Newest first. Each entry: date, options considered, choice, why.
 ---
 
 ## 2026-11-04 — Fit-check cap and the profile dashboard
-- **Gemini fit checks (Shrey):** at most 5 per person per day. Whether checks are Gemini only or
-  rules plus Gemini is still open (options A/B/C in the conversation).
+- **Fit check. Options:** A rules only (free, instant, every job, shallow) · B Gemini only, one
+  job at a time · C both. **Choice (Shrey):** B, Gemini only, at most 5 checks per person per day,
+  with a notice before the first check that Gemini's free tier may use what it is sent. The
+  server counts checks and keeps each verdict (`fit_checks`), so the cap holds and the dashboard
+  can list recent verdicts. The dashboard's other boxes are counting rules, never Gemini.
 - **Profile button (Shrey):** top right on every page: "Sign in" when signed out; the person's
   initial when signed in, opening Profile and Sign out. The job list checks the stored session
   itself, so supabase-js stays off it.
-- **Dashboard (Shrey), first version:** (1) jobs for you, with new since the last visit;
+- **Dashboard (Shrey), first version:** (1) jobs for you, with new in the last 3 days (Shrey: no "last visit" column for now);
   (2) resume vs. the market, the skills most asked for in jobs that fit you, ticked when the
   resume has them; (3) your details, the current form; (4) a tracker, Saved → Applied →
-  Interview → Offer / Rejected, with a Save button on each job; (5) fit checks left today and
-  recent verdicts. Tailored resumes (B.3) and outreach (B.5) appear only once built.
+  Interview → Offer / Rejected, with a Save button on each job (applications gains a `saved`
+  status); (5) fit checks left today and recent verdicts. Layout as sketched: jobs for you and
+  fit checks on top, then the tracker, then resume vs. the market; details on their own page. Tailored resumes (B.3) and outreach (B.5) appear only once built.
 
 ## 2026-11-04 — After saving a profile, go to the jobs it fits
 - **Found (Shrey):** saving showed "Saved." and nothing else, so a person didn't know what to do next.
