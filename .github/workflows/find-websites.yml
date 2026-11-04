@@ -1,0 +1,48 @@
+name: Find company websites
+
+# Finds a website for each working company that has none (scripts/find_websites.py), so the job
+# list can show its logo, and commits the result to the PR branch for review. Keeps a domain only
+# when that site's title names the company (docs/decisions.md, 2026-11-04).
+on:
+  pull_request:
+    paths:
+      - scripts/find_websites.py
+      - .github/workflows/find-websites.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: find-websites-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  find:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -u scripts/find_websites.py
+      - run: python scripts/export_logos.py
+      # Only on PRs: never push straight to main from a manual run.
+      - name: Commit results to PR branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898088+github-actions[bot]@users.noreply.github.com"
+          git add config/companies.yaml site/public/company-domains.json
+          if git diff --cached --quiet; then
+            echo "No new websites."
+          else
+            git commit -m "Add company websites found by scripts/find_websites.py"
+            git push
+          fi
