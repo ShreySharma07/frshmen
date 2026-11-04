@@ -5,6 +5,7 @@
 import type { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { profileFilters, SAVED_KEY, toSearch } from "@/lib/filters";
 import { resumeText } from "@/lib/resumeText";
 import {
   authConfigured, PROFILE_COLUMNS, RESUME_BUCKET, RESUME_MAX_BYTES, RESUME_TEXT_MAX, resumePath, supabase,
@@ -17,7 +18,7 @@ const ROLES: { v: ProfileRole; label: string }[] = [{ v: "ai_ml", label: "AI/ML"
 const GRAD_YEARS = Array.from({ length: 13 }, (_, i) => 2018 + i);
 
 type Load = { kind: "loading" } | { kind: "error"; message: string } | { kind: "ready"; user: User; exists: boolean };
-type Save = { kind: "idle" } | { kind: "reading" } | { kind: "saving" } | { kind: "saved" } | { kind: "error"; message: string };
+type Save = { kind: "idle" } | { kind: "reading" } | { kind: "saving" } | { kind: "error"; message: string };
 
 const blank = (user: User): Profile => ({
   // Google sign-ins carry the person's name; email sign-ins start empty.
@@ -59,7 +60,7 @@ export function ProfileForm() {
   if (load.kind === "loading" || !form) return <AccountShell><FormSkeleton /></AccountShell>;
 
   const { user, exists } = load;
-  const set = (patch: Partial<Profile>) => { setForm({ ...form, ...patch }); if (save.kind === "saved" || save.kind === "error") setSave({ kind: "idle" }); };
+  const set = (patch: Partial<Profile>) => { setForm({ ...form, ...patch }); if (save.kind === "error") setSave({ kind: "idle" }); };
   const toggleRole = (r: ProfileRole) =>
     set({ target_roles: form.target_roles.includes(r) ? form.target_roles.filter((x) => x !== r) : [...form.target_roles, r] });
 
@@ -98,10 +99,9 @@ export function ProfileForm() {
       ? await sb.from("students").update(values).eq("id", user.id)
       : await sb.from("students").insert({ id: user.id, ...values });
     if (res.error) return setSave({ kind: "error", message: res.error.message });
-    setFile(null);
-    setForm({ ...form, ...values });
-    setLoad({ kind: "ready", user, exists: true });
-    setSave({ kind: "saved" });
+    // Saved: on to the jobs this profile fits (docs/decisions.md, 2026-11-04).
+    try { sessionStorage.setItem(SAVED_KEY, "1"); } catch {}
+    router.push("/" + toSearch(profileFilters(values.yoe, values.target_roles)));
   }
 
   async function openResume() {
@@ -208,7 +208,6 @@ export function ProfileForm() {
             {save.kind === "saving" ? "Saving…" : "Save profile"}
           </button>
           <p aria-live="polite" className="text-body text-muted">
-            {save.kind === "saved" && "Saved."}
             {save.kind === "error" && <span role="alert">{save.message}</span>}
           </p>
         </div>
