@@ -62,3 +62,13 @@ export function toApiParams(f: Filters): Record<string, string> {
 }
 
 export const isDefault = (f: Filters) => toSearch(f) === "";
+
+/** The job list a saved profile points to: its years ("3+" stays ≤ 3, precision first) and, when
+ *  exactly one role is picked, that role; otherwise all three target roles. */
+export function profileFilters(yoe: number, roles: string[]): Filters {
+  const role = roles.length === 1 && ROLES.includes(roles[0] as Role) ? (roles[0] as Role) : "target";
+  return { ...DEFAULTS, years: Math.min(Math.max(Math.round(yoe), 0), 3), role };
+}
+
+/** Set by /profile on save; the job list shows a one-time "Profile saved" note and clears it. */
+export const SAVED_KEY = "aventra:profile-saved";

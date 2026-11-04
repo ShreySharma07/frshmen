@@ -9,6 +9,7 @@ import { useUrlFilters } from "@/lib/useUrlFilters";
 import { FilterBar } from "./FilterBar";
 import { JobDetailView } from "./JobDetailView";
 import { JobRow } from "./JobRow";
+import { SavedNote } from "./SavedNote";
 import { SearchBox } from "./SearchBox";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -43,6 +44,7 @@ export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
       <main className="mx-auto max-w-[1280px] pb-4 lg:px-2">
         {filters ? (
           <>
+            <SavedNote filters={filters} />
             <FilterBar filters={filters} countries={countries} onChange={(f) => navigate(f)} />
             {/* A new key per filter set starts the results fresh: page 1, first job selected. */}
             <Results key={toSearch(filters)} filters={filters} onClear={() => navigate(DEFAULTS)} />
