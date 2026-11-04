@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_JOBS = ROOT / "data" / "jobs.json"
 
 # Bump when extract/ rules change so every stored job gets re-classified once.
-EXTRACT_VERSION = 4  # 2: countries/location_type; 3: Indian cities; 4: mobile roles, visa, eligibility
+EXTRACT_VERSION = 5  # 2: countries/location_type; 3: Indian cities; 4: mobile roles, visa, eligibility; 5: skills
 # Real descriptions are ~5 KB; a cap keeps one malformed page from bloating the database.
 MAX_DESCRIPTION_CHARS = 60_000
 # Closed (never deleted) after this many runs in a row missing from a board that answered.
@@ -27,7 +27,7 @@ CLOSE_AFTER_MISSES = 2
 # Fingerprinted by extract_hash: when none of these change, the label isn't rewritten.
 EXTRACT_FIELDS = [
     "extract_version", "location_type", "countries", "cities", "visa_sponsorship", "eligible", "yoe_min", "yoe_max", "yoe_evidence", "batch_years", "level", "level_confidence",
-    "level_reason", "role_match", "role_family", "role_reason", "evidence", "extract_hash",
+    "level_reason", "role_match", "role_family", "role_reason", "skills", "evidence", "extract_hash",
 ]
 LOCATION_TYPES = {"remote", "hybrid", "onsite"}
 VISA = {"yes", "no", "unknown"}
@@ -83,6 +83,7 @@ def _row(job: dict[str, Any]) -> dict[str, Any]:
         "role_match": bool(job.get("role_match")),
         "role_family": job.get("role_family"),
         "role_reason": job.get("role_reason"),
+        "skills": job.get("skills") or [],
         "evidence": {"level": job.get("evidence") or [], "role": job.get("role_evidence") or [],
                      "location": job.get("location_evidence") or [],
                      "eligibility": job.get("eligibility_reason")},

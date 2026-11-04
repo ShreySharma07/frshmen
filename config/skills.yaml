@@ -1,0 +1,56 @@
+# Skills counted in postings (extract/skills.py) and looked for in a resume (the profile
+# dashboard's "resume vs. the market"). One catalogue for both, so a tick means the same word.
+#
+# name:   what the dashboard shows
+# terms:  words that count, matched as whole words (C++ and C# included)
+# exact:  match the terms' case exactly; for names that are also English words ("Spark", "Ray")
+#
+# After editing, run `python scripts/export_skills.py` so the site's copy matches
+# (tests/test_skills.py fails until it does).
+skills:
+  - {name: Python, terms: [Python]}
+  - {name: PyTorch, terms: [PyTorch]}
+  - {name: TensorFlow, terms: [TensorFlow]}
+  - {name: JAX, terms: [JAX], exact: true}
+  - {name: scikit-learn, terms: [scikit-learn, sklearn]}
+  - {name: Pandas, terms: [Pandas], exact: true}
+  - {name: NumPy, terms: [NumPy]}
+  - {name: CUDA, terms: [CUDA], exact: true}
+  - {name: LLMs, terms: [LLM, LLMs, large language model, large language models]}
+  - {name: RAG, terms: [RAG, retrieval-augmented generation, retrieval augmented generation], exact: true}
+  - {name: Hugging Face, terms: [Hugging Face, HuggingFace, transformers library]}
+  - {name: LangChain, terms: [LangChain]}
+  - {name: vLLM, terms: [vLLM]}
+  - {name: NLP, terms: [NLP, natural language processing]}
+  - {name: Computer vision, terms: [computer vision]}
+  - {name: Reinforcement learning, terms: [reinforcement learning, RLHF]}
+  - {name: MLOps, terms: [MLOps]}
+  - {name: MLflow, terms: [MLflow]}
+  - {name: Spark, terms: [Spark, PySpark], exact: true}
+  - {name: Ray, terms: [Ray], exact: true}
+  - {name: Airflow, terms: [Airflow], exact: true}
+  - {name: Kafka, terms: [Kafka]}
+  - {name: SQL, terms: [SQL]}
+  - {name: PostgreSQL, terms: [PostgreSQL, Postgres]}
+  - {name: Docker, terms: [Docker]}
+  - {name: Kubernetes, terms: [Kubernetes, K8s]}
+  - {name: Terraform, terms: [Terraform]}
+  - {name: AWS, terms: [AWS, Amazon Web Services], exact: true}
+  - {name: GCP, terms: [GCP, Google Cloud], exact: true}
+  - {name: Azure, terms: [Azure], exact: true}
+  - {name: Linux, terms: [Linux]}
+  - {name: Git, terms: [Git], exact: true}
+  - {name: FastAPI, terms: [FastAPI]}
+  - {name: Django, terms: [Django]}
+  - {name: Flask, terms: [Flask], exact: true}
+  - {name: REST APIs, terms: [REST, RESTful], exact: true}
+  - {name: Java, terms: [Java], exact: true}
+  - {name: C++, terms: [C++]}
+  - {name: Go, terms: [Golang, Go (Golang)]}
+  - {name: Rust, terms: [Rust], exact: true}
+  - {name: TypeScript, terms: [TypeScript]}
+  - {name: JavaScript, terms: [JavaScript]}
+  - {name: React, terms: [React, React.js, ReactJS], exact: true}
+  - {name: React Native, terms: [React Native], exact: true}
+  - {name: Android, terms: [Android], exact: true}
+  - {name: Kotlin, terms: [Kotlin]}

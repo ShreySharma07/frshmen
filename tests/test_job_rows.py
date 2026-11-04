@@ -44,3 +44,11 @@ def test_extract_hash_changes_only_with_extracted_values():
     relabelled = jr.to_row({**d1_row(), "company_slug": "acme", "reason": "0-1 years", "evidence": [],
                             "countries": ["India"], "cities": [], "batch_years": [2026], "level": "maybe"})
     assert base["extract_hash"] == same["extract_hash"] != relabelled["extract_hash"]
+
+
+def test_skills_reach_the_label_and_its_fingerprint():
+    job = {**d1_row(), "company_slug": "acme", "reason": "0-1 years", "evidence": [], "countries": ["India"],
+           "cities": [], "batch_years": [2026]}
+    with_skills = jr.to_row({**job, "skills": ["Python", "PyTorch"]})
+    assert jr.label_row(with_skills)["skills"] == ["Python", "PyTorch"]
+    assert with_skills["extract_hash"] != jr.to_row({**job, "skills": []})["extract_hash"]
