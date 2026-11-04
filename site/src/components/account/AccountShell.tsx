@@ -1,9 +1,10 @@
 // The frame around /login and /profile: the job screen's header, one narrow column below.
 import Link from "next/link";
+import { ProfileButton } from "@/components/ProfileButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Wordmark } from "@/components/Wordmark";
 
-export function AccountShell({ actions, children }: { actions?: React.ReactNode; children: React.ReactNode }) {
+export function AccountShell({ actions, wide, children }: { actions?: React.ReactNode; wide?: boolean; children: React.ReactNode }) {
   return (
     <>
       <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas/90 backdrop-blur-md">
@@ -12,10 +13,11 @@ export function AccountShell({ actions, children }: { actions?: React.ReactNode;
           <div className="ml-auto flex items-center gap-2">
             {actions}
             <ThemeToggle />
+            <ProfileButton />
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-[560px] px-4 py-10 lg:py-16">{children}</main>
+      <main className={`mx-auto w-full px-4 py-10 lg:py-16 ${wide ? "max-w-[960px]" : "max-w-[560px]"}`}>{children}</main>
     </>
   );
 }
