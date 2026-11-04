@@ -19,6 +19,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 
 import fit
+import tailor
 from auth import auth_config, current_user
 
 from pg_queries import FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
@@ -113,8 +114,10 @@ def fit_check_enabled(request: Request) -> bool:
     return fit_config(request) is not None and auth_config(request) is not None
 
 
-# Gemini fit checks per person in any 24 hours (docs/decisions.md, 2026-11-04).
+# Gemini fit checks and tailored resumes per person in any 24 hours (docs/decisions.md, 2026-11-04).
 FIT_DAILY = 5
+TAILOR_DAILY = 2
+LIMITS = {"fit_checks": FIT_DAILY, "tailored_resumes": TAILOR_DAILY}
 FIT_WINDOW = "interval '24 hours'"
 # A check holds its place while Gemini answers; one that fails is removed and doesn't count.
 PENDING = '{"pending": true}'
@@ -231,51 +234,78 @@ def create_app() -> FastAPI:
                             "GROUP BY s ORDER BY n DESC, s", p)
         return {"total": total, "skills": rows}
 
-    async def fit_quota(db: Database, uid: str) -> tuple[int, datetime | None]:
-        """(checks used in the last 24 hours, when the oldest of them stops counting)."""
-        row = (await db.all(f"SELECT COUNT(*) AS used, MIN(created_at) + {FIT_WINDOW} AS frees FROM fit_checks "
+    async def used_in_window(db: Database, table: str, uid: str) -> tuple[int, datetime | None]:
+        """(uses in the last 24 hours, when the oldest of them stops counting). `table` is one of LIMITS."""
+        row = (await db.all(f"SELECT COUNT(*) AS used, MIN(created_at) + {FIT_WINDOW} AS frees FROM {table} "
                             f"WHERE student_id = $1 AND created_at > now() - {FIT_WINDOW}", [uid]))[0]
         return int(row["used"]), row["frees"]
 
+    async def allowance(db: Database, table: str, uid: str) -> dict[str, Any]:
+        used, frees = await used_in_window(db, table, uid)
+        limit = LIMITS[table]
+        return {"limit": limit, "used": used, "remaining": max(0, limit - used), "frees_at": frees if used >= limit else None}
+
     @app.get("/api/fit/quota")
     async def quota(request: Request, uid: str = Depends(current_user), db: Database = Depends(get_db)) -> dict[str, Any]:
-        used, frees = await fit_quota(db, uid)
-        return {"limit": FIT_DAILY, "used": used, "remaining": max(0, FIT_DAILY - used),
-                "frees_at": frees if used >= FIT_DAILY else None, "enabled": fit_check_enabled(request)}
+        return {**await allowance(db, "fit_checks", uid), "enabled": fit_check_enabled(request),
+                "tailor": await allowance(db, "tailored_resumes", uid)}
 
-    @app.post("/api/jobs/{job_id:path}/fit")
-    async def check_fit(job_id: str, request: Request, uid: str = Depends(current_user),
-                        db: Database = Depends(get_db)) -> dict[str, Any]:
-        """Gemini compares the job with the signed-in person's saved resume. At most FIT_DAILY a day;
-        each verdict is kept in fit_checks for the dashboard."""
+    async def gemini_job(request: Request, db: Database, uid: str, job_id: str, table: str):
+        """The shared start of a Gemini run for one job: config, job, saved resume, and a held place
+        within the person's daily limit. Returns (config, job, profile, held id)."""
         config = fit_config(request)
         if config is None:
             raise HTTPException(status_code=404, detail="fit check is turned off")
         jobs = await db.all(f"SELECT id, title, company, description_text FROM job_cards WHERE id = {RESOLVE}", [job_id])
         if not jobs:
             raise HTTPException(status_code=404, detail="job not found")
-        profile = await db.all("SELECT resume_text FROM students WHERE id = $1", [uid])
+        profile = await db.all("SELECT name, resume_text FROM students WHERE id = $1", [uid])
         resume = (profile[0]["resume_text"] or "").strip() if profile else ""
         if len(resume) < 50:
             raise HTTPException(status_code=409, detail="add your resume to your profile first")
-        # Locking the person's row makes two checks sent at once count one after the other.
+        limit = LIMITS[table]
+        # Locking the person's row makes two requests sent at once count one after the other.
         async with db.transaction():
             await db.all("SELECT 1 FROM students WHERE id = $1 FOR UPDATE", [uid])
-            used, frees = await fit_quota(db, uid)
-            if used >= FIT_DAILY:
-                raise HTTPException(status_code=429, detail={"message": f"all {FIT_DAILY} checks used for now",
+            used, frees = await used_in_window(db, table, uid)
+            if used >= limit:
+                raise HTTPException(status_code=429, detail={"message": f"all {limit} used for now",
                                                              "frees_at": frees.isoformat() if frees else None})
-            held = (await db.all("INSERT INTO fit_checks (student_id, job_id, result) VALUES ($1, $2, $3::jsonb) "
+            held = (await db.all(f"INSERT INTO {table} (student_id, job_id, result) VALUES ($1, $2, $3::jsonb) "
                                  "RETURNING id", [uid, jobs[0]["id"], PENDING]))[0]["id"]
+        return config, jobs[0], {"name": profile[0]["name"], "resume": resume}, held, limit - used - 1
+
+    @app.post("/api/jobs/{job_id:path}/fit")
+    async def check_fit(job_id: str, request: Request, uid: str = Depends(current_user),
+                        db: Database = Depends(get_db)) -> dict[str, Any]:
+        """Gemini compares the job with the signed-in person's saved resume. At most FIT_DAILY a day;
+        each verdict is kept in fit_checks for the dashboard."""
+        config, job, profile, held, remaining = await gemini_job(request, db, uid, job_id, "fit_checks")
         try:
-            result = await fit.check(jobs[0], resume, *config)
+            result = await fit.check(job, profile["resume"], *config)
         except fit.FitUnavailable as e:
             await db.all("DELETE FROM fit_checks WHERE id = $1", [held])
             raise HTTPException(status_code=503, detail=str(e)) from None
         verdict = {k: v for k, v in result.items() if k != "model"}
         await db.all("UPDATE fit_checks SET result = $2::jsonb, model = $3 WHERE id = $1",
                      [held, json.dumps(verdict), result.get("model")])
-        return {**result, "remaining": max(0, FIT_DAILY - used - 1)}
+        return {**result, "remaining": max(0, remaining)}
+
+    @app.post("/api/jobs/{job_id:path}/tailor")
+    async def tailor_resume(job_id: str, request: Request, uid: str = Depends(current_user),
+                            db: Database = Depends(get_db)) -> dict[str, Any]:
+        """Gemini rewords and reorders the saved resume toward this job; tailor.guard reverts any
+        line that adds a skill or a number. At most TAILOR_DAILY a day; each result is kept."""
+        config, job, profile, held, remaining = await gemini_job(request, db, uid, job_id, "tailored_resumes")
+        try:
+            result = await tailor.tailor(job, profile["resume"], profile["name"], *config)
+        except fit.FitUnavailable as e:
+            await db.all("DELETE FROM tailored_resumes WHERE id = $1", [held])
+            raise HTTPException(status_code=503, detail=str(e)) from None
+        stored = {k: v for k, v in result.items() if k != "model"}
+        await db.all("UPDATE tailored_resumes SET result = $2::jsonb, model = $3 WHERE id = $1",
+                     [held, json.dumps(stored), result.get("model")])
+        return {**result, "id": held, "remaining": max(0, remaining)}
 
     @app.get("/api/evidence")
     async def evidence(limit: int = Query(120, ge=1, le=300), db: Database = Depends(get_db)) -> dict[str, Any]:
