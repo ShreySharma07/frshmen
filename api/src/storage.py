@@ -17,6 +17,8 @@ import asyncpg
 class Database(Protocol):
     async def all(self, sql: str, params: Sequence[Any] = ()) -> list[dict[str, Any]]: ...
 
+    def transaction(self) -> Any: ...  # async context manager: commit on exit, roll back on error
+
 
 class PostgresDatabase:
     def __init__(self, conn: Any):
@@ -24,6 +26,9 @@ class PostgresDatabase:
 
     async def all(self, sql: str, params: Sequence[Any] = ()) -> list[dict[str, Any]]:
         return [dict(r) for r in await self.conn.fetch(sql, *params)]
+
+    def transaction(self) -> Any:
+        return self.conn.transaction()
 
 
 @asynccontextmanager

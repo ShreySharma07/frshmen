@@ -4,6 +4,32 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-04 — Fit-check cap and the profile dashboard
+- **Fit check. Options:** A rules only (free, instant, every job, shallow) · B Gemini only, one
+  job at a time · C both. **Choice (Shrey):** B, Gemini only, at most 5 checks per person per day,
+  with a notice before the first check that Gemini's free tier may use what it is sent. The
+  server counts checks and keeps each verdict (`fit_checks`), so the cap holds and the dashboard
+  can list recent verdicts. The dashboard's other boxes are counting rules, never Gemini.
+- **Profile button (Shrey):** top right on every page: "Sign in" when signed out; the person's
+  initial when signed in, opening Profile and Sign out. The job list checks the stored session
+  itself, so supabase-js stays off it.
+- **Skills (built for box 2):** the pipeline now reads each posting's full text for the skills
+  in `config/skills.yaml` (rules, `extract/skills.py`) and stores them in `job_labels.skills`. A
+  hit is the skill's own word, so no separate snippet is stored. The browser checks the saved
+  resume against the same catalogue (`site/src/lib/skills.json`, exported from the YAML).
+  EXTRACT_VERSION 5 re-labels every open job once on the next run.
+- **How the API knows who is asking (built):** the site sends the Supabase access token, and the
+  API asks Supabase's `/auth/v1/user` whether it is valid (one small request; no signing keys or
+  crypto in the Worker). The check reads the saved resume itself, so nothing is pasted. A check
+  holds its place while Gemini answers and is removed if Gemini fails, so failures don't count;
+  checks sent at once are counted one after another (a row lock). "A day" is any 24 hours.
+- **Dashboard (Shrey), first version:** (1) jobs for you, with new in the last 3 days (Shrey: no "last visit" column for now);
+  (2) resume vs. the market, the skills most asked for in jobs that fit you, ticked when the
+  resume has them; (3) your details, the current form; (4) a tracker, Saved → Applied →
+  Interview → Offer / Rejected, with a Save button on each job (applications gains a `saved`
+  status); (5) fit checks left today and recent verdicts. Layout as sketched: jobs for you and
+  fit checks on top, then the tracker, then resume vs. the market; details on their own page. Tailored resumes (B.3) and outreach (B.5) appear only once built.
+
 ## 2026-11-04 — After saving a profile, go to the jobs it fits
 - **Found (Shrey):** saving showed "Saved." and nothing else, so a person didn't know what to do next.
 - **Options:** a panel with a "See your jobs" button, staying on the form · go straight to the

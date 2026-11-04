@@ -26,6 +26,7 @@ pytestmark = pytest.mark.skipif(not PG, reason="set PG_TEST_URL to a throwaway P
 
 ALICE = uuid.UUID("00000000-0000-4000-8000-00000000a11c")
 BOB = uuid.UUID("00000000-0000-4000-8000-000000000b0b")
+JOB = "greenhouse:acme:1"
 # Tables the pipeline owns. Nobody on the Data API may change them.
 # Each with a plain column to try an UPDATE on.
 PIPELINE_TABLES = {"universities": "name", "companies": "name", "jobs": "title", "job_labels": "level",
@@ -41,16 +42,21 @@ def database():
         for f in sorted(Path("db/postgres").glob("*.sql")):
             conn.execute(f.read_text())
         conn.execute("INSERT INTO auth.users (id) VALUES (%s), (%s)", (ALICE, BOB))
+        cid = conn.execute("INSERT INTO companies (name) VALUES ('Acme') RETURNING id").fetchone()[0]
+        conn.execute("INSERT INTO jobs (id, company_id, source, title, url, first_seen_at, content_hash) "
+                     "VALUES (%s, %s, 'greenhouse', 'ML Engineer', 'https://x', now(), 'h')", (JOB, cid))
     yield
 
 
 @pytest.fixture(autouse=True)
 def clean():
-    """Each test starts with Bob's profile and resume in place and nothing of Alice's."""
+    """Each test starts with Bob's profile, resume, tracked job and fit check, and nothing of Alice's."""
     with psycopg.connect(PG, autocommit=True) as conn:
-        conn.execute("DELETE FROM students; DELETE FROM storage.objects")
+        conn.execute("DELETE FROM students; DELETE FROM storage.objects")  # cascades to applications, fit_checks
         conn.execute("INSERT INTO students (id, name, resume_path, resume_text) VALUES (%s, 'Bob', %s, 'Bob secret resume')",
                      (BOB, f"{BOB}/resume.pdf"))
+        conn.execute("INSERT INTO applications (student_id, job_id, status) VALUES (%s, %s, 'interview')", (BOB, JOB))
+        conn.execute("INSERT INTO fit_checks (student_id, job_id, result) VALUES (%s, %s, '{\"fit\": \"strong\"}')", (BOB, JOB))
         conn.execute("INSERT INTO storage.objects (bucket_id, name, owner) VALUES ('resumes', %s, %s)",
                      (f"{BOB}/resume.pdf", BOB))
     yield
@@ -257,4 +263,84 @@ def test_pipeline_bookkeeping_is_not_readable(table):
 
 
 def test_public_job_data_stays_readable():
-    assert rows(as_role("anon"), "SELECT count(*) FROM job_cards") == [(0,)]
+    assert rows(as_role("anon"), "SELECT count(*) FROM job_cards") == [(1,)]
+
+
+# --- Tracker (applications) -------------------------------------------------------------------
+
+def alice_with_profile():
+    with as_alice() as conn:
+        conn.execute("INSERT INTO students (id, name) VALUES (%s, 'Alice')", (ALICE,))
+        conn.commit()
+
+
+def test_user_tracks_their_own_jobs():
+    alice_with_profile()
+    with as_alice() as conn:
+        conn.execute("INSERT INTO applications (student_id, job_id) VALUES (%s, %s)", (ALICE, JOB))
+        assert conn.execute("SELECT status, applied_at FROM applications").fetchone() == ("saved", None)
+        conn.execute("UPDATE applications SET status = 'applied'")
+        status, applied_at = conn.execute("SELECT status, applied_at FROM applications").fetchone()
+        assert status == "applied" and applied_at is not None  # stamped when it first leaves "saved"
+        conn.execute("DELETE FROM applications")
+        assert conn.execute("SELECT count(*) FROM applications").fetchone() == (0,)
+
+
+def test_cannot_see_add_move_or_remove_someone_elses_tracked_jobs():
+    alice_with_profile()
+    assert rows(as_alice(), "SELECT * FROM applications") == []  # Bob's row is invisible
+    assert denied(as_alice(), "INSERT INTO applications (student_id, job_id) VALUES (%s, %s)", (BOB, JOB))
+    assert rowcount(as_alice(), "UPDATE applications SET status = 'rejected' WHERE student_id = %s", (BOB,)) == 0
+    assert rowcount(as_alice(), "DELETE FROM applications WHERE student_id = %s", (BOB,)) == 0
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT status FROM applications WHERE student_id = %s", (BOB,)).fetchone() == ("interview",)
+
+
+def test_cannot_hand_a_tracked_job_to_someone_else_or_forge_its_dates():
+    alice_with_profile()
+    with as_alice() as conn:
+        conn.execute("INSERT INTO applications (student_id, job_id) VALUES (%s, %s)", (ALICE, JOB))
+        conn.commit()
+    assert denied(as_alice(), "UPDATE applications SET student_id = %s", (BOB,))
+    assert denied(as_alice(), "UPDATE applications SET applied_at = now() - interval '1 year'")
+    assert denied(as_alice(), "INSERT INTO applications (student_id, job_id, created_at) VALUES (%s, %s, now())", (ALICE, JOB))
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("UPDATE applications SET status = 'hired'")
+
+
+def test_anon_cannot_touch_the_tracker():
+    assert denied(as_role("anon"), "SELECT * FROM applications")
+    assert denied(as_role("anon"), "INSERT INTO applications (student_id, job_id) VALUES (%s, %s)", (BOB, JOB))
+
+
+# --- Fit checks -------------------------------------------------------------------------------
+
+def test_user_reads_only_their_own_fit_checks():
+    alice_with_profile()
+    assert rows(as_alice(), "SELECT * FROM fit_checks") == []  # Bob's verdict is invisible
+    with psycopg.connect(PG, autocommit=True) as conn:  # as the API writes it
+        conn.execute("INSERT INTO fit_checks (student_id, job_id, result) VALUES (%s, %s, '{}')", (ALICE, JOB))
+    assert len(rows(as_alice(), "SELECT * FROM fit_checks")) == 1
+
+
+def test_nobody_on_the_data_api_can_write_fit_checks():
+    # The 5-a-day cap lives in the API; a direct insert or delete would let anyone get around it.
+    alice_with_profile()
+    for role, uid in (("authenticated", ALICE), ("anon", None)):
+        assert denied(as_role(role, uid), "INSERT INTO fit_checks (student_id, job_id, result) VALUES (%s, %s, '{}')", (ALICE, JOB))
+        assert denied(as_role(role, uid), "DELETE FROM fit_checks")
+        assert denied(as_role(role, uid), "UPDATE fit_checks SET result = '{}'")
+    assert denied(as_role("anon"), "SELECT * FROM fit_checks")
+
+
+def test_deleting_a_profile_removes_its_tracker_and_fit_checks():
+    alice_with_profile()
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO applications (student_id, job_id) VALUES (%s, %s)", (ALICE, JOB))
+        conn.execute("INSERT INTO fit_checks (student_id, job_id, result) VALUES (%s, %s, '{}')", (ALICE, JOB))
+    with as_alice() as conn:
+        conn.execute("DELETE FROM students WHERE id = %s", (ALICE,))
+        conn.commit()
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT count(*) FROM applications WHERE student_id = %s", (ALICE,)).fetchone() == (0,)
+        assert conn.execute("SELECT count(*) FROM fit_checks WHERE student_id = %s", (ALICE,)).fetchone() == (0,)

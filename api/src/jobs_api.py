@@ -17,9 +17,9 @@ import traceback
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 
 import fit
+from auth import auth_config, current_user
 
 from pg_queries import FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
 from storage import Database, connect
@@ -109,11 +109,40 @@ def fit_config(request: Request) -> tuple[str, fit.Post] | None:
 
 
 def fit_check_enabled(request: Request) -> bool:
-    return fit_config(request) is not None
+    # Checks read the signed-in person's saved resume, so sign-in has to work on the server too.
+    return fit_config(request) is not None and auth_config(request) is not None
 
 
-class FitRequest(BaseModel):
-    resume: str = Field(min_length=50, max_length=fit.MAX_RESUME_CHARS)
+# Gemini fit checks per person in any 24 hours (docs/decisions.md, 2026-11-04).
+FIT_DAILY = 5
+FIT_WINDOW = "interval '24 hours'"
+# A check holds its place while Gemini answers; one that fails is removed and doesn't count.
+PENDING = '{"pending": true}'
+
+
+Experience = Literal["all", "fresher", "internship", "0-0", "0-1", "0-2", "0-3", "0-4", "0-5", "unstated", "experienced"]
+RoleName = Literal["all", "target", "ai_ml", "backend", "mobile"]
+
+
+def experience_role_filters(p: Params, experience: str, include_unstated: bool, role: str) -> list[str]:
+    """The Asks and Role filters, shared by the job list and the dashboard's skill counts."""
+    where = []
+    if experience == "fresher":
+        where.append("level = 'fresher'")
+    elif experience == "experienced":
+        where.append("level = 'experienced'")
+    elif experience == "unstated":
+        where.append("level <> 'fresher' AND yoe_min IS NULL")
+    elif experience == "internship":
+        where.append(INTERN)
+    elif experience.startswith("0-"):
+        unstated = " OR (level = 'maybe' AND yoe_min IS NULL)" if include_unstated else ""
+        where.append(f"(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= {p(int(experience[2:]))}){unstated})")
+    if role == "target":
+        where.append("role_match")
+    elif role != "all":
+        where.append(f"role_match AND role_family = ANY({p(list(FAMILIES[role]))})")
+    return where
 
 
 def _since(hours: int) -> datetime:
@@ -134,13 +163,12 @@ def create_app() -> FastAPI:
     async def list_jobs(
         # "0-N": fresher roles plus any whose stated minimum is within N years. "unstated": no number
         # in the posting. "internship": intern/trainee/apprentice titles, whatever their label.
-        experience: Literal["all", "fresher", "internship", "0-0", "0-1", "0-2", "0-3", "0-4", "0-5", "unstated",
-                            "experienced"] = "all",
+        experience: Experience = "all",
         # With a "0-N" bucket: also list postings that state no years ("maybe", no number). Jobs
         # labelled experienced from other signals (e.g. a "Senior" title) stay out: precision first.
         include_unstated: bool = False,
         # "target": the roles in config/profile.yaml (AI/ML, Python backend, Android/React Native).
-        role: Literal["all", "target", "ai_ml", "backend", "mobile"] = "all",
+        role: RoleName = "all",
         # "24h" is new to us (first seen); 7d/30d use the posting date where the source gives one.
         posted: Literal["any", "24h", "7d", "30d"] = "any",
         eligible_only: bool = False,
@@ -155,23 +183,8 @@ def create_app() -> FastAPI:
         with_total: bool = False,
         db: Database = Depends(get_db),
     ) -> dict[str, Any]:
-        where = [OPEN]
         p = Params()
-        if experience == "fresher":
-            where.append("level = 'fresher'")
-        elif experience == "experienced":
-            where.append("level = 'experienced'")
-        elif experience == "unstated":
-            where.append("level <> 'fresher' AND yoe_min IS NULL")
-        elif experience == "internship":
-            where.append(INTERN)
-        elif experience.startswith("0-"):
-            unstated = " OR (level = 'maybe' AND yoe_min IS NULL)" if include_unstated else ""
-            where.append(f"(level = 'fresher' OR (yoe_min IS NOT NULL AND yoe_min <= {p(int(experience[2:]))}){unstated})")
-        if role == "target":
-            where.append("role_match")
-        elif role != "all":
-            where.append(f"role_match AND role_family = ANY({p(list(FAMILIES[role]))})")
+        where = [OPEN, *experience_role_filters(p, experience, include_unstated, role)]
         if eligible_only:
             where.append(ELIGIBLE)
         if posted == "24h":
@@ -206,19 +219,63 @@ def create_app() -> FastAPI:
             body.update(total=total, pages=max(1, -(-total // per_page)))
         return body
 
+    @app.get("/api/skill-demand")
+    async def skill_demand(experience: Experience = "all", include_unstated: bool = False, role: RoleName = "all",
+                           db: Database = Depends(get_db)) -> dict[str, Any]:
+        """How many of the matching open jobs name each skill (job_labels.skills, extract/skills.py):
+        the dashboard's "resume vs. the market"."""
+        p = Params()
+        cond = " AND ".join([OPEN, *experience_role_filters(p, experience, include_unstated, role)])
+        total = (await db.all(f"SELECT COUNT(*) AS n FROM job_cards WHERE {cond}", p))[0]["n"]
+        rows = await db.all(f"SELECT s AS skill, COUNT(*) AS n FROM job_cards, unnest(skills) s WHERE {cond} "
+                            "GROUP BY s ORDER BY n DESC, s", p)
+        return {"total": total, "skills": rows}
+
+    async def fit_quota(db: Database, uid: str) -> tuple[int, datetime | None]:
+        """(checks used in the last 24 hours, when the oldest of them stops counting)."""
+        row = (await db.all(f"SELECT COUNT(*) AS used, MIN(created_at) + {FIT_WINDOW} AS frees FROM fit_checks "
+                            f"WHERE student_id = $1 AND created_at > now() - {FIT_WINDOW}", [uid]))[0]
+        return int(row["used"]), row["frees"]
+
+    @app.get("/api/fit/quota")
+    async def quota(request: Request, uid: str = Depends(current_user), db: Database = Depends(get_db)) -> dict[str, Any]:
+        used, frees = await fit_quota(db, uid)
+        return {"limit": FIT_DAILY, "used": used, "remaining": max(0, FIT_DAILY - used),
+                "frees_at": frees if used >= FIT_DAILY else None, "enabled": fit_check_enabled(request)}
+
     @app.post("/api/jobs/{job_id:path}/fit")
-    async def check_fit(job_id: str, req: FitRequest, request: Request,
+    async def check_fit(job_id: str, request: Request, uid: str = Depends(current_user),
                         db: Database = Depends(get_db)) -> dict[str, Any]:
+        """Gemini compares the job with the signed-in person's saved resume. At most FIT_DAILY a day;
+        each verdict is kept in fit_checks for the dashboard."""
         config = fit_config(request)
         if config is None:
             raise HTTPException(status_code=404, detail="fit check is turned off")
-        rows = await db.all(f"SELECT title, company, description_text FROM job_cards WHERE id = {RESOLVE}", [job_id])
-        if not rows:
+        jobs = await db.all(f"SELECT id, title, company, description_text FROM job_cards WHERE id = {RESOLVE}", [job_id])
+        if not jobs:
             raise HTTPException(status_code=404, detail="job not found")
+        profile = await db.all("SELECT resume_text FROM students WHERE id = $1", [uid])
+        resume = (profile[0]["resume_text"] or "").strip() if profile else ""
+        if len(resume) < 50:
+            raise HTTPException(status_code=409, detail="add your resume to your profile first")
+        # Locking the person's row makes two checks sent at once count one after the other.
+        async with db.transaction():
+            await db.all("SELECT 1 FROM students WHERE id = $1 FOR UPDATE", [uid])
+            used, frees = await fit_quota(db, uid)
+            if used >= FIT_DAILY:
+                raise HTTPException(status_code=429, detail={"message": f"all {FIT_DAILY} checks used for now",
+                                                             "frees_at": frees.isoformat() if frees else None})
+            held = (await db.all("INSERT INTO fit_checks (student_id, job_id, result) VALUES ($1, $2, $3::jsonb) "
+                                 "RETURNING id", [uid, jobs[0]["id"], PENDING]))[0]["id"]
         try:
-            return await fit.check(rows[0], req.resume, *config)
+            result = await fit.check(jobs[0], resume, *config)
         except fit.FitUnavailable as e:
+            await db.all("DELETE FROM fit_checks WHERE id = $1", [held])
             raise HTTPException(status_code=503, detail=str(e)) from None
+        verdict = {k: v for k, v in result.items() if k != "model"}
+        await db.all("UPDATE fit_checks SET result = $2::jsonb, model = $3 WHERE id = $1",
+                     [held, json.dumps(verdict), result.get("model")])
+        return {**result, "remaining": max(0, FIT_DAILY - used - 1)}
 
     @app.get("/api/evidence")
     async def evidence(limit: int = Query(120, ge=1, le=300), db: Database = Depends(get_db)) -> dict[str, Any]:

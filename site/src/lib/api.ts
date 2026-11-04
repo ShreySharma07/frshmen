@@ -64,6 +64,7 @@ export interface Meta {
   cities: { city: string; n: number }[];
   snapshot_at: string | null;
   last_run: { finished_at: string; companies_ok: number; jobs_new: number } | null;
+  fit_check?: boolean; // Gemini fit checks are on (needs sign-in)
 }
 
 export const PER_PAGE = 20;

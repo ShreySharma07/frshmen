@@ -9,6 +9,7 @@ import { useUrlFilters } from "@/lib/useUrlFilters";
 import { FilterBar } from "./FilterBar";
 import { JobDetailView } from "./JobDetailView";
 import { JobRow } from "./JobRow";
+import { ProfileButton } from "./ProfileButton";
 import { SavedNote } from "./SavedNote";
 import { SearchBox } from "./SearchBox";
 import { ThemeToggle } from "./ThemeToggle";
@@ -21,11 +22,15 @@ type ListState = { status: "loading" } | { status: "error"; message: string } | 
 export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
   const [filters, navigate] = useUrlFilters();
   const [countries, setCountries] = useState<string[]>([]);
+  const [fitCheck, setFitCheck] = useState(false); // the API has Gemini fit checks switched on
 
   // Country choices for the Where chip, from the pipeline's per-run snapshot (one cheap request).
   useEffect(() => {
     const ctrl = new AbortController();
-    fetchMeta(ctrl.signal).then((m) => setCountries(m.countries.slice(0, 12).map((c) => c.country))).catch(() => {});
+    fetchMeta(ctrl.signal).then((m) => {
+      setCountries(m.countries.slice(0, 12).map((c) => c.country));
+      setFitCheck(Boolean(m.fit_check));
+    }).catch(() => {});
     return () => ctrl.abort();
   }, []);
   const onSearch = useCallback((q: string) => { if (filters) navigate({ ...filters, q }, "replace"); }, [filters, navigate]);
@@ -38,6 +43,7 @@ export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
           <div className="ml-auto flex w-full items-center justify-end gap-2">
             {filters && <SearchBox value={filters.q} onSearch={onSearch} />}
             <ThemeToggle />
+            <ProfileButton />
           </div>
         </div>
       </header>
@@ -47,7 +53,7 @@ export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
             <SavedNote filters={filters} />
             <FilterBar filters={filters} countries={countries} onChange={(f) => navigate(f)} />
             {/* A new key per filter set starts the results fresh: page 1, first job selected. */}
-            <Results key={toSearch(filters)} filters={filters} onClear={() => navigate(DEFAULTS)} />
+            <Results key={toSearch(filters)} filters={filters} fitCheck={fitCheck} onClear={() => navigate(DEFAULTS)} />
           </>
         ) : <Skeleton />}
       </main>
@@ -55,7 +61,7 @@ export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
   );
 }
 
-function Results({ filters, onClear }: { filters: Filters; onClear: () => void }) {
+function Results({ filters, fitCheck, onClear }: { filters: Filters; fitCheck: boolean; onClear: () => void }) {
   const [list, setList] = useState<ListState>({ status: "loading" });
   const [jobs, setJobs] = useState<JobSummary[]>([]);
   const [total, setTotal] = useState<number | null>(null);
@@ -174,7 +180,7 @@ function Results({ filters, onClear }: { filters: Filters; onClear: () => void }
       <aside aria-live="polite"
         className={`${sheetOpen ? "fixed inset-0 z-40 block overflow-y-auto bg-canvas p-5" : "hidden"} lg:sticky lg:inset-auto lg:top-[72px] lg:z-auto lg:block lg:h-[calc(100vh-88px)] lg:overflow-y-auto lg:border-l lg:border-line lg:bg-transparent lg:px-8 lg:py-1`}>
         {detail === "error" ? <p className="text-body text-muted">Couldn&apos;t load this job.</p>
-          : detail ? <JobDetailView job={detail} onBack={closeSheet} />
+          : detail ? <JobDetailView job={detail} fitCheck={fitCheck} onBack={closeSheet} />
           : current ? <DetailSkeleton /> : null}
       </aside>
     </div>

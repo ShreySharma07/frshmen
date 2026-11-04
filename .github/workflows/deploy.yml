@@ -55,4 +55,16 @@ jobs:
 
       - name: Deploy Worker
         working-directory: api
-        run: uv run pywrangler deploy
+        env:
+          # The API checks sign-ins with Supabase (api/src/auth.py) and runs fit checks with Gemini
+          # (api/src/fit.py, on through FIT_CHECK in wrangler.jsonc).
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          uv run pywrangler deploy --var "SUPABASE_URL:$SUPABASE_URL" --var "SUPABASE_PUBLISHABLE_KEY:$SUPABASE_PUBLISHABLE_KEY"
+          # A Worker secret, never a var: copied from the repo secret on each deploy so a new Worker
+          # (like the rename to aventra) gets it without a manual step.
+          if [ -n "$GEMINI_API_KEY" ]; then
+            printf '%s' "$GEMINI_API_KEY" | npx --yes wrangler secret put GEMINI_API_KEY
+          fi

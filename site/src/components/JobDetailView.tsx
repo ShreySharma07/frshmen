@@ -3,9 +3,13 @@ import type { JobDetail } from "@/lib/api";
 import { ATS, blocks, bodyText, highlightParts, techMentioned } from "@/lib/describe";
 import { shortDate } from "@/lib/format";
 import { FitCard } from "./FitCard";
+import dynamic from "next/dynamic";
+
+// Save and fit check load after the page, so they don't count against the job list's first load.
+const JobActions = dynamic(() => import("./JobActions").then((m) => m.JobActions), { ssr: false });
 
 /** The right-hand panel (full screen on phones): who, what, where, why it fits, and the posting. */
-export function JobDetailView({ job, onBack }: { job: JobDetail; onBack: () => void }) {
+export function JobDetailView({ job, fitCheck, onBack }: { job: JobDetail; fitCheck: boolean; onBack: () => void }) {
   const tech = techMentioned(job.description_text);
   const mode = job.location_type && job.location_type[0].toUpperCase() + job.location_type.slice(1);
   return (
@@ -34,6 +38,8 @@ export function JobDetailView({ job, onBack }: { job: JobDetail; onBack: () => v
           <kbd className="ml-1 hidden rounded-sm border border-on-accent/30 px-1 font-mono text-caption leading-4 opacity-70 lg:inline">A</kbd>
         </a>
       </div>
+      {/* A new key per job: its saved state and fit verdict start fresh. */}
+      <div className="mt-3"><JobActions key={job.id} jobId={job.id} fitCheck={fitCheck} /></div>
 
       <div className="mt-7 space-y-3 border-t border-line pt-6 text-body text-ink/85">
         {tech.length > 0 && (

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { ProfileForm } from "@/components/account/ProfileForm";
+import { Dashboard } from "@/components/account/Dashboard";
 
+// Where sign-in lands. Unlinked from the landing page until launch, like /login.
 export const metadata: Metadata = { title: "Your profile · Aventra", robots: { index: false } };
 
 export default function ProfilePage() {
-  return <ProfileForm />;
+  return <Dashboard />;
 }
