@@ -300,47 +300,116 @@ def test_old_postings_stay_listed_unless_filtered_and_newest_posting_sorts_first
 
 RESUME = "B.Tech CS (AI), 2026. Python, PyTorch, FastAPI. Built a multi-agent LLM system and a RAG pipeline."
 HUME = "greenhouse:humeai:4775962008"
-
-
-def test_fit_check_is_off_by_default(client):
-    assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": RESUME}).status_code == 404
-    assert client.get("/api/meta").json()["fit_check"] is False
+ASHA = "00000000-0000-4000-8000-00000000a5a0"
+TOKEN = {"Authorization": "Bearer asha-token"}
 
 
 def gemini_reply(payload):
     return {"candidates": [{"content": {"parts": [{"text": json.dumps(payload)}]}}]}
 
 
-def test_fit_check_when_switched_on(client):
+WEAK = {"fit": "weak", "score": 140, "matched": ["Python"], "missing": ["2+ years"],
+        "experience": "Asks for 2+ years; resume shows none.", "advice": "Apply to new-grad roles."}
+
+
+def signed_in(client, resume=RESUME, post=None):
+    """Asha is signed in (her token is accepted) and has saved a resume; the fit check is on."""
+    async def verify(token):
+        return ASHA if token == "asha-token" else None
+
     calls = []
 
-    async def post(url, headers, body):
+    async def gemini(url, headers, body):
         calls.append((url, headers, json.loads(body)))
         if "3.5" in url:
             return 404, {"error": {"message": "not found"}}
-        return 200, gemini_reply({"fit": "weak", "score": 140, "matched": ["Python"], "missing": ["2+ years"],
-                                  "experience": "Asks for 2+ years; resume shows none.", "advice": "Apply to new-grad roles."})
+        return 200, gemini_reply(WEAK)
 
-    client.app.state.fit = ("secret-key", post)
-    res = client.post(f"/api/jobs/{HUME}/fit", json={"resume": RESUME})
+    client.app.state.auth = verify
+    client.app.state.fit = ("secret-key", post or gemini)
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO auth.users (id) VALUES (%s) ON CONFLICT DO NOTHING", (ASHA,))
+        conn.execute("INSERT INTO students (id, name, resume_text) VALUES (%s, 'Asha', %s) "
+                     "ON CONFLICT (id) DO UPDATE SET resume_text = EXCLUDED.resume_text", (ASHA, resume))
+    return calls
+
+
+def test_fit_check_is_off_by_default(client):
+    assert client.post(f"/api/jobs/{HUME}/fit", headers=TOKEN).status_code == 503  # no sign-in on the server
+    assert client.get("/api/meta").json()["fit_check"] is False
+
+
+def test_fit_check_reads_the_saved_resume_and_keeps_the_verdict(client):
+    calls = signed_in(client)
+    res = client.post(f"/api/jobs/{HUME}/fit", headers=TOKEN)
     assert res.status_code == 200
     body = res.json()
     assert body["fit"] == "weak" and body["score"] == 100 and body["model"] == "gemini-3.1-flash-lite"
+    assert body["remaining"] == 4
     url, headers, sent = calls[-1]
     assert "key=" not in url and headers["x-goog-api-key"] == "secret-key"
     prompt = sent["contents"][0]["parts"][0]["text"]
-    assert RESUME in prompt and "2+ years" in prompt  # the job's own description goes in
+    assert RESUME in prompt and "2+ years" in prompt  # the saved resume and the job's own description
+    with psycopg.connect(PG) as conn:
+        result, model = conn.execute("SELECT result, model FROM fit_checks WHERE student_id = %s", (ASHA,)).fetchone()
+    assert result["fit"] == "weak" and model == "gemini-3.1-flash-lite"
     assert client.get("/api/meta").json()["fit_check"] is True
 
 
-def test_fit_check_errors(client):
-    async def quota(url, headers, body):
+def test_fit_check_needs_a_valid_sign_in(client):
+    signed_in(client)
+    assert client.post(f"/api/jobs/{HUME}/fit").status_code == 401
+    assert client.post(f"/api/jobs/{HUME}/fit", headers={"Authorization": "Bearer forged"}).status_code == 401
+    assert client.get("/api/fit/quota").status_code == 401
+
+
+def test_fit_check_needs_a_saved_resume(client):
+    signed_in(client, resume="")
+    res = client.post(f"/api/jobs/{HUME}/fit", headers=TOKEN)
+    assert res.status_code == 409 and "resume" in res.json()["detail"]
+
+
+def test_five_checks_a_day_then_429(client):
+    signed_in(client)
+    for left in (4, 3, 2, 1, 0):
+        assert client.post(f"/api/jobs/{HUME}/fit", headers=TOKEN).json()["remaining"] == left
+    res = client.post(f"/api/jobs/{HUME}/fit", headers=TOKEN)
+    assert res.status_code == 429 and res.json()["detail"]["frees_at"]
+    quota = client.get("/api/fit/quota", headers=TOKEN).json()
+    assert (quota["used"], quota["remaining"], quota["limit"]) == (5, 0, 5) and quota["frees_at"]
+    # Checks older than 24 hours stop counting.
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("UPDATE fit_checks SET created_at = now() - interval '25 hours' WHERE student_id = %s", (ASHA,))
+    assert client.get("/api/fit/quota", headers=TOKEN).json()["remaining"] == 5
+
+
+def test_a_failed_check_does_not_count(client):
+    async def quota_hit(url, headers, body):
         return 429, {}
 
-    client.app.state.fit = ("k", quota)
-    assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": RESUME}).status_code == 503
-    assert client.post("/api/jobs/nope/fit", json={"resume": RESUME}).status_code == 404
-    assert client.post(f"/api/jobs/{HUME}/fit", json={"resume": "too short"}).status_code == 422
+    signed_in(client, post=quota_hit)
+    assert client.post(f"/api/jobs/{HUME}/fit", headers=TOKEN).status_code == 503
+    assert client.post("/api/jobs/nope/fit", headers=TOKEN).status_code == 404
+    assert client.get("/api/fit/quota", headers=TOKEN).json()["used"] == 0
+
+
+def test_skill_demand_counts_skills_in_matching_jobs(mixed_skills):
+    body = mixed_skills.get("/api/skill-demand?role=ai_ml").json()
+    assert body["total"] == 2 and body["skills"] == [{"skill": "Python", "n": 2}, {"skill": "PyTorch", "n": 1}]
+    assert mixed_skills.get("/api/skill-demand?role=mobile").json() == {"total": 1, "skills": [{"skill": "Kotlin", "n": 1}]}
+
+
+@pytest.fixture
+def mixed_skills():
+    reset()
+    base = dict(records()[0], posted_at=None, source="ashby", company="Acme", company_slug="acme", level="fresher",
+                role_match=True, countries=["India"], cities=["Pune"])
+    publish([
+        dict(base, id="ashby:acme:ml", title="ML Engineer", role_family="ai_ml", content_hash="s1", skills=["Python", "PyTorch"]),
+        dict(base, id="ashby:acme:ds", title="Data Scientist", role_family="ai_ml", content_hash="s2", skills=["Python"]),
+        dict(base, id="ashby:acme:and", title="Android Developer", role_family="mobile", content_hash="s3", skills=["Kotlin"]),
+    ], datetime.now(timezone.utc))
+    return app_client()
 
 
 def test_salary_shows_on_the_list_and_the_job(client):
