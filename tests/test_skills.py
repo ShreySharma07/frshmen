@@ -33,7 +33,8 @@ def test_catalogue_names_are_unique():
     assert len(names) == len(set(names))
 
 
-def test_site_copy_matches_config():
-    # The dashboard ticks resume skills with this copy; run scripts/export_skills.py after editing.
-    assert export_skills.TARGET.read_text() == export_skills.exported()
+def test_copies_match_config():
+    # The dashboard and the tailored resume's check use these; run scripts/export_skills.py after editing.
+    assert export_skills.SITE.read_text() == export_skills.exported()
+    assert export_skills.API.read_text() == export_skills.exported_py()
 

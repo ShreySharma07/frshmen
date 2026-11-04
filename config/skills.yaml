@@ -5,7 +5,7 @@
 # terms:  words that count, matched as whole words (C++ and C# included)
 # exact:  match the terms' case exactly; for names that are also English words ("Spark", "Ray")
 #
-# After editing, run `python scripts/export_skills.py` so the site's copy matches
+# After editing, run `python scripts/export_skills.py` so the site's and the API's copies match
 # (tests/test_skills.py fails until it does).
 skills:
   - {name: Python, terms: [Python]}
