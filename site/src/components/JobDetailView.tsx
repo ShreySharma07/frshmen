@@ -39,7 +39,7 @@ export function JobDetailView({ job, fitCheck, onBack }: { job: JobDetail; fitCh
         </a>
       </div>
       {/* A new key per job: its saved state and fit verdict start fresh. */}
-      <div className="mt-3"><JobActions key={job.id} jobId={job.id} fitCheck={fitCheck} /></div>
+      <div className="mt-3"><JobActions key={job.id} jobId={job.id} title={job.title} company={job.company} fitCheck={fitCheck} /></div>
 
       <div className="mt-7 space-y-3 border-t border-line pt-6 text-body text-ink/85">
         {tech.length > 0 && (

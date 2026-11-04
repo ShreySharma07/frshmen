@@ -393,6 +393,45 @@ def test_a_failed_check_does_not_count(client):
     assert client.get("/api/fit/quota", headers=TOKEN).json()["used"] == 0
 
 
+TAILORED = {"name": "Asha", "note": "Led with the RAG pipeline.", "sections": [{"heading": "Projects", "lines": [
+    {"text": "Built a RAG pipeline and a multi-agent LLM system", "sources": [1]},
+    {"text": "Deployed on Kubernetes", "sources": [1]},
+]}]}
+
+
+def test_tailor_rewrites_within_the_resume_and_keeps_the_result(client):
+    async def gemini(url, headers, body):
+        return 200, gemini_reply(TAILORED)
+
+    signed_in(client, post=gemini)
+    res = client.post(f"/api/jobs/{HUME}/tailor", headers=TOKEN)
+    assert res.status_code == 200
+    body = res.json()
+    lines = body["sections"][0]["lines"]
+    assert not lines[0]["kept_original"]
+    assert lines[1]["kept_original"] and "Kubernetes" in lines[1]["reason"]  # the guard caught the invented skill
+    assert body["remaining"] == 1 and body["id"]
+    with psycopg.connect(PG) as conn:
+        stored = conn.execute("SELECT result FROM tailored_resumes WHERE student_id = %s", (ASHA,)).fetchone()[0]
+    assert stored["kept_original"] == 1 and "model" not in stored
+
+
+def test_two_tailored_resumes_a_day_counted_apart_from_fit_checks(client):
+    async def gemini(url, headers, body):
+        return 200, gemini_reply(TAILORED)
+
+    signed_in(client, post=gemini)
+    assert [client.post(f"/api/jobs/{HUME}/tailor", headers=TOKEN).json()["remaining"] for _ in range(2)] == [1, 0]
+    assert client.post(f"/api/jobs/{HUME}/tailor", headers=TOKEN).status_code == 429
+    quota = client.get("/api/fit/quota", headers=TOKEN).json()
+    assert quota["tailor"]["remaining"] == 0 and quota["remaining"] == 5  # fit checks untouched
+
+
+def test_tailor_needs_sign_in(client):
+    signed_in(client)
+    assert client.post(f"/api/jobs/{HUME}/tailor").status_code == 401
+
+
 def test_skill_demand_counts_skills_in_matching_jobs(mixed_skills):
     body = mixed_skills.get("/api/skill-demand?role=ai_ml").json()
     assert body["total"] == 2 and body["skills"] == [{"skill": "Python", "n": 2}, {"skill": "PyTorch", "n": 1}]

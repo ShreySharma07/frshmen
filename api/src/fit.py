@@ -81,10 +81,11 @@ def parse(answer: Any) -> dict[str, Any] | None:
     }
 
 
-async def check(job: dict[str, Any], resume: str, api_key: str, post: Post) -> dict[str, Any]:
+async def generate(prompt: str, schema: dict[str, Any], api_key: str, post: Post) -> tuple[Any, str]:
+    """One structured Gemini answer: (its JSON text, the model that gave it). Shared with tailor.py."""
     body = json.dumps({
-        "contents": [{"role": "user", "parts": [{"text": build_prompt(job, resume)}]}],
-        "generationConfig": {"temperature": 0, "responseMimeType": "application/json", "responseSchema": SCHEMA},
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 0, "responseMimeType": "application/json", "responseSchema": schema},
     })
     headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
     for model in MODELS:
@@ -94,13 +95,18 @@ async def check(job: dict[str, Any], resume: str, api_key: str, post: Post) -> d
         if status != 200:
             raise FitUnavailable("Gemini quota reached, try again later" if status == 429 else f"Gemini HTTP {status}")
         try:
-            result = parse(data["candidates"][0]["content"]["parts"][0]["text"])
+            return data["candidates"][0]["content"]["parts"][0]["text"], model
         except (KeyError, IndexError, TypeError):
-            result = None
-        if result is None:
-            raise FitUnavailable("Gemini gave no usable answer")
-        return {**result, "model": model}
+            raise FitUnavailable("Gemini gave no usable answer") from None
     raise FitUnavailable("no Gemini model is available to this key")
+
+
+async def check(job: dict[str, Any], resume: str, api_key: str, post: Post) -> dict[str, Any]:
+    answer, model = await generate(build_prompt(job, resume), SCHEMA, api_key, post)
+    result = parse(answer)
+    if result is None:
+        raise FitUnavailable("Gemini gave no usable answer")
+    return {**result, "model": model}
 
 
 async def worker_post(url: str, headers: dict[str, str], body: str) -> tuple[int, Any]:

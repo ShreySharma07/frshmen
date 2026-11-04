@@ -257,6 +257,9 @@ body {
    Here, not in landing.css, because the landing's styles leave with it mid-transition. */
 ::view-transition-old(root) { animation: 300ms var(--ease-in-out-soft) both vt-settle; }
 ::view-transition-new(root) { animation: 420ms var(--ease-out-expo) both vt-rise; }
+/* A dialog arriving over the page (the tailored resume). */
+@keyframes fade-in { from { opacity: 0; } }
+
 @keyframes vt-settle { to { opacity: 0; transform: scale(0.985); } }
 @keyframes vt-rise { from { opacity: 0; transform: translateY(24px); } }
 @media (prefers-reduced-motion: reduce) {

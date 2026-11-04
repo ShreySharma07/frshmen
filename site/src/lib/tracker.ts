@@ -66,7 +66,8 @@ export interface Verdict {
   advice: string;
 }
 export interface FitCheck { id: number; job_id: string; result: Verdict; created_at: string; jobs: Tracked["jobs"] }
-export interface Quota { limit: number; used: number; remaining: number; frees_at: string | null; enabled: boolean }
+export interface Allowance { limit: number; used: number; remaining: number; frees_at: string | null }
+export interface Quota extends Allowance { enabled: boolean; tailor: Allowance }
 
 export async function recentChecks(limit = 5): Promise<FitCheck[]> {
   // Checks still waiting for Gemini hold {"pending": true}; only finished verdicts are listed.
@@ -90,3 +91,25 @@ async function api(path: string, init: RequestInit = {}) {
 export const fitQuota = (): Promise<Quota> => api("/api/fit/quota");
 export const checkFit = (jobId: string): Promise<Verdict & { remaining: number }> =>
   api(`/api/jobs/${encodeURIComponent(jobId)}/fit`, { method: "POST" });
+
+// --- Tailored resumes (2 a day; api/src/tailor.py holds each line to the saved resume) --------
+
+export interface TailoredLine { text: string; original: string; sources: number[]; kept_original: boolean; reason: string | null }
+export interface TailoredSection { heading: string; lines: TailoredLine[] }
+export interface Tailored {
+  name: string;
+  note: string;
+  sections: TailoredSection[];
+  left_out: string[];
+  kept_original: number;
+  dropped: number;
+}
+export interface TailoredRow { id: number; job_id: string; result: Tailored; created_at: string; jobs: Tracked["jobs"] }
+
+export const tailorResume = (jobId: string): Promise<Tailored & { id: number; remaining: number }> =>
+  api(`/api/jobs/${encodeURIComponent(jobId)}/tailor`, { method: "POST" });
+
+export async function recentTailored(limit = 5): Promise<TailoredRow[]> {
+  const res = await rest(`tailored_resumes?select=id,job_id,result,created_at,jobs(title,url,companies(name))&result->sections=not.is.null&order=created_at.desc&limit=${limit}`);
+  return (await ok(res)).json();
+}

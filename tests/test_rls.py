@@ -50,13 +50,14 @@ def database():
 
 @pytest.fixture(autouse=True)
 def clean():
-    """Each test starts with Bob's profile, resume, tracked job and fit check, and nothing of Alice's."""
+    """Each test starts with Bob's profile, resume, tracked job, fit check and tailored resume, and nothing of Alice's."""
     with psycopg.connect(PG, autocommit=True) as conn:
         conn.execute("DELETE FROM students; DELETE FROM storage.objects")  # cascades to applications, fit_checks
         conn.execute("INSERT INTO students (id, name, resume_path, resume_text) VALUES (%s, 'Bob', %s, 'Bob secret resume')",
                      (BOB, f"{BOB}/resume.pdf"))
         conn.execute("INSERT INTO applications (student_id, job_id, status) VALUES (%s, %s, 'interview')", (BOB, JOB))
         conn.execute("INSERT INTO fit_checks (student_id, job_id, result) VALUES (%s, %s, '{\"fit\": \"strong\"}')", (BOB, JOB))
+        conn.execute("INSERT INTO tailored_resumes (student_id, job_id, result) VALUES (%s, %s, '{\"sections\": []}')", (BOB, JOB))
         conn.execute("INSERT INTO storage.objects (bucket_id, name, owner) VALUES ('resumes', %s, %s)",
                      (f"{BOB}/resume.pdf", BOB))
     yield
@@ -338,9 +339,31 @@ def test_deleting_a_profile_removes_its_tracker_and_fit_checks():
     with psycopg.connect(PG, autocommit=True) as conn:
         conn.execute("INSERT INTO applications (student_id, job_id) VALUES (%s, %s)", (ALICE, JOB))
         conn.execute("INSERT INTO fit_checks (student_id, job_id, result) VALUES (%s, %s, '{}')", (ALICE, JOB))
+        conn.execute("INSERT INTO tailored_resumes (student_id, job_id, result) VALUES (%s, %s, '{}')", (ALICE, JOB))
     with as_alice() as conn:
         conn.execute("DELETE FROM students WHERE id = %s", (ALICE,))
         conn.commit()
     with psycopg.connect(PG) as conn:
         assert conn.execute("SELECT count(*) FROM applications WHERE student_id = %s", (ALICE,)).fetchone() == (0,)
         assert conn.execute("SELECT count(*) FROM fit_checks WHERE student_id = %s", (ALICE,)).fetchone() == (0,)
+        assert conn.execute("SELECT count(*) FROM tailored_resumes WHERE student_id = %s", (ALICE,)).fetchone() == (0,)
+
+
+# --- Tailored resumes -------------------------------------------------------------------------
+
+def test_user_reads_only_their_own_tailored_resumes():
+    alice_with_profile()
+    assert rows(as_alice(), "SELECT * FROM tailored_resumes") == []  # Bob's is invisible
+    with psycopg.connect(PG, autocommit=True) as conn:  # as the API writes it
+        conn.execute("INSERT INTO tailored_resumes (student_id, job_id, result) VALUES (%s, %s, '{}')", (ALICE, JOB))
+    assert len(rows(as_alice(), "SELECT * FROM tailored_resumes")) == 1
+
+
+def test_nobody_on_the_data_api_can_write_tailored_resumes():
+    # The 2-a-day cap and the no-new-claims check live in the API; a direct write would skip both.
+    alice_with_profile()
+    for role, uid in (("authenticated", ALICE), ("anon", None)):
+        assert denied(as_role(role, uid), "INSERT INTO tailored_resumes (student_id, job_id, result) VALUES (%s, %s, '{}')", (ALICE, JOB))
+        assert denied(as_role(role, uid), "UPDATE tailored_resumes SET result = '{}'")
+        assert denied(as_role(role, uid), "DELETE FROM tailored_resumes")
+    assert denied(as_role("anon"), "SELECT * FROM tailored_resumes")

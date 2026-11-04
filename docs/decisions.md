@@ -4,6 +4,21 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-04 — Part B.3: the tailored resume
+- **Promise:** reword and reorder the saved resume toward one job, never adding a skill, a number
+  or a claim; show a diff; download a PDF.
+- **LLM. Options:** Gemini Flash-Lite free tier (already wired: key, quota, failure handling;
+  Google may use what is sent) · Groq Llama 3.3 70B free tier (no training on data, but a new
+  provider and key). **Choice (Shrey):** Gemini, with the same privacy note as the fit check.
+- **Guard:** whatever the model writes, a rules check compares each rewritten line with the
+  resume lines it cites; a line naming a catalogued skill or a number its sources don't have is
+  dropped back to the original wording.
+- **Download. Options:** a clean one-page PDF in our own template, made in the browser (library
+  loaded only on that page) · the original PDF's layout, edited (fragile) · a .docx.
+  **Choice (Shrey):** our own PDF template.
+- **Limit (Shrey):** its own count, 2 tailored resumes per person in any 24 hours, separate from
+  the 5 fit checks.
+
 ## 2026-11-04 — Job list JS budget: what was over, and how it is measured
 - **Finding:** summing every chunk named in `out/index.html` gave 193.8 KB gzip, but 39.5 KB of
   that is Next's `noModule` polyfill script, which no browser that runs ES modules downloads. A

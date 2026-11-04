@@ -4,6 +4,7 @@
 // is counting over real data except the fit verdicts, which come from Gemini (5 a day).
 import type { User } from "@supabase/supabase-js";
 import { Check, X } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,10 +14,13 @@ import { sessionChanged } from "@/lib/session";
 import { skillsIn } from "@/lib/skills";
 import { authConfigured, PROFILE_COLUMNS, supabase, type Profile } from "@/lib/supabase";
 import {
-  fitQuota, moveJob, recentChecks, removeJob, STAGES, trackedJobs,
-  type FitCheck, type Quota, type Stage, type Tracked,
+  fitQuota, moveJob, recentChecks, recentTailored, removeJob, STAGES, trackedJobs,
+  type FitCheck, type Quota, type Stage, type Tracked, type TailoredRow,
 } from "@/lib/tracker";
 import { AccountShell, NotSetUp } from "./AccountShell";
+
+// Reopening a tailored resume (and pdf-lib) loads only when asked.
+const TailorDialog = dynamic(() => import("@/components/TailorDialog").then((m) => m.TailorDialog), { ssr: false });
 
 const ROLE_LABEL: Record<string, string> = { ai_ml: "AI/ML", backend: "Backend", mobile: "Mobile" };
 const fmt = (n: number) => n.toLocaleString("en-IN");
@@ -128,9 +132,12 @@ const FIT_TONE: Record<string, string> = { strong: "bg-accent text-on-accent", p
 function FitChecks() {
   const [quota, setQuota] = useState<Quota | "off" | null>(null);
   const [checks, setChecks] = useState<FitCheck[] | null>(null);
+  const [tailored, setTailored] = useState<TailoredRow[]>([]);
+  const [open, setOpen] = useState<TailoredRow | null>(null);
   useEffect(() => {
     fitQuota().then(setQuota).catch(() => setQuota("off"));
     recentChecks().then(setChecks).catch(() => setChecks([]));
+    recentTailored().then(setTailored).catch(() => {});
   }, []);
   const off = quota === "off" || (quota !== null && !quota.enabled);
   return (
@@ -152,6 +159,23 @@ function FitChecks() {
             ))}
           </ul>
         )}
+      {tailored.length > 0 && (
+        <div className="mt-5 border-t border-line pt-4">
+          <h3 className="flex items-baseline justify-between text-meta text-muted">
+            Tailored resumes
+            {quota && quota !== "off" && <span className="font-mono"><span className="text-ink">{quota.tailor.remaining}</span> of {quota.tailor.limit} left today</span>}
+          </h3>
+          <ul className="mt-2 space-y-1.5">
+            {tailored.map((t) => (
+              <li key={t.id} className="flex items-center gap-3 text-body">
+                <span className="min-w-0 flex-1 truncate"><span className="font-medium">{t.jobs?.companies?.name}</span> · {t.jobs?.title}</span>
+                <button type="button" onClick={() => setOpen(t)} className="shrink-0 text-meta font-medium text-accent underline underline-offset-2">Open</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {open && <TailorDialog jobId={open.job_id} title={open.jobs?.title ?? ""} company={open.jobs?.companies?.name ?? ""} initial={open.result} onClose={() => setOpen(null)} />}
     </Card>
   );
 }
