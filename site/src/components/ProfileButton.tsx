@@ -1,7 +1,7 @@
 "use client";
 // Top right of every page: "Sign in", or the person's initial opening Profile and Sign out.
 // Reads the stored session itself (lib/session.ts), so the job list stays free of supabase-js.
-import Link from "next/link";
+import { IntentLink } from "./IntentLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { readSession, signOut, subscribeSession } from "@/lib/session";
@@ -25,9 +25,9 @@ export function ProfileButton() {
 
   if (!session) {
     return (
-      <Link href="/login" className="inline-flex h-9 shrink-0 items-center rounded-md border border-line px-3 text-meta font-medium transition-colors duration-quick hover:bg-surface">
+      <IntentLink href="/login" className="inline-flex h-9 shrink-0 items-center rounded-md border border-line px-3 text-meta font-medium transition-colors duration-quick hover:bg-surface">
         Sign in
-      </Link>
+      </IntentLink>
     );
   }
   const initial = (session.name || session.email || "?").trim()[0]?.toUpperCase() ?? "?";
@@ -41,9 +41,9 @@ export function ProfileButton() {
       {open && (
         <div role="menu" className="absolute right-0 top-11 z-40 w-56 overflow-hidden rounded-lg border border-line bg-canvas py-1 shadow-menu">
           <p className="truncate px-3 py-2 text-meta text-muted">{session.email}</p>
-          <Link role="menuitem" href="/profile" onClick={() => setOpen(false)} className="block px-3 py-2 text-body hover:bg-surface focus:bg-surface focus:outline-none">
+          <IntentLink role="menuitem" href="/profile" onClick={() => setOpen(false)} className="block px-3 py-2 text-body hover:bg-surface focus:bg-surface focus:outline-none">
             Profile
-          </Link>
+          </IntentLink>
           <button role="menuitem" type="button" onClick={async () => { setOpen(false); await signOut(); router.push("/"); }}
             className="block w-full px-3 py-2 text-left text-body hover:bg-surface focus:bg-surface focus:outline-none">
             Sign out

@@ -4,6 +4,22 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-04 — Job list JS budget: what was over, and how it is measured
+- **Finding:** summing every chunk named in `out/index.html` gave 193.8 KB gzip, but 39.5 KB of
+  that is Next's `noModule` polyfill script, which no browser that runs ES modules downloads. A
+  Playwright load of `/` showed what browsers really fetched: **228 KB**, because `next/link`
+  prefetched `/login` and `/profile` as soon as "Sign in" was on screen, pulling in supabase-js
+  (56 KB) and the login chunk on every visit.
+- **Change:** the job list's links (`ProfileButton`, `SavedNote`, `JobActions`) use
+  `IntentLink`, which prefetches on hover, focus or touch instead of on entering the viewport.
+  Real download on `/` is now **154 KB** gzip (React DOM 72 KB + Next runtime ~62 KB +
+  app code ~19 KB). Screens are unchanged.
+- **Tradeoff:** a first tap on "Sign in" or "Profile" on a phone starts the fetch at touch
+  rather than earlier, so that one navigation can be slightly slower on 4G.
+- **Measurement (proposed, Shrey to confirm):** count the scripts a modern browser loads for
+  the route, i.e. skip `noModule` scripts. The old sum cannot reach 170 KB: framework chunks
+  plus the polyfill are already ~176 KB with zero app code.
+
 ## 2026-11-04 — Fit-check cap and the profile dashboard
 - **Fit check. Options:** A rules only (free, instant, every job, shallow) · B Gemini only, one
   job at a time · C both. **Choice (Shrey):** B, Gemini only, at most 5 checks per person per day,

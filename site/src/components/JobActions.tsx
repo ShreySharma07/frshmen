@@ -3,7 +3,7 @@
 // resume (5 a day, docs/decisions.md 2026-11-04). Both need sign-in; neither loads supabase-js
 // unless a token has to be refreshed.
 import { Bookmark, BookmarkCheck } from "lucide-react";
-import Link from "next/link";
+import { IntentLink } from "./IntentLink";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { readSession, subscribeSession } from "@/lib/session";
 import { checkFit, fitQuota, saveJob, stageOf, STAGES, type Stage, type Verdict } from "@/lib/tracker";
@@ -16,7 +16,7 @@ export function JobActions({ jobId, fitCheck }: { jobId: string; fitCheck: boole
   if (!session) {
     return (
       <p className="text-meta text-muted">
-        <Link href="/login" className="font-medium text-accent underline underline-offset-2">Sign in</Link> to save this job{fitCheck ? " and check your fit" : ""}.
+        <IntentLink href="/login" className="font-medium text-accent underline underline-offset-2">Sign in</IntentLink> to save this job{fitCheck ? " and check your fit" : ""}.
       </p>
     );
   }
@@ -46,11 +46,11 @@ function SaveButton({ userId, jobId }: { userId: string; jobId: string }) {
   return (
     <>
       {stage && stage !== "loading" ? (
-        <Link href="/profile" className={btn}><BookmarkCheck aria-hidden className="size-4 text-accent" />{label} · tracker</Link>
+        <IntentLink href="/profile" className={btn}><BookmarkCheck aria-hidden className="size-4 text-accent" />{label} · tracker</IntentLink>
       ) : (
         <button type="button" onClick={save} disabled={stage === "loading"} className={btn}><Bookmark aria-hidden className="size-4" />Save</button>
       )}
-      {problem === "no-profile" && <span className="text-meta text-muted">Save your <Link href="/profile/edit" className="font-medium text-accent underline">profile</Link> first.</span>}
+      {problem === "no-profile" && <span className="text-meta text-muted">Save your <IntentLink href="/profile/edit" className="font-medium text-accent underline">profile</IntentLink> first.</span>}
       {problem === "error" && <span role="alert" className="text-meta text-muted">Couldn&apos;t save. Try again.</span>}
     </>
   );
@@ -74,9 +74,9 @@ function FitCheck({ jobId }: { jobId: string }) {
       setState({ kind: "done", verdict: v });
     } catch (e) {
       const err = e as Error & { status?: number; freesAt?: string };
-      const message = err.status === 409 ? <>Add your resume to your <Link href="/profile/edit" className="font-medium text-accent underline">profile</Link> first.</>
+      const message = err.status === 409 ? <>Add your resume to your <IntentLink href="/profile/edit" className="font-medium text-accent underline">profile</IntentLink> first.</>
         : err.status === 429 ? <>All 5 checks used. The next one frees up at {err.freesAt ? new Date(err.freesAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "a later time"}.</>
-        : err.status === 401 ? <><Link href="/login" className="font-medium text-accent underline">Sign in</Link> again to check your fit.</>
+        : err.status === 401 ? <><IntentLink href="/login" className="font-medium text-accent underline">Sign in</IntentLink> again to check your fit.</>
         : `Couldn't check right now (${err.message}).`;
       if (err.status === 429) setLeft(0);
       setState({ kind: "error", message });
