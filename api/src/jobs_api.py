@@ -31,7 +31,7 @@ SALARY = r"substring(description_text from '^Salary\n([^\n]+)') AS salary"
 LIST_COLUMNS = (
     "id, company, title, url, location_raw, location_type, countries, cities, posted_at, first_seen_at, "
     "level, level_confidence, level_reason, yoe_min, yoe_max, yoe_evidence, batch_years, role_family, "
-    f"visa_sponsorship, eligible, evidence, {SALARY}"
+    f"visa_sponsorship, eligible, skills, evidence, {SALARY}"
 )
 # Which evidence decides a label, in order of preference. The page shows this one line per job.
 HIGHLIGHT_KINDS = {
