@@ -21,135 +21,135 @@
 companies:
   # --- Frontier / foundation-model labs ---
   - {name: OpenAI, category: lab, hq: us, ats: ashby, slug: openai, verified: true, jobs: 822, ai_jobs: 149}
-  - {name: Anthropic, category: lab, hq: us, ats: greenhouse, slug: anthropic, verified: true, jobs: 645, ai_jobs: 130}
+  - {name: Anthropic, category: lab, hq: us, website: anthropic.com, ats: greenhouse, slug: anthropic, verified: true, jobs: 645, ai_jobs: 130}
   - {name: Google DeepMind, category: lab, hq: uk, website: deepmind.google, ats: workable, slug: deepmind, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: xAI, category: lab, hq: us, ats: greenhouse, slug: xai, verified: true, jobs: 302, ai_jobs: 35}
   - {name: Mistral AI, category: lab, hq: eu, ats: lever, slug: mistral, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
-  - {name: Cohere, category: lab, hq: ca, ats: ashby, slug: cohere, verified: true, jobs: 135, ai_jobs: 24}
+  - {name: Cohere, category: lab, hq: ca, website: cohere.com, ats: ashby, slug: cohere, verified: true, jobs: 135, ai_jobs: 24}
   - {name: Perplexity, category: lab, hq: us, ats: ashby, slug: perplexity, verified: true, jobs: 129, ai_jobs: 26}
   - {name: Character.AI, category: lab, hq: us, ats: ashby, slug: character, verified: true, jobs: 13, ai_jobs: 8}
-  - {name: Stability AI, category: lab, hq: uk, ats: greenhouse, slug: stabilityai, verified: true, jobs: 6, ai_jobs: 1}
-  - {name: Runway, category: lab, hq: us, ats: ashby, slug: runway, verified: true, jobs: 3, ai_jobs: 0}
+  - {name: Stability AI, category: lab, hq: uk, website: stability.ai, ats: greenhouse, slug: stabilityai, verified: true, jobs: 6, ai_jobs: 1}
+  - {name: Runway, category: lab, hq: us, website: runway.com, ats: ashby, slug: runway, verified: true, jobs: 3, ai_jobs: 0}
   - {name: Luma AI, category: lab, hq: us, ats: ashby, slug: lumaai, verified: true, jobs: 29, ai_jobs: 6}
   - {name: Pika, category: lab, hq: us, ats: ashby, slug: pika, verified: true, jobs: 15, ai_jobs: 3}
   - {name: Black Forest Labs, category: lab, hq: eu, ats: ashby, slug: black-forest-labs, verified: true, jobs: 14, ai_jobs: 1}
-  - {name: ElevenLabs, category: lab, hq: global, ats: ashby, slug: elevenlabs, verified: true, jobs: 140, ai_jobs: 10}
-  - {name: Suno, category: lab, hq: us, ats: ashby, slug: suno, verified: true, jobs: 66, ai_jobs: 10}
-  - {name: Cartesia, category: lab, hq: us, ats: ashby, slug: cartesia, verified: true, jobs: 31, ai_jobs: 2}
-  - {name: Synthesia, category: lab, hq: uk, ats: ashby, slug: synthesia, verified: true, jobs: 48, ai_jobs: 7}
+  - {name: ElevenLabs, category: lab, hq: global, website: elevenlabs.io, ats: ashby, slug: elevenlabs, verified: true, jobs: 140, ai_jobs: 10}
+  - {name: Suno, category: lab, hq: us, website: suno.com, ats: ashby, slug: suno, verified: true, jobs: 66, ai_jobs: 10}
+  - {name: Cartesia, category: lab, hq: us, website: cartesia.ai, ats: ashby, slug: cartesia, verified: true, jobs: 31, ai_jobs: 2}
+  - {name: Synthesia, category: lab, hq: uk, website: synthesia.com, ats: ashby, slug: synthesia, verified: true, jobs: 48, ai_jobs: 7}
   - {name: Hume AI, category: lab, hq: us, ats: greenhouse, slug: humeai, verified: true, jobs: 5, ai_jobs: 3}
   - {name: AI21 Labs, category: lab, hq: global, website: ai21.com, ats: greenhouse, slug: ai21labs, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Reka AI, category: lab, hq: us, ats: ashby, slug: reka, verified: true, jobs: 9, ai_jobs: 3}
   - {name: Aleph Alpha, category: lab, hq: eu, ats: ashby, slug: alephalpha, verified: true, jobs: 1, ai_jobs: 0}
-  - {name: Poolside, category: lab, hq: eu, ats: ashby, slug: poolside, verified: true, jobs: 2, ai_jobs: 1}
+  - {name: Poolside, category: lab, hq: eu, website: poolside.ai, ats: ashby, slug: poolside, verified: true, jobs: 2, ai_jobs: 1}
   - {name: Magic, category: lab, hq: us, ats: ashby, slug: magic, verified: true, jobs: 10, ai_jobs: 0, checked: '2026-11-03'}
-  - {name: Imbue, category: lab, hq: us, ats: greenhouse, slug: imbue, verified: true, jobs: 1, ai_jobs: 0}
+  - {name: Imbue, category: lab, hq: us, website: imbue.com, ats: greenhouse, slug: imbue, verified: true, jobs: 1, ai_jobs: 0}
   - {name: Adept, category: lab, hq: us, website: adept.ai, ats: greenhouse, slug: adept, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
-  - {name: Inflection AI, category: lab, hq: us, ats: greenhouse, slug: inflectionai, verified: true, jobs: 6, ai_jobs: 3}
-  - {name: Essential AI, category: lab, hq: us, ats: ashby, slug: essentialai, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
-  - {name: Liquid AI, category: lab, hq: us, ats: ashby, slug: liquid-ai, verified: true, jobs: 20, ai_jobs: 6}
-  - {name: Nous Research, category: lab, hq: us, ats: ashby, slug: nousresearch, verified: true, jobs: 14, ai_jobs: 1}
+  - {name: Inflection AI, category: lab, hq: us, website: inflection.ai, ats: greenhouse, slug: inflectionai, verified: true, jobs: 6, ai_jobs: 3}
+  - {name: Essential AI, category: lab, hq: us, website: essential.ai, ats: ashby, slug: essentialai, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
+  - {name: Liquid AI, category: lab, hq: us, website: liquid.ai, ats: ashby, slug: liquid-ai, verified: true, jobs: 20, ai_jobs: 6}
+  - {name: Nous Research, category: lab, hq: us, website: nousresearch.com, ats: ashby, slug: nousresearch, verified: true, jobs: 14, ai_jobs: 1}
   - {name: Contextual AI, category: lab, hq: us, website: contextual.ai, ats: ashby, slug: contextualai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Nomic AI, category: lab, hq: us, ats: ashby, slug: nomic, verified: true, jobs: 6, ai_jobs: 1}
   - {name: Allen Institute for AI, category: lab, hq: us, ats: greenhouse, slug: thealleninstitute, verified: true, jobs: 18, ai_jobs: 9}
-  - {name: Hugging Face, category: lab, hq: global, ats: workable, slug: huggingface, verified: true, jobs: 8, ai_jobs: 5}
-  - {name: Physical Intelligence, category: lab, hq: us, ats: ashby, slug: physicalintelligence, verified: true, jobs: 37, ai_jobs: 7}
-  - {name: World Labs, category: lab, hq: us, ats: ashby, slug: worldlabs, verified: true, jobs: 11, ai_jobs: 6}
-  - {name: Thinking Machines Lab, category: lab, hq: us, ats: ashby, slug: thinkingmachines, verified: true, jobs: 55, ai_jobs: 6}
+  - {name: Hugging Face, category: lab, hq: global, website: huggingface.co, ats: workable, slug: huggingface, verified: true, jobs: 8, ai_jobs: 5}
+  - {name: Physical Intelligence, category: lab, hq: us, website: physicalintelligence.com, ats: ashby, slug: physicalintelligence, verified: true, jobs: 37, ai_jobs: 7}
+  - {name: World Labs, category: lab, hq: us, website: worldlabs.ai, ats: ashby, slug: worldlabs, verified: true, jobs: 11, ai_jobs: 6}
+  - {name: Thinking Machines Lab, category: lab, hq: us, website: thinkingmachineslab.ai, ats: ashby, slug: thinkingmachines, verified: true, jobs: 55, ai_jobs: 6}
   - {name: Safe Superintelligence, category: lab, hq: us, ats: ashby, slug: ssi, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
-  - {name: Sakana AI, category: lab, hq: global, ats: workable, slug: sakana-ai, verified: true, jobs: 22, ai_jobs: 1}
+  - {name: Sakana AI, category: lab, hq: global, website: sakana.ai, ats: workable, slug: sakana-ai, verified: true, jobs: 22, ai_jobs: 1}
 
   # --- AI infrastructure, inference, data, compute ---
   - {name: Scale AI, category: infra, hq: us, ats: greenhouse, slug: scaleai, verified: true, jobs: 188, ai_jobs: 49}
-  - {name: Databricks, category: infra, hq: us, ats: greenhouse, slug: databricks, verified: true, jobs: 887, ai_jobs: 83}
-  - {name: Together AI, category: infra, hq: us, ats: greenhouse, slug: togetherai, verified: true, jobs: 78, ai_jobs: 29}
+  - {name: Databricks, category: infra, hq: us, website: databricks.com, ats: greenhouse, slug: databricks, verified: true, jobs: 887, ai_jobs: 83}
+  - {name: Together AI, category: infra, hq: us, website: together.ai, ats: greenhouse, slug: togetherai, verified: true, jobs: 78, ai_jobs: 29}
   - {name: Fireworks AI, category: infra, hq: us, website: fireworks.ai, ats: ashby, slug: fireworks, verified: true, jobs: 88, ai_jobs: 20, checked: '2026-10-18', careers: 'ashby: https://fireworks.ai/careers'}
-  - {name: Anyscale, category: infra, hq: us, ats: ashby, slug: anyscale, verified: true, jobs: 20, ai_jobs: 3}
+  - {name: Anyscale, category: infra, hq: us, website: anyscale.com, ats: ashby, slug: anyscale, verified: true, jobs: 20, ai_jobs: 3}
   - {name: Modal, category: infra, hq: us, ats: ashby, slug: modal, verified: true, jobs: 38, ai_jobs: 6}
-  - {name: Baseten, category: infra, hq: us, ats: ashby, slug: baseten, verified: true, jobs: 105, ai_jobs: 16}
+  - {name: Baseten, category: infra, hq: us, website: baseten.co, ats: ashby, slug: baseten, verified: true, jobs: 105, ai_jobs: 16}
   - {name: Replicate, category: infra, hq: us, website: replicate.com, ats: ashby, slug: replicate, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Groq, category: infra, hq: us, website: groq.com, ats: greenhouse, slug: groq, verified: false, checked: '2026-11-03', careers: 'gem (no adapter yet): https://groq.com'}
-  - {name: Cerebras, category: infra, hq: us, ats: ashby, slug: cerebras, verified: true, jobs: 117, ai_jobs: 40}
-  - {name: SambaNova, category: infra, hq: us, ats: greenhouse, slug: sambanovasystems, verified: true, jobs: 63, ai_jobs: 7}
-  - {name: Etched, category: infra, hq: us, ats: ashby, slug: etched, verified: true, jobs: 108, ai_jobs: 9}
-  - {name: Lightning AI, category: infra, hq: us, ats: greenhouse, slug: lightningai, verified: true, jobs: 54, ai_jobs: 8}
-  - {name: CoreWeave, category: infra, hq: us, ats: greenhouse, slug: coreweave, verified: true, jobs: 313, ai_jobs: 23}
-  - {name: Lambda, category: infra, hq: us, ats: ashby, slug: lambda, verified: true, jobs: 90, ai_jobs: 3}
-  - {name: Crusoe, category: infra, hq: us, ats: ashby, slug: crusoe, verified: true, jobs: 348, ai_jobs: 14}
+  - {name: Cerebras, category: infra, hq: us, website: cerebras.com, ats: ashby, slug: cerebras, verified: true, jobs: 117, ai_jobs: 40}
+  - {name: SambaNova, category: infra, hq: us, website: sambanova.ai, ats: greenhouse, slug: sambanovasystems, verified: true, jobs: 63, ai_jobs: 7}
+  - {name: Etched, category: infra, hq: us, website: etched.com, ats: ashby, slug: etched, verified: true, jobs: 108, ai_jobs: 9}
+  - {name: Lightning AI, category: infra, hq: us, website: lightning.ai, ats: greenhouse, slug: lightningai, verified: true, jobs: 54, ai_jobs: 8}
+  - {name: CoreWeave, category: infra, hq: us, website: coreweave.com, ats: greenhouse, slug: coreweave, verified: true, jobs: 313, ai_jobs: 23}
+  - {name: Lambda, category: infra, hq: us, website: lambda.ai, ats: ashby, slug: lambda, verified: true, jobs: 90, ai_jobs: 3}
+  - {name: Crusoe, category: infra, hq: us, website: crusoe.ai, ats: ashby, slug: crusoe, verified: true, jobs: 348, ai_jobs: 14}
   - {name: Weights & Biases, category: infra, hq: us, website: wandb.ai, ats: greenhouse, slug: wandb, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Snorkel AI, category: infra, hq: us, ats: greenhouse, slug: snorkelai, verified: true, jobs: 42, ai_jobs: 7}
-  - {name: Labelbox, category: infra, hq: us, ats: greenhouse, slug: labelbox, verified: true, jobs: 9, ai_jobs: 2}
-  - {name: Pinecone, category: infra, hq: us, ats: ashby, slug: pinecone, verified: true, jobs: 5, ai_jobs: 0}
-  - {name: Weaviate, category: infra, hq: eu, ats: ashby, slug: weaviate, verified: true, jobs: 3, ai_jobs: 0}
+  - {name: Snorkel AI, category: infra, hq: us, website: snorkel.ai, ats: greenhouse, slug: snorkelai, verified: true, jobs: 42, ai_jobs: 7}
+  - {name: Labelbox, category: infra, hq: us, website: labelbox.com, ats: greenhouse, slug: labelbox, verified: true, jobs: 9, ai_jobs: 2}
+  - {name: Pinecone, category: infra, hq: us, website: pinecone.com, ats: ashby, slug: pinecone, verified: true, jobs: 5, ai_jobs: 0}
+  - {name: Weaviate, category: infra, hq: eu, website: weaviate.io, ats: ashby, slug: weaviate, verified: true, jobs: 3, ai_jobs: 0}
   - {name: Qdrant, category: infra, hq: eu, website: qdrant.tech, ats: workable, slug: qdrant, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Chroma, category: infra, hq: us, ats: ashby, slug: trychroma, verified: true, jobs: 1, ai_jobs: 0}
-  - {name: Zilliz, category: infra, hq: us, ats: lever, slug: zilliz, verified: true, jobs: 12, ai_jobs: 0}
-  - {name: LangChain, category: infra, hq: us, ats: ashby, slug: langchain, verified: true, jobs: 100, ai_jobs: 10}
-  - {name: LlamaIndex, category: infra, hq: us, ats: ashby, slug: llamaindex, verified: true, jobs: 9, ai_jobs: 1}
+  - {name: Zilliz, category: infra, hq: us, website: zilliz.com, ats: lever, slug: zilliz, verified: true, jobs: 12, ai_jobs: 0}
+  - {name: LangChain, category: infra, hq: us, website: langchain.com, ats: ashby, slug: langchain, verified: true, jobs: 100, ai_jobs: 10}
+  - {name: LlamaIndex, category: infra, hq: us, website: llamaindex.ai, ats: ashby, slug: llamaindex, verified: true, jobs: 9, ai_jobs: 1}
   - {name: Arize AI, category: infra, hq: us, ats: greenhouse, slug: arizeai, verified: true, jobs: 24, ai_jobs: 11}
   - {name: Braintrust, category: infra, hq: us, ats: ashby, slug: braintrust, verified: true, jobs: 27, ai_jobs: 0}
-  - {name: Unstructured, category: infra, hq: us, ats: ashby, slug: unstructured, verified: true, jobs: 5, ai_jobs: 1}
-  - {name: Deepgram, category: infra, hq: us, ats: ashby, slug: deepgram, verified: true, jobs: 95, ai_jobs: 18}
-  - {name: AssemblyAI, category: infra, hq: us, ats: greenhouse, slug: assemblyai, verified: true, jobs: 10, ai_jobs: 4}
+  - {name: Unstructured, category: infra, hq: us, website: unstructured.io, ats: ashby, slug: unstructured, verified: true, jobs: 5, ai_jobs: 1}
+  - {name: Deepgram, category: infra, hq: us, website: deepgram.com, ats: ashby, slug: deepgram, verified: true, jobs: 95, ai_jobs: 18}
+  - {name: AssemblyAI, category: infra, hq: us, website: assemblyai.com, ats: greenhouse, slug: assemblyai, verified: true, jobs: 10, ai_jobs: 4}
   - {name: OctoAI, category: infra, hq: us, website: octo.ai, ats: greenhouse, slug: octoai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Predibase, category: infra, hq: us, website: predibase.com, ats: ashby, slug: predibase, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
   - {name: Clarifai, category: infra, hq: us, website: clarifai.com, ats: workable, slug: clarifai, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
   - {name: DataRobot, category: infra, hq: us, website: datarobot.com, ats: workday, slug: datarobot/wd1/DataRobot_External_Careers, verified: true, jobs: 17, ai_jobs: 6, checked: '2026-10-18', careers: 'workday: https://www.datarobot.com/careers/open-positions/job/102685/'}
   - {name: H2O.ai, category: infra, hq: us, website: h2o.ai, ats: greenhouse, slug: h2oai, verified: false, checked: '2026-11-03', careers: 'jazzhr (no adapter yet): https://h2o.ai/company/careers'}
   - {name: Neo4j, category: infra, hq: global, ats: greenhouse, slug: neo4j, verified: true, jobs: 66, ai_jobs: 5}
-  - {name: MotherDuck, category: infra, hq: us, ats: ashby, slug: motherduck, verified: true, jobs: 3, ai_jobs: 0}
-  - {name: Vercel, category: infra, hq: us, ats: greenhouse, slug: vercel, verified: true, jobs: 83, ai_jobs: 1}
-  - {name: Cloudflare, category: infra, hq: global, ats: greenhouse, slug: cloudflare, verified: true, jobs: 415, ai_jobs: 18}
+  - {name: MotherDuck, category: infra, hq: us, website: motherduck.com, ats: ashby, slug: motherduck, verified: true, jobs: 3, ai_jobs: 0}
+  - {name: Vercel, category: infra, hq: us, website: vercel.com, ats: greenhouse, slug: vercel, verified: true, jobs: 83, ai_jobs: 1}
+  - {name: Cloudflare, category: infra, hq: global, website: cloudflare.com, ats: greenhouse, slug: cloudflare, verified: true, jobs: 415, ai_jobs: 18}
   - {name: Nebius, category: infra, hq: eu, ats: greenhouse, slug: nebius, verified: true, jobs: 363, ai_jobs: 42}
   - {name: Hebbia, category: infra, hq: us, website: hebbia.com, ats: ashby, slug: hebbia-ai, verified: true, jobs: 22, ai_jobs: 7, checked: '2026-10-18', careers: 'ashby: https://www.hebbia.com/careers/'}
-  - {name: Vectara, category: infra, hq: us, ats: greenhouse, slug: vectara, verified: true, jobs: 5, ai_jobs: 1}
+  - {name: Vectara, category: infra, hq: us, website: vectara.com, ats: greenhouse, slug: vectara, verified: true, jobs: 5, ai_jobs: 1}
   - {name: Jina AI, category: infra, hq: eu, website: jina.ai, ats: ashby, slug: jina-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
 
   # --- Applied AI products ---
   - {name: Harvey, category: applied, hq: us, ats: ashby, slug: harvey, verified: true, jobs: 323, ai_jobs: 8}
   - {name: Glean, category: applied, hq: us, ats: greenhouse, slug: gleanwork, verified: true, jobs: 131, ai_jobs: 23}
-  - {name: Writer, category: applied, hq: us, ats: ashby, slug: writer, verified: true, jobs: 49, ai_jobs: 24}
+  - {name: Writer, category: applied, hq: us, website: writer.com, ats: ashby, slug: writer, verified: true, jobs: 49, ai_jobs: 24}
   - {name: Jasper, category: applied, hq: us, ats: workable, slug: jasper, verified: true, jobs: 1, ai_jobs: 0}
-  - {name: Sierra, category: applied, hq: us, ats: ashby, slug: sierra, verified: true, jobs: 197, ai_jobs: 2}
+  - {name: Sierra, category: applied, hq: us, website: sierra.ai, ats: ashby, slug: sierra, verified: true, jobs: 197, ai_jobs: 2}
   - {name: Decagon, category: applied, hq: us, ats: ashby, slug: decagon, verified: true, jobs: 145, ai_jobs: 9}
-  - {name: Abridge, category: applied, hq: us, ats: ashby, slug: abridge, verified: true, jobs: 49, ai_jobs: 7}
+  - {name: Abridge, category: applied, hq: us, website: abridge.com, ats: ashby, slug: abridge, verified: true, jobs: 49, ai_jobs: 7}
   - {name: Hippocratic AI, category: applied, hq: us, website: hippocraticai.com, ats: ashby, slug: hippocraticai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Ambience Healthcare, category: applied, hq: us, ats: ashby, slug: ambiencehealthcare, verified: true, jobs: 19, ai_jobs: 4}
+  - {name: Ambience Healthcare, category: applied, hq: us, website: ambiencehealthcare.com, ats: ashby, slug: ambiencehealthcare, verified: true, jobs: 19, ai_jobs: 4}
   - {name: HeyGen, category: applied, hq: us, ats: greenhouse, slug: heygen, verified: true, jobs: 22, ai_jobs: 2}
   - {name: Captions, category: applied, hq: us, website: captions.ai, ats: ashby, slug: mirage, verified: true, jobs: 14, ai_jobs: 3, checked: '2026-10-18', careers: 'ashby: https://captions.ai'}
-  - {name: Descript, category: applied, hq: us, ats: greenhouse, slug: descript, verified: true, jobs: 11, ai_jobs: 2}
-  - {name: Tavus, category: applied, hq: us, ats: ashby, slug: tavus, verified: true, jobs: 16, ai_jobs: 4}
+  - {name: Descript, category: applied, hq: us, website: descript.com, ats: greenhouse, slug: descript, verified: true, jobs: 11, ai_jobs: 2}
+  - {name: Tavus, category: applied, hq: us, website: tavus.io, ats: ashby, slug: tavus, verified: true, jobs: 16, ai_jobs: 4}
   - {name: Moveworks, category: applied, hq: us, website: moveworks.com, ats: workable, slug: moveworks, verified: false, checked: '2026-11-03', careers: 'same board as ServiceNow (acquired?): https://www.moveworks.com/us/en/company/careers'}
-  - {name: Observe.AI, category: applied, hq: us, ats: greenhouse, slug: observeai, verified: true, jobs: 11, ai_jobs: 5}
+  - {name: Observe.AI, category: applied, hq: us, website: observe.ai, ats: greenhouse, slug: observeai, verified: true, jobs: 11, ai_jobs: 5}
   - {name: Gong, category: applied, hq: global, ats: greenhouse, slug: gongio, verified: true, jobs: 95, ai_jobs: 4}
-  - {name: Notion, category: applied, hq: us, ats: ashby, slug: notion, verified: true, jobs: 135, ai_jobs: 7}
+  - {name: Notion, category: applied, hq: us, website: notion.com, ats: ashby, slug: notion, verified: true, jobs: 135, ai_jobs: 7}
   - {name: Grammarly, category: applied, hq: global, website: grammarly.com, ats: workable, slug: grammarly, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Duolingo, category: applied, hq: us, ats: greenhouse, slug: duolingo, verified: true, jobs: 60, ai_jobs: 5}
-  - {name: Speak, category: applied, hq: us, ats: ashby, slug: speak, verified: true, jobs: 35, ai_jobs: 3}
-  - {name: PolyAI, category: applied, hq: uk, ats: greenhouse, slug: polyai, verified: true, jobs: 3, ai_jobs: 0}
+  - {name: Duolingo, category: applied, hq: us, website: duolingo.com, ats: greenhouse, slug: duolingo, verified: true, jobs: 60, ai_jobs: 5}
+  - {name: Speak, category: applied, hq: us, website: speak.com, ats: ashby, slug: speak, verified: true, jobs: 35, ai_jobs: 3}
+  - {name: PolyAI, category: applied, hq: uk, website: poly.ai, ats: greenhouse, slug: polyai, verified: true, jobs: 3, ai_jobs: 0}
   - {name: Parloa, category: applied, hq: eu, ats: greenhouse, slug: parloa, verified: true, jobs: 49, ai_jobs: 1}
-  - {name: DeepL, category: applied, hq: eu, ats: ashby, slug: deepl, verified: true, jobs: 18, ai_jobs: 0}
-  - {name: Photoroom, category: applied, hq: eu, ats: ashby, slug: photoroom, verified: true, jobs: 15, ai_jobs: 3}
+  - {name: DeepL, category: applied, hq: eu, website: deepl.com, ats: ashby, slug: deepl, verified: true, jobs: 18, ai_jobs: 0}
+  - {name: Photoroom, category: applied, hq: eu, website: photoroom.com, ats: ashby, slug: photoroom, verified: true, jobs: 15, ai_jobs: 3}
   - {name: Dust, category: applied, hq: eu, ats: ashby, slug: dust, verified: true, jobs: 23, ai_jobs: 1}
   - {name: Sana, category: applied, hq: eu, website: sanalabs.com, ats: workable, slug: sana, verified: false, checked: '2026-11-03', careers: 'same board as Workday (acquired?): https://sanalabs.com/careers'}
   - {name: Lovable, category: applied, hq: eu, ats: ashby, slug: lovable, verified: true, jobs: 78, ai_jobs: 11}
-  - {name: Granola, category: applied, hq: uk, ats: ashby, slug: granola, verified: true, jobs: 19, ai_jobs: 1}
+  - {name: Granola, category: applied, hq: uk, website: granola.ai, ats: ashby, slug: granola, verified: true, jobs: 19, ai_jobs: 1}
   - {name: Synthflow, category: applied, hq: eu, website: synthflow.ai, ats: ashby, slug: synthflow, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Wordware, category: applied, hq: us, website: wordware.ai, ats: ashby, slug: sauna.ai, verified: true, jobs: 11, ai_jobs: 1, checked: '2026-10-18', careers: 'ashby: https://www.wordware.ai/'}
   - {name: Lindy, category: applied, hq: us, website: lindy.ai, ats: careersite, slug: careers.lindy.ai, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-18', careers: 'careersite: https://careers.lindy.ai/jobs/707150-senior-engineering-manager'}
-  - {name: Relevance AI, category: applied, hq: global, ats: ashby, slug: relevanceai, verified: true, jobs: 1, ai_jobs: 1, checked: '2026-10-18'}
+  - {name: Relevance AI, category: applied, hq: global, website: relevanceai.com, ats: ashby, slug: relevanceai, verified: true, jobs: 1, ai_jobs: 1, checked: '2026-10-18'}
   - {name: Cresta, category: applied, hq: us, ats: greenhouse, slug: cresta, verified: true, jobs: 87, ai_jobs: 29}
   - {name: Rippling, category: applied, hq: global, website: rippling.com, ats: workable, slug: rippling, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Ramp, category: applied, hq: us, ats: ashby, slug: ramp, verified: true, jobs: 159, ai_jobs: 9}
-  - {name: Mercor, category: applied, hq: us, ats: ashby, slug: mercor, verified: true, jobs: 114, ai_jobs: 22}
+  - {name: Ramp, category: applied, hq: us, website: ramp.com, ats: ashby, slug: ramp, verified: true, jobs: 159, ai_jobs: 9}
+  - {name: Mercor, category: applied, hq: us, website: mercor.com, ats: ashby, slug: mercor, verified: true, jobs: 114, ai_jobs: 22}
   - {name: Turing, category: applied, hq: global, ats: greenhouse, slug: turing, verified: true, jobs: 30, ai_jobs: 17}
 
   # --- AI dev tools / coding agents ---
   - {name: Anysphere (Cursor), category: devtools, hq: us, ats: ashby, slug: cursor, verified: true, jobs: 132, ai_jobs: 13}
-  - {name: Cognition, category: devtools, hq: us, ats: ashby, slug: cognition, verified: true, jobs: 100, ai_jobs: 14}
+  - {name: Cognition, category: devtools, hq: us, website: cognition.com, ats: ashby, slug: cognition, verified: true, jobs: 100, ai_jobs: 14}
   - {name: Windsurf, category: devtools, hq: us, website: windsurf.com, ats: ashby, slug: windsurf, verified: false, checked: '2026-11-03', careers: 'same board as Cognition (acquired?): https://jobs.ashbyhq.com/cognition'}
-  - {name: Replit, category: devtools, hq: us, ats: ashby, slug: replit, verified: true, jobs: 70, ai_jobs: 3}
-  - {name: Sourcegraph, category: devtools, hq: global, ats: greenhouse, slug: sourcegraph91, verified: true, jobs: 10, ai_jobs: 1}
+  - {name: Replit, category: devtools, hq: us, website: replit.com, ats: ashby, slug: replit, verified: true, jobs: 70, ai_jobs: 3}
+  - {name: Sourcegraph, category: devtools, hq: global, website: sourcegraph.com, ats: greenhouse, slug: sourcegraph91, verified: true, jobs: 10, ai_jobs: 1}
   - {name: GitLab, category: devtools, hq: global, ats: greenhouse, slug: gitlab, verified: true, jobs: 210, ai_jobs: 14}
   - {name: Postman, category: devtools, hq: in, ats: workday, slug: postman/wd108/careers, verified: true, jobs: 34, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Warp, category: devtools, hq: us, ats: ashby, slug: warp, verified: true, jobs: 22, ai_jobs: 1}
@@ -160,26 +160,26 @@ companies:
   - {name: Bolt (StackBlitz), category: devtools, hq: us, ats: greenhouse, slug: stackblitz, verified: true, jobs: 7, ai_jobs: 2}
 
   # --- Robotics / autonomy ---
-  - {name: Figure AI, category: robotics, hq: us, ats: greenhouse, slug: figureai, verified: true, jobs: 85, ai_jobs: 9}
+  - {name: Figure AI, category: robotics, hq: us, website: figure.ai, ats: greenhouse, slug: figureai, verified: true, jobs: 85, ai_jobs: 9}
   - {name: Skild AI, category: robotics, hq: us, website: skild.ai, ats: workable, slug: skild-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: 1X Technologies, category: robotics, hq: eu, ats: ashby, slug: 1x, verified: true, jobs: 95, ai_jobs: 8}
   - {name: Wayve, category: robotics, hq: uk, ats: ashby, slug: wayve, verified: true, jobs: 138, ai_jobs: 37}
-  - {name: Waabi, category: robotics, hq: ca, ats: lever, slug: waabi, verified: true, jobs: 92, ai_jobs: 21}
+  - {name: Waabi, category: robotics, hq: ca, website: waabi.ai, ats: lever, slug: waabi, verified: true, jobs: 92, ai_jobs: 21}
   - {name: Nuro, category: robotics, hq: us, ats: greenhouse, slug: nuro, verified: true, jobs: 104, ai_jobs: 30}
   - {name: Aurora Innovation, category: robotics, hq: us, website: aurora.tech, ats: workable, slug: aurora-innovation, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Applied Intuition, category: robotics, hq: us, website: appliedintuition.com, ats: ashby, slug: applied, verified: true, jobs: 329, ai_jobs: 32, checked: '2026-10-18', careers: 'ashby: https://www.appliedintuition.com/careers'}
   - {name: Anduril, category: robotics, hq: us, ats: greenhouse, slug: andurilindustries, verified: true, jobs: 2457, ai_jobs: 57}
   - {name: Shield AI, category: robotics, hq: us, ats: lever, slug: shieldai, verified: true, jobs: 594, ai_jobs: 22}
   - {name: Helsing, category: robotics, hq: eu, ats: greenhouse, slug: helsing, verified: true, jobs: 167, ai_jobs: 12}
-  - {name: Palantir, category: robotics, hq: us, ats: lever, slug: palantir, verified: true, jobs: 318, ai_jobs: 3}
+  - {name: Palantir, category: robotics, hq: us, website: palantir.com, ats: lever, slug: palantir, verified: true, jobs: 318, ai_jobs: 3}
   - {name: Agility Robotics, category: robotics, hq: us, ats: greenhouse, slug: agilityrobotics, verified: true, jobs: 78, ai_jobs: 9}
   - {name: Covariant, category: robotics, hq: us, website: covariant.ai, ats: greenhouse, slug: covariant, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
 
   # --- India: AI-first and strong ML teams ---
-  - {name: Sarvam AI, category: india, hq: in, ats: ashby, slug: sarvam, verified: true, jobs: 59, ai_jobs: 10}
+  - {name: Sarvam AI, category: india, hq: in, website: sarvam.ai, ats: ashby, slug: sarvam, verified: true, jobs: 59, ai_jobs: 10}
   - {name: Krutrim, category: india, hq: in, website: olakrutrim.com, ats: lever, slug: krutrim, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Uniphore, category: india, hq: in, ats: workday, slug: uniphore/wd503/Uniphore, verified: true, jobs: 34, ai_jobs: 8, checked: '2026-10-06'}
-  - {name: Yellow.ai, category: india, hq: in, ats: zoho_recruit, slug: yellow.zohorecruit.in, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Uniphore, category: india, hq: in, website: uniphore.com, ats: workday, slug: uniphore/wd503/Uniphore, verified: true, jobs: 34, ai_jobs: 8, checked: '2026-10-06'}
+  - {name: Yellow.ai, category: india, hq: in, website: yellow.ai, ats: zoho_recruit, slug: yellow.zohorecruit.in, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Haptik, category: india, hq: in, website: haptik.ai, ats: careersite, slug: haptik.freshteam.com, verified: false, checked: '2026-11-03', careers: 'careersite: https://haptik.freshteam.com/jobs/68V3608ei65Q/devops-engineer-2'}
   - {name: Gupshup, category: india, hq: in, website: gupshup.io, ats: workable, slug: gupshup, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Vue.ai (Mad Street Den), category: india, hq: in, website: vue.ai, ats: darwinbox, slug: msd, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
@@ -188,20 +188,20 @@ companies:
   - {name: Wadhwani AI, category: india, hq: in, ats: zoho_recruit, slug: wadhwaniai.zohorecruit.in, verified: true, jobs: 25, ai_jobs: 3, checked: '2026-10-06'}
   - {name: Simplismart, category: india, hq: in, website: simplismart.ai, ats: ashby, slug: simplismart, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Atlan, category: india, hq: in, ats: ashby, slug: atlan, verified: true, jobs: 6, ai_jobs: 0}
-  - {name: Razorpay, category: india, hq: in, ats: greenhouse, slug: razorpaysoftwareprivatelimited, verified: true, jobs: 19, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Razorpay, category: india, hq: in, website: razorpay.com, ats: greenhouse, slug: razorpaysoftwareprivatelimited, verified: true, jobs: 19, ai_jobs: 1, checked: '2026-10-06'}
   - {name: CRED, category: india, hq: in, ats: lever, slug: cred, verified: true, jobs: 8, ai_jobs: 0}
   - {name: Meesho, category: india, hq: in, ats: lever, slug: meesho, verified: true, jobs: 59, ai_jobs: 7}
   - {name: PhonePe, category: india, hq: in, ats: smartrecruiters, slug: PHONEPELIMITED, verified: true, jobs: 90, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Groww, category: india, hq: in, ats: greenhouse, slug: groww, verified: true, jobs: 7, ai_jobs: 0}
   - {name: Zepto, category: india, hq: in, website: zeptonow.com, ats: darwinbox, slug: zepto, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: InMobi, category: india, hq: in, ats: greenhouse, slug: inmobi, verified: true, jobs: 72, ai_jobs: 9}
-  - {name: Glance, category: india, hq: in, ats: greenhouse, slug: glance, verified: true, jobs: 37, ai_jobs: 7}
+  - {name: Glance, category: india, hq: in, website: glance.com, ats: greenhouse, slug: glance, verified: true, jobs: 37, ai_jobs: 7}
   - {name: ShareChat, category: india, hq: in, website: sharechat.com, ats: lever, slug: sharechat, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Dream11, category: india, hq: in, website: dream11.com, ats: lever, slug: dream11, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
-  - {name: Unacademy, category: india, hq: in, ats: smartrecruiters, slug: unacademy, verified: true, jobs: 3, ai_jobs: 0}
+  - {name: Unacademy, category: india, hq: in, website: unacademy.com, ats: smartrecruiters, slug: unacademy, verified: true, jobs: 3, ai_jobs: 0}
   - {name: upGrad, category: india, hq: in, website: upgrad.com, ats: lever, slug: upgrad, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Freshworks, category: india, hq: in, ats: smartrecruiters, slug: freshworks, verified: true, jobs: 100, ai_jobs: 6}
-  - {name: BrowserStack, category: india, hq: in, ats: workday, slug: browserstack/wd3/External, verified: true, jobs: 32, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: BrowserStack, category: india, hq: in, website: browserstack.com, ats: workday, slug: browserstack/wd3/External, verified: true, jobs: 32, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Hasura, category: india, hq: in, website: hasura.io, ats: lever, slug: hasura, verified: false, checked: '2026-11-03', careers: 'on another company''s site (acquired?): https://promptql.io/careers'}
   - {name: Juspay, category: india, hq: in, website: juspay.in, ats: lever, slug: juspay, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Zeta, category: india, hq: in, ats: lever, slug: zeta, verified: true, jobs: 25, ai_jobs: 1}
@@ -219,13 +219,13 @@ companies:
   - {name: Verloop.io, category: india, hq: in, website: verloop.io, ats: lever, slug: verloop, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
   - {name: Neysa, category: india, hq: in, website: neysa.ai, ats: lever, slug: neysa, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Setu, category: india, hq: in, website: setu.co, ats: lever, slug: setu, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Fractal Analytics, category: india, hq: in, ats: workday, slug: fractal/wd1/Careers, verified: true, jobs: 100, ai_jobs: 24, checked: '2026-10-06'}
+  - {name: Fractal Analytics, category: india, hq: in, website: fractal.ai, ats: workday, slug: fractal/wd1/Careers, verified: true, jobs: 100, ai_jobs: 24, checked: '2026-10-06'}
   - {name: Tredence, category: india, hq: in, website: tredence.com, ats: workable, slug: tredence, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Sigmoid, category: india, hq: in, ats: greenhouse, slug: sigmoid, verified: true, jobs: 36, ai_jobs: 4}
   - {name: Gramener, category: india, hq: in, website: gramener.com, ats: darwinbox, slug: straive.darwinbox.com, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
   - {name: Ema, category: india, hq: us, ats: ashby, slug: ema, verified: true, jobs: 41, ai_jobs: 10}
   - {name: Lyzr AI, category: india, hq: in, ats: ashby, slug: lyzr, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
-  - {name: Smallest.ai, category: india, hq: in, ats: ashby, slug: smallest, verified: true, jobs: 2, ai_jobs: 0}
+  - {name: Smallest.ai, category: india, hq: in, website: smallest.ai, ats: ashby, slug: smallest, verified: true, jobs: 2, ai_jobs: 0}
   - {name: Gnani.ai, category: india, hq: in, website: gnani.ai, ats: lever, slug: gnani, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Nference, category: india, hq: in, website: nference.com, ats: keka, slug: nference, verified: false, checked: '2026-11-03', careers: 'keka: https://nference.com/careers'}
   - {name: Swiggy, category: india, hq: in, ats: smartrecruiters, slug: swiggy, verified: true, jobs: 100, ai_jobs: 0}
@@ -237,79 +237,79 @@ companies:
   - {name: Spinny, category: india, hq: in, website: spinny.com, ats: darwinbox, slug: spinzone, verified: false, checked: '2026-11-03', careers: 'darwinbox: https://www.spinny.com/careers/'}
 
   # --- YC AI startups ---
-  - {name: Langfuse, category: yc, hq: eu, ats: ashby, slug: langfuse, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
+  - {name: Langfuse, category: yc, hq: eu, website: langfuse.com, ats: ashby, slug: langfuse, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
   - {name: Helicone, category: yc, hq: us, website: www.helicone.ai, ats: ashby, slug: helicone, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Mem0, category: yc, hq: us, ats: ashby, slug: mem0, verified: true, jobs: 1, ai_jobs: 0}
-  - {name: Vapi, category: yc, hq: us, ats: ashby, slug: vapi, verified: true, jobs: 26, ai_jobs: 1}
+  - {name: Mem0, category: yc, hq: us, website: mem0.ai, ats: ashby, slug: mem0, verified: true, jobs: 1, ai_jobs: 0}
+  - {name: Vapi, category: yc, hq: us, website: vapi.ai, ats: ashby, slug: vapi, verified: true, jobs: 26, ai_jobs: 1}
   - {name: Bland AI, category: yc, hq: us, ats: ashby, slug: bland, verified: true, jobs: 19, ai_jobs: 2}
-  - {name: Retell AI, category: yc, hq: us, ats: ashby, slug: retell-ai, verified: true, jobs: 25, ai_jobs: 1}
-  - {name: Browserbase, category: yc, hq: us, ats: ashby, slug: browserbase, verified: true, jobs: 9, ai_jobs: 0}
-  - {name: Firecrawl, category: yc, hq: us, ats: ashby, slug: firecrawl, verified: true, jobs: 34, ai_jobs: 4}
+  - {name: Retell AI, category: yc, hq: us, website: retellai.com, ats: ashby, slug: retell-ai, verified: true, jobs: 25, ai_jobs: 1}
+  - {name: Browserbase, category: yc, hq: us, website: browserbase.com, ats: ashby, slug: browserbase, verified: true, jobs: 9, ai_jobs: 0}
+  - {name: Firecrawl, category: yc, hq: us, website: firecrawl.dev, ats: ashby, slug: firecrawl, verified: true, jobs: 34, ai_jobs: 4}
   - {name: E2B, category: yc, hq: us, ats: ashby, slug: e2b, verified: true, jobs: 12, ai_jobs: 0}
   - {name: Reducto, category: yc, hq: us, ats: ashby, slug: reducto, verified: true, jobs: 43, ai_jobs: 4}
-  - {name: Greptile, category: yc, hq: us, ats: ashby, slug: greptile, verified: true, jobs: 17, ai_jobs: 1}
+  - {name: Greptile, category: yc, hq: us, website: greptile.com, ats: ashby, slug: greptile, verified: true, jobs: 17, ai_jobs: 1}
   - {name: Trigger.dev, category: yc, hq: uk, ats: ashby, slug: triggerdev, verified: true, jobs: 6, ai_jobs: 0}
   - {name: PostHog, category: yc, hq: global, ats: ashby, slug: posthog, verified: true, jobs: 8, ai_jobs: 1}
-  - {name: Supabase, category: yc, hq: global, ats: ashby, slug: supabase, verified: true, jobs: 49, ai_jobs: 2}
+  - {name: Supabase, category: yc, hq: global, website: supabase.com, ats: ashby, slug: supabase, verified: true, jobs: 49, ai_jobs: 2}
   - {name: Hex, category: yc, hq: us, ats: ashby, slug: hex, verified: true, jobs: 36, ai_jobs: 3}
   - {name: Pylon, category: yc, hq: us, ats: ashby, slug: pylon, verified: true, jobs: 18, ai_jobs: 0}
-  - {name: Tennr, category: yc, hq: us, ats: ashby, slug: tennr, verified: true, jobs: 27, ai_jobs: 1}
-  - {name: Extend, category: yc, hq: us, ats: ashby, slug: extend, verified: true, jobs: 8, ai_jobs: 2}
-  - {name: Composio, category: yc, hq: in, ats: ashby, slug: composio, verified: true, jobs: 29, ai_jobs: 4}
+  - {name: Tennr, category: yc, hq: us, website: tennr.com, ats: ashby, slug: tennr, verified: true, jobs: 27, ai_jobs: 1}
+  - {name: Extend, category: yc, hq: us, website: extend.ai, ats: ashby, slug: extend, verified: true, jobs: 8, ai_jobs: 2}
+  - {name: Composio, category: yc, hq: in, website: composio.dev, ats: ashby, slug: composio, verified: true, jobs: 29, ai_jobs: 4}
   - {name: Giga ML, category: yc, hq: us, ats: ashby, slug: gigaml, verified: true, jobs: 32, ai_jobs: 0}
   - {name: Codegen, category: yc, hq: us, ats: ashby, slug: codegen, verified: false, checked: '2026-11-03'}
   - {name: Laminar, category: yc, hq: us, website: laminar.com, ats: ashby, slug: laminar-jobs, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://www.laminar.com/careers'}
   - {name: Morph, category: yc, hq: us, ats: greenhouse, slug: morph, verified: true, jobs: 1, ai_jobs: 1, checked: '2026-10-18'}
-  - {name: Infisical, category: yc, hq: us, ats: ashby, slug: infisical, verified: true, jobs: 10, ai_jobs: 0}
+  - {name: Infisical, category: yc, hq: us, website: infisical.com, ats: ashby, slug: infisical, verified: true, jobs: 10, ai_jobs: 0}
   - {name: Truewind, category: yc, hq: us, website: www.trytruewind.com, ats: ashby, slug: truewind, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Fini, category: yc, hq: us, website: www.usefini.com, ats: ashby, slug: fini, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Cal.com, category: yc, hq: global, ats: ashby, slug: cal, verified: false, checked: '2026-11-03'}
   - {name: Openlayer, category: yc, hq: us, website: openlayer.com, ats: ashby, slug: openlayer, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Lilac, category: yc, hq: us, website: getlilac.com, ats: ashby, slug: lilac, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Guardrails AI, category: yc, hq: us, ats: ashby, slug: guardrails, verified: false, checked: '2026-11-03'}
-  - {name: Credal, category: yc, hq: us, ats: ashby, slug: credal, verified: true, jobs: 5, ai_jobs: 0}
-  - {name: Hyperbound, category: yc, hq: us, ats: ashby, slug: hyperbound, verified: true, jobs: 7, ai_jobs: 1}
+  - {name: Credal, category: yc, hq: us, website: credal.ai, ats: ashby, slug: credal, verified: true, jobs: 5, ai_jobs: 0}
+  - {name: Hyperbound, category: yc, hq: us, website: hyperbound.ai, ats: ashby, slug: hyperbound, verified: true, jobs: 7, ai_jobs: 1}
   - {name: Glimpse, category: yc, hq: us, ats: ashby, slug: glimpse, verified: true, jobs: 9, ai_jobs: 0}
   - {name: Sweep, category: yc, hq: us, ats: ashby, slug: sweep, verified: true, jobs: 7, ai_jobs: 0}
   - {name: Kobalt Labs, category: yc, hq: us, website: www.kobaltlabs.com, ats: ashby, slug: Kobalt%20Labs, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://www.kobaltlabs.com/'}
-  - {name: Arcade AI, category: yc, hq: us, ats: ashby, slug: arcade, verified: true, jobs: 4, ai_jobs: 0}
+  - {name: Arcade AI, category: yc, hq: us, website: arcade.ai, ats: ashby, slug: arcade, verified: true, jobs: 4, ai_jobs: 0}
   - {name: Martian, category: yc, hq: us, ats: ashby, slug: martian, verified: false, checked: '2026-11-03'}
   - {name: Outerport, category: yc, hq: us, website: outerport.com, ats: ashby, slug: outerport, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Exa, category: yc, hq: us, ats: ashby, slug: exa, verified: true, jobs: 57, ai_jobs: 6}
+  - {name: Exa, category: yc, hq: us, website: exa.ai, ats: ashby, slug: exa, verified: true, jobs: 57, ai_jobs: 6}
   - {name: Tensorlake, category: yc, hq: us, ats: ashby, slug: tensorlake, verified: false, checked: '2026-11-03'}
   - {name: Pipecat (Daily), category: yc, hq: us, ats: ashby, slug: daily, verified: false, checked: '2026-11-03'}
-  - {name: Deepnote, category: yc, hq: eu, ats: ashby, slug: deepnote, verified: true, jobs: 3, ai_jobs: 0}
-  - {name: Mintlify, category: yc, hq: us, ats: ashby, slug: mintlify, verified: true, jobs: 13, ai_jobs: 2}
+  - {name: Deepnote, category: yc, hq: eu, website: deepnote.com, ats: ashby, slug: deepnote, verified: true, jobs: 3, ai_jobs: 0}
+  - {name: Mintlify, category: yc, hq: us, website: mintlify.com, ats: ashby, slug: mintlify, verified: true, jobs: 13, ai_jobs: 2}
   - {name: Resend, category: yc, hq: us, ats: ashby, slug: resend, verified: true, jobs: 10, ai_jobs: 0}
   - {name: Vellum, category: yc, hq: us, website: www.vellum.ai, ats: ashby, slug: vellum, verified: false, checked: '2026-11-03', careers: 'ashby: https://www.vellum.ai/'}
   - {name: Humanloop, category: yc, hq: uk, website: humanloop.com, ats: ashby, slug: humanloop, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Trieve, category: yc, hq: us, website: trieve.ai, ats: ashby, slug: trieve, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
   - {name: Hamming AI, category: yc, hq: us, website: hamming.ai, ats: ashby, slug: Hamming%20AI, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://hamming.ai/careers'}
-  - {name: Opusclip, category: yc, hq: us, ats: ashby, slug: opusclip, verified: true, jobs: 9, ai_jobs: 6}
+  - {name: Opusclip, category: yc, hq: us, website: opus.pro, ats: ashby, slug: opusclip, verified: true, jobs: 9, ai_jobs: 6}
   - {name: Medplum, category: yc, hq: us, website: www.medplum.com, ats: ashby, slug: medplum, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Assembled, category: yc, hq: us, ats: ashby, slug: assembled, verified: false, checked: '2026-11-03'}
   - {name: Persana AI, category: yc, hq: us, website: www.persana.ai, ats: ashby, slug: persana, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Openmart, category: yc, hq: us, website: www.openmart.com, ats: ashby, slug: openmart, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Simple AI, category: yc, hq: us, ats: ashby, slug: simple-ai, verified: true, jobs: 9, ai_jobs: 1}
+  - {name: Simple AI, category: yc, hq: us, website: simple.ai, ats: ashby, slug: simple-ai, verified: true, jobs: 9, ai_jobs: 1}
 
   # --- More India (careers systems surveyed 2026-10-06; see docs/decisions.md) ---
   - {name: Jupiter, category: india, hq: in, ats: keka, slug: jupiter/b5279857-cf81-4dde-a215-fc48957ee2b5, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Signzy, category: india, hq: in, website: signzy.com, ats: keka, slug: signzy, verified: false, checked: '2026-11-03', careers: 'keka: https://www.signzy.com/careers'}
   - {name: Karya, category: india, hq: in, ats: greenhouse, slug: karya, verified: true, jobs: 16, ai_jobs: 1, checked: '2026-10-06'}
-  - {name: HackerRank, category: india, hq: in, ats: greenhouse, slug: hackerrank, verified: true, jobs: 28, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: HackerRank, category: india, hq: in, website: hackerrank.com, ats: greenhouse, slug: hackerrank, verified: true, jobs: 28, ai_jobs: 2, checked: '2026-10-06'}
   - {name: DoorDash India, category: india, hq: in, ats: greenhouse, slug: doordashindia, verified: true, jobs: 19, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Paytm, category: india, hq: in, ats: lever, slug: paytm, verified: true, jobs: 175, ai_jobs: 5, checked: '2026-10-06'}
-  - {name: Hevo Data, category: india, hq: in, ats: lever, slug: hevodata, verified: true, jobs: 52, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: Paytm, category: india, hq: in, website: paytm.com, ats: lever, slug: paytm, verified: true, jobs: 175, ai_jobs: 5, checked: '2026-10-06'}
+  - {name: Hevo Data, category: india, hq: in, website: hevodata.com, ats: lever, slug: hevodata, verified: true, jobs: 52, ai_jobs: 2, checked: '2026-10-06'}
   - {name: Level AI, category: india, hq: in, ats: lever, slug: levelai, verified: true, jobs: 19, ai_jobs: 6, checked: '2026-10-06'}
   - {name: Netomi, category: india, hq: in, ats: lever, slug: netomi, verified: true, jobs: 23, ai_jobs: 3, checked: '2026-10-06'}
   - {name: Dozee, category: india, hq: in, ats: lever, slug: dozee, verified: true, jobs: 20, ai_jobs: 0, checked: '2026-10-06'}
   - {name: 100ms, category: india, hq: in, ats: lever, slug: 100ms, verified: true, jobs: 9, ai_jobs: 6, checked: '2026-10-06'}
-  - {name: Stable Money, category: india, hq: in, ats: lever, slug: stable-money1, verified: true, jobs: 17, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Gushwork, category: india, hq: in, ats: lever, slug: gushwork, verified: true, jobs: 13, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: AiPrise, category: india, hq: in, ats: ashby, slug: aiprise, verified: true, jobs: 16, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Altimate AI, category: india, hq: in, ats: ashby, slug: altimate, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Sprinklr, category: india, hq: in, ats: workday, slug: sprinklr/wd1/careers, verified: true, jobs: 70, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Quantiphi, category: india, hq: in, ats: workday, slug: quantiphi/wd1/Careers_at_Quantiphi, verified: true, jobs: 87, ai_jobs: 18, checked: '2026-10-06'}
+  - {name: Stable Money, category: india, hq: in, website: stablemoney.ai, ats: lever, slug: stable-money1, verified: true, jobs: 17, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Gushwork, category: india, hq: in, website: gushwork.com, ats: lever, slug: gushwork, verified: true, jobs: 13, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: AiPrise, category: india, hq: in, website: aiprise.com, ats: ashby, slug: aiprise, verified: true, jobs: 16, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Altimate AI, category: india, hq: in, website: altimate.ai, ats: ashby, slug: altimate, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Sprinklr, category: india, hq: in, website: sprinklr.com, ats: workday, slug: sprinklr/wd1/careers, verified: true, jobs: 70, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Quantiphi, category: india, hq: in, website: quantiphi.com, ats: workday, slug: quantiphi/wd1/Careers_at_Quantiphi, verified: true, jobs: 87, ai_jobs: 18, checked: '2026-10-06'}
   - {name: Games24x7, category: india, hq: in, website: games24x7.com, ats: darwinbox, slug: games24x7, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: LatentView, category: india, hq: in, website: latentview.com, ats: darwinbox, slug: latentview, verified: false, checked: '2026-11-03', careers: 'darwinbox: https://www.latentview.com/career/'}
   - {name: Perfios, category: india, hq: in, website: perfios.com, ats: darwinbox, slug: perfios, verified: false, checked: '2026-11-03', careers: 'darwinbox: https://perfios.ai/careers/'}
@@ -318,7 +318,7 @@ companies:
   # --- MNCs and global companies hiring in India (india_only: only India + remote roles fetched; see docs/decisions.md) ---
   - {name: NVIDIA, category: mnc, hq: us, ats: workday, slug: nvidia/wd5/NVIDIAExternalCareerSite, india_only: true, verified: true, jobs: 100, ai_jobs: 20, checked: '2026-10-06'}
   - {name: Adobe, category: mnc, hq: us, ats: workday, slug: adobe/wd5/external_experienced, india_only: true, verified: true, jobs: 100, ai_jobs: 19, checked: '2026-10-06'}
-  - {name: Salesforce, category: mnc, hq: us, ats: workday, slug: salesforce/wd12/External_Career_Site, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Salesforce, category: mnc, hq: us, website: salesforce.com, ats: workday, slug: salesforce/wd12/External_Career_Site, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-10-06'}
   - {name: Intel, category: mnc, hq: us, ats: workday, slug: intel/wd1/External, india_only: true, verified: true, jobs: 100, ai_jobs: 9, checked: '2026-10-06'}
   - {name: Walmart Global Tech, category: mnc, hq: us, ats: workday, slug: walmart/wd504/WalmartExternal, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-06'}
   - {name: Mastercard, category: mnc, hq: us, ats: workday, slug: mastercard/wd1/CorporateCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 8, checked: '2026-10-06'}
@@ -329,41 +329,41 @@ companies:
   - {name: Visa, category: mnc, hq: us, ats: workday, slug: visa/wd5/Visa, india_only: true, verified: true, jobs: 100, ai_jobs: 11, checked: '2026-10-06'}
   - {name: Visa (Early Careers), category: mnc, hq: us, ats: workday, slug: visa/wd5/Visa_Early_Careers, india_only: true, verified: true, jobs: 24, ai_jobs: 5, checked: '2026-10-06'}
   - {name: Workday, category: mnc, hq: us, ats: workday, slug: workday/wd5/Workday, india_only: true, verified: true, jobs: 100, ai_jobs: 13, checked: '2026-10-06'}
-  - {name: Wells Fargo, category: mnc, hq: us, ats: workday, slug: wf/wd1/WellsFargoJobs, india_only: true, verified: true, jobs: 100, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Broadcom, category: mnc, hq: us, ats: workday, slug: broadcom/wd1/External_Career, india_only: true, verified: true, jobs: 365, ai_jobs: 8, checked: '2026-10-06'}
+  - {name: Wells Fargo, category: mnc, hq: us, website: wellsfargo.com, ats: workday, slug: wf/wd1/WellsFargoJobs, india_only: true, verified: true, jobs: 100, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Broadcom, category: mnc, hq: us, website: broadcom.com, ats: workday, slug: broadcom/wd1/External_Career, india_only: true, verified: true, jobs: 365, ai_jobs: 8, checked: '2026-10-06'}
   - {name: Autodesk, category: mnc, hq: us, ats: workday, slug: autodesk/wd1/Ext, india_only: true, verified: true, jobs: 100, ai_jobs: 11, checked: '2026-10-06'}
-  - {name: CrowdStrike, category: mnc, hq: us, ats: workday, slug: crowdstrike/wd5/crowdstrikecareers, india_only: true, verified: true, jobs: 100, ai_jobs: 13, checked: '2026-10-06'}
+  - {name: CrowdStrike, category: mnc, hq: us, website: crowdstrike.com, ats: workday, slug: crowdstrike/wd5/crowdstrikecareers, india_only: true, verified: true, jobs: 100, ai_jobs: 13, checked: '2026-10-06'}
   - {name: Red Hat, category: mnc, hq: us, ats: workday, slug: redhat/wd5/Jobs, india_only: true, verified: true, jobs: 100, ai_jobs: 7, checked: '2026-10-06'}
   - {name: Analog Devices, category: mnc, hq: us, ats: workday, slug: analogdevices/wd1/External, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-06'}
   - {name: Cadence, category: mnc, hq: us, ats: workday, slug: cadence/wd1/External_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 12, checked: '2026-10-06'}
   - {name: Micron, category: mnc, hq: us, ats: workday, slug: micron/wd1/External, india_only: true, verified: true, jobs: 3118, ai_jobs: 142, checked: '2026-10-06'}
   - {name: Expedia, category: mnc, hq: us, ats: workday, slug: expedia/wd108/search, india_only: true, verified: true, jobs: 163, ai_jobs: 19, checked: '2026-10-06'}
   - {name: Samsung, category: mnc, hq: global, ats: workday, slug: sec/wd3/Samsung_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-10-06'}
-  - {name: Thomson Reuters, category: mnc, hq: global, ats: workday, slug: thomsonreuters/wd5/External_Career_Site, india_only: true, verified: true, jobs: 100, ai_jobs: 10, checked: '2026-10-06'}
-  - {name: BlackRock, category: mnc, hq: us, ats: workday, slug: blackrock/wd1/BlackRock_Professional, india_only: true, verified: true, jobs: 308, ai_jobs: 19, checked: '2026-10-06'}
+  - {name: Thomson Reuters, category: mnc, hq: global, website: thomsonreuters.com, ats: workday, slug: thomsonreuters/wd5/External_Career_Site, india_only: true, verified: true, jobs: 100, ai_jobs: 10, checked: '2026-10-06'}
+  - {name: BlackRock, category: mnc, hq: us, website: blackrock.com, ats: workday, slug: blackrock/wd1/BlackRock_Professional, india_only: true, verified: true, jobs: 308, ai_jobs: 19, checked: '2026-10-06'}
   - {name: Applied Materials, category: mnc, hq: us, ats: workday, slug: amat/wd1/External, india_only: true, verified: true, jobs: 100, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Qualys, category: mnc, hq: us, ats: workday, slug: qualys/wd5/Careers, india_only: true, verified: true, jobs: 157, ai_jobs: 19, checked: '2026-10-06'}
-  - {name: Microchip, category: mnc, hq: us, ats: workday, slug: microchiphr/wd5/External, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Microchip, category: mnc, hq: us, website: microchip.ai, ats: workday, slug: microchiphr/wd5/External, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-10-06'}
   - {name: RTX, category: mnc, hq: us, ats: workday, slug: globalhr/wd5/REC_RTX_Ext_Gateway, india_only: true, verified: true, jobs: 4824, ai_jobs: 42, checked: '2026-10-06'}
   - {name: Stripe, category: mnc, hq: us, ats: greenhouse, slug: stripe, india_only: true, verified: true, jobs: 719, ai_jobs: 41, checked: '2026-10-06'}
-  - {name: Coinbase, category: mnc, hq: us, ats: greenhouse, slug: coinbase, india_only: true, verified: true, jobs: 226, ai_jobs: 15, checked: '2026-10-06'}
+  - {name: Coinbase, category: mnc, hq: us, website: coinbase.com, ats: greenhouse, slug: coinbase, india_only: true, verified: true, jobs: 226, ai_jobs: 15, checked: '2026-10-06'}
   - {name: Rubrik, category: mnc, hq: us, ats: greenhouse, slug: rubrik, india_only: true, verified: true, jobs: 131, ai_jobs: 5, checked: '2026-10-06'}
   - {name: Okta, category: mnc, hq: us, ats: greenhouse, slug: okta, india_only: true, verified: true, jobs: 368, ai_jobs: 14, checked: '2026-10-06'}
   - {name: Twilio, category: mnc, hq: us, ats: greenhouse, slug: twilio, india_only: true, verified: true, jobs: 132, ai_jobs: 3, checked: '2026-10-06'}
   - {name: MongoDB, category: mnc, hq: us, ats: greenhouse, slug: mongodb, india_only: true, verified: true, jobs: 394, ai_jobs: 17, checked: '2026-10-06'}
   - {name: Elastic, category: mnc, hq: us, ats: greenhouse, slug: elastic, india_only: true, verified: true, jobs: 399, ai_jobs: 23, checked: '2026-10-06'}
   - {name: Airbnb, category: mnc, hq: us, ats: greenhouse, slug: airbnb, india_only: true, verified: true, jobs: 151, ai_jobs: 20, checked: '2026-10-06'}
-  - {name: Thoughtworks, category: mnc, hq: global, ats: greenhouse, slug: thoughtworks, india_only: true, verified: true, jobs: 34, ai_jobs: 5, checked: '2026-10-06'}
+  - {name: Thoughtworks, category: mnc, hq: global, website: thoughtworks.com, ats: greenhouse, slug: thoughtworks, india_only: true, verified: true, jobs: 34, ai_jobs: 5, checked: '2026-10-06'}
   - {name: Zscaler, category: mnc, hq: us, ats: greenhouse, slug: zscaler, india_only: true, verified: true, jobs: 366, ai_jobs: 22, checked: '2026-10-06'}
   - {name: Pure Storage, category: mnc, hq: us, ats: greenhouse, slug: purestorage, india_only: true, verified: true, jobs: 353, ai_jobs: 16, checked: '2026-10-06'}
   - {name: Druva, category: mnc, hq: in, ats: greenhouse, slug: druva, india_only: true, verified: true, jobs: 35, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Snowflake, category: mnc, hq: us, ats: ashby, slug: snowflake, india_only: true, verified: true, jobs: 351, ai_jobs: 47, checked: '2026-10-06'}
+  - {name: Snowflake, category: mnc, hq: us, website: snowflake.com, ats: ashby, slug: snowflake, india_only: true, verified: true, jobs: 351, ai_jobs: 47, checked: '2026-10-06'}
   - {name: ServiceNow, category: mnc, hq: us, ats: smartrecruiters, slug: ServiceNow, india_only: true, verified: true, jobs: 100, ai_jobs: 8, checked: '2026-10-06'}
   - {name: Bosch, category: mnc, hq: eu, ats: smartrecruiters, slug: BoschGroup, india_only: true, verified: true, jobs: 100, ai_jobs: 5, checked: '2026-10-06'}
-  - {name: Microsoft, category: mnc, hq: us, ats: eightfold, slug: apply.careers.microsoft.com/microsoft.com, india_only: true, verified: true, jobs: 250, ai_jobs: 42, checked: '2026-10-06'}
-  - {name: Qualcomm, category: mnc, hq: us, ats: eightfold, slug: careers.qualcomm.com/qualcomm.com, india_only: true, verified: true, jobs: 592, ai_jobs: 51, checked: '2026-10-06'}
+  - {name: Microsoft, category: mnc, hq: us, website: microsoft.com, ats: eightfold, slug: apply.careers.microsoft.com/microsoft.com, india_only: true, verified: true, jobs: 250, ai_jobs: 42, checked: '2026-10-06'}
+  - {name: Qualcomm, category: mnc, hq: us, website: qualcomm.com, ats: eightfold, slug: careers.qualcomm.com/qualcomm.com, india_only: true, verified: true, jobs: 592, ai_jobs: 51, checked: '2026-10-06'}
   - {name: PayPal, category: mnc, hq: us, ats: eightfold, slug: paypal.eightfold.ai/paypal.com, india_only: true, verified: true, jobs: 10, ai_jobs: 1, checked: '2026-10-06'}
-  - {name: Morgan Stanley, category: mnc, hq: us, ats: eightfold, slug: morganstanley.eightfold.ai/morganstanley.com, india_only: true, verified: true, jobs: 115, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Morgan Stanley, category: mnc, hq: us, website: morganstanley.com, ats: eightfold, slug: morganstanley.eightfold.ai/morganstanley.com, india_only: true, verified: true, jobs: 115, ai_jobs: 3, checked: '2026-10-06'}
   - {name: NetApp, category: mnc, hq: us, ats: eightfold, slug: netapp.eightfold.ai/netapp.com, india_only: true, verified: true, jobs: 20, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Netflix, category: mnc, hq: us, ats: eightfold, slug: explore.jobs.netflix.net/netflix.com, india_only: true, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Amazon, category: mnc, hq: us, ats: amazon, slug: IND, india_only: true, verified: true, jobs: 2294, ai_jobs: 153, checked: '2026-10-06'}
@@ -475,21 +475,21 @@ companies:
   - {name: BigBasket, category: india, hq: in, website: bigbasket.com, ats: darwinbox, slug: bigbasket, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
   - {name: Delhivery, category: india, hq: in, website: delhivery.com, ats: darwinbox, slug: delhivery, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Rapido, category: india, hq: in, website: rapido.bike, ats: darwinbox, slug: rapido, verified: false, checked: '2026-11-03', careers: 'darwinbox: https://rapido.bike/Home'}
-  - {name: Tiger Analytics, category: consulting, hq: us, ats: workable, slug: tiger-analytics, india_only: true, verified: true, jobs: 218, ai_jobs: 80, checked: '2026-10-07'}
+  - {name: Tiger Analytics, category: consulting, hq: us, website: tigeranalytics.com, ats: workable, slug: tiger-analytics, india_only: true, verified: true, jobs: 218, ai_jobs: 80, checked: '2026-10-07'}
   - {name: Accenture, category: consulting, hq: global, ats: workday, slug: accenture/wd103/AccentureCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 9, checked: '2026-10-07'}
   - {name: PwC India (campus), category: consulting, hq: global, ats: workday, slug: pwc/wd3/Global_Campus_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-07'}
   - {name: Genpact, category: consulting, hq: global, ats: workday, slug: genpact/wd108/External_Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 2, checked: '2026-10-07'}
-  - {name: Cognizant, category: consulting, hq: us, ats: workday, slug: mycts/wd1/CTS, india_only: true, verified: true, jobs: 11, ai_jobs: 0, checked: '2026-10-07'}
+  - {name: Cognizant, category: consulting, hq: us, website: cognizant.com, ats: workday, slug: mycts/wd1/CTS, india_only: true, verified: true, jobs: 11, ai_jobs: 0, checked: '2026-10-07'}
   - {name: Publicis Sapient, category: consulting, hq: global, website: publicissapient.com, ats: smartrecruiters, slug: PublicisGroupe, india_only: true, verified: false, checked: '2026-11-03', careers: 'icims (no adapter yet): https://careers.publicissapient.com/early-career'}
 
   # --- Company career sites (sources/careersite.py, sources/oracle.py; checked 2026-10-08, see docs/decisions.md) ---
   - {name: EY, category: consulting, hq: global, ats: careersite, slug: careers.ey.com, india_only: true, verified: true, jobs: 8808, ai_jobs: 454, checked: '2026-10-08'}
-  - {name: Capgemini, category: consulting, hq: global, ats: careersite, slug: careers.capgemini.com, india_only: true, verified: true, jobs: 6522, ai_jobs: 507, checked: '2026-10-08'}
+  - {name: Capgemini, category: consulting, hq: global, website: capgemini.com, ats: careersite, slug: careers.capgemini.com, india_only: true, verified: true, jobs: 6522, ai_jobs: 507, checked: '2026-10-08'}
   - {name: HCLTech, category: consulting, hq: in, ats: careersite, slug: careers.hcltech.com, india_only: true, verified: true, jobs: 9161, ai_jobs: 99, checked: '2026-10-08'}
   - {name: Wipro, category: consulting, hq: in, ats: careersite, slug: careers.wipro.com, india_only: true, verified: true, jobs: 5782, ai_jobs: 136, checked: '2026-10-08'}
   - {name: ZS Associates, category: consulting, hq: us, ats: careersite, slug: jobs.zs.com, india_only: true, verified: true, jobs: 291, ai_jobs: 0, checked: '2026-10-08'}
   - {name: KPMG India, category: consulting, hq: in, ats: oracle, slug: ejgk.fa.em2.oraclecloud.com/CX_1, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-08'}
-  - {name: KPMG Global Services, category: consulting, hq: in, ats: oracle, slug: ejgk.fa.em2.oraclecloud.com/CX_3, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-08'}
+  - {name: KPMG Global Services, category: consulting, hq: in, website: kpmgglobalservices.com, ats: oracle, slug: ejgk.fa.em2.oraclecloud.com/CX_3, india_only: true, verified: true, jobs: 100, ai_jobs: 4, checked: '2026-10-08'}
   - {name: EXL, category: consulting, hq: us, ats: oracle, slug: fa-ewjt-saasfaprod1.fa.ocs.oraclecloud.com/CX_2, india_only: true, verified: true, jobs: 100, ai_jobs: 5, checked: '2026-10-08'}
 
   # --- Community hiring threads (one entry covers every company posting there) ---
@@ -499,7 +499,7 @@ companies:
   - {name: Hub, category: yc, hq: us, website: hub.xyz, ats: ashby, slug: hub, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Ressl AI, category: yc, hq: in, website: ressl.ai, ats: ashby, slug: ressl-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Revion, category: yc, hq: us, website: revion.inc, ats: careersite, slug: revion.inc, verified: false, checked: '2026-11-03', careers: 'careersite: https://revion.inc/careers/backend-engineer'}
-  - {name: AfterQuery, category: yc, hq: us, ats: ashby, slug: afterquery, verified: true, jobs: 39, ai_jobs: 7, checked: '2026-10-06'}
+  - {name: AfterQuery, category: yc, hq: us, website: afterquery.com, ats: ashby, slug: afterquery, verified: true, jobs: 39, ai_jobs: 7, checked: '2026-10-06'}
   - {name: Auctor, category: yc, hq: us, ats: ashby, slug: auctor, verified: true, jobs: 12, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Besimple AI, category: yc, hq: us, website: besimple.ai, ats: careersite, slug: besimple.ai, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-18', careers: 'careersite: https://besimple.ai/jobs/rl-environment-engineer/'}
   - {name: Bluejay, category: yc, hq: us, website: getbluejay.ai, ats: ashby, slug: bluejay, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://getbluejay.ai'}
@@ -511,7 +511,7 @@ companies:
   - {name: Contrario, category: yc, hq: us, website: contrario.ai, ats: ashby, slug: contrario, verified: false, checked: '2026-11-03', careers: 'job listing on ycombinator.com: https://www.ycombinator.com/companies/contrario/jobs/QExVgmb-bizops'}
   - {name: F2, category: yc, hq: us, website: f2.ai, ats: ashby, slug: f2-ai, verified: true, jobs: 10, ai_jobs: 1, checked: '2026-10-18', careers: 'ashby: https://f2.ai/'}
   - {name: Finto, category: yc, hq: eu, ats: ashby, slug: finto, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Fleetline, category: yc, hq: us, ats: ashby, slug: fleetline, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Fleetline, category: yc, hq: us, website: fleetline.com, ats: ashby, slug: fleetline, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Forge Automation, category: yc, hq: ca, website: www.forgeautomation.ca, ats: ashby, slug: forge-automation, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Godela, category: yc, hq: us, website: godela.ai, ats: ashby, slug: godela, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Harper, category: yc, hq: us, website: www.harperinsure.com, ats: ashby, slug: harperinsure, verified: true, jobs: 37, ai_jobs: 2, checked: '2026-10-18', careers: 'ashby: https://www.harperinsure.com/'}
@@ -524,9 +524,9 @@ companies:
   - {name: Proception Inc, category: yc, hq: us, website: proception.ai, ats: ashby, slug: proception-inc, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: QualGent, category: yc, hq: us, website: www.qualgent.ai, ats: ashby, slug: qualgent, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Reacher, category: yc, hq: us, ats: ashby, slug: reacher, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: SalesPatriot, category: yc, hq: us, ats: ashby, slug: salespatriot, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: SalesPatriot, category: yc, hq: us, website: salespatriot.com, ats: ashby, slug: salespatriot, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Semble, category: yc, hq: us, ats: lever, slug: semble, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
-  - {name: Sim, category: yc, hq: us, ats: ashby, slug: sim, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Sim, category: yc, hq: us, website: sim.ai, ats: ashby, slug: sim, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Sixtyfour, category: yc, hq: us, website: www.sixtyfour.ai, ats: ashby, slug: sixtyfour, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.sixtyfour.ai'}
   - {name: Spott, category: yc, hq: eu, website: spott.io, ats: careersite, slug: spott.io, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-18', careers: 'careersite: https://spott.io/jobs/business-development-representative-4'}
   - {name: Structured AI, category: yc, hq: us, website: www.getstructured.ai, ats: careersite, slug: getstructured.ai, verified: false, checked: '2026-11-03', careers: 'careersite: https://getstructured.ai/careers/founding-engineer/'}
@@ -534,15 +534,15 @@ companies:
   - {name: throxy, category: yc, hq: uk, website: throxy.com, ats: ashby, slug: throxy, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Toothy AI, category: yc, hq: us, website: www.toothy.ai, ats: ashby, slug: toothy-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Trelium, category: yc, hq: us, website: www.trelium.com, ats: ashby, slug: trelium, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Uplane, category: yc, hq: us, ats: ashby, slug: uplane, verified: true, jobs: 16, ai_jobs: 13, checked: '2026-10-06'}
-  - {name: Veritus, category: yc, hq: us, ats: ashby, slug: veritus, verified: true, jobs: 4, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Uplane, category: yc, hq: us, website: uplane.com, ats: ashby, slug: uplane, verified: true, jobs: 16, ai_jobs: 13, checked: '2026-10-06'}
+  - {name: Veritus, category: yc, hq: us, website: veritus.com, ats: ashby, slug: veritus, verified: true, jobs: 4, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Vesence, category: yc, hq: us, website: vesence.com, ats: ashby, slug: vesence, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Weave, category: yc, hq: us, ats: ashby, slug: weave, verified: true, jobs: 25, ai_jobs: 6, checked: '2026-10-06'}
   - {name: YouShift, category: yc, hq: us, website: www.you-shift.com, ats: ashby, slug: youshift, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Zalos, category: yc, hq: uk, website: www.zalos.ai, ats: ashby, slug: zalos, verified: false, checked: '2026-11-03', careers: 'gem (no adapter yet): https://www.zalos.ai/careers'}
   - {name: Alex, category: yc, hq: us, website: alexcodes.app, ats: ashby, slug: alex-com, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Anthrogen, category: yc, hq: us, ats: ashby, slug: anthrogen, verified: true, jobs: 8, ai_jobs: 4, checked: '2026-10-06'}
-  - {name: Arini, category: yc, hq: us, ats: ashby, slug: arini, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Anthrogen, category: yc, hq: us, website: anthrogen.com, ats: ashby, slug: anthrogen, verified: true, jobs: 8, ai_jobs: 4, checked: '2026-10-06'}
+  - {name: Arini, category: yc, hq: us, website: arini.ai, ats: ashby, slug: arini, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Artisan, category: yc, hq: us, ats: ashby, slug: artisan, verified: true, jobs: 4, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Arva AI, category: yc, hq: us, website: www.arva.ai, ats: ashby, slug: arva-ai, verified: false, checked: '2026-11-03', careers: 'job listing on ycombinator.com: https://www.ycombinator.com/companies/arva-ai/jobs/bPPv8fg-head-of-research'}
   - {name: Assembly HOA, category: yc, hq: us, website: assemblyhoa.com, ats: ashby, slug: assembly-hoa, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
@@ -551,13 +551,13 @@ companies:
   - {name: Carma, category: yc, hq: us, website: www.joincarma.com, ats: ashby, slug: carma, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.joincarma.com'}
   - {name: Cartage, category: yc, hq: us, website: cartage.ai, ats: ashby, slug: cartage, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Clarion, category: yc, hq: us, ats: ashby, slug: clarion, verified: true, jobs: 11, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Clearly AI, category: yc, hq: us, ats: ashby, slug: clearly-ai, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Codes Health, category: yc, hq: us, ats: ashby, slug: codes-health, verified: true, jobs: 13, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Clearly AI, category: yc, hq: us, website: clearly-ai.com, ats: ashby, slug: clearly-ai, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Codes Health, category: yc, hq: us, website: codeshealth.com, ats: ashby, slug: codes-health, verified: true, jobs: 13, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Conduit, category: yc, hq: us, ats: ashby, slug: conduit, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Conveo, category: yc, hq: uk, ats: ashby, slug: conveo, verified: true, jobs: 16, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Conveo, category: yc, hq: uk, website: conveo.ai, ats: ashby, slug: conveo, verified: true, jobs: 16, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Corgi Insurance, category: yc, hq: us, website: corgi.com, ats: ashby, slug: corgi-insurance, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.corgi.insure/careers'}
   - {name: Coval, category: yc, hq: us, website: coval.dev, ats: ashby, slug: coval, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.coval.ai/careers'}
-  - {name: CTGT, category: yc, hq: us, ats: ashby, slug: ctgt, verified: true, jobs: 3, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: CTGT, category: yc, hq: us, website: ctgt.ai, ats: ashby, slug: ctgt, verified: true, jobs: 3, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Deepnight, category: yc, hq: us, website: www.deepnight.com, ats: ashby, slug: deepnight, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://deepnight.com/pages/careers'}
   - {name: Domu Technology Inc., category: yc, hq: us, website: www.domu.ai, ats: ashby, slug: domu-technology-inc, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Drillbit, category: yc, hq: us, website: www.drillbit.com, ats: ashby, slug: drillbit, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.drillbit.com'}
@@ -565,16 +565,16 @@ companies:
   - {name: Event Horizon Labs, category: yc, hq: us, ats: ashby, slug: event-horizon-labs, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-06'}
   - {name: FINNY AI, category: yc, hq: us, website: www.finny.com, ats: ashby, slug: FINNY, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://finny.com/join-our-team/'}
   - {name: Garage, category: yc, hq: us, ats: ashby, slug: garage, verified: true, jobs: 14, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Greenboard, category: yc, hq: us, ats: ashby, slug: greenboard, verified: true, jobs: 7, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Greenboard, category: yc, hq: us, website: greenboard.com, ats: ashby, slug: greenboard, verified: true, jobs: 7, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Legora, category: yc, hq: eu, ats: ashby, slug: legora, verified: true, jobs: 277, ai_jobs: 10, checked: '2026-10-06'}
   - {name: Merlin AI, category: yc, hq: us, website: www.merlinai.co, ats: ashby, slug: merlin-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Model ML, category: yc, hq: uk, website: www.modelml.com, ats: ashby, slug: model-ml, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Momentic, category: yc, hq: us, ats: ashby, slug: momentic, verified: true, jobs: 4, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Momentic, category: yc, hq: us, website: momentic.ai, ats: ashby, slug: momentic, verified: true, jobs: 4, ai_jobs: 1, checked: '2026-10-06'}
   - {name: No Logo, category: yc, hq: us, website: nologo.com, ats: ashby, slug: no-logo, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: OffDeal, category: yc, hq: us, ats: ashby, slug: offdeal, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: OffDeal, category: yc, hq: us, website: offdeal.io, ats: ashby, slug: offdeal, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Open, category: yc, hq: global, website: open.cx, ats: workable, slug: open-252, verified: true, jobs: 40, ai_jobs: 1, checked: '2026-10-18', careers: 'workable: https://careers.open.cx'}
   - {name: Piramidal, category: yc, hq: us, website: piramidal.ai, ats: greenhouse, slug: piramidalinc, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-18', careers: 'greenhouse: https://piramidal.ai/join-us/'}
-  - {name: PointOne, category: yc, hq: us, ats: ashby, slug: pointone, verified: true, jobs: 15, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: PointOne, category: yc, hq: us, website: pointone.com, ats: ashby, slug: pointone, verified: true, jobs: 15, ai_jobs: 0, checked: '2026-10-06'}
   - {name: ProSights, category: yc, hq: us, website: prosights.co, ats: careersite, slug: www.prosights.co, verified: false, checked: '2026-11-03', careers: 'careersite: https://www.prosights.co/careers/ai-forward-deployed-engineer'}
   - {name: Reform, category: yc, hq: us, ats: ashby, slug: reform, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-18'}
   - {name: Respan, category: yc, hq: us, website: respan.ai, ats: ashby, slug: respan, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.respan.ai/careers'}
@@ -582,54 +582,54 @@ companies:
   - {name: Revyl, category: yc, hq: us, ats: ashby, slug: revyl, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
   - {name: Saturn, category: yc, hq: uk, website: www.SaturnOS.com, ats: ashby, slug: saturn, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Syntra, category: yc, hq: us, website: www.syntra.com, ats: ashby, slug: syntra, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Tamarind Bio, category: yc, hq: us, ats: ashby, slug: tamarindbio, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Tamarind Bio, category: yc, hq: us, website: tamarind.bio, ats: ashby, slug: tamarindbio, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
   - {name: TaxGPT, category: yc, hq: us, website: www.taxgpt.com, ats: ashby, slug: taxgpt, verified: false, checked: '2026-11-03', careers: 'gem (no adapter yet): https://www.taxgpt.com/careers/sales-development-representative-sdr'}
-  - {name: Thunder Compute, category: yc, hq: us, ats: ashby, slug: thundercompute, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Thunder Compute, category: yc, hq: us, website: thundercompute.com, ats: ashby, slug: thundercompute, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Trellis AI, category: yc, hq: us, website: runtrellis.com, ats: ashby, slug: trellis-ai, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://runtrellis.com'}
   - {name: Ubicloud, category: yc, hq: us, website: www.ubicloud.com, ats: ashby, slug: ubicloud, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Unsloth AI, category: yc, hq: us, website: unsloth.ai, ats: ashby, slug: unsloth-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Usul, category: yc, hq: us, ats: ashby, slug: usul, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Usul, category: yc, hq: us, website: usul.com, ats: ashby, slug: usul, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Yondu, category: yc, hq: us, website: yondu.ai, ats: ashby, slug: yondu, verified: false, checked: '2026-11-03', careers: 'job listing on ycombinator.com: https://www.ycombinator.com/companies/yondu/jobs/l6z04IP-senior-robotics-engineer'}
-  - {name: Zeit AI, category: yc, hq: eu, ats: ashby, slug: zeit-ai, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Zeit AI, category: yc, hq: eu, website: zeit-ai.com, ats: ashby, slug: zeit-ai, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Zep AI, category: yc, hq: us, website: www.getzep.com, ats: ashby, slug: zep-ai, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.getzep.com/careers/'}
   - {name: 1stCollab, category: yc, hq: us, website: 1stcollab.com, ats: ashby, slug: 1stcollab, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: '222', category: yc, hq: us, website: 222.place, ats: ashby, slug: '222', verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Accend, category: yc, hq: global, website: www.withaccend.com, ats: ashby, slug: accend, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Alguna, category: yc, hq: uk, website: alguna.com, ats: ashby, slug: alguna, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://alguna.com'}
-  - {name: Andromeda Surgical, category: yc, hq: us, ats: ashby, slug: andromedasurgical, verified: true, jobs: 3, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Andromeda Surgical, category: yc, hq: us, website: andromedasurgical.com, ats: ashby, slug: andromedasurgical, verified: true, jobs: 3, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Boundary, category: yc, hq: us, website: www.boundaryml.com, ats: ashby, slug: boundary, verified: false, checked: '2026-11-03', careers: 'job listing on ycombinator.com: https://www.ycombinator.com/companies/boundary/jobs/f31pAPu-engineers-that-enjoy-hard-things-like-compilers'}
-  - {name: Bretton AI, category: yc, hq: us, ats: ashby, slug: brettonai, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Campfire, category: yc, hq: us, ats: ashby, slug: campfire, verified: true, jobs: 50, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Bretton AI, category: yc, hq: us, website: bretton.com, ats: ashby, slug: brettonai, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Campfire, category: yc, hq: us, website: campfire.ai, ats: ashby, slug: campfire, verified: true, jobs: 50, ai_jobs: 3, checked: '2026-10-06'}
   - {name: Casca, category: yc, hq: us, ats: ashby, slug: casca, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Clearest Health, category: yc, hq: us, website: clearesthealth.com, ats: ashby, slug: clearest-health, verified: false, checked: '2026-11-03', careers: 'job listing on ycombinator.com: https://www.ycombinator.com/companies/clearest-health/jobs/vSiCt2K-idr-filing-specialist'}
-  - {name: Concourse, category: yc, hq: us, ats: ashby, slug: concourse, verified: true, jobs: 7, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Concourse, category: yc, hq: us, website: concourse.ai, ats: ashby, slug: concourse, verified: true, jobs: 7, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Cosine, category: yc, hq: uk, ats: ashby, slug: cosine, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Credal.ai, category: yc, hq: us, website: credal.ai, ats: ashby, slug: credal, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://credal.ai/careers'}
   - {name: Decoda Health, category: yc, hq: ca, ats: ashby, slug: decodahealth, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Diffuse Bio, category: yc, hq: us, website: diffuse.bio, ats: ashby, slug: diffuse-bio, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: dili, category: yc, hq: us, website: www.dili.com, ats: ashby, slug: dili, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.dili.com'}
-  - {name: Diligent, category: yc, hq: uk, ats: greenhouse, slug: diligent, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Diligent, category: yc, hq: uk, website: diligent.com, ats: greenhouse, slug: diligent, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Elyos AI, category: yc, hq: uk, website: www.elyos.ai, ats: ashby, slug: elyos, verified: true, jobs: 11, ai_jobs: 1, checked: '2026-10-18', careers: 'ashby: https://elyos.ai/careers'}
   - {name: FleetWorks, category: yc, hq: us, ats: ashby, slug: fleetworks, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Flint, category: yc, hq: us, ats: ashby, slug: flint, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Flint, category: yc, hq: us, website: flint.com, ats: ashby, slug: flint, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Giga, category: yc, hq: us, website: giga.ai, ats: ashby, slug: gigaml, verified: true, jobs: 33, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://giga.ai/careers'}
   - {name: Hadrius, category: yc, hq: us, ats: ashby, slug: hadrius, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
   - {name: HappyRobot, category: yc, hq: us, website: happyrobot.ai, ats: ashby, slug: happyrobot.ai, verified: true, jobs: 75, ai_jobs: 4, checked: '2026-10-18', careers: 'ashby: https://www.happyrobot.ai/careers'}
-  - {name: Inkeep, category: yc, hq: us, ats: ashby, slug: inkeep, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Inkeep, category: yc, hq: us, website: inkeep.com, ats: ashby, slug: inkeep, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
   - {name: kapa.ai, category: yc, hq: global, website: www.kapa.ai, ats: ashby, slug: kapa-ai, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.kapa.ai'}
-  - {name: Langdock, category: yc, hq: eu, ats: ashby, slug: langdock, verified: true, jobs: 26, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Langdock, category: yc, hq: eu, website: langdock.com, ats: ashby, slug: langdock, verified: true, jobs: 26, ai_jobs: 3, checked: '2026-10-06'}
   - {name: Latent, category: yc, hq: us, ats: ashby, slug: latent, verified: true, jobs: 23, ai_jobs: 2, checked: '2026-10-06'}
-  - {name: LiteLLM, category: yc, hq: us, ats: ashby, slug: litellm, verified: true, jobs: 10, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: LiteLLM, category: yc, hq: us, website: litellm.ai, ats: ashby, slug: litellm, verified: true, jobs: 10, ai_jobs: 1, checked: '2026-10-06'}
   - {name: loopfour, category: yc, hq: us, website: www.loopfour.com, ats: ashby, slug: loopfour, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Maven Bio, category: yc, hq: us, website: mavenbio.com, ats: ashby, slug: maven-bio, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://mavenbio.com'}
   - {name: Metal, category: yc, hq: us, ats: ashby, slug: metal, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Middleware, category: yc, hq: us, website: www.middleware.io, ats: ashby, slug: middleware, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Numen, category: yc, hq: us, website: www.numen.com, ats: ashby, slug: numen, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.numen.com'}
-  - {name: Outset, category: yc, hq: us, ats: ashby, slug: outset, verified: true, jobs: 23, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Prosper, category: yc, hq: us, ats: lever, slug: prosper, verified: true, jobs: 13, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Outset, category: yc, hq: us, website: outset.ai, ats: ashby, slug: outset, verified: true, jobs: 23, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Prosper, category: yc, hq: us, website: prosper.com, ats: lever, slug: prosper, verified: true, jobs: 13, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Readily, category: yc, hq: us, website: readily.ai, ats: ashby, slug: readily, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.readily.ai/'}
   - {name: Reflex, category: yc, hq: us, ats: greenhouse, slug: reflex, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Rollstack, category: yc, hq: us, ats: ashby, slug: rollstack, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Rollstack, category: yc, hq: us, website: rollstack.com, ats: ashby, slug: rollstack, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Rubbrband, category: yc, hq: us, website: rubbrband.com, ats: careersite, slug: www.rubbrband.com, verified: false, checked: '2026-11-03', careers: 'careersite: https://www.rubbrband.com/careers/'}
   - {name: Salient, category: yc, hq: us, ats: ashby, slug: salient, verified: true, jobs: 17, ai_jobs: 3, checked: '2026-10-06'}
   - {name: Skyvern, category: yc, hq: us, website: www.skyvern.com, ats: ashby, slug: skyvern, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
@@ -642,47 +642,47 @@ companies:
   - {name: Agave, category: yc, hq: us, ats: ashby, slug: agave, verified: true, jobs: 10, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Ankr Health, category: yc, hq: us, website: ankr.us, ats: ashby, slug: ankr-health, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: AstroForge, category: yc, hq: us, website: www.astroforge.io, ats: ashby, slug: astroforge, verified: false, checked: '2026-11-03', careers: 'gem (no adapter yet): https://www.astroforge.com/careers'}
-  - {name: Aurelian, category: yc, hq: us, ats: ashby, slug: aurelian, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Aurelian, category: yc, hq: us, website: aurelian.com, ats: ashby, slug: aurelian, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-06'}
   - {name: AviaryAI, category: yc, hq: us, website: www.helloaviary.ai, ats: ashby, slug: aviaryai, verified: false, checked: '2026-11-03', careers: 'dover (no adapter yet): https://www.helloaviary.ai'}
   - {name: Axle, category: yc, hq: us, ats: greenhouse, slug: axle, verified: true, jobs: 33, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Axross Pte Ltd, category: yc, hq: global, website: www.axross.co, ats: ashby, slug: axross-pte-ltd, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Bemlo, category: yc, hq: eu, website: www.bemlo.com, ats: ashby, slug: bemlo, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Blee, category: yc, hq: us, ats: ashby, slug: blee, verified: true, jobs: 8, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Broccoli AI, category: yc, hq: us, website: www.broccoli.com, ats: ashby, slug: broccoli-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Cambio, category: yc, hq: us, ats: ashby, slug: cambio, verified: true, jobs: 7, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Cambio, category: yc, hq: us, website: cambio.ai, ats: ashby, slug: cambio, verified: true, jobs: 7, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Cerrion, category: yc, hq: eu, website: www.cerrion.com, ats: ashby, slug: cerrion, verified: false, checked: '2026-11-03', careers: 'dover (no adapter yet): https://www.cerrion.com'}
-  - {name: Cinder, category: yc, hq: us, ats: ashby, slug: cinder, verified: true, jobs: 9, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: Cinder, category: yc, hq: us, website: cinder.ai, ats: ashby, slug: cinder, verified: true, jobs: 9, ai_jobs: 2, checked: '2026-10-06'}
   - {name: Cogram, category: yc, hq: us, website: cogram.com, ats: ashby, slug: cogram, verified: false, checked: '2026-11-03', careers: 'job listing on ycombinator.com: https://www.ycombinator.com/companies/cogram/jobs/1iW19df-account-executive-full-cycle'}
   - {name: Coris, category: yc, hq: us, website: coris.ai, ats: ashby, slug: coris, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.coris.ai/'}
   - {name: Curacel, category: yc, hq: uk, website: curacel.co, ats: ashby, slug: curacel, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.curacel.co/careers'}
   - {name: Dart, category: yc, hq: us, website: www.dartai.com, ats: ashby, slug: dart, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.dartai.com'}
   - {name: Dynamo AI, category: yc, hq: us, website: dynamo.ai, ats: ashby, slug: dynamoai, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03', careers: 'rippling (no adapter yet): https://www.dynamo.ai/'}
-  - {name: Eventual, category: yc, hq: us, ats: ashby, slug: eventual, verified: true, jobs: 4, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Eventual, category: yc, hq: us, website: eventual.com, ats: ashby, slug: eventual, verified: true, jobs: 4, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Finku, category: yc, hq: global, ats: smartrecruiters, slug: finku, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Flagright, category: yc, hq: us, website: flagright.com, ats: ashby, slug: flagright.com, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://jobs.ashbyhq.com/flagright.com'}
-  - {name: GovDash, category: yc, hq: us, ats: ashby, slug: govdash, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: GovDash, category: yc, hq: us, website: govdash.com, ats: ashby, slug: govdash, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Gym Class, category: yc, hq: us, website: gymclass.com, ats: ashby, slug: gym-class, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.gymclass.com/'}
   - {name: HOMLI, category: yc, hq: us, website: thehomli.com, ats: ashby, slug: homli, verified: false, checked: '2026-11-03', careers: not found (0 pages read)}
   - {name: Invert, category: yc, hq: us, ats: ashby, slug: invert, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Juicebox, category: yc, hq: us, ats: ashby, slug: juicebox, verified: true, jobs: 25, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Julius, category: yc, hq: us, ats: ashby, slug: julius, verified: true, jobs: 4, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Juicebox, category: yc, hq: us, website: juicebox.ai, ats: ashby, slug: juicebox, verified: true, jobs: 25, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Julius, category: yc, hq: us, website: julius.ai, ats: ashby, slug: julius, verified: true, jobs: 4, ai_jobs: 0, checked: '2026-10-06'}
   - {name: KorrAI, category: yc, hq: ca, website: www.korrai.com, ats: ashby, slug: korrai, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.korrai.com'}
   - {name: Landeed, category: yc, hq: in, website: www.landeed.com, ats: ashby, slug: landeed, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.landeed.com/careers'}
   - {name: Layerup, category: yc, hq: us, website: www.uselayerup.com, ats: ashby, slug: layerup, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Metriport, category: yc, hq: us, ats: ashby, slug: metriport, verified: true, jobs: 19, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Metriport, category: yc, hq: us, website: metriport.com, ats: ashby, slug: metriport, verified: true, jobs: 19, ai_jobs: 1, checked: '2026-10-06'}
   - {name: NewsCatcher, category: yc, hq: eu, website: newscatcherapi.com, ats: ashby, slug: newscatcher, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Oneleet, category: yc, hq: eu, ats: ashby, slug: oneleet, verified: true, jobs: 12, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: Oneleet, category: yc, hq: eu, website: oneleet.com, ats: ashby, slug: oneleet, verified: true, jobs: 12, ai_jobs: 2, checked: '2026-10-06'}
   - {name: Paces, category: yc, hq: us, website: paces.com, ats: ashby, slug: paces, verified: false, checked: '2026-11-03', careers: 'gem (no adapter yet): https://jobs.gem.com/paces'}
   - {name: Pasito, category: yc, hq: us, website: pasito.ai, ats: ashby, slug: pasito, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: PermitFlow, category: yc, hq: us, ats: ashby, slug: permitflow, verified: true, jobs: 40, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: PermitFlow, category: yc, hq: us, website: permitflow.com, ats: ashby, slug: permitflow, verified: true, jobs: 40, ai_jobs: 3, checked: '2026-10-06'}
   - {name: Polymath Robotics, category: yc, hq: us, website: www.polymathrobotics.com, ats: ashby, slug: polymath-robotics, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Provision, category: yc, hq: ca, ats: ashby, slug: provision, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Provision, category: yc, hq: ca, website: provision.com, ats: ashby, slug: provision, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Pump.co, category: yc, hq: us, website: www.pump.co, ats: greenhouse, slug: pumpcareers, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-10-18', careers: 'greenhouse: https://www.pump.co/'}
   - {name: Raven, category: yc, hq: in, ats: greenhouse, slug: raven, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Reality Defender, category: yc, hq: us, ats: ashby, slug: realitydefender, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Reality Defender, category: yc, hq: us, website: realitydefender.com, ats: ashby, slug: realitydefender, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Reforged Labs, category: yc, hq: global, website: reforgedlabs.com, ats: ashby, slug: reforged-labs, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Serif Health, category: yc, hq: us, ats: ashby, slug: serifhealth, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Sieve, category: yc, hq: us, ats: ashby, slug: sieve, verified: true, jobs: 15, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: Serif Health, category: yc, hq: us, website: serifhealth.com, ats: ashby, slug: serifhealth, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Sieve, category: yc, hq: us, website: sieve.ai, ats: ashby, slug: sieve, verified: true, jobs: 15, ai_jobs: 2, checked: '2026-10-06'}
   - {name: Spade, category: yc, hq: us, ats: ashby, slug: spade, verified: true, jobs: 12, ai_jobs: 1, checked: '2026-10-06'}
   - {name: Thera, category: yc, hq: us, ats: ashby, slug: thera, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Two Dots, category: yc, hq: us, ats: lever, slug: twodots, verified: true, jobs: 4, ai_jobs: 0, checked: '2026-10-06'}
@@ -693,10 +693,10 @@ companies:
   - {name: Anima, category: yc, hq: uk, ats: ashby, slug: anima, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-06'}
   - {name: arnata, category: yc, hq: us, website: arnata.com, ats: ashby, slug: arnata, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.arnata.com/'}
   - {name: Atomic Industries, category: yc, hq: us, ats: ashby, slug: atomicindustries, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
-  - {name: authzed, category: yc, hq: us, ats: ashby, slug: authzed, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: authzed, category: yc, hq: us, website: authzed.com, ats: ashby, slug: authzed, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: BoldVoice, category: yc, hq: us, website: boldvoice.com, ats: ashby, slug: boldvoice, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://boldvoice.com'}
   - {name: BusinessOnBot, category: yc, hq: in, website: www.businessonbot.com, ats: ashby, slug: businessonbot, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Charge Robotics, category: yc, hq: us, ats: ashby, slug: charge-robotics, verified: true, jobs: 14, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Charge Robotics, category: yc, hq: us, website: chargerobotics.com, ats: ashby, slug: charge-robotics, verified: true, jobs: 14, ai_jobs: 0, checked: '2026-10-06'}
   - {name: CoLoop, category: yc, hq: uk, website: coloop.ai, ats: ashby, slug: coloop, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.coloop.ai/'}
   - {name: Confido, category: yc, hq: us, ats: ashby, slug: confido, verified: true, jobs: 36, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Coulomb AI, category: yc, hq: in, website: coulomb.ai, ats: ashby, slug: coulomb-ai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
@@ -704,18 +704,18 @@ companies:
   - {name: Datrics, category: yc, hq: us, website: datrics.ai, ats: ashby, slug: datrics, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: DigiBuild, category: yc, hq: us, website: digibuild.com, ats: ashby, slug: digibuild, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Encord, category: yc, hq: uk, ats: ashby, slug: encord, verified: true, jobs: 43, ai_jobs: 5, checked: '2026-10-06'}
-  - {name: Fathom, category: yc, hq: us, ats: ashby, slug: fathom, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-18'}
+  - {name: Fathom, category: yc, hq: us, website: fathom.ai, ats: ashby, slug: fathom, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-10-18'}
   - {name: Gigs, category: yc, hq: us, ats: ashby, slug: gigs, verified: true, jobs: 60, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Humaans, category: yc, hq: uk, ats: ashby, slug: humaans, verified: true, jobs: 12, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: Humaans, category: yc, hq: uk, website: humaans.io, ats: ashby, slug: humaans, verified: true, jobs: 12, ai_jobs: 2, checked: '2026-10-06'}
   - {name: Kalam Labs, category: yc, hq: in, website: www.kalamlabs.in, ats: ashby, slug: kalam-labs, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Lamar Health, category: yc, hq: us, website: www.lamarhealth.com, ats: ashby, slug: lamar-health, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: Legion Health, category: yc, hq: us, ats: ashby, slug: legionhealth, verified: true, jobs: 162, ai_jobs: 2, checked: '2026-10-06'}
-  - {name: LiveFlow, category: yc, hq: us, ats: ashby, slug: liveflow, verified: true, jobs: 4, ai_jobs: 3, checked: '2026-10-06'}
-  - {name: Mach9, category: yc, hq: us, ats: ashby, slug: mach9, verified: true, jobs: 16, ai_jobs: 4, checked: '2026-10-06'}
+  - {name: Legion Health, category: yc, hq: us, website: legionhealth.com, ats: ashby, slug: legionhealth, verified: true, jobs: 162, ai_jobs: 2, checked: '2026-10-06'}
+  - {name: LiveFlow, category: yc, hq: us, website: liveflow.com, ats: ashby, slug: liveflow, verified: true, jobs: 4, ai_jobs: 3, checked: '2026-10-06'}
+  - {name: Mach9, category: yc, hq: us, website: mach9.ai, ats: ashby, slug: mach9, verified: true, jobs: 16, ai_jobs: 4, checked: '2026-10-06'}
   - {name: MindFi, category: yc, hq: global, website: www.mindfi.co, ats: ashby, slug: mindfi, verified: false, checked: '2026-11-03', careers: 'dover (no adapter yet): https://mindfi.co/'}
   - {name: Neodocs, category: yc, hq: in, website: www.neodocs.in, ats: ashby, slug: neodocs, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
-  - {name: OneSchema, category: yc, hq: us, ats: ashby, slug: oneschema, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Popl, category: yc, hq: us, ats: ashby, slug: popl, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: OneSchema, category: yc, hq: us, website: oneschema.co, ats: ashby, slug: oneschema, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
+  - {name: Popl, category: yc, hq: us, website: popl.co, ats: ashby, slug: popl, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Replo, category: yc, hq: us, ats: ashby, slug: replo, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
   - {name: RocketSDR, category: yc, hq: in, website: rocketsdr.ai, ats: ashby, slug: rocketsdr, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Rootly, category: yc, hq: us, website: rootly.com, ats: ashby, slug: rootly, verified: false, checked: '2026-11-03', careers: 'gem (no adapter yet): https://rootly.com/careers'}
@@ -725,30 +725,30 @@ companies:
   - {name: Sully, category: yc, hq: us, website: www.sully.ai, ats: careersite, slug: sullyai.teamtailor.com, verified: true, jobs: 6, ai_jobs: 1, checked: '2026-10-18', careers: 'careersite: https://sullyai.teamtailor.com/jobs/8511548-customer-success-manager-mena'}
   - {name: Telmai, category: yc, hq: us, website: www.telm.ai, ats: ashby, slug: telmai, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Tint, category: yc, hq: us, website: www.tint.ai, ats: greenhouse, slug: tintai, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-11-03', careers: 'greenhouse: https://www.tint.ai/careers'}
-  - {name: Tractian, category: yc, hq: us, ats: lever, slug: tractian, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
+  - {name: Tractian, category: yc, hq: us, website: tractian.com, ats: lever, slug: tractian, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
   - {name: Waydev, category: yc, hq: eu, website: waydev.co, ats: ashby, slug: waydev, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Writesonic, category: yc, hq: in, website: writesonic.com, ats: workable, slug: writesonic, verified: true, jobs: 7, ai_jobs: 2, checked: '2026-10-18', careers: 'workable: https://writesonic.com/careers'}
   - {name: Zensors, category: yc, hq: us, ats: ashby, slug: zensors, verified: true, jobs: 5, ai_jobs: 4, checked: '2026-10-06'}
   - {name: Zuma, category: yc, hq: us, website: www.getzuma.com, ats: lever, slug: getzuma, verified: true, jobs: 6, ai_jobs: 2, checked: '2026-10-18', careers: 'lever: https://www.getzuma.com/'}
 
   # --- Auto-discovered on 2026-10-08 (scripts/discover_companies.py) ---
-  - {name: ClickHouse, category: hn, hq: global, ats: ashby, slug: clickhouse, verified: true, jobs: 197, ai_jobs: 25, checked: '2026-10-08'}
-  - {name: Prior Labs, category: hn, hq: global, ats: ashby, slug: prior-labs, verified: true, jobs: 24, ai_jobs: 9, checked: '2026-10-08'}
-  - {name: SentiLink, category: hn, hq: global, ats: ashby, slug: sentilink, verified: true, jobs: 51, ai_jobs: 8, checked: '2026-10-08'}
+  - {name: ClickHouse, category: hn, hq: global, website: clickhouse.com, ats: ashby, slug: clickhouse, verified: true, jobs: 197, ai_jobs: 25, checked: '2026-10-08'}
+  - {name: Prior Labs, category: hn, hq: global, website: priorlabs.ai, ats: ashby, slug: prior-labs, verified: true, jobs: 24, ai_jobs: 9, checked: '2026-10-08'}
+  - {name: SentiLink, category: hn, hq: global, website: sentilink.com, ats: ashby, slug: sentilink, verified: true, jobs: 51, ai_jobs: 8, checked: '2026-10-08'}
   - {name: Discord, category: hn, hq: global, ats: greenhouse, slug: discord, verified: true, jobs: 47, ai_jobs: 7, checked: '2026-10-08'}
-  - {name: Artificial Analysis, category: hn, hq: global, ats: ashby, slug: artificialanalysis, verified: true, jobs: 18, ai_jobs: 6, checked: '2026-10-08'}
+  - {name: Artificial Analysis, category: hn, hq: global, website: artificialanalysis.ai, ats: ashby, slug: artificialanalysis, verified: true, jobs: 18, ai_jobs: 6, checked: '2026-10-08'}
   - {name: Blackcanyonconsulting, category: hn, hq: global, ats: greenhouse, slug: blackcanyonconsulting, verified: true, jobs: 78, ai_jobs: 4, checked: '2026-10-08'}
-  - {name: Loft Orbital, category: hn, hq: global, ats: lever, slug: loftorbital, verified: true, jobs: 57, ai_jobs: 4, checked: '2026-10-08'}
+  - {name: Loft Orbital, category: hn, hq: global, website: loftorbital.com, ats: lever, slug: loftorbital, verified: true, jobs: 57, ai_jobs: 4, checked: '2026-10-08'}
   - {name: Longshot Systems, category: hn, hq: global, ats: workable, slug: longshot-systems-ltd, verified: true, jobs: 4, ai_jobs: 3, checked: '2026-10-08'}
   - {name: ICEYE, category: hn, hq: global, ats: ashby, slug: iceye, verified: true, jobs: 188, ai_jobs: 2, checked: '2026-10-08'}
   - {name: Solace Health, category: hn, hq: global, ats: ashby, slug: Solace, verified: true, jobs: 27, ai_jobs: 2, checked: '2026-10-08'}
   - {name: Oscilar.com, category: hn, hq: global, ats: ashby, slug: oscilar, verified: true, jobs: 21, ai_jobs: 2, checked: '2026-10-08'}
-  - {name: Hiya, category: hn, hq: global, ats: ashby, slug: hiya, verified: true, jobs: 20, ai_jobs: 2, checked: '2026-10-08'}
+  - {name: Hiya, category: hn, hq: global, website: hiya.com, ats: ashby, slug: hiya, verified: true, jobs: 20, ai_jobs: 2, checked: '2026-10-08'}
   - {name: Middesk, category: hn, hq: global, ats: ashby, slug: middesk, verified: true, jobs: 17, ai_jobs: 2, checked: '2026-10-08'}
   - {name: Rebar, category: hn, hq: global, ats: ashby, slug: rebar, verified: true, jobs: 14, ai_jobs: 2, checked: '2026-10-08'}
-  - {name: LiveKit, category: hn, hq: global, ats: ashby, slug: livekit, verified: true, jobs: 29, ai_jobs: 1, checked: '2026-10-08'}
-  - {name: Aiuc, category: hn, hq: global, ats: ashby, slug: aiuc, verified: true, jobs: 13, ai_jobs: 1, checked: '2026-10-08'}
-  - {name: Wikimedia Foundation, category: hn, hq: global, ats: greenhouse, slug: wikimedia, verified: true, jobs: 12, ai_jobs: 1, checked: '2026-10-08'}
-  - {name: Mastra, category: hn, hq: global, ats: ashby, slug: mastra, verified: true, jobs: 2, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: LiveKit, category: hn, hq: global, website: livekit.com, ats: ashby, slug: livekit, verified: true, jobs: 29, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: Aiuc, category: hn, hq: global, website: aiuc.com, ats: ashby, slug: aiuc, verified: true, jobs: 13, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: Wikimedia Foundation, category: hn, hq: global, website: wikimediafoundation.org, ats: greenhouse, slug: wikimedia, verified: true, jobs: 12, ai_jobs: 1, checked: '2026-10-08'}
+  - {name: Mastra, category: hn, hq: global, website: mastra.ai, ats: ashby, slug: mastra, verified: true, jobs: 2, ai_jobs: 1, checked: '2026-10-08'}
   - {name: Modash.io, category: hn, hq: global, ats: workable, slug: modash, verified: true, jobs: 27, ai_jobs: 0, checked: '2026-10-08'}
-  - {name: Mattermost, category: hn, hq: global, ats: greenhouse, slug: mattermost, verified: true, jobs: 14, ai_jobs: 0, checked: '2026-10-08'}
+  - {name: Mattermost, category: hn, hq: global, website: mattermost.com, ats: greenhouse, slug: mattermost, verified: true, jobs: 14, ai_jobs: 0, checked: '2026-10-08'}
