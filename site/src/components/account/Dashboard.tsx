@@ -6,7 +6,6 @@
 import type { User } from "@supabase/supabase-js";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FitRing } from "@/components/board/FitRing";
 import { Kanban } from "@/components/board/Kanban";
@@ -15,9 +14,9 @@ import { Today } from "@/components/board/Today";
 import { fetchJobs, type JobSummary } from "@/lib/api";
 import { brief, followUpsDue, isStrongMatch, missingSkills } from "@/lib/board";
 import { profileFilters, toApiParams, toSearch } from "@/lib/filters";
-import { sessionChanged } from "@/lib/session";
 import { skillsIn } from "@/lib/skills";
-import { authConfigured, PROFILE_COLUMNS, supabase, type Profile } from "@/lib/supabase";
+import { authConfigured, type Profile } from "@/lib/supabase";
+import { useProfile } from "@/lib/useProfile";
 import {
   fitQuota, moveJob, recentChecks, recentTailored, removeJob, trackedJobs,
   type FitCheck, type Quota, type Stage, type Tracked, type TailoredRow, type Verdict,
@@ -27,35 +26,8 @@ import { AccountShell, NotSetUp } from "./AccountShell";
 // Reopening a tailored resume (and pdf-lib) loads only when asked.
 const TailorDialog = dynamic(() => import("@/components/TailorDialog").then((m) => m.TailorDialog), { ssr: false });
 
-
-type Load = { kind: "loading" } | { kind: "error"; message: string } | { kind: "ready"; user: User; profile: Profile };
-
 export function Dashboard() {
-  const router = useRouter();
-  const [load, setLoad] = useState<Load>({ kind: "loading" });
-
-  useEffect(() => {
-    if (!authConfigured) return;
-    const sb = supabase();
-    let cancelled = false;
-    // getSession also swaps a sign-in link's ?code= for a session: this is where sign-in lands.
-    sb.auth.getSession().then(async ({ data, error }) => {
-      if (cancelled) return;
-      if (error) return setLoad({ kind: "error", message: `${error.message}. The link may have expired; sign in again.` });
-      const user = data.session?.user;
-      if (!user) return router.replace("/login");
-      sessionChanged();
-      if (location.search.includes("code=")) history.replaceState(null, "", "/profile");
-      const row = await sb.from("students").select(PROFILE_COLUMNS).eq("id", user.id).maybeSingle<Profile>();
-      if (cancelled) return;
-      if (row.error) return setLoad({ kind: "error", message: row.error.message });
-      // First visit: nothing to show until there's a profile.
-      if (!row.data) return router.replace("/profile/edit");
-      setLoad({ kind: "ready", user, profile: { ...row.data, yoe: Number(row.data.yoe) } });
-    });
-    return () => { cancelled = true; };
-  }, [router]);
-
+  const load = useProfile();
   if (!authConfigured) return <AccountShell><NotSetUp /></AccountShell>;
   if (load.kind === "error") return <AccountShell><p role="alert" className="text-body text-muted">Couldn&apos;t open your profile: {load.message}</p></AccountShell>;
   if (load.kind === "loading") return <AccountShell wide><Skeleton /></AccountShell>;
