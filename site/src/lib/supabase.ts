@@ -34,6 +34,7 @@ export interface Profile {
   resume_path: string | null;
   resume_name: string | null;
   resume_text: string | null;
+  weekly_goal: number; // applications a week the dashboard measures against (default 5)
 }
 
-export const PROFILE_COLUMNS = "name, yoe, grad_year, target_roles, resume_path, resume_name, resume_text";
+export const PROFILE_COLUMNS = "name, yoe, grad_year, target_roles, resume_path, resume_name, resume_text, weekly_goal";

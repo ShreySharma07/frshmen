@@ -24,7 +24,7 @@ type Save = { kind: "idle" } | { kind: "reading" } | { kind: "saving" } | { kind
 const blank = (user: User): Profile => ({
   // Google sign-ins carry the person's name; email sign-ins start empty.
   name: String(user.user_metadata?.full_name ?? user.user_metadata?.name ?? ""),
-  yoe: 0, grad_year: null, target_roles: [], resume_path: null, resume_name: null, resume_text: null,
+  yoe: 0, grad_year: null, target_roles: [], resume_path: null, resume_name: null, resume_text: null, weekly_goal: 5,
 });
 
 export function ProfileForm() {
@@ -95,6 +95,7 @@ export function ProfileForm() {
       name: form.name.trim(), yoe: form.yoe, grad_year: form.grad_year, target_roles: form.target_roles,
       resume_path: file ? path : form.resume_path, resume_name: form.resume_name,
       resume_text: form.resume_text?.trim() ? form.resume_text.slice(0, RESUME_TEXT_MAX) : null,
+      weekly_goal: Math.min(50, Math.max(1, Math.round(form.weekly_goal || 5))),
     };
     // Insert once, then update: an upsert would also try to write `id`, which only INSERT may set.
     const res = exists
@@ -173,6 +174,12 @@ export function ProfileForm() {
             })}
           </div>
         </fieldset>
+
+        <Field label="Applications a week (your goal)" htmlFor="goal" hint="The board and Insights measure your week against this.">
+          <input id="goal" type="number" inputMode="numeric" min={1} max={50} value={form.weekly_goal}
+            onChange={(e) => set({ weekly_goal: Number(e.target.value) })}
+            className="h-11 w-28 rounded-md border border-line bg-canvas px-3 font-mono text-base outline-none focus:border-accent focus:ring-2 focus:ring-accent/30" />
+        </Field>
 
         <div>
           <p className="text-meta text-muted">Resume</p>
