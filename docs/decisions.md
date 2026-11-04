@@ -18,6 +18,11 @@ Newest first. Each entry: date, options considered, choice, why.
   hit is the skill's own word, so no separate snippet is stored. The browser checks the saved
   resume against the same catalogue (`site/src/lib/skills.json`, exported from the YAML).
   EXTRACT_VERSION 5 re-labels every open job once on the next run.
+- **How the API knows who is asking (built):** the site sends the Supabase access token, and the
+  API asks Supabase's `/auth/v1/user` whether it is valid (one small request; no signing keys or
+  crypto in the Worker). The check reads the saved resume itself, so nothing is pasted. A check
+  holds its place while Gemini answers and is removed if Gemini fails, so failures don't count;
+  checks sent at once are counted one after another (a row lock). "A day" is any 24 hours.
 - **Dashboard (Shrey), first version:** (1) jobs for you, with new in the last 3 days (Shrey: no "last visit" column for now);
   (2) resume vs. the market, the skills most asked for in jobs that fit you, ticked when the
   resume has them; (3) your details, the current form; (4) a tracker, Saved → Applied →

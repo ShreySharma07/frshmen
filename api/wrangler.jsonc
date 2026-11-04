@@ -6,6 +6,9 @@
   "compatibility_flags": ["python_workers"],
   // Workers Logs (free tier): tracebacks from the API show up in the dashboard.
   "observability": { "enabled": true },
+  // Gemini fit checks for signed-in people, 5 a day (docs/decisions.md, 2026-11-04). Needs the
+  // GEMINI_API_KEY secret too; without it the check stays hidden.
+  "vars": { "FIT_CHECK": "on" },
   // Supabase Postgres through Hyperdrive's connection pool (M3). The password lives in the
   // Hyperdrive config on Cloudflare, not here; the ID alone grants nothing.
   "hyperdrive": [
