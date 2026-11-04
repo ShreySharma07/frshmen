@@ -5,6 +5,7 @@ import { IntentLink } from "./IntentLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { readSession, signOut, subscribeSession } from "@/lib/session";
+import { SECTIONS } from "./SiteNav";
 
 export function ProfileButton() {
   const session = useSyncExternalStore(subscribeSession, readSession, () => null);
@@ -41,8 +42,14 @@ export function ProfileButton() {
       {open && (
         <div role="menu" className="absolute right-0 top-11 z-40 w-56 overflow-hidden rounded-lg border border-line bg-canvas py-1 shadow-menu">
           <p className="truncate px-3 py-2 text-meta text-muted">{session.email}</p>
-          <IntentLink role="menuitem" href="/profile" onClick={() => setOpen(false)} className="block px-3 py-2 text-body hover:bg-surface focus:bg-surface focus:outline-none">
-            Profile
+          {/* The header's section links, for phones where the header has no room for them. */}
+          {SECTIONS.map((s) => (
+            <IntentLink key={s.href} role="menuitem" href={s.href} onClick={() => setOpen(false)} className="block px-3 py-2 text-body hover:bg-surface focus:bg-surface focus:outline-none sm:hidden">
+              {s.label}
+            </IntentLink>
+          ))}
+          <IntentLink role="menuitem" href="/profile/edit" onClick={() => setOpen(false)} className="block px-3 py-2 text-body hover:bg-surface focus:bg-surface focus:outline-none">
+            Your details
           </IntentLink>
           <button role="menuitem" type="button" onClick={async () => { setOpen(false); await signOut(); router.push("/"); }}
             className="block w-full px-3 py-2 text-left text-body hover:bg-surface focus:bg-surface focus:outline-none">

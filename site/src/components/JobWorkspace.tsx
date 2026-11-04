@@ -10,6 +10,8 @@ import { FilterBar } from "./FilterBar";
 import { JobDetailView } from "./JobDetailView";
 import { JobRow } from "./JobRow";
 import { ProfileButton } from "./ProfileButton";
+import { SiteNav } from "./SiteNav";
+import { CommandLauncher } from "./CommandLauncher";
 import { SavedNote } from "./SavedNote";
 import { SearchBox } from "./SearchBox";
 import { ThemeToggle } from "./ThemeToggle";
@@ -40,8 +42,10 @@ export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
       <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex h-full max-w-[1280px] items-center gap-4 px-4 lg:px-6">
           {logo}
+          <SiteNav />
           <div className="ml-auto flex w-full items-center justify-end gap-2">
             {filters && <SearchBox value={filters.q} onSearch={onSearch} />}
+            <CommandLauncher />
             <ThemeToggle />
             <ProfileButton />
           </div>
