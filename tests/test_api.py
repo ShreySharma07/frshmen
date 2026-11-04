@@ -432,6 +432,11 @@ def test_tailor_needs_sign_in(client):
     assert client.post(f"/api/jobs/{HUME}/tailor").status_code == 401
 
 
+def test_job_summaries_carry_their_skills(mixed_skills):
+    jobs = {j["title"]: j["skills"] for j in mixed_skills.get("/api/jobs?role=all").json()["jobs"]}
+    assert jobs["ML Engineer"] == ["Python", "PyTorch"] and jobs["Android Developer"] == ["Kotlin"]
+
+
 def test_skill_demand_counts_skills_in_matching_jobs(mixed_skills):
     body = mixed_skills.get("/api/skill-demand?role=ai_ml").json()
     assert body["total"] == 2 and body["skills"] == [{"skill": "Python", "n": 2}, {"skill": "PyTorch", "n": 1}]

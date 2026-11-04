@@ -367,3 +367,14 @@ def test_nobody_on_the_data_api_can_write_tailored_resumes():
         assert denied(as_role(role, uid), "UPDATE tailored_resumes SET result = '{}'")
         assert denied(as_role(role, uid), "DELETE FROM tailored_resumes")
     assert denied(as_role("anon"), "SELECT * FROM tailored_resumes")
+
+
+def test_weekly_goal_is_the_users_own_and_checked():
+    alice_with_profile()
+    with as_alice() as conn:
+        conn.execute("UPDATE students SET weekly_goal = 8")
+        assert conn.execute("SELECT weekly_goal FROM students").fetchone() == (8,)
+        conn.commit()
+    assert rowcount(as_alice(), "UPDATE students SET weekly_goal = 9 WHERE id = %s", (BOB,)) == 0
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("UPDATE students SET weekly_goal = 0")

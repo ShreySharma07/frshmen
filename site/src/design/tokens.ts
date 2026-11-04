@@ -17,6 +17,8 @@ export const color = {
     cardText: "#ffffff",
     cardMuted: "#d4d4d8",
     cardAccent: "#a5a0ff",
+    cardPass: "#4ade80",
+    cardFail: "#fb7185",
     code: "#f4f4f5",
   },
   dark: {
@@ -34,6 +36,8 @@ export const color = {
     cardText: "#ededf2",
     cardMuted: "#d4d4d8",
     cardAccent: "#a5a0ff",
+    cardPass: "#4ade80",
+    cardFail: "#fb7185",
     code: "#1c1c24",
   },
   /** Landing chapters ("Ink and Marigold"), `.lp-dark` and `.lp-light` in globals.css. */

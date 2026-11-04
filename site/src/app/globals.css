@@ -27,6 +27,8 @@
   --card-muted: #d4d4d8;
   --card-accent: #a5a0ff; /* years number and ticks inside the card */
   --card-line: rgb(255 255 255 / 0.1);
+  --card-pass: #4ade80; /* on the dark card: matches the posting (10.9:1) */
+  --card-fail: #fb7185; /* on the dark card: works against you (7.0:1) */
   --code: #f4f4f5; /* keyword pills */
   color-scheme: light;
 }
@@ -50,6 +52,8 @@
     --card-muted: #d4d4d8;
     --card-accent: #a5a0ff;
     --card-line: rgb(255 255 255 / 0.08);
+    --card-pass: #4ade80;
+    --card-fail: #fb7185;
     --code: #1c1c24;
     color-scheme: dark;
   }
@@ -70,6 +74,8 @@
   --card-muted: #d4d4d8;
   --card-accent: #a5a0ff;
   --card-line: rgb(255 255 255 / 0.08);
+  --card-pass: #4ade80;
+  --card-fail: #fb7185;
   --code: #1c1c24;
   color-scheme: dark;
 }
@@ -152,6 +158,8 @@
   --color-card-muted: var(--card-muted);
   --color-card-accent: var(--card-accent);
   --color-card-line: var(--card-line);
+  --color-card-pass: var(--card-pass);
+  --color-card-fail: var(--card-fail);
   --color-code: var(--code);
   --color-lp-bg: var(--lp-bg);
   --color-lp-surface: var(--lp-surface);
