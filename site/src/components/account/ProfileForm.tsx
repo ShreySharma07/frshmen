@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { profileFilters, SAVED_KEY, toSearch } from "@/lib/filters";
 import { resumeText } from "@/lib/resumeText";
+import { sessionChanged } from "@/lib/session";
 import {
   authConfigured, PROFILE_COLUMNS, RESUME_BUCKET, RESUME_MAX_BYTES, RESUME_TEXT_MAX, resumePath, supabase,
   type Profile, type ProfileRole,
@@ -44,14 +45,15 @@ export function ProfileForm() {
       if (error) return setLoad({ kind: "error", message: `${error.message}. The link may have expired; sign in again.` });
       const user = data.session?.user;
       if (!user) return router.replace("/login");
-      if (location.search.includes("code=")) history.replaceState(null, "", "/profile");
+      sessionChanged(); // the header's profile button reads the session supabase-js just stored
+      if (location.search.includes("code=")) history.replaceState(null, "", location.pathname);
       const row = await sb.from("students").select(PROFILE_COLUMNS).eq("id", user.id).maybeSingle<Profile>();
       if (cancelled) return;
       if (row.error) return setLoad({ kind: "error", message: row.error.message });
       setForm(row.data ? { ...row.data, yoe: Math.min(Number(row.data.yoe), 3) } : blank(user));
       setLoad({ kind: "ready", user, exists: Boolean(row.data) });
     });
-    const { data: sub } = sb.auth.onAuthStateChange((event) => { if (event === "SIGNED_OUT") router.replace("/login"); });
+    const { data: sub } = sb.auth.onAuthStateChange((event) => { if (event === "SIGNED_OUT") router.replace("/"); });
     return () => { cancelled = true; sub.subscription.unsubscribe(); };
   }, [router]);
 
@@ -120,18 +122,14 @@ export function ProfileForm() {
     const row = await sb.from("students").delete().eq("id", user.id);
     if (files.error || row.error) return setSave({ kind: "error", message: (files.error ?? row.error)!.message });
     await sb.auth.signOut();
+    sessionChanged();
     router.replace("/");
   }
 
   const busy = save.kind === "saving" || save.kind === "reading";
-  const signOut = (
-    <button type="button" onClick={() => supabase().auth.signOut()}
-      className="h-8 rounded-md px-2.5 text-meta font-medium text-muted transition-colors duration-quick hover:bg-surface hover:text-ink">Sign out</button>
-  );
-
   return (
-    <AccountShell actions={signOut}>
-      <h1 className="text-title font-medium">Your profile</h1>
+    <AccountShell>
+      <h1 className="text-title font-medium">Your details</h1>
       <p className="mt-2 text-body text-muted">Signed in as <span className="text-ink">{user.email}</span>. Only you can see this.</p>
 
       <form onSubmit={submit} className="mt-8 space-y-7">

@@ -29,7 +29,7 @@ export function SavedNote({ filters }: { filters: Filters }) {
       <p className="min-w-0 flex-1">
         <span className="font-medium">Profile saved.</span>{" "}
         <span className="text-muted">Showing {ROLE_LABEL[filters.role]} jobs for {years}.</span>{" "}
-        <Link href="/profile" className="font-medium text-accent underline underline-offset-2">Edit profile</Link>
+        <Link href="/profile/edit" className="font-medium text-accent underline underline-offset-2">Edit profile</Link>
       </p>
       <button type="button" onClick={() => setShown(false)} aria-label="Dismiss"
         className="grid size-7 shrink-0 place-items-center rounded-sm text-muted transition-colors duration-quick hover:bg-canvas hover:text-ink">
