@@ -126,7 +126,9 @@ def guard(answer: Any, lines: list[str], profile_name: str) -> dict[str, Any] | 
             reason = _added(text, source)
             if reason:
                 kept += 1
-            out.append({"text": " ".join(lines[n - 1] for n in sources) if reason else text,
+            original = " ".join(lines[n - 1] for n in sources)
+            # `original` is what the dialog diffs against.
+            out.append({"text": original if reason else text, "original": original,
                         "sources": sources, "kept_original": bool(reason), "reason": reason})
         if out:
             sections.append({"heading": heading, "lines": out})

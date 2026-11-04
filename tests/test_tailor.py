@@ -20,6 +20,7 @@ def test_a_faithful_rewording_is_kept():
     out = tailor.guard(answer({"text": "Built a LangChain chatbot serving 200 daily users", "sources": [3]}), LINES, "Asha")
     line = out["sections"][0]["lines"][0]
     assert line["text"] == "Built a LangChain chatbot serving 200 daily users" and not line["kept_original"]
+    assert line["original"] == LINES[2]
     assert out["kept_original"] == 0
 
 
