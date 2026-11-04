@@ -29,24 +29,33 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from sources.http import USER_AGENT, FetchError, HttpClient  # noqa: E402
 from verify_companies import COMPANIES, rewrite_yaml  # noqa: E402
 
-# Words that don't tell companies apart, dropped before comparing a name with a page title.
-_FILLER = re.compile(r"\b(inc|llc|ltd|limited|corp|corporation|technologies|technology|labs?|ai|hq|the|co)\b")
+# Legal and filler words dropped from a name before comparing it with a page title. "AI" and
+# "Labs" stay: "Character.AI" must not match a page about some other "Character".
+_FILLER = re.compile(r"\b(inc|llc|ltd|limited|corp|corporation|technologies|technology|hq|the|co)\b")
+# A short name ("Flint", "Weave") is shared by many companies, so its site must also link to the
+# company's own hiring board before we believe it.
+DISTINCTIVE = 8
+ATS_LINK = {"greenhouse": "greenhouse.io/{}", "lever": "lever.co/{}", "ashby": "ashbyhq.com/{}",
+            "workable": "workable.com/{}", "smartrecruiters": "smartrecruiters.com/{}"}
 _TITLE = re.compile(r"<title[^>]*>(.*?)</title>", re.I | re.S)
 _SITE_NAME = re.compile(r"<meta[^>]+property=[\"']og:site_name[\"'][^>]+content=[\"']([^\"']+)", re.I)
 
 
 def core(name: str) -> str:
-    """'Sarvam AI' -> 'sarvam', 'Anysphere (Cursor)' -> 'anysphere': the part a title must contain."""
+    """'Sarvam AI' -> 'sarvamai', 'Anysphere (Cursor)' -> 'anysphere': what a page title must contain."""
     name = re.sub(r"\(.*?\)", " ", name.lower())
     name = _FILLER.sub(" ", name)
     return re.sub(r"[^a-z0-9]", "", name)
 
 
 def candidates(company: dict) -> list[str]:
-    base = core(company["name"])
-    plain = re.sub(r"[^a-z0-9]", "", re.sub(r"\(.*?\)", "", company["name"].lower()))
+    words = re.sub(r"\(.*?\)", " ", company["name"].lower())
+    full = core(company["name"])
+    # Without a trailing "AI": "Sarvam AI" is sarvam.ai far more often than sarvamai.com.
+    short = re.sub(r"[^a-z0-9]", "", re.sub(r"(\.ai|\s+ai)\s*$", "", words))
     slug = str(company.get("slug") or "").lower()
-    out = [f"{base}.com", f"{base}.ai", f"{plain}.com", f"{plain}.ai", f"{base}.io"]
+    ai_named = bool(re.search(r"(\.ai|\bai)\s*$", words))
+    out = ([f"{short}.ai", f"{short}.com"] if ai_named else [f"{short}.com", f"{short}.ai"]) + [f"{full}.com", f"{short}.io"]
     if re.fullmatch(r"[a-z0-9-]+", slug):
         out += [f"{slug}.com", f"{slug}.ai"]
     seen, unique = set(), []
@@ -57,6 +66,13 @@ def candidates(company: dict) -> list[str]:
     return unique
 
 
+def links_board(page: str, company: dict) -> bool:
+    """True when the page links to the company's own board on its hiring system."""
+    pattern = ATS_LINK.get(str(company.get("ats")))
+    slug = str(company.get("slug") or "")
+    return bool(pattern and slug) and pattern.format(slug).lower() in page.lower()
+
+
 def names_company(page: str, company: str) -> bool:
     """True when the page's <title> or og:site_name contains the company's core name."""
     found = [m.group(1) for m in (_TITLE.search(page), _SITE_NAME.search(page)) if m]
@@ -64,7 +80,7 @@ def names_company(page: str, company: str) -> bool:
     return bool(want) and any(want in re.sub(r"[^a-z0-9]", "", html.unescape(t).lower()) for t in found)
 
 
-def allowed(client: HttpClient, domain: str) -> bool:
+def allowed(client: HttpClient, domain: str, path: str = "/") -> bool:
     try:
         text = client.get_text(f"https://{domain}/robots.txt", accept="text/plain")
     except FetchError:
@@ -73,21 +89,39 @@ def allowed(client: HttpClient, domain: str) -> bool:
         return True
     rp = RobotFileParser()
     rp.parse(text.splitlines())
-    return rp.can_fetch(USER_AGENT, f"https://{domain}/")
+    return rp.can_fetch(USER_AGENT, f"https://{domain}{path}")
+
+
+def same_site(final_url: str, domain: str, company: str) -> str | None:
+    """The host a candidate ended up on, if it's still the company's own: sarvam.com -> sarvam.ai
+    is fine, a redirect to linkedin.com or a parking page isn't."""
+    host = (urlparse(final_url).hostname or "").removeprefix("www.")
+    if host == domain or host.endswith("." + domain):
+        return host
+    label = re.sub(r"[^a-z0-9]", "", host.split(".")[0])
+    want = core(company)
+    return host if label and (label in want or want.startswith(label)) and len(label) >= 3 else None
 
 
 def find(client: HttpClient, company: dict) -> str | None:
+    distinctive = len(core(company["name"])) >= DISTINCTIVE
     for domain in candidates(company):
         try:
             if not allowed(client, domain):
                 continue
             got = client.get_page(f"https://{domain}/")
+            if not got or not names_company(got[1], company["name"]):
+                continue
+            host = same_site(got[0], domain, company["name"])
+            if not host:
+                continue
+            if not distinctive:
+                careers = client.get_page(f"https://{host}/careers") if allowed(client, host, "/careers") else None
+                if not (links_board(got[1], company) or (careers and links_board(careers[1], company))):
+                    continue
+            return host
         except (FetchError, OSError, ValueError):
             continue
-        if got and names_company(got[1], company["name"]):
-            # Keep where it landed (sarvam.com -> www.sarvam.ai), minus "www.".
-            host = urlparse(got[0]).netloc or domain
-            return host.removeprefix("www.")
     return None
 
 
