@@ -44,5 +44,7 @@ jobs:
             echo "No new websites."
           else
             git commit -m "Add company websites found by scripts/find_websites.py"
+            # Other workflows (the board check) also commit to PR branches: take theirs first.
+            git pull --rebase origin "${{ github.head_ref }}"
             git push
           fi
