@@ -692,7 +692,7 @@ companies:
   - {name: Alinea, category: yc, hq: us, website: alinea-invest.com, ats: ashby, slug: alinea, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
   - {name: Anima, category: yc, hq: uk, ats: ashby, slug: anima, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-06'}
   - {name: arnata, category: yc, hq: us, website: arnata.com, ats: ashby, slug: arnata, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://www.arnata.com/'}
-  - {name: Atomic Industries, category: yc, hq: us, ats: ashby, slug: atomicindustries, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
+  - {name: Atomic Industries, category: yc, hq: us, website: atomicindustries.com, ats: ashby, slug: atomicindustries, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-03'}
   - {name: authzed, category: yc, hq: us, website: authzed.com, ats: ashby, slug: authzed, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: BoldVoice, category: yc, hq: us, website: boldvoice.com, ats: ashby, slug: boldvoice, verified: false, checked: '2026-11-03', careers: 'yc_jobs (no adapter yet): https://boldvoice.com'}
   - {name: BusinessOnBot, category: yc, hq: in, website: www.businessonbot.com, ats: ashby, slug: businessonbot, verified: false, checked: '2026-11-03', careers: not found (6 pages read)}
