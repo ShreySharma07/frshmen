@@ -14,6 +14,7 @@ export interface Tracked {
   job_id: string;
   status: Stage;
   applied_at: string | null;
+  created_at: string;
   updated_at: string;
   jobs: { title: string; url: string; companies: { name: string } | null } | null;
 }
@@ -27,7 +28,7 @@ async function ok(res: Response): Promise<Response> {
 }
 
 export async function trackedJobs(): Promise<Tracked[]> {
-  const res = await rest("applications?select=id,job_id,status,applied_at,updated_at,jobs(title,url,companies(name))&order=updated_at.desc");
+  const res = await rest("applications?select=id,job_id,status,applied_at,created_at,updated_at,jobs(title,url,companies(name))&order=updated_at.desc");
   return (await ok(res)).json();
 }
 
