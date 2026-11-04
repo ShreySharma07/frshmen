@@ -343,7 +343,7 @@ companies:
   - {name: BlackRock, category: mnc, hq: us, website: blackrock.com, ats: workday, slug: blackrock/wd1/BlackRock_Professional, india_only: true, verified: true, jobs: 308, ai_jobs: 19, checked: '2026-10-06'}
   - {name: Applied Materials, category: mnc, hq: us, ats: workday, slug: amat/wd1/External, india_only: true, verified: true, jobs: 100, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Qualys, category: mnc, hq: us, ats: workday, slug: qualys/wd5/Careers, india_only: true, verified: true, jobs: 157, ai_jobs: 19, checked: '2026-10-06'}
-  - {name: Microchip, category: mnc, hq: us, ats: workday, slug: microchiphr/wd5/External, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-10-06'}
+  - {name: Microchip, category: mnc, hq: us, website: microchip.com, ats: workday, slug: microchiphr/wd5/External, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-10-06'}
   - {name: RTX, category: mnc, hq: us, ats: workday, slug: globalhr/wd5/REC_RTX_Ext_Gateway, india_only: true, verified: true, jobs: 4824, ai_jobs: 42, checked: '2026-10-06'}
   - {name: Stripe, category: mnc, hq: us, ats: greenhouse, slug: stripe, india_only: true, verified: true, jobs: 719, ai_jobs: 41, checked: '2026-10-06'}
   - {name: Coinbase, category: mnc, hq: us, website: coinbase.com, ats: greenhouse, slug: coinbase, india_only: true, verified: true, jobs: 226, ai_jobs: 15, checked: '2026-10-06'}
