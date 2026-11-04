@@ -4,6 +4,26 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-04 — Job list polish and the pipeline-first dashboard
+- **Brief (Shrey):** on the job list, real logos or per-company tints, a sticky action bar,
+  visibly active filter chips with "Clear all", a requirements card without dead space and with
+  semantic colours. The dashboard becomes a command center: a one-sentence brief with one
+  action, a kanban tracker with drag and drop, a Today rail (strong matches, follow-ups, the
+  fit-check ring, the top missing skills), an Insights page (timeline, applications per week
+  against a goal), header nav (Jobs, Board, Insights) and a Cmd+K palette. B.4 is on hold.
+- **Logos. Options:** a free favicon service by domain with a tinted-letter fallback · logos
+  fetched once by the pipeline and self-hosted · tinted letters only. **Choice (Shrey):** favicon
+  service (DuckDuckGo's icon endpoint) plus tint fallback. The service sees which company domains
+  a visitor's browser asks for. Only 57 of 433 working companies had a known website, so a
+  backfill adds domains, keeping a guess only when that site's title names the company.
+- **Strong match. Options:** rules (new in 24 hours, fits years and roles, and the resume has at
+  least half of the skills the posting names) · only Gemini-checked "strong". **Choice (Shrey):**
+  rules; a Gemini verdict upgrades a card once checked.
+- **Weekly goal (Shrey):** a goal on the profile, default 5 (adds `students.weekly_goal`). A job
+  sitting in Applied for 7 or more days is "follow-up due".
+- **Pages (Shrey):** Jobs `/` (the list), Board `/profile` (the command center), Insights
+  `/insights` (timeline, weekly chart, full skill gap).
+
 ## 2026-11-04 — Part B.3: the tailored resume
 - **Promise:** reword and reorder the saved resume toward one job, never adding a skill, a number
   or a claim; show a diff; download a PDF.
