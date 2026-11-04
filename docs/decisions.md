@@ -4,6 +4,15 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-04 — After saving a profile, go to the jobs it fits
+- **Found (Shrey):** saving showed "Saved." and nothing else, so a person didn't know what to do next.
+- **Options:** a panel with a "See your jobs" button, staying on the form · go straight to the
+  job list, filtered by the profile, with a one-time "Profile saved" note · a toast plus a
+  "Your jobs" link in the header.
+- **Choice (Shrey):** straight to the job list. The filters come from the profile: its years
+  ("3+" becomes "≤ 3", precision first) and its role when exactly one is picked, otherwise all
+  three target roles. The note says what the list shows and links back to "Edit profile".
+
 ## 2026-11-03 — Rename to Aventra; a new address now, our own domain later
 - **Name (Shrey):** the product is **Aventra**, its only name. Replaces Kario everywhere a
   person or a fetched server sees it: the wordmark and the "a" mark (regenerated from Instrument
