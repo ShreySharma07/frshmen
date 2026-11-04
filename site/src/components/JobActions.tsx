@@ -6,6 +6,7 @@ import { Bookmark, BookmarkCheck } from "lucide-react";
 import dynamic from "next/dynamic";
 import { IntentLink } from "./IntentLink";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { readSession, subscribeSession } from "@/lib/session";
 import { checkFit, fitQuota, saveJob, stageOf, STAGES, type Stage, type Verdict } from "@/lib/tracker";
 
@@ -15,7 +16,11 @@ const TailorDialog = dynamic(() => import("./TailorDialog").then((m) => m.Tailor
 const NOTICE_KEY = "aventra:gemini-notice"; // set once the person has read the privacy note
 const btn = "inline-flex h-10 items-center gap-1.5 rounded-md border border-line px-3.5 text-meta font-medium transition-colors duration-quick hover:bg-surface disabled:opacity-60";
 
-export function JobActions({ jobId, title, company, fitCheck }: { jobId: string; title: string; company: string; fitCheck: boolean }) {
+/** `panels` is where the fit check's note and verdict go: below the sticky action bar, so a tall
+ *  verdict scrolls with the posting instead of covering it. */
+export function JobActions({ jobId, title, company, fitCheck, panels }: {
+  jobId: string; title: string; company: string; fitCheck: boolean; panels?: HTMLElement | null;
+}) {
   const session = useSyncExternalStore(subscribeSession, readSession, () => null);
   if (!session) {
     return (
@@ -25,12 +30,10 @@ export function JobActions({ jobId, title, company, fitCheck }: { jobId: string;
     );
   }
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <SaveButton userId={session.userId} jobId={jobId} />
-        {fitCheck && <FitCheck jobId={jobId} title={title} company={company} />}
-      </div>
-    </div>
+    <>
+      <SaveButton userId={session.userId} jobId={jobId} />
+      {fitCheck && <FitCheck jobId={jobId} title={title} company={company} panels={panels} />}
+    </>
   );
 }
 
@@ -64,7 +67,7 @@ type Fit =
   | { kind: "idle" } | { kind: "notice" } | { kind: "checking" }
   | { kind: "done"; verdict: Verdict } | { kind: "error"; message: React.ReactNode };
 
-function FitCheck({ jobId, title, company }: { jobId: string; title: string; company: string }) {
+function FitCheck({ jobId, title, company, panels }: { jobId: string; title: string; company: string; panels?: HTMLElement | null }) {
   const [left, setLeft] = useState<number | null>(null);
   const [tailorLeft, setTailorLeft] = useState<number | null>(null);
   const [tailoring, setTailoring] = useState(false);
@@ -100,8 +103,9 @@ function FitCheck({ jobId, title, company }: { jobId: string; title: string; com
         {state.kind === "checking" ? "Checking with Gemini…" : "Check my fit"}
         {left !== null && state.kind !== "checking" && <span className="font-mono font-normal text-muted">· {left} left today</span>}
       </button>
+      {below(panels, <>
       {state.kind === "notice" && (
-        <div role="dialog" aria-label="Before your first fit check" className="basis-full rounded-lg border border-line bg-surface p-4 text-body">
+        <div role="dialog" aria-label="Before your first fit check" className="rounded-lg border border-line bg-surface p-4 text-body">
           <p>Gemini will compare this posting with the resume text saved on your profile.</p>
           <p className="mt-1.5 text-muted">On Gemini&apos;s free tier, Google may use what it&apos;s sent to improve its products. You get 5 checks a day.</p>
           <div className="mt-3 flex gap-2">
@@ -110,7 +114,7 @@ function FitCheck({ jobId, title, company }: { jobId: string; title: string; com
           </div>
         </div>
       )}
-      {state.kind === "error" && <p role="alert" className="basis-full text-meta text-muted">{state.message}</p>}
+      {state.kind === "error" && <p role="alert" className="text-meta text-muted">{state.message}</p>}
       {state.kind === "done" && (
         <VerdictCard v={state.verdict}>
           {/* The next step after a verdict: the resume, reworded toward this job (2 a day). */}
@@ -120,16 +124,22 @@ function FitCheck({ jobId, title, company }: { jobId: string; title: string; com
           </button>
         </VerdictCard>
       )}
+      </>)}
       {tailoring && <TailorDialog jobId={jobId} title={title} company={company} onClose={() => setTailoring(false)} onMade={setTailorLeft} />}
     </>
   );
+}
+
+/** Renders into the panel slot under the action bar when there is one, else in place. */
+function below(slot: HTMLElement | null | undefined, node: React.ReactNode) {
+  return slot ? createPortal(node, slot) : node;
 }
 
 const TONE = { strong: "Strong fit", partial: "Partial fit", weak: "Weak fit" } as const;
 
 function VerdictCard({ v, children }: { v: Verdict; children?: React.ReactNode }) {
   return (
-    <div role="status" className="basis-full rounded-lg border border-line p-4 text-body">
+    <div role="status" className="rounded-lg border border-line p-4 text-body">
       <p className="flex items-baseline gap-2">
         <span className="font-medium">{TONE[v.fit]}</span>
         {v.score !== null && <span className="font-mono text-meta text-muted">{v.score}/100</span>}
