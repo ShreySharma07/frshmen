@@ -3,15 +3,19 @@
 // resume (5 a day, docs/decisions.md 2026-11-04). Both need sign-in; neither loads supabase-js
 // unless a token has to be refreshed.
 import { Bookmark, BookmarkCheck } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { readSession, subscribeSession } from "@/lib/session";
 import { checkFit, fitQuota, saveJob, stageOf, STAGES, type Stage, type Verdict } from "@/lib/tracker";
 
+// The tailored resume (and pdf-lib with it) loads only when someone opens it.
+const TailorDialog = dynamic(() => import("./TailorDialog").then((m) => m.TailorDialog), { ssr: false });
+
 const NOTICE_KEY = "aventra:gemini-notice"; // set once the person has read the privacy note
 const btn = "inline-flex h-10 items-center gap-1.5 rounded-md border border-line px-3.5 text-meta font-medium transition-colors duration-quick hover:bg-surface disabled:opacity-60";
 
-export function JobActions({ jobId, fitCheck }: { jobId: string; fitCheck: boolean }) {
+export function JobActions({ jobId, title, company, fitCheck }: { jobId: string; title: string; company: string; fitCheck: boolean }) {
   const session = useSyncExternalStore(subscribeSession, readSession, () => null);
   if (!session) {
     return (
@@ -24,7 +28,7 @@ export function JobActions({ jobId, fitCheck }: { jobId: string; fitCheck: boole
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SaveButton userId={session.userId} jobId={jobId} />
-        {fitCheck && <FitCheck jobId={jobId} />}
+        {fitCheck && <FitCheck jobId={jobId} title={title} company={company} />}
       </div>
     </div>
   );
@@ -60,10 +64,12 @@ type Fit =
   | { kind: "idle" } | { kind: "notice" } | { kind: "checking" }
   | { kind: "done"; verdict: Verdict } | { kind: "error"; message: React.ReactNode };
 
-function FitCheck({ jobId }: { jobId: string }) {
+function FitCheck({ jobId, title, company }: { jobId: string; title: string; company: string }) {
   const [left, setLeft] = useState<number | null>(null);
+  const [tailorLeft, setTailorLeft] = useState<number | null>(null);
+  const [tailoring, setTailoring] = useState(false);
   const [state, setState] = useState<Fit>({ kind: "idle" });
-  useEffect(() => { fitQuota().then((q) => setLeft(q.remaining)).catch(() => {}); }, []);
+  useEffect(() => { fitQuota().then((q) => { setLeft(q.remaining); setTailorLeft(q.tailor?.remaining ?? null); }).catch(() => {}); }, []);
 
   async function run() {
     try { localStorage.setItem(NOTICE_KEY, "1"); } catch {}
@@ -105,14 +111,23 @@ function FitCheck({ jobId }: { jobId: string }) {
         </div>
       )}
       {state.kind === "error" && <p role="alert" className="basis-full text-meta text-muted">{state.message}</p>}
-      {state.kind === "done" && <VerdictCard v={state.verdict} />}
+      {state.kind === "done" && (
+        <VerdictCard v={state.verdict}>
+          {/* The next step after a verdict: the resume, reworded toward this job (2 a day). */}
+          <button type="button" onClick={() => setTailoring(true)} disabled={tailorLeft === 0} className={btn}>
+            Tailor my resume for this job
+            {tailorLeft !== null && <span className="font-mono font-normal text-muted">· {tailorLeft} left today</span>}
+          </button>
+        </VerdictCard>
+      )}
+      {tailoring && <TailorDialog jobId={jobId} title={title} company={company} onClose={() => setTailoring(false)} onMade={setTailorLeft} />}
     </>
   );
 }
 
 const TONE = { strong: "Strong fit", partial: "Partial fit", weak: "Weak fit" } as const;
 
-function VerdictCard({ v }: { v: Verdict }) {
+function VerdictCard({ v, children }: { v: Verdict; children?: React.ReactNode }) {
   return (
     <div role="status" className="basis-full rounded-lg border border-line p-4 text-body">
       <p className="flex items-baseline gap-2">
@@ -125,6 +140,7 @@ function VerdictCard({ v }: { v: Verdict }) {
         <List title="Not on your resume" items={v.missing} />
       </div>
       {v.advice && <p className="mt-3">{v.advice}</p>}
+      {children && <div className="mt-4">{children}</div>}
       <p className="mt-3 text-caption text-muted">From Gemini, using only this posting and your saved resume. Check it against the posting.</p>
     </div>
   );
