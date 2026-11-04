@@ -2,6 +2,7 @@ import { ArrowUpRight, Banknote, Briefcase, ChevronLeft, Clock, MapPin } from "l
 import type { JobDetail } from "@/lib/api";
 import { ATS, blocks, bodyText, highlightParts, techMentioned } from "@/lib/describe";
 import { shortDate } from "@/lib/format";
+import { CompanyMark } from "./CompanyMark";
 import { FitCard } from "./FitCard";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -19,8 +20,9 @@ export function JobDetailView({ job, fitCheck, onBack }: { job: JobDetail; fitCh
       <button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-1 text-body text-muted lg:hidden">
         <ChevronLeft className="size-4" /> Jobs
       </button>
-      <p className="text-body text-muted">
-        <span className="font-medium text-ink">{job.company}</span> · via {ATS[job.source] ?? job.source}
+      <p className="flex items-center gap-2.5 text-body text-muted">
+        <CompanyMark company={job.company} size="sm" />
+        <span><span className="font-medium text-ink">{job.company}</span> · via {ATS[job.source] ?? job.source}</span>
       </p>
       <h1 className="mt-2 text-title font-medium tracking-tight">{job.title}</h1>
       {job.salary && (
