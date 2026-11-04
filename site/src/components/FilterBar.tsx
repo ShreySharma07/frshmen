@@ -47,7 +47,7 @@ export function FilterBar({ filters, countries, onChange }: {
       </Chip>
       {!isDefault({ ...filters, q: "" }) && (
         <button type="button" onClick={() => onChange({ ...DEFAULTS, q: filters.q })}
-          className="shrink-0 px-2 text-meta text-muted underline-offset-2 hover:text-ink hover:underline">Clear</button>
+          className="shrink-0 px-2 text-meta font-medium text-accent underline-offset-2 hover:underline">Clear all</button>
       )}
     </div>
   );
@@ -57,13 +57,14 @@ function Chip({ label, on, value, onChange, children }: {
   label: string; on: boolean; value: string; onChange: (v: string) => void; children: React.ReactNode;
 }) {
   return (
-    <label className={`relative inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border pl-2.5 transition-colors duration-quick focus-within:ring-2 focus-within:ring-accent/40 ${on ? "border-ink/25 bg-canvas shadow-raised" : "border-line hover:bg-surface"}`}>
+    // An active filter carries the accent (border, tint, value), so a glance shows what's narrowing the list.
+    <label className={`relative inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border pl-2.5 transition-colors duration-quick focus-within:ring-2 focus-within:ring-accent/40 ${on ? "border-accent bg-selected" : "border-line hover:bg-surface"}`}>
       <span className="text-meta text-muted">{label}</span>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="h-full cursor-pointer appearance-none bg-transparent pr-7 text-meta font-medium text-ink outline-none [field-sizing:content]">
+        className={`h-full cursor-pointer appearance-none bg-transparent pr-7 text-meta font-medium outline-none [field-sizing:content] ${on ? "text-accent" : "text-ink"}`}>
         {children}
       </select>
-      <ChevronDown aria-hidden className="pointer-events-none absolute right-2 size-3.5 text-muted" />
+      <ChevronDown aria-hidden className={`pointer-events-none absolute right-2 size-3.5 ${on ? "text-accent" : "text-muted"}`} />
     </label>
   );
 }
