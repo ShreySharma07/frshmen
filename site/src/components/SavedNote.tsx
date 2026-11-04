@@ -2,7 +2,7 @@
 // One line above the filters after someone saves their profile and lands here: what was saved and
 // what the list now shows. Shown once per save (SAVED_KEY), dismissable.
 import { X } from "lucide-react";
-import Link from "next/link";
+import { IntentLink } from "./IntentLink";
 import { useEffect, useState } from "react";
 import type { Role } from "@/lib/api";
 import { SAVED_KEY, type Filters } from "@/lib/filters";
@@ -29,7 +29,7 @@ export function SavedNote({ filters }: { filters: Filters }) {
       <p className="min-w-0 flex-1">
         <span className="font-medium">Profile saved.</span>{" "}
         <span className="text-muted">Showing {ROLE_LABEL[filters.role]} jobs for {years}.</span>{" "}
-        <Link href="/profile/edit" className="font-medium text-accent underline underline-offset-2">Edit profile</Link>
+        <IntentLink href="/profile/edit" className="font-medium text-accent underline underline-offset-2">Edit profile</IntentLink>
       </p>
       <button type="button" onClick={() => setShown(false)} aria-label="Dismiss"
         className="grid size-7 shrink-0 place-items-center rounded-sm text-muted transition-colors duration-quick hover:bg-canvas hover:text-ink">
