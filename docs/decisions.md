@@ -14,6 +14,15 @@ Newest first. Each entry: date, options considered, choice, why.
   (13:1 with ink). Dark: paper `#111314`, panels `#191b1d`, ink `#e9ebe8`, muted `#9ca19c`,
   highlighter `#5a4512`. The primary button and "you / this week" in charts use ink, not
   marigold. Status colours (takes you / stretch / excluded) and the agent's bottle green stay.
+- **Charts (Shrey, after seeing an all-grey Insights page):** keep the first Insights look: data
+  series in dark ink `#343835`, and marigold `#ffb21a` for "this week / you / now" in charts. So
+  marigold has two jobs, both about pointing: the evidence highlight and "now" in a chart.
+  Buttons stay ink.
+- **Navigation. Options:** keep the 2026-11-04 pages (Jobs, Board, Insights) · five tabs ·
+  four tabs (Jobs, Today, Tracker, Market). **Choice (Shrey):** five tabs: **Jobs · Today ·
+  Applications · Insights · Market**, replacing the 2026-11-04 page list. Today takes the Board's
+  brief and Needs-you list; Applications holds the table and kanban; Scout opens from the header.
+  On phones the same five sit in a bottom tab bar.
   Instrument Serif for headings, Instrument Sans for text; Geist leaves the app.
 - **Why:** one identity across landing and app; the earlier Ledger read too beige, and a
   marigold button competed with the evidence highlight, which is the product's whole promise.
