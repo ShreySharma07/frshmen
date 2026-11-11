@@ -14,14 +14,30 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
-## 2026-11-11 — App redesign: scope, and three directions to choose from
+## 2026-11-11 — App redesign: the three directions mixed (job list built)
 - **Scope options:** app pages only · landing and app, fresh identity · landing only
-- **Choice (Shrey):** app pages (job list, job detail, profile, insights, login) move to the
-  landing page's identity (ink, paper, marigold); the landing page stays. Claude builds, Shrey
-  reviews.
-- **Open:** the direction. Three sketches of the job list with real jobs are in
-  `docs/wireframes/next.html` (`?d=a` Ledger, `?d=b` Console, `?d=c` Billboard; screenshots
-  `next-*-1280.png` and `next-*-390.png`). Shrey chooses before tokens are written.
+- **Choice (Shrey):** app pages move to the landing page's identity; the landing page stays.
+  Claude builds, Shrey reviews.
+- **Direction (Shrey, after seeing `docs/wireframes/next.html`):** mix all three, because Ledger
+  alone had no visible filters.
+  - From **Ledger:** paper and warm ink, Instrument Serif headings, and the highlighter over the
+    words in the quoted line that decided the label (it sweeps in once when a job opens).
+  - From **Console:** every filter open in a rail beside the list with live counts (chips stay on
+    phones), the ruler (bar = what the job asks, tick = your years) in each row and in the
+    evidence card, and the graphite dark theme.
+  - From **Billboard:** years of experience as the page's headline control ("I have 3 years of
+    experience"), replacing the "Asks" chip.
+- **Tokens:** the app's white and purple are replaced by the landing's paper, ink and marigold in
+  `globals.css` and `tokens.ts`. Marigold is a fill only; new `accent-text` (blue on paper, amber
+  on graphite) is the text version, and `mark` is the highlighter. Every text pair is 4.5:1 or
+  more (computed; figures in `globals.css`).
+- **Type:** Instrument Serif (headings, years), Instrument Sans (text, replaces Geist) and Geist
+  Mono (data), loaded once in the root layout. Three families against CLAUDE.md's two, the same
+  exception the landing page already has; say if the mono should go.
+- **Budget:** the job list downloads 153 KB of JavaScript gzipped (limit 170), no new libraries.
+- **Checked:** lint, types, token sync, static build; screenshots at 390 and 1280 px, light and
+  dark, with sample jobs in place of the API (this sandbox can't reach it). **Not checked:** the
+  signed-in pages (board, insights, profile) on screen, a real phone, throttled-4G timings.
 
 ## 2026-11-04 — Job list polish and the pipeline-first dashboard
 - **Brief (Shrey):** on the job list, real logos or per-company tints, a sticky action bar,

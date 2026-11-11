@@ -20,7 +20,7 @@ export function SkillGap({ missing, total }: { missing: { skill: string; n: numb
           ))}
         </ol>
       )}
-      <Link href="/insights" className="mt-3 inline-block text-meta font-medium text-accent underline underline-offset-2">All skills</Link>
+      <Link href="/insights" className="mt-3 inline-block text-meta font-medium text-accent-text underline underline-offset-2">All skills</Link>
     </section>
   );
 }

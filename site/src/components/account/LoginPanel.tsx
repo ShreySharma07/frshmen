@@ -57,7 +57,7 @@ export function LoginPanel() {
         <div role="status" className="rounded-lg border border-line bg-surface p-4 text-body">
           <p className="font-medium">Check your inbox.</p>
           <p className="mt-1 text-muted">We sent a sign-in link to <span className="text-ink">{state.email}</span>. It works once, for one hour.</p>
-          <button type="button" onClick={() => setState({ kind: "idle" })} className="mt-3 text-meta font-medium text-accent underline">Use a different email</button>
+          <button type="button" onClick={() => setState({ kind: "idle" })} className="mt-3 text-meta font-medium text-accent-text underline">Use a different email</button>
         </div>
       ) : (
         <form onSubmit={sendLink} className="space-y-3">

@@ -33,7 +33,7 @@ export function Today({ userId, matches, followUps, tracked, onSaved }: {
                 </a>
                 <button type="button" onClick={() => save(j.id)} disabled={isSaved} aria-label={isSaved ? `${j.title} is saved` : `Save ${j.title}`}
                   className="grid size-8 shrink-0 place-items-center rounded-md border border-line text-muted transition-colors duration-quick hover:bg-surface hover:text-ink disabled:border-transparent">
-                  {isSaved ? <BookmarkCheck aria-hidden className="size-4 text-accent" /> : <Bookmark aria-hidden className="size-4" />}
+                  {isSaved ? <BookmarkCheck aria-hidden className="size-4 text-accent-text" /> : <Bookmark aria-hidden className="size-4" />}
                 </button>
               </li>
             );

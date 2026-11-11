@@ -7,14 +7,15 @@ export const metadata: Metadata = { title: "Design tokens · Aventra", robots: {
 const COLOURS = [
   ["canvas", "Page background"], ["surface", "Hover, subtle fills"], ["line", "Dividers, borders"],
   ["ink", "Main text"], ["muted", "Secondary text"], ["faint", "Icons and dividers only"],
-  ["accent", "The brand colour"], ["selected", "Selected row"], ["card", "Fit card"],
-  ["card-accent", "Years in the fit card"], ["code", "Keyword pills"],
+  ["accent", "Marigold: action fill"], ["accent-text", "Links, accent text"], ["mark", "Highlighter"],
+  ["selected", "Selected row"], ["card", "Evidence card"], ["card-accent", "Years in the card"], ["code", "Keyword pills"],
 ] as const;
 
 const TYPE = [
-  ["text-display", "3+ years", "font-mono font-semibold"], ["text-title", "ML Engineer (Data), Foundational Models", "font-medium"],
+  ["text-hero", "I have 3 years", "font-display"], ["text-headline", "ML Engineer (Data), Foundational Models", "font-display"],
+  ["text-display", "27,412", "font-mono font-semibold"], ["text-title", "Applications this week", "font-medium"],
   ["text-base", "Default text", ""], ["text-body", "Machine Learning Engineer, Search Quality", "font-medium"],
-  ["text-meta", "Sarvam AI · Bengaluru · 21 May", "text-muted"], ["text-caption", "3–5 yrs", "font-mono text-accent"],
+  ["text-meta", "Sarvam AI · Bengaluru · 21 May", "text-muted"], ["text-caption", "3–5 yrs", "font-mono text-muted"],
 ] as const;
 
 export default function Tokens() {
@@ -59,7 +60,7 @@ export default function Tokens() {
         <h2 className="mb-3 text-meta font-medium text-muted">Components from tokens</h2>
         <div className="grid gap-5 rounded-lg bg-card p-5 text-card-text sm:grid-cols-2">
           <div>
-            <div className="font-mono text-display font-semibold text-card-accent">3+ <span className="text-base">years</span></div>
+            <div className="font-display text-hero text-card-accent">3+ <span className="font-sans text-meta text-card-muted">years</span></div>
             <p className="mt-3 border-l-2 border-card-accent/40 pl-3 text-meta italic text-card-muted">
               3+ years of experience building large-scale data systems.
             </p>
@@ -72,7 +73,7 @@ export default function Tokens() {
           <button className="rounded-md bg-accent px-4 py-2.5 text-meta font-medium text-on-accent transition-colors duration-quick hover:bg-accent-hover">Apply on Sarvam AI</button>
           <button className="rounded-md border border-line px-3 py-2.5 text-meta font-medium transition-colors duration-quick hover:bg-surface">Save</button>
         </div>
-        <div className="mt-4 rounded-md bg-selected px-4 py-3 text-body font-medium">Selected row <span className="float-right font-mono text-caption text-accent">3+ yrs</span></div>
+        <div className="mt-4 rounded-md bg-selected px-4 py-3 text-body font-medium">Selected row <span className="float-right font-mono text-caption text-accent-text">3+ yrs</span></div>
       </section>
     </main>
   );
