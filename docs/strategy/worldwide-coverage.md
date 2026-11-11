@@ -13,7 +13,7 @@ everything is on the shelves with an honest label, and each shopper walks in wit
 list. So the pipeline's job changes from "decide what fits Shrey" to "label every job truthfully",
 and deciding what fits moves to the moment a person looks.
 
-Status: a plan. Nothing here is built. The open choices are in the last section.
+Status: a plan. Nothing here is built. Decisions, and the two still open, are in the last section.
 
 ## Where we are
 
@@ -149,25 +149,26 @@ Every new system gets a robots.txt and terms check first, and is skipped if it r
 | 4 | Country codes on every job; country filter | Usable outside India | Every stored job has a country |
 | 5 | Remove the title screen and the India screen, one careers system at a time, watching size | All jobs from the 703 companies | No `india_only`, no title screen |
 | 6 | Common Crawl import for systems we already read | Thousands of companies | First 2,000 verified |
-| 7 | New regions: adapters, then language rules | Europe first, then the rest | Per region |
+| 7 | India completed, then Europe: adapters, then language rules | The first two regions, each a full board | Per region |
 
 Phases 0–5 need no new source. After them Aventra is a general job board for the companies it
 already reads; 6 and 7 are growth.
 
 ## Decisions
 
-**Decided (Shrey, 2026-11-11):** every country · all roles, filtered per person.
+**Decided (Shrey, 2026-11-11):**
+- Every country; all roles, filtered per person.
+- **Storage:** slim rows in Postgres, descriptions in Cloudflare R2, closed jobs deleted after
+  14 days (options B + D).
+- **At the ceiling:** region by region, each finished before the next starts.
+- **Region order:** India and Europe first. India means finishing `company-coverage.md` (GCCs,
+  Darwinbox, Keka, Zoho Recruit, own careers sites) with the screens off; Europe means Personio,
+  Teamtailor, Recruitee and JOIN.
+- **Languages:** English first. Other languages are listed with years "Not stated" and family
+  "Other" until their rules exist.
 
-**Open:**
-1. **Storage.** A, B, D or a mix. Recommended: B + D.
-2. **When the free ceiling is reached, who gets in first?** By company size · by a region order ·
-   tech and data companies first, then the rest. Recommended: a region order, so each new
-   region is complete when it launches.
-3. **First region after what we have.** Europe · Southeast Asia · the Gulf. Recommended: Europe;
-   its systems publish clean feeds.
-4. **Languages.** English only at first, others shown as "Not stated" · German and French rules
-   before Europe launches. Recommended: English first.
-5. **Family list.** The ~25 above, pruned by Shrey · fewer, broader families. Recommended: the
+**Still open (not blocking phases 0 to 3):**
+1. **Family list.** The ~25 above, pruned by Shrey · fewer, broader families. Recommended: the
    ~25; merging later is easy, splitting is a re-label.
-6. **Company quality bar for imports.** Everything that verifies · at least one open job.
+2. **Company quality bar for imports.** Everything that verifies · at least one open job.
    Recommended: at least one.

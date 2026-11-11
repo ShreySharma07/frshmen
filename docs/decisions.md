@@ -14,6 +14,18 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-11 — Worldwide coverage: storage, order and languages
+- **Storage. Options:** everything in Postgres (~70k jobs) · slim rows in Postgres with
+  descriptions in Cloudflare R2 and closed jobs deleted after 14 days · the same, keeping closed
+  jobs. **Choice (Shrey):** slim rows + R2, 14-day shelf life. Free tier: R2 10 GB, 1M writes and
+  10M reads a month. Cost: search covers title and company, not full text; Insights keeps weekly
+  totals instead of old rows.
+- **At the free ceiling. Options:** region by region · biggest employers first · tech and data
+  companies first. **Choice (Shrey):** region by region.
+- **First regions (Shrey):** India and Europe.
+- **Languages. Options:** English first, others "Not stated" · rules before a region launches ·
+  hide other languages. **Choice (Shrey):** English first.
+
 ## 2026-11-11 — All roles, matched per person at request time
 - **Options:** tech and data roles only (a quarter of the volume) · every role
 - **Choice (Shrey):** fetch every job, every role, and let each person filter by their own
