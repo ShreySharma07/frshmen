@@ -41,7 +41,7 @@ function Page({ profile }: { profile: Profile }) {
       </h1>
       <p className="mt-1 text-body text-muted">
         {data && (thisWeek >= goal ? "Goal met. " : `${goal - thisWeek} to go. `)}
-        <Link href="/profile/edit" className="text-accent underline underline-offset-2">Change your goal</Link>
+        <Link href="/profile/edit" className="text-accent-text underline underline-offset-2">Change your goal</Link>
       </p>
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-3">
@@ -122,7 +122,7 @@ function Skills({ profile }: { profile: Profile }) {
                 return (
                   <li key={skill} className="grid grid-cols-[1fr_2.5rem] items-center gap-x-3 text-body">
                     <span className="flex items-center gap-1.5 truncate">
-                      {on ? <Check aria-label="On your resume" className="size-3.5 shrink-0 text-accent" /> : <span aria-label="Not on your resume" className="size-3.5 shrink-0" />}
+                      {on ? <Check aria-label="On your resume" className="size-3.5 shrink-0 text-accent-text" /> : <span aria-label="Not on your resume" className="size-3.5 shrink-0" />}
                       <span className={on ? "font-medium" : ""}>{skill}</span>
                     </span>
                     <span className="text-right font-mono text-meta">{pct}%</span>

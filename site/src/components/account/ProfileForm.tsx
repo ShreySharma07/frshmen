@@ -194,7 +194,7 @@ export function ProfileForm() {
               <span className="min-w-0 truncate font-mono text-meta">
                 {form.resume_name}
                 {file ? <span className="text-muted"> · not saved yet</span>
-                  : form.resume_path && <> · <button type="button" onClick={openResume} className="font-sans font-medium text-accent underline">open</button></>}
+                  : form.resume_path && <> · <button type="button" onClick={openResume} className="font-sans font-medium text-accent-text underline">open</button></>}
               </span>
             ) : <span className="text-meta text-muted">PDF, up to 5 MB.</span>}
           </div>

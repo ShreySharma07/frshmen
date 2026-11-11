@@ -465,3 +465,21 @@ def test_salary_shows_on_the_list_and_the_job(client):
     detail = client.get(f"/api/jobs/{paid[0]['id']}").json()
     assert detail["salary"] == paid[0]["salary"]
     assert detail["description_text"].startswith(f"Salary\n{paid[0]['salary']}\n")
+
+
+def test_job_detail_reads_text_from_r2_and_falls_back_to_the_column(client):
+    """During the switch-over both hold the text (job_text.py): R2 wins when it has the job."""
+    from test_text_store import FakeBucket
+    import job_text
+
+    in_db = client.get(f"/api/jobs/{HUME}").json()["description_text"]
+    client.app.state.job_text = FakeBucket({job_text.key(HUME): "the text from R2"})
+    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == "the text from R2"
+    # A reposted listing's old link reads the text stored under the job it resolved to.
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO job_aliases VALUES ('ashby:acme:relisted', 'ashby:acme:new')")
+    client.app.state.job_text = FakeBucket({job_text.key("ashby:acme:new"): "the text from R2"})
+    assert client.get("/api/jobs/ashby:acme:relisted").json()["description_text"] == "the text from R2"
+    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == in_db  # not in R2 yet
+    client.app.state.job_text = FakeBucket({}, broken=True)
+    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == in_db  # R2 down: the page still works

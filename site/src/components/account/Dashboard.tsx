@@ -134,7 +134,7 @@ function Board({ user, profile }: { user: User; profile: Profile }) {
                 {data.tailored.map((t) => (
                   <li key={t.id} className="flex items-center gap-3 text-body">
                     <span className="min-w-0 flex-1 truncate">Resume for <span className="font-medium">{t.jobs?.companies?.name}</span></span>
-                    <button type="button" onClick={() => setOpen(t)} className="shrink-0 text-meta font-medium text-accent underline underline-offset-2">Open</button>
+                    <button type="button" onClick={() => setOpen(t)} className="shrink-0 text-meta font-medium text-accent-text underline underline-offset-2">Open</button>
                   </li>
                 ))}
               </ul>

@@ -17,6 +17,11 @@ one card, its applications and its first_seen_at, and shows the new listing's da
 The whole run is one transaction: a failure leaves Supabase as it was, and the next run (all
 upserts) picks everything up again.
 
+Job text also goes to Cloudflare R2 when the R2_* variables are set (scripts/text_store.py):
+each new or changed job's description is uploaded before the transaction commits, so a failed
+upload rolls the run back and the next run writes it again. Postgres still gets the text too
+until the switch-over is finished (docs/decisions.md, 2026-11-11 storage).
+
 Run:
   SUPABASE_DB_URL=postgresql://... python scripts/publish_pg.py
 """
@@ -43,6 +48,7 @@ from job_rows import CLOSE_AFTER_MISSES, DEFAULT_JOBS, _ts, label_row, refresh_c
 
 sys.path.insert(0, str(ROOT / "api" / "src"))  # SQL shared with the API
 from pg_queries import SNAPSHOT  # noqa: E402
+from text_store import TextStore, from_env  # noqa: E402
 
 KEEP_LABELS = 2  # current + previous, enough to check a rules update for regressions
 SAME_TEXT = 0.9  # shingle overlap above which two descriptions are the same posting
@@ -131,12 +137,13 @@ WHERE l.job_id = old.job_id AND l.rules_version = old.rules_version AND old.rn >
 """
 
 
-def publish(pg: psycopg.Connection, payload: dict[str, Any], now: datetime | None = None) -> dict[str, int]:
+def publish(pg: psycopg.Connection, payload: dict[str, Any], now: datetime | None = None,
+            store: TextStore | None = None) -> dict[str, int]:
     now = now or datetime.now(timezone.utc)
     rows = [to_row(j) for j in payload["jobs"]]
     for r in rows:
         r["repost_key"] = repost_key(r["company"], r["title"], r["location_raw"])
-    counts = dict(new=0, changed=0, reclassified=0, reopened=0, reposts=0, missed=0, closed=0)
+    counts = dict(new=0, changed=0, reclassified=0, reopened=0, reposts=0, missed=0, closed=0, texts=0)
 
     with pg.transaction(), pg.cursor() as cur:
         cur.execute("SELECT id, status, missed_runs, content_hash, repost_key, url, posted_at FROM jobs")
@@ -180,6 +187,9 @@ def publish(pg: psycopg.Connection, payload: dict[str, Any], now: datetime | Non
                 if old is not None and jid in labels:
                     counts["reclassified"] += 1
                 label_writes.append(label)
+        if store is not None:
+            # Before the rows: if an upload fails, nothing is committed and the next run retries.
+            counts["texts"] = store.put_many((w["id"], w["description_text"]) for w in job_writes)
         cur.executemany(UPSERT_JOB, job_writes)
         cur.executemany(UPSERT_LABEL, label_writes)
         if label_writes:
@@ -215,8 +225,10 @@ def main() -> int:
     args = parser.parse_args()
     url = os.environ.get("SUPABASE_DB_URL") or sys.exit("set SUPABASE_DB_URL")
     payload = json.loads(args.jobs.read_text())
+    store = from_env()
+    print("job text: " + ("also written to R2" if store else "Postgres only (R2 not set up)"))
     with psycopg.connect(url, autocommit=True, prepare_threshold=None) as pg:
-        counts = publish(pg, payload)
+        counts = publish(pg, payload, store=store)
     print("published to Supabase: " + " ".join(f"{k}={v}" for k, v in counts.items()) + " (unchanged jobs not written)")
     return 0
 

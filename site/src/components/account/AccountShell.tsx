@@ -30,7 +30,7 @@ export function AccountShell({ actions, wide, children }: { actions?: React.Reac
 export function NotSetUp() {
   return (
     <p className="text-body text-muted">
-      Sign-in isn&apos;t switched on yet. <Link href="/" className="font-medium text-accent underline">See open jobs</Link>
+      Sign-in isn&apos;t switched on yet. <Link href="/" className="font-medium text-accent-text underline">See open jobs</Link>
     </p>
   );
 }

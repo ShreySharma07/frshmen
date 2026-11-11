@@ -4,6 +4,107 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-11 — Worldwide coverage: every country, all jobs
+- **Options:** every country, all jobs · companies from everywhere but only jobs open to India ·
+  a few regions first
+- **Choice (Shrey):** every country, all jobs. Reverses point 3 of the 2026-10-18 coverage
+  strategy (keep only India, remote and visa/relocation jobs from global companies).
+- **Why:** Aventra is for every job seeker, not only people in India.
+- **Consequence:** the 500 MB database is the first limit (about 190 MB used with the India
+  filter on). The plan and six open choices (storage first) are in
+  `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
+
+## 2026-11-11 — Moving job text to R2: how (phase 1, first half)
+- **Order. Options:** cut over in one change (drop the column, read only R2) · write to both,
+  copy the old rows, read R2 with Postgres as the fallback, drop the column later.
+  **Choice:** both, then cut over, the same shape as the D1 to Supabase move (2026-10-16). At
+  every step Postgres still has the text, so undoing it is removing two secrets.
+- **Built:** `scripts/text_store.py` (R2 over its S3 API with boto3, a new pipeline-only
+  dependency), `publish_pg.py` uploads each new or changed job's text before its transaction
+  commits (a failed upload rolls the run back; the next run retries), `scripts/backfill_r2.py`
+  with a verify step, `api/src/job_text.py` reading through the Worker's R2 binding, and
+  `scripts/measure_storage.py`. Objects are plain UTF-8 text under `text/<sha256 of job id>`.
+- **Off until set up:** with no R2 secrets the pipeline writes Postgres only, and the Worker's
+  binding is commented out in `wrangler.jsonc` because a deploy fails when its bucket is
+  missing. Steps for Shrey: `docs/setup-r2.md`.
+- **Free tier (checked 2026-11-11):** 10 GB, 1M writes and 10M reads a month. Cloudflare asks
+  for a payment card to switch R2 on; usage inside the limits is not billed. **For Shrey to
+  confirm** against the free-tools rule before step 2 of the setup.
+- **Found on the way, to do before the column can go:** the job list reads pay from the first
+  line of the description, and repost matching compares full texts from Postgres. Pay needs its
+  own column and reposts a stored fingerprint.
+
+## 2026-11-11 — Worldwide coverage: storage, order and languages
+- **Storage. Options:** everything in Postgres (~70k jobs) · slim rows in Postgres with
+  descriptions in Cloudflare R2 and closed jobs deleted after 14 days · the same, keeping closed
+  jobs. **Choice (Shrey):** slim rows + R2, 14-day shelf life. Free tier: R2 10 GB, 1M writes and
+  10M reads a month. Cost: search covers title and company, not full text; Insights keeps weekly
+  totals instead of old rows.
+- **At the free ceiling. Options:** region by region · biggest employers first · tech and data
+  companies first. **Choice (Shrey):** region by region.
+- **First regions (Shrey):** India and Europe.
+- **Languages. Options:** English first, others "Not stated" · rules before a region launches ·
+  hide other languages. **Choice (Shrey):** English first.
+
+## 2026-11-11 — All roles, matched per person at request time
+- **Options:** tech and data roles only (a quarter of the volume) · every role
+- **Choice (Shrey):** fetch every job, every role, and let each person filter by their own
+  preferences.
+- **Consequence:** the pipeline stops matching jobs against `config/profile.yaml`. It labels
+  every job with profile-independent facts (a job family from a fixed list, years, places,
+  workplace, visa, skills) and the API filters by the signed-in person's preferences.
+  `role_match` goes; the title screen and the India screen go. Free storage then holds a few
+  hundred thousand open jobs, so the order companies are added in becomes a product decision.
+  Plan and open choices: `docs/strategy/worldwide-coverage.md` (rewritten today).
+
+## 2026-11-11 — App layout approved (Shrey)
+- **Approved:** the four-section sketch in `docs/wireframes/app-v2.html`, with three changes
+  Shrey asked for, now in the sketch: a profile button at the top right of every page; a filter
+  bar above the Applications board; the Jobs list is flat, newest first, without the
+  grouped-by-fit sections.
+- **Next:** build in the order shell and Jobs, Applications, Insights, Agent. The agent's open
+  questions below still stand.
+
+## 2026-11-11 — The app's four sections, and the layout for them (sketch stage)
+- **Sections (Shrey):** Jobs · Applications (track every job applied to) · Insights, with the
+  market merged in (what companies ask for against the person's profile, how to close each gap,
+  market sentiment) · Agent (talk to it, have it prepare applications and outreach, improve the
+  resume, and keep every tailored resume).
+- **Layout (Shrey liked ideas 1 and 3 of `docs/wireframes/ideas.html`):** Workbench's sidebar,
+  dense grouped rows and command bar, with Pinboard's paper notes for boards, big serif numbers
+  and view switches. The command bar on every page is the agent's input. Sketches:
+  `docs/wireframes/app-v2.html` (`?s=jobs|apps|insights|agent|resumes`), screenshots `v2-*.png`.
+- **Kept from 2026-10-19:** nothing goes out under a person's name without them reading it. In the
+  sketch the agent drafts notes and fills forms; the person sends and submits.
+- **Open, for Shrey:** whether the agent may ever submit an application itself; which model runs
+  the chat and where long agent work runs (Workers allow 10 ms CPU per request); the new market
+  numbers the pipeline must compute (skill share and its change, jobs per week, days open, pay).
+
+## 2026-11-11 — App redesign: the three directions mixed (job list built)
+- **Scope options:** app pages only · landing and app, fresh identity · landing only
+- **Choice (Shrey):** app pages move to the landing page's identity; the landing page stays.
+  Claude builds, Shrey reviews.
+- **Direction (Shrey, after seeing `docs/wireframes/next.html`):** mix all three, because Ledger
+  alone had no visible filters.
+  - From **Ledger:** paper and warm ink, Instrument Serif headings, and the highlighter over the
+    words in the quoted line that decided the label (it sweeps in once when a job opens).
+  - From **Console:** every filter open in a rail beside the list with live counts (chips stay on
+    phones), the ruler (bar = what the job asks, tick = your years) in each row and in the
+    evidence card, and the graphite dark theme.
+  - From **Billboard:** years of experience as the page's headline control ("I have 3 years of
+    experience"), replacing the "Asks" chip.
+- **Tokens:** the app's white and purple are replaced by the landing's paper, ink and marigold in
+  `globals.css` and `tokens.ts`. Marigold is a fill only; new `accent-text` (blue on paper, amber
+  on graphite) is the text version, and `mark` is the highlighter. Every text pair is 4.5:1 or
+  more (computed; figures in `globals.css`).
+- **Type:** Instrument Serif (headings, years), Instrument Sans (text, replaces Geist) and Geist
+  Mono (data), loaded once in the root layout. Three families against CLAUDE.md's two, the same
+  exception the landing page already has; say if the mono should go.
+- **Budget:** the job list downloads 153 KB of JavaScript gzipped (limit 170), no new libraries.
+- **Checked:** lint, types, token sync, static build; screenshots at 390 and 1280 px, light and
+  dark, with sample jobs in place of the API (this sandbox can't reach it). **Not checked:** the
+  signed-in pages (board, insights, profile) on screen, a real phone, throttled-4G timings.
+
 ## 2026-11-04 — Job list polish and the pipeline-first dashboard
 - **Brief (Shrey):** on the job list, real logos or per-company tints, a sticky action bar,
   visibly active filter chips with "Clear all", a requirements card without dead space and with
