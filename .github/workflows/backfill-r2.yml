@@ -1,0 +1,43 @@
+name: Copy job text to R2
+
+# One-off (docs/decisions.md, 2026-11-11 storage): copy the descriptions already in Postgres to
+# Cloudflare R2. Run a dry run first and read the size, then run for real; it ends by comparing
+# a random sample with R2. Postgres keeps its copy. Needs the R2 secrets (docs/setup-r2.md).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only count jobs and bytes"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# Shares the pipeline's group so it never overlaps a publish.
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Copy
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ vars.R2_BUCKET || 'aventra-job-text' }}
+        run: python -u scripts/backfill_r2.py ${{ inputs.dry_run && '--dry-run' || '--verify 300' }}

@@ -110,6 +110,8 @@ def main() -> int:
     jobs: list[Job] = []
     errors: dict[str, str] = {}
     per_company: dict[str, int] = {}
+    screened: list[int] = []  # jobs the India screen dropped, one entry per india_only board
+
     def fetch_one(company: Company) -> tuple[Company, list[Job] | None, str | None]:
         try:
             found = ADAPTERS[company.ats].fetch(http, company)
@@ -119,7 +121,9 @@ def main() -> int:
             # The ATS changed its payload shape: report it, keep going.
             return company, None, f"parse error: {e!r}"
         if company.india_only:
-            found = [j for j in found if in_india_or_remote(j)]
+            kept = [j for j in found if in_india_or_remote(j)]
+            screened.append(len(found) - len(kept))  # list.append is safe across the pool's threads
+            found = kept
         return company, found, None
 
     # Boards on different hosts are fetched in parallel; HttpClient still spaces requests per host.
@@ -161,6 +165,9 @@ def main() -> int:
     # Run summary (skills.md §7): fetched, kept, per-source errors.
     print(f"\nCompanies: {len(companies)} ok={len(per_company)} failed={len(errors)}")
     print(f"Jobs: fetched={len(jobs)} after_dedupe={len(unique)} -> {args.out}")
+    # How much the India screen hides today: the size of "every country" for these boards
+    # (docs/strategy/worldwide-coverage.md, phase 0).
+    print(f"India screen: dropped {sum(screened)} jobs on {len(screened)} india_only boards")
     levels = Counter(r["level"] for r in records)
     print(f"Levels: fresher={levels['fresher']} maybe={levels['maybe']} experienced={levels['experienced']}")
     targets = [r for r in records if r["role_match"]]

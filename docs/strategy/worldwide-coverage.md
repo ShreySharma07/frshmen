@@ -138,12 +138,41 @@ Every new system gets a robots.txt and terms check first, and is skipped if it r
 | Careers hosts | Per-host rate limit in `sources/http.py` | Many more companies on the same hosts | Keep the per-host limit; run time grows, request rate does not |
 | Detail requests | Title screen avoids them | Every job's description is needed once | Fetch a description only for a new or changed job (hash of the listing), never per run |
 
+## Latency and scaling (estimates until measured in production)
+
+**Analogy.** Postgres becomes the library's card catalogue and R2 the stacks. Browsing the
+catalogue gets faster because the cards are small; fetching one book takes one extra walk.
+
+| Request | Today | With text in R2 |
+|---|---|---|
+| Job list (20 rows) | 1–2 Postgres queries. Each row also reads its long text to pull the pay line | Same queries on rows a fraction of the size; faster once pay has its own column |
+| One job opened | 1 Postgres query | The same query plus one R2 read from inside Cloudflare's network, typically tens of milliseconds. Job text rarely changes, so the response can be cached at the edge |
+| Fit check, tailored resume | 1 query, then seconds of Gemini | One extra R2 read; not noticeable next to Gemini |
+| Pipeline run | Writes changed rows | Plus one R2 write per new or changed job, 16 in parallel |
+
+What grows with the number of jobs, and the answer to each:
+
+| Pressure | Shows up as | Answer |
+|---|---|---|
+| Filtered lists (family + country + years) | Slow pages if Postgres has to scan | One combined index for the common filters; the list keeps reading ~20 rows |
+| Exact totals ("33 jobs") | Counting reads every matching row: 23 ms at 27k jobs, roughly linear after | Counts from the per-run snapshot; show "1,000+" past a cap |
+| Search by title or company | A scan over every row | A trigram index on title and company names; costs storage, so measured first |
+| Hyperdrive 100k queries a day | About 50k page views a day at 2 queries each | Cache list responses at the edge for 60 seconds |
+| R2 1M writes a month | About 33k new or changed jobs a day | Only changed jobs are written; fine for a few hundred thousand open jobs |
+| R2 10M reads a month | About 330k job opens a day | Edge cache on job pages |
+| One `jobs.json` and one transaction per run | Memory and run time: the publisher loads every stored job id and the whole fetch at once | Publish per careers system, in batches. **Needed before the screens come off (phase 5)** |
+| Fetch time | Hours as one job | One Actions job per careers system, in parallel; large boards daily |
+
+**Where free ends.** Postgres size is the first wall (the measured ceiling goes here once
+"Measure storage" has run). The next step up is Supabase's paid tier (8 GB, no pausing) or
+splitting jobs across databases; neither is needed for India plus Europe at the sizes expected.
+
 ## Phases
 
 | Phase | Work | Gain | Done when |
 |---|---|---|---|
-| 0 | Measure bytes per job, jobs per company by system, and what the two screens drop today | A real ceiling | Numbers in this file |
-| 1 | Storage: text to R2, slim rows, shelf life | Room for ~10× the jobs | A job opens from R2 in production |
+| 0 | Measure bytes per job, jobs per company by system, and what the two screens drop today. **Built 2026-11-11:** the "Measure storage" workflow; the fetch log now prints what the India screen drops | A real ceiling | Numbers in this file (waiting for the first run) |
+| 1 | Storage: text to R2, slim rows, shelf life. **Built 2026-11-11:** text written to both, backfill, API reads R2 with Postgres as fallback; all off until `docs/setup-r2.md` is followed. **Left:** drop the column (pay column and repost fingerprint first), 14-day shelf life | Room for ~10× the jobs | A job opens from R2 in production |
 | 2 | Job families: the list, the rules, fixtures; label every stored job | Every job has a family | Family precision measured on fixtures |
 | 3 | Preferences in the profile; the API filters by them; the page opens on them | The board works for any person | Two test profiles see different lists from the same data |
 | 4 | Country codes on every job; country filter | Usable outside India | Every stored job has a country |

@@ -14,6 +14,26 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-11 — Moving job text to R2: how (phase 1, first half)
+- **Order. Options:** cut over in one change (drop the column, read only R2) · write to both,
+  copy the old rows, read R2 with Postgres as the fallback, drop the column later.
+  **Choice:** both, then cut over, the same shape as the D1 to Supabase move (2026-10-16). At
+  every step Postgres still has the text, so undoing it is removing two secrets.
+- **Built:** `scripts/text_store.py` (R2 over its S3 API with boto3, a new pipeline-only
+  dependency), `publish_pg.py` uploads each new or changed job's text before its transaction
+  commits (a failed upload rolls the run back; the next run retries), `scripts/backfill_r2.py`
+  with a verify step, `api/src/job_text.py` reading through the Worker's R2 binding, and
+  `scripts/measure_storage.py`. Objects are plain UTF-8 text under `text/<sha256 of job id>`.
+- **Off until set up:** with no R2 secrets the pipeline writes Postgres only, and the Worker's
+  binding is commented out in `wrangler.jsonc` because a deploy fails when its bucket is
+  missing. Steps for Shrey: `docs/setup-r2.md`.
+- **Free tier (checked 2026-11-11):** 10 GB, 1M writes and 10M reads a month. Cloudflare asks
+  for a payment card to switch R2 on; usage inside the limits is not billed. **For Shrey to
+  confirm** against the free-tools rule before step 2 of the setup.
+- **Found on the way, to do before the column can go:** the job list reads pay from the first
+  line of the description, and repost matching compares full texts from Postgres. Pay needs its
+  own column and reposts a stored fingerprint.
+
 ## 2026-11-11 — Worldwide coverage: storage, order and languages
 - **Storage. Options:** everything in Postgres (~70k jobs) · slim rows in Postgres with
   descriptions in Cloudflare R2 and closed jobs deleted after 14 days · the same, keeping closed

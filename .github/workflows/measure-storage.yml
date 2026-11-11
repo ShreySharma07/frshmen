@@ -1,0 +1,28 @@
+name: Measure storage
+
+# Read-only: what the database holds and what one job costs, printed on the run's summary page
+# (docs/strategy/worldwide-coverage.md, phase 0). Run it by hand before and after storage changes.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Measure
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: python -u scripts/measure_storage.py
