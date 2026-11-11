@@ -1,0 +1,237 @@
+<!doctype html>
+<!-- 2026-11-11: the four sections Shrey asked for (Jobs, Applications, Insights with the market
+     merged in, Agent), mixing layout ideas 1 (Workbench: sidebar, dense rows, command bar) and
+     3 (Pinboard: paper notes, big serif numbers, view switch) from ideas.html.
+     ?s=jobs | apps | insights | agent | resumes
+     Jobs are real postings (2026-10-06 snapshot). Every other number, the people and the resume
+     lines are SAMPLES to show the layout. The agent never sends anything without the person's OK
+     (docs/decisions.md 2026-10-19). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aventra app sketch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #f2eee4; --raised: #fbf9f4; --surface: #e9e3d6; --line: #d9d3c5; --ink: #121110; --muted: #625d53;
+    --gold: #ffb21a; --soft: #ffd98a; --pass: #276b43; --fail: #b5381f; --link: #1f4fd8;
+    --serif: "Instrument Serif", serif; --sans: "Instrument Sans", sans-serif; --mono: "Geist Mono", monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  body { background: var(--paper); color: var(--ink); font: 14px/1.45 var(--sans); -webkit-font-smoothing: antialiased; }
+  .mono { font-family: var(--mono); } .serif { font-family: var(--serif); } .mu { color: var(--muted); } .sm { font-size: 12.5px; }
+  .hl { background: var(--gold); padding: 0 .14em; border-radius: 2px; }
+  .clip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--muted); background: var(--raised); }
+  .co { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; font-weight: 600; font-size: 12px; flex: none; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; background: var(--gold); padding: 7px 13px; border-radius: 8px; font-weight: 600; white-space: nowrap; }
+  .btn.q { background: none; border: 1px solid var(--line); font-weight: 500; }
+  .up { color: var(--pass); } .down { color: var(--fail); }
+  /* The ruler: track = 0 to 8+ years, bar = what the job asks, tick = you. */
+  .ruler { position: relative; height: 6px; border-radius: 3px; background: var(--line); }
+  .ruler i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: var(--gold); }
+  .ruler i.open { background: linear-gradient(90deg, var(--gold) 45%, transparent); }
+  .ruler.ns { background: repeating-linear-gradient(90deg, var(--line) 0 4px, transparent 4px 8px); }
+  .ruler b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); border-radius: 1px; }
+  .meter { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; } .meter i { display: block; height: 100%; background: var(--gold); border-radius: 4px; }
+
+  /* Shell: sidebar, page, and the agent's bar at the foot of every page. */
+  .app { display: grid; grid-template-columns: 212px 1fr; min-height: 100vh; }
+  aside { border-right: 1px solid var(--line); padding: 18px 12px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; }
+  .brand { font: 24px/1 var(--serif); padding: 0 8px 18px; }
+  aside a { display: flex; justify-content: space-between; align-items: center; padding: 7px 8px; border-radius: 6px; color: var(--muted); font-weight: 500; }
+  aside a.on { background: var(--raised); color: var(--ink); box-shadow: inset 2px 0 var(--gold); }
+  aside a em { font: 600 11px var(--sans); font-style: normal; background: var(--gold); color: var(--ink); border-radius: 9px; padding: 1px 7px; }
+  aside .me { margin-top: auto; padding: 10px 8px; border-top: 1px solid var(--line); font-size: 13px; }
+  main { display: flex; flex-direction: column; min-width: 0; }
+  .top { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 20px; border-bottom: 1px solid var(--line); font-weight: 600; flex: none; }
+  .top > span { font-weight: 400; color: var(--muted); }
+  .seg { margin-left: auto; display: flex; border: 1px solid var(--line); border-radius: 8px; padding: 2px; font-weight: 500; font-size: 13px; background: var(--raised); }
+  .seg b { padding: 4px 11px; font-weight: 500; color: var(--muted); border-radius: 6px; } .seg b.on { background: var(--ink); color: var(--raised); }
+  .body { flex: 1; min-height: 0; }
+  .ask { position: sticky; bottom: 0; padding: 10px 20px 16px; background: linear-gradient(transparent, var(--paper) 30%); }
+  .ask div { display: flex; gap: 10px; align-items: center; height: 42px; padding: 0 14px; border: 1px solid var(--ink); border-radius: 12px; background: var(--raised); color: var(--muted); box-shadow: 0 6px 20px rgb(18 17 16 / .08); }
+  .ask kbd { margin-left: auto; } .spark { width: 9px; height: 9px; background: var(--gold); border-radius: 2px; transform: rotate(45deg); flex: none; }
+  .grp { display: flex; gap: 10px; align-items: center; padding: 8px 20px; background: var(--surface); font-size: 12.5px; font-weight: 600; border-bottom: 1px solid var(--line); }
+  .grp span { font: 12px var(--mono); color: var(--muted); font-weight: 400; }
+  .row { display: grid; align-items: center; gap: 14px; padding: 9px 20px; border-bottom: 1px solid var(--line); }
+  .row.sel { background: var(--raised); box-shadow: inset 2px 0 var(--ink); }
+  .peek { border-left: 1px solid var(--line); padding: 24px 28px; background: var(--raised); }
+  .peek h2 { font: 30px/1.1 var(--serif); margin: 4px 0 14px; } .peek blockquote { font: 19px/1.4 var(--serif); margin: 16px 0 8px; }
+
+  /* Paper notes (the board views). */
+  .note { background: var(--raised); border-radius: 4px; padding: 14px 16px; box-shadow: 0 1px 0 var(--line), 0 10px 24px rgb(18 17 16 / .07); position: relative; }
+  .note.tape::before { content: ""; position: absolute; left: 50%; top: -7px; width: 46px; height: 14px; margin-left: -23px; background: rgb(255 178 26 / .7); transform: rotate(-2deg); }
+  .note h4 { font: 600 14.5px/1.25 var(--sans); } .note p { font-size: 12.5px; color: var(--muted); margin: 3px 0 10px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; background: var(--gold); padding: 1px 7px; border-radius: 3px; }
+  .tag.q { background: var(--surface); font-weight: 500; }
+  .board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; padding: 22px 20px; background-image: radial-gradient(var(--line) 1.2px, transparent 1.2px); background-size: 24px 24px; min-height: 100%; }
+  .board h3 { font: 34px/1 var(--serif); display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; } .board h3 span { font: 13px var(--sans); color: var(--muted); }
+  .board .note { margin-bottom: 16px; } .board .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .drop { border: 2px dashed var(--line); border-radius: 6px; height: 96px; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+
+  /* Insights. */
+  .ins { padding: 30px 28px 10px; }
+  .ins h1 { font: 52px/1.04 var(--serif); letter-spacing: -.015em; max-width: 22ch; }
+  .ins .lede { margin-top: 12px; color: var(--muted); font-size: 15px; max-width: 64ch; }
+  .ins h2 { font: 26px/1.1 var(--serif); margin: 38px 0 4px; } .ins h2 + p { color: var(--muted); margin-bottom: 14px; }
+  .tbl { border-top: 1px solid var(--ink); } .tbl .row { padding: 10px 0; grid-template-columns: 22px 120px 1fr 46px 46px 150px 1fr; }
+  .have { font-weight: 600; } .gap { font-weight: 600; }
+  .two { display: grid; grid-template-columns: 1.15fr 1fr; gap: 36px; }
+  .hist { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; align-items: end; height: 170px; border-bottom: 1px solid var(--ink); position: relative; }
+  .hist i { border-radius: 4px 4px 0 0; background: var(--line); } .hist i.y { background: var(--gold); }
+  .axis { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; text-align: center; color: var(--muted); font: 12px var(--mono); margin-top: 8px; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; } .facts .note b { font: 40px/1 var(--serif); display: block; margin-bottom: 4px; }
+  .line { height: 90px; width: 100%; display: block; }
+
+  /* Agent. */
+  .agent { display: grid; grid-template-columns: 1fr 392px; height: calc(100vh - 52px); }
+  .chat { display: flex; flex-direction: column; min-height: 0; padding: 24px 28px 0; gap: 18px; }
+  .msg.me { align-self: flex-end; max-width: 60ch; background: var(--ink); color: var(--raised); padding: 10px 14px; border-radius: 14px 14px 2px 14px; }
+  .msg.ai { max-width: 70ch; } .msg.ai > p { font: 21px/1.35 var(--serif); margin-bottom: 12px; }
+  .steps li { display: grid; grid-template-columns: 18px 1fr auto; gap: 10px; align-items: start; padding: 9px 0; border-top: 1px solid var(--line); }
+  .steps li > i { width: 14px; height: 14px; border-radius: 50%; margin-top: 3px; border: 2px solid var(--pass); background: var(--pass); }
+  .steps li > i.wait { border-color: var(--gold); background: var(--gold); } .steps li > i.todo { border-color: var(--muted); background: none; }
+  .steps b { font-weight: 600; } .steps span { display: block; color: var(--muted); font-size: 13px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; } .chips span { border: 1px solid var(--line); background: var(--raised); border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+  .chat .ask { position: static; padding: 0 0 16px; background: none; }
+  .side { border-left: 1px solid var(--line); background: var(--raised); overflow: hidden; }
+  .side h3 { font: 600 12.5px var(--sans); padding: 12px 18px 8px; display: flex; justify-content: space-between; } .side h3 span { font-weight: 400; color: var(--muted); }
+  .ok { padding: 12px 18px; border-top: 1px solid var(--line); } .ok p { color: var(--muted); font-size: 13px; margin: 2px 0 10px; } .ok .acts { display: flex; gap: 8px; }
+  .rules { margin: 14px 18px; padding: 12px 14px; background: var(--paper); border-radius: 8px; font-size: 13px; color: var(--muted); } .rules b { color: var(--ink); }
+  .res { display: grid; grid-template-columns: 330px 1fr; height: calc(100vh - 52px); }
+  .res .list { border-right: 1px solid var(--line); overflow: hidden; } .res .list .row { grid-template-columns: 28px 1fr auto; }
+  .sheet { margin: 26px auto; width: 640px; background: var(--raised); padding: 36px 44px; box-shadow: 0 1px 0 var(--line), 0 18px 50px rgb(18 17 16 / .09); font-size: 13.5px; }
+  .sheet h2 { font: 30px/1 var(--serif); } .sheet h5 { font: 600 11.5px var(--sans); color: var(--muted); margin: 18px 0 6px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  .sheet li { margin: 5px 0 5px 16px; list-style: disc; } .sheet del { color: var(--fail); text-decoration-thickness: 1px; } .sheet ins { text-decoration: none; background: var(--soft); }
+  .tips { padding: 0 28px 20px; width: 640px; margin: 0 auto; } .tips li { padding: 9px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; }
+</style>
+</head>
+<body>
+<script>
+// Real postings. [title, company, place, posted, min, max(null = open), new]
+const J = [
+  ["Machine Learning Engineer, Search Quality", "Glean", "San Francisco", "25 Sep", 2, null, 1],
+  ["Software Engineer, Public Sector – New Grad", "Scale AI", "San Francisco", "23 Sep", 0, 0, 1],
+  ["Software Engineer – New Grad", "Scale AI", "London", "14 Sep", 0, 0, 1],
+  ["Machine Learning Research Scientist, Evaluations", "Scale AI", "SF, Seattle, New York", "26 Aug", null],
+  ["ML Engineer (Data), Foundational Models", "Sarvam AI", "Bengaluru, onsite", "21 May", 3, null],
+  ["ML Ops Engineer, Chanakya", "Sarvam AI", "Delhi, onsite", "17 Apr", 3, 5],
+  ["Embedded Data Scientist, Chanakya", "Sarvam AI", "Delhi, onsite", "17 Apr", 2, 5],
+  ["Backend Engineer, Chanakya", "Sarvam AI", "Bengaluru, onsite", "17 Apr", 3, 6],
+];
+const ME = 3, MAX = 8, pct = (n) => Math.min(n, MAX) / MAX * 100;
+const yrs = (a, b) => a == null ? "Not stated" : b === null ? a + "+" : a === b ? "" + a : a + "–" + b;
+const ruler = (a, b, w = 96) => `<div class="ruler ${a == null ? "ns" : ""}" style="width:${typeof w === "number" ? w + "px" : w}">${a == null ? "" : `<i class="${b === null ? "open" : ""}" style="left:${pct(a)}%;width:${b === null ? 100 - pct(a) : Math.max(pct(b) - pct(a), 6)}%"></i>`}<b style="left:${pct(ME)}%"></b></div>`;
+const tint = { "Scale AI": ["#fbe3d8", "#8a3a14"], "Sarvam AI": ["#dcefdc", "#1f5c2e"], "Glean": ["#d9f0e4", "#17603c"] };
+const co = (c) => `<span class="co" style="background:${tint[c][0]};color:${tint[c][1]}">${c[0]}</span>`;
+const s = new URLSearchParams(location.search).get("s") || "jobs";
+const NAV = [["jobs", "Jobs", ""], ["apps", "Applications", ""], ["insights", "Insights", ""], ["agent", "Agent", "<em>3 waiting</em>"]];
+const shell = (title, sub, seg, body, ask = true) => `<div class="app"><aside><div class="brand">aventra</div>
+  ${NAV.map(([k, l, x]) => `<a class="${k === s || (k === "agent" && s === "resumes") ? "on" : ""}">${l}${x || `<kbd>G ${l[0]}</kbd>`}</a>`).join("")}
+  <div class="me"><b>3 years</b> <span class="mu">of experience</span><br><span class="mu">AI/ML, backend</span></div></aside>
+  <main><div class="top">${title} <span>${sub}</span>${seg ? `<div class="seg">${seg[0].map((x, i) => `<b class="${i === seg[1] ? "on" : ""}">${x}</b>`).join("")}</div>` : ""}</div>
+  <div class="body">${body}</div>
+  ${ask ? `<div class="ask"><div><i class="spark"></i>Ask the agent, or search: “remote jobs in India”, “tailor my resume for this”, “who can refer me?”<kbd>Ctrl K</kbd></div></div>` : ""}</main></div>`;
+
+const V = {
+  jobs() {
+    const row = (j, sel) => `<div class="row ${sel ? "sel" : ""}" style="grid-template-columns:28px 1fr 60px 96px">${co(j[1])}<div style="min-width:0"><div class="clip" style="font-weight:500">${j[6] ? '<span class="hl" style="font-size:11px;font-weight:600;margin-right:6px">New</span>' : ""}${j[0]}</div><div class="mu clip sm">${j[1]}, ${j[2]}, ${j[3]}</div></div><span class="serif" style="font-size:20px;text-align:right">${j[4] == null ? '<span class="mu" style="font:11px var(--sans)">Not stated</span>' : yrs(j[4], j[5])}</span>${ruler(j[4], j[5])}</div>`;
+    const fits = J.filter((j) => j[4] > 0 && j[4] <= ME), fresh = J.filter((j) => j[4] === 0), ns = J.filter((j) => j[4] == null);
+    return shell("Jobs", "33 open for 3 years of experience", [["List", "Board by years", "Map"], 0], `<div style="display:grid;grid-template-columns:1fr 430px;height:100%"><div>
+      <div style="display:flex;gap:8px;padding:10px 20px;border-bottom:1px solid var(--line)"><span class="tag">3 years</span><span class="tag q">AI/ML, backend</span><span class="tag q">Anywhere</span><span class="tag q">Any workplace</span><span class="mu sm" style="margin-left:auto;align-self:center">Grouped by fit</span></div>
+      <div class="grp">Asks for your level <span>2 to 3 years, 21 jobs</span></div>${fits.map((j, i) => row(j, i === 1)).join("")}
+      <div class="grp">Asks for less than you have <span>0 to 1 years, 8 jobs</span></div>${fresh.map((j) => row(j)).join("")}
+      <div class="grp">Years not stated <span>read before applying, 4 jobs</span></div>${ns.map((j) => row(j)).join("")}</div>
+      <div class="peek"><div class="mu">Sarvam AI, Bengaluru, onsite</div><h2>ML Engineer (Data), Foundational Models</h2>${ruler(3, null, 370)}
+      <blockquote>“<span class="hl">3+ years of experience</span> building large-scale data systems”</blockquote><div class="mu sm">The line that decided it. You have 3, so it fits.</div>
+      <div style="display:flex;gap:8px;margin-top:22px;flex-wrap:wrap"><span class="btn">Apply <kbd style="background:none;border-color:rgb(18 17 16/.3);color:var(--ink)">A</kbd></span><span class="btn q">Save <kbd>S</kbd></span><span class="btn q"><i class="spark"></i>Get this ready with the agent</span></div>
+      <div class="note" style="margin-top:22px;background:var(--paper);box-shadow:none"><h4>You match 4 of the 6 skills it names</h4><p style="margin-bottom:0">Has: Python, PyTorch, Spark, SQL. Missing: Kubernetes, Ray.</p></div></div></div>`);
+  },
+  apps() {
+    const card = (j, next, days, res, rot, gold = true) => `<div class="note tape" style="transform:rotate(${rot}deg)"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">${co(j[1])}<span class="mu sm">${j[1]}</span><span class="mono mu" style="margin-left:auto;font-size:11.5px">${days}</span></div><h4>${j[0]}</h4><p>${j[2]}</p><span class="tag ${gold ? "" : "q"}">${next}</span>${res ? `<div class="foot sm"><span class="mu">${res}</span><span style="color:var(--link);text-decoration:underline">Open</span></div>` : ""}</div>`;
+    return shell("Applications", "11 in progress, 1 needs you this week", [["Board", "List", "Calendar"], 0], `
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line)"><div style="display:flex;gap:3px;flex:1"><i style="flex:6;height:8px;border-radius:4px;background:var(--line)"></i><i style="flex:4;height:8px;border-radius:4px;background:var(--soft)"></i><i style="flex:1;height:8px;border-radius:4px;background:var(--gold)"></i><i style="flex:1;height:8px;border-radius:4px;background:var(--surface)"></i></div><span class="sm mu">3 replies from 14 sent in 30 days</span></div>
+      <div class="board">
+      <div><h3>Saved<span>6</span></h3>${card(J[0], "Closes soon", "9 d", "", -.6)}${card(J[2], "Check my fit first", "1 d", "", .5, false)}${card(J[6], "Fits: asks 2 to 5", "1 d", "", -.3, false)}</div>
+      <div><h3>Applied<span>4</span></h3>${card(J[4], "No reply. Follow up Friday", "6 d", "Tailored resume, 3 lines changed", .6)}${card(J[7], "Sent", "2 d", "Tailored resume, 2 lines changed", -.5, false)}</div>
+      <div><h3>Interview<span>1</span></h3>${card(J[1], "Round 2 on Thursday", "3 d", "Prep notes from the agent", .4)}</div>
+      <div><h3>Offer<span>0</span></h3><div class="drop">Drag a job here</div></div>
+      <div><h3 style="color:var(--muted)">Closed<span>2</span></h3>${card(J[5], "Rejected after screen", "21 d", "", -.4, false)}</div></div>`);
+  },
+  insights() {
+    // [skill, share of matching jobs %, change in 30 days, on the resume?, how to close]
+    const SK = [["Python", 71, 2, 1, ""], ["PyTorch", 38, 5, 1, ""], ["LLMs", 33, 9, 1, ""], ["SQL", 29, -1, 0, "You used it in your capstone: add that line"], ["Kubernetes", 21, 0, 0, "Not on your resume. 2 saved jobs ask for it"], ["FastAPI", 12, 3, 1, ""], ["Spark", 11, 1, 0, "Not on your resume. 1 saved job asks for it"]];
+    const ASK = [356, 410, 890, 1240, 720, 980, 310, 190, 1044], WK = [410, 388, 452, 431, 470, 512, 498, 540];
+    const pts = WK.map((n, i) => `${i * (100 / 7)},${90 - (n - 350) / 200 * 80}`).join(" ");
+    return shell("Insights", "your profile against 6,140 open jobs in your roles", [["For me", "Whole market"], 0], `<div class="ins">
+      <h1>You show 4 of the 7 skills companies ask for most. <span class="hl">Three are closable.</span></h1>
+      <p class="lede">Counted from every open AI/ML and backend job. A skill counts as yours only when your saved resume names it.</p>
+
+      <h2>What companies ask for, and where you stand</h2><p>Share of jobs naming each skill, the change over 30 days, and the quickest way to close each gap.</p>
+      <div class="tbl">${SK.map(([n, p, d, has, how], i) => `<div class="row"><span class="mono mu" style="font-size:12px">${i + 1}</span><b style="font-weight:600">${has ? n : `<span class="hl">${n}</span>`}</b><div class="meter"><i style="width:${p}%"></i></div><span class="mono" style="font-size:12.5px;text-align:right">${p}%</span><span class="mono ${d > 0 ? "up" : d < 0 ? "down" : "mu"}" style="font-size:12.5px;text-align:right">${d > 0 ? "+" : ""}${d}</span><span class="${has ? "have up" : "gap"}">${has ? "On your resume" : "Missing"}</span><span class="mu sm">${how}${how ? ' <span style="color:var(--link);text-decoration:underline;white-space:nowrap">Ask the agent</span>' : ""}</span></div>`).join("")}</div>
+
+      <div class="two">
+        <div><h2>How much of the market is open to you</h2><p><b style="color:var(--ink)">2,896 of 6,140</b> jobs ask for 3 years or fewer. The line is you.</p>
+          <div class="hist">${ASK.map((n, i) => `<i class="${i <= ME ? "y" : ""}" style="height:${n / 1240 * 100}%"></i>`).join("")}<span style="position:absolute;top:-10px;bottom:0;left:calc(${4 / 9 * 100}% - 4px);width:2px;background:var(--ink)"></span></div>
+          <div class="axis">${ASK.map((_, i) => `<span>${i === 8 ? "8+" : i}</span>`).join("")}</div></div>
+        <div><h2>Is the market getting better or worse</h2><p><b style="color:var(--ink)">Better.</b> 540 new jobs this week, up 32% in eight weeks.</p>
+          <svg class="line" viewBox="0 0 100 90" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="#121110" stroke-width="2" vector-effect="non-scaling-stroke"/><polygon points="0,90 ${pts} 100,90" fill="#ffb21a" opacity=".28"/></svg>
+          <div class="axis" style="grid-auto-columns:auto;display:flex;justify-content:space-between"><span>8 weeks ago</span><span>this week</span></div>
+          <p class="sm" style="margin-top:12px">A job stays open for <b style="color:var(--ink)">19 days</b> on average, so apply in the first week.</p></div>
+      </div>
+
+      <h2>The rest of the picture</h2><p>Who is hiring, where, for how much, and how your own search is going.</p>
+      <div class="facts">
+        <div class="note"><b>Sarvam AI</b>hiring most in your roles this month: 14 jobs. Then Glean, 9, and Scale AI, 7.</div>
+        <div class="note"><b>38%</b>of jobs are in India. 10% are remote. Bengaluru leads with 2,140.</div>
+        <div class="note"><b>1 in 5</b>jobs states pay. For 3 years in India the middle of those is 18 to 28 LPA.</div>
+        <div class="note"><b>4 of 10</b>applications sent this week. 3 replies from your last 14.</div>
+      </div>
+      <p class="sm mu" style="margin-top:16px">Also possible here: visa sponsorship share for jobs abroad, which batch years are being hired, and skills rising fastest.</p></div>`);
+  },
+  agent() {
+    return shell("Agent", "works for you, sends nothing without your OK", [["Chat", "Resumes", "Outreach", "Activity"], 0], `<div class="agent"><div class="chat">
+      <div class="msg me">Get me ready for the ML Engineer (Data) job at Sarvam AI, and find someone who can refer me.</div>
+      <div class="msg ai"><p>Done up to the point where I need you. Three things are waiting for your OK on the right.</p>
+        <ol class="steps">
+          <li><i></i><div><b>Read the posting</b><span>Asks for 3+ years. You have 3. It names 6 skills; your resume shows 4.</span></div><span class="sm mu">done</span></li>
+          <li><i></i><div><b>Tailored your resume</b><span>3 lines reworded toward data systems. Nothing added that your resume doesn't say.</span></div><span class="sm" style="color:var(--link);text-decoration:underline">See changes</span></li>
+          <li><i class="wait"></i><div><b>Found 2 people you know at Sarvam AI</b><span>From the connections you uploaded. I wrote a short note to each.</span></div><span class="tag">needs you</span></li>
+          <li><i class="wait"></i><div><b>Filled in the application</b><span>Name, links, resume and 2 written answers are ready on Sarvam's form.</span></div><span class="tag">needs you</span></li>
+          <li><i class="todo"></i><div><b>Follow up in 5 days if nobody replies</b><span>I will remind you and draft it. You send it.</span></div><span class="sm mu">scheduled</span></li>
+        </ol></div>
+      <div class="chips"><span>How can I improve my resume?</span><span>Apply to my 3 best matches</span><span>Who can refer me at Glean?</span><span>Prepare me for Thursday's interview</span></div>
+      <div class="ask"><div><i class="spark"></i>Tell the agent what to do<kbd>Enter</kbd></div></div></div>
+      <div class="side"><h3>Waiting for your OK <span>3</span></h3>
+        <div class="ok"><b>Note to a connection, ML Engineer at Sarvam AI</b><p>“Hi, I'm applying for the ML Engineer (Data) role on your team. I built a 2 TB data pipeline in my capstone…”</p><div class="acts"><span class="btn">Copy and open profile</span><span class="btn q">Edit</span></div></div>
+        <div class="ok"><b>Email to a second connection</b><p>A draft is in your Gmail. Nothing is sent until you approve it there.</p><div class="acts"><span class="btn">Review draft</span><span class="btn q">Skip</span></div></div>
+        <div class="ok"><b>Application to Sarvam AI</b><p>Form filled with your tailored resume. Read the 2 answers, then submit it yourself.</p><div class="acts"><span class="btn">Review and submit</span><span class="btn q">Edit answers</span></div></div>
+        <div class="rules"><b>What the agent may do.</b> Read jobs, rewrite your resume, find people in connections you gave it, draft notes and fill forms. <b>It never sends, submits or messages on its own.</b></div>
+        <h3>Today's allowance <span>resets at midnight</span></h3><div style="padding:0 18px"><div class="meter"><i style="width:50%"></i></div><p class="sm mu" style="margin-top:6px">1 of 2 tailored resumes, 2 of 5 fit checks used.</p></div></div></div>`, false);
+  },
+  resumes() {
+    const r = (j, n, when, sel) => `<div class="row ${sel ? "sel" : ""}">${co(j[1])}<div style="min-width:0"><div class="clip" style="font-weight:500">${j[0]}</div><div class="mu sm">${j[1]}. ${n} lines changed</div></div><span class="mono mu" style="font-size:11.5px">${when}</span></div>`;
+    return shell("Agent", "every resume it has tailored for you", [["Chat", "Resumes", "Outreach", "Activity"], 1], `<div class="res"><div class="list">
+      <div class="grp">Your resume <span>the one everything starts from</span></div><div class="row"><span class="co" style="background:var(--ink);color:var(--raised)">R</span><div><div style="font-weight:500">Base resume</div><div class="mu sm">Uploaded 2 Nov. 1 page</div></div><span class="sm" style="color:var(--link);text-decoration:underline">Replace</span></div>
+      <div class="grp">Tailored for jobs you applied to <span>3</span></div>${r(J[4], 3, "6 d", 1)}${r(J[7], 2, "2 d")}${r(J[1], 4, "3 d")}
+      <div class="grp">Make it stronger <span>from the agent</span></div>
+      <div style="padding:6px 20px"><ul class="tips" style="padding:0;width:auto"><li style="border:0"><span><b>Add SQL.</b> <span class="mu">29% of your jobs ask for it and your capstone used it.</span></span><span class="btn q">Add line</span></li><li><span><b>Put numbers on 2 bullets.</b> <span class="mu">“Improved latency” says less than “cut latency 40%”.</span></span><span class="btn q">Show me</span></li><li><span><b>Move PyTorch up.</b> <span class="mu">It is named in 38% of jobs and sits in your last line.</span></span><span class="btn q">Reorder</span></li></ul></div></div>
+      <div style="overflow:hidden;background-image:radial-gradient(var(--line) 1.2px, transparent 1.2px);background-size:24px 24px">
+        <div style="display:flex;gap:8px;align-items:center;padding:14px 28px 0"><b>For ML Engineer (Data), Sarvam AI</b><span class="mu sm">3 lines changed, 0 added. Struck text was yours; marked text is the rewording.</span><span class="btn" style="margin-left:auto">Download PDF</span><span class="btn q">Edit</span></div>
+        <div class="sheet"><h2>Your Name</h2><div class="mu sm">B.Tech Computer Science (AI), 2026. Python, PyTorch, FastAPI, LLMs</div>
+          <h5>Experience</h5><ul>
+            <li><del>Capstone: a data pipeline in Python and Spark, 2 TB.</del> <ins>Built a 2 TB data pipeline in Python and Spark for my capstone.</ins></li>
+            <li>Distilled a 7B model into a 1B student with 94% of its accuracy.</li>
+            <li><del>Worked on speculative decoding with a custom CUDA kernel to speed up inference.</del> <ins>Cut inference latency with speculative decoding on a custom CUDA kernel.</ins></li></ul>
+          <h5>Projects</h5><ul>
+            <li><del>Agent evaluation tool (FastAPI).</del> <ins>Evaluation harness for LLM agents, served with FastAPI.</ins></li>
+            <li>Job board that reads every posting and labels the years it asks for.</li></ul>
+          <h5>Why these changes</h5><p class="mu sm">The posting asks for large-scale data systems and Python. Each new line only restates what your base resume already says; a rules check dropped one rewrite that added a number you hadn't written.</p></div></div></div>`, false);
+  },
+};
+document.body.innerHTML = V[s]();
+</script>
+</body>
+</html>

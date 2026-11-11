@@ -14,6 +14,21 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-11 — The app's four sections, and the layout for them (sketch stage)
+- **Sections (Shrey):** Jobs · Applications (track every job applied to) · Insights, with the
+  market merged in (what companies ask for against the person's profile, how to close each gap,
+  market sentiment) · Agent (talk to it, have it prepare applications and outreach, improve the
+  resume, and keep every tailored resume).
+- **Layout (Shrey liked ideas 1 and 3 of `docs/wireframes/ideas.html`):** Workbench's sidebar,
+  dense grouped rows and command bar, with Pinboard's paper notes for boards, big serif numbers
+  and view switches. The command bar on every page is the agent's input. Sketches:
+  `docs/wireframes/app-v2.html` (`?s=jobs|apps|insights|agent|resumes`), screenshots `v2-*.png`.
+- **Kept from 2026-10-19:** nothing goes out under a person's name without them reading it. In the
+  sketch the agent drafts notes and fills forms; the person sends and submits.
+- **Open, for Shrey:** whether the agent may ever submit an application itself; which model runs
+  the chat and where long agent work runs (Workers allow 10 ms CPU per request); the new market
+  numbers the pipeline must compute (skill share and its change, jobs per week, days open, pay).
+
 ## 2026-11-11 — App redesign: the three directions mixed (job list built)
 - **Scope options:** app pages only · landing and app, fresh identity · landing only
 - **Choice (Shrey):** app pages move to the landing page's identity; the landing page stays.
