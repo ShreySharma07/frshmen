@@ -4,6 +4,25 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-11 — Worldwide coverage: every country, all jobs
+- **Options:** every country, all jobs · companies from everywhere but only jobs open to India ·
+  a few regions first
+- **Choice (Shrey):** every country, all jobs. Reverses point 3 of the 2026-10-18 coverage
+  strategy (keep only India, remote and visa/relocation jobs from global companies).
+- **Why:** Aventra is for every job seeker, not only people in India.
+- **Consequence:** the 500 MB database is the first limit (about 190 MB used with the India
+  filter on). The plan and six open choices (storage first) are in
+  `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
+
+## 2026-11-11 — App redesign: scope, and three directions to choose from
+- **Scope options:** app pages only · landing and app, fresh identity · landing only
+- **Choice (Shrey):** app pages (job list, job detail, profile, insights, login) move to the
+  landing page's identity (ink, paper, marigold); the landing page stays. Claude builds, Shrey
+  reviews.
+- **Open:** the direction. Three sketches of the job list with real jobs are in
+  `docs/wireframes/next.html` (`?d=a` Ledger, `?d=b` Console, `?d=c` Billboard; screenshots
+  `next-*-1280.png` and `next-*-390.png`). Shrey chooses before tokens are written.
+
 ## 2026-11-04 — Job list polish and the pipeline-first dashboard
 - **Brief (Shrey):** on the job list, real logos or per-company tints, a sticky action bar,
   visibly active filter chips with "Clear all", a requirements card without dead space and with
