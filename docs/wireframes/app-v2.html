@@ -2,7 +2,7 @@
 <!-- 2026-11-11: the four sections Shrey asked for (Jobs, Applications, Insights with the market
      merged in, Agent), mixing layout ideas 1 (Workbench: sidebar, dense rows, command bar) and
      3 (Pinboard: paper notes, big serif numbers, view switch) from ideas.html.
-     ?s=jobs | apps | insights | agent | resumes
+     ?s=jobs | apps | apps-big | apps-list | insights | agent | resumes
      Jobs are real postings (2026-10-06 snapshot). Every other number, the people and the resume
      lines are SAMPLES to show the layout. The agent never sends anything without the person's OK
      (docs/decisions.md 2026-10-19). -->
@@ -75,6 +75,18 @@
   .board .note { margin-bottom: 16px; } .board .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
   .drop { border: 2px dashed var(--line); border-radius: 6px; height: 96px; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
 
+  /* A large tracker: compact cards, per-column limits, stacks, and the list view. */
+  .board.big { grid-template-columns: repeat(4, 1fr) 150px; padding-top: 18px; }
+  .board.big .note { padding: 10px 12px; margin-bottom: 10px; } .board.big .note h4 { font-size: 13.5px; } .board.big .note p { margin-bottom: 6px; }
+  .board.big h3 { font-size: 28px; margin-bottom: 12px; }
+  .more { display: block; text-align: center; padding: 8px; border: 1px dashed var(--line); border-radius: 6px; color: var(--muted); font-size: 13px; font-weight: 500; background: var(--paper); }
+  .stack { position: relative; margin-bottom: 18px; } .stack::before, .stack::after { content: ""; position: absolute; left: 6px; right: 6px; height: 100%; top: 5px; background: var(--raised); border-radius: 4px; box-shadow: 0 1px 0 var(--line); z-index: 0; }
+  .stack::after { left: 12px; right: 12px; top: 10px; } .stack .note { position: relative; z-index: 1; margin: 0; }
+  .lst .row { grid-template-columns: 12px 28px minmax(0, 1.5fr) 110px minmax(0, 1.2fr) 130px 70px; }
+  .lst .head { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--surface); padding-top: 7px; padding-bottom: 7px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--muted); } .dot.half { border-color: var(--gold); background: linear-gradient(90deg, var(--gold) 50%, transparent 50%); } .dot.gold { border-color: var(--gold); background: var(--gold); } .dot.x { border-color: var(--line); background: var(--line); }
+  .pager { display: flex; gap: 10px; align-items: center; padding: 12px 20px; color: var(--muted); font-size: 13px; }
+
   /* Insights. */
   .ins { padding: 30px 28px 10px; }
   .ins h1 { font: 52px/1.04 var(--serif); letter-spacing: -.015em; max-width: 22ch; }
@@ -133,7 +145,7 @@ const co = (c) => `<span class="co" style="background:${tint[c][0]};color:${tint
 const s = new URLSearchParams(location.search).get("s") || "jobs";
 const NAV = [["jobs", "Jobs", ""], ["apps", "Applications", ""], ["insights", "Insights", ""], ["agent", "Agent", "<em>3 waiting</em>"]];
 const shell = (title, sub, seg, body, ask = true) => `<div class="app"><aside><div class="brand">aventra</div>
-  ${NAV.map(([k, l, x]) => `<a class="${k === s || (k === "agent" && s === "resumes") ? "on" : ""}">${l}${x || `<kbd>G ${l[0]}</kbd>`}</a>`).join("")}
+  ${NAV.map(([k, l, x]) => `<a class="${k === s.split("-")[0] || (k === "agent" && s === "resumes") ? "on" : ""}">${l}${x || `<kbd>G ${l[0]}</kbd>`}</a>`).join("")}
   <div class="me"><b>3 years</b> <span class="mu">of experience</span><br><span class="mu">AI/ML, backend</span></div></aside>
   <main><div class="top">${title} <span>${sub}</span><div class="right">${seg ? `<div class="seg">${seg[0].map((x, i) => `<b class="${i === seg[1] ? "on" : ""}">${x}</b>`).join("")}</div>` : ""}<span class="who" title="Profile and sign out">S</span></div></div>
   <div class="body">${body}</div>
@@ -161,6 +173,27 @@ const V = {
       <div><h3>Interview<span>1</span></h3>${card(J[1], "Round 2 on Thursday", "3 d", "Prep notes from the agent", .4)}</div>
       <div><h3>Offer<span>0</span></h3><div class="drop">Drag a job here</div></div>
       <div><h3 style="color:var(--muted)">Closed<span>2</span></h3>${card(J[5], "Rejected after screen", "21 d", "", -.4, false)}</div></div>`);
+  },
+  // The same tracker with 118 applications (sample counts): what stays on the board, and the list.
+  "apps-big"() {
+    const c = (j, tag, days, gold) => `<div class="note"><div style="display:flex;gap:6px;align-items:center;margin-bottom:5px">${co(j[1])}<span class="mu sm clip">${j[1]}</span><span class="mono mu" style="margin-left:auto;font-size:11px">${days}</span></div><h4>${j[0]}</h4><p></p><span class="tag ${gold ? "" : "q"}">${tag}</span></div>`;
+    const stack = (title, sub) => `<div class="stack"><div class="note"><h4>${title}</h4><p style="margin:2px 0 0">${sub}</p></div></div>`;
+    return shell("Applications", "118 tracked, 7 need you this week", [["Board", "List", "Calendar"], 0], `
+      <div class="bar"><span class="tag">Needs me <b style="font-weight:700">7</b></span><span class="tag q">All stages</span><span class="tag q">Any company</span><span class="tag q">Applied any time</span><span class="tag q">With a tailored resume</span><span class="find">Search 118 applications</span></div>
+      <div class="board big">
+      <div><h3>Saved<span>38</span></h3>${c(J[0], "Closes soon", "9 d", 1)}${c(J[2], "Check my fit first", "1 d")}${c(J[6], "Fits: asks 2 to 5", "1 d")}${stack("Sarvam AI, 5 saved jobs", "One company, grouped. Open to see all five")}<span class="more">Show 30 more saved</span></div>
+      <div><h3>Applied<span>52</span></h3>${c(J[4], "Follow up Friday", "6 d", 1)}${c(J[7], "Sent", "2 d")}${c(J[3], "Sent", "4 d")}${stack("Gone quiet, 31 applications", "No reply in 30 days. Kept, but off the board")}<span class="more">Show 18 more applied</span></div>
+      <div><h3>Interview<span>4</span></h3>${c(J[1], "Round 2 on Thursday", "3 d", 1)}${c(J[5], "Take-home due Monday", "5 d", 1)}${c(J[0], "Recruiter call booked", "1 d")}${c(J[6], "Waiting for feedback", "8 d")}</div>
+      <div><h3>Offer<span>1</span></h3>${c(J[2], "Reply by 20 Nov", "2 d", 1)}</div>
+      <div><h3 style="color:var(--muted)">Closed<span>23</span></h3>${stack("23 closed", "Rejected, withdrawn or the posting closed")}<span class="more">Open</span></div></div>`);
+  },
+  "apps-list"() {
+    const R = [["gold", J[1], "Interview", "Round 2 on Thursday", "Prep notes", "3 d"], ["gold", J[5], "Interview", "Take-home due Monday", "Tailored, 2 lines", "5 d"], ["gold", J[2], "Offer", "Reply by 20 Nov", "Tailored, 4 lines", "2 d"], ["half", J[4], "Applied", "Follow up Friday", "Tailored, 3 lines", "6 d"], ["", J[0], "Saved", "Closes soon. Apply or drop", "", "9 d"], ["half", J[7], "Applied", "Sent", "Tailored, 2 lines", "2 d"], ["half", J[3], "Applied", "Sent", "", "4 d"], ["", J[6], "Saved", "Fits: asks 2 to 5", "", "1 d"], ["x", ["ML Research Engineer, ML Systems", "Scale AI", "SF, Seattle, New York"], "Closed", "Rejected after screen", "", "21 d"], ["x", ["Senior/Staff ML Research Engineer, General Agents", "Scale AI", "SF, New York"], "Closed", "Posting closed", "", "34 d"]];
+    return shell("Applications", "118 tracked, 7 need you this week", [["Board", "List", "Calendar"], 1], `
+      <div class="bar"><span class="tag q">Needs me <b style="font-weight:700">7</b></span><span class="tag">All stages</span><span class="tag q">Any company</span><span class="tag q">Applied any time</span><span class="tag q">With a tailored resume</span><span class="find">Search 118 applications</span></div>
+      <div class="lst"><div class="row head"><span></span><span></span><span>Job</span><span>Stage</span><span>Next step ↑</span><span>Resume</span><span style="text-align:right">Updated</span></div>
+      ${R.map(([d, j, st, next, res, days], i) => `<div class="row" style="${st === "Closed" ? "color:var(--muted)" : ""}"><span class="dot ${d}"></span>${co(j[1])}<div style="min-width:0"><div class="clip" style="font-weight:500">${j[0]}</div><div class="mu sm clip">${j[1]}, ${j[2]}</div></div><span>${st}</span><span class="clip">${i < 4 ? `<span class="hl">${next}</span>` : next}</span><span class="sm" style="${res ? "color:var(--link);text-decoration:underline" : ""}">${res || '<span class="mu">Base resume</span>'}</span><span class="mono mu" style="font-size:12px;text-align:right">${days}</span></div>`).join("")}
+      <div class="pager"><span>1 to 20 of 118, sorted by what needs you first</span><span class="btn q" style="margin-left:auto">Previous</span><span class="btn q">Next 20</span></div></div>`);
   },
   insights() {
     // [skill, share of matching jobs %, change in 30 days, on the resume?, how to close]
