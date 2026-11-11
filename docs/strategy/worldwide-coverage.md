@@ -1,16 +1,19 @@
-# Plan: companies and jobs from every country (2026-11-11)
+# Plan: every job, every country, filtered by each person's preferences (2026-11-11)
 
-Shrey's call (2026-11-11): Aventra lists **every country, all jobs**. Someone in Berlin or São
-Paulo should see local jobs, not only jobs open to people in India. This replaces point 3 of
-`company-coverage.md` ("global companies: keep only India, remote, and visa/relocation jobs").
+Shrey's calls (2026-11-11):
 
-**Analogy.** Today Aventra is a city library: it buys only the books its own neighbourhood reads.
-A world board is a national library, and the hard part of a national library is the shelf space
-and the catalogue, not finding books. Most of this plan is about shelves (storage) and the
-catalogue (locations and languages); the list of companies is the easy half.
+1. Aventra lists **every country**. Someone in Berlin or São Paulo sees local jobs. This replaces
+   point 3 of `company-coverage.md` (keep only India, remote and visa/relocation jobs).
+2. Aventra fetches **all jobs, every role**, and **each person filters them by their own
+   preferences**. This replaces the earlier recommendation in this file to keep tech roles only.
 
-Status: a plan. Nothing here is built. Six choices in the last section are Shrey's to make before
-work starts.
+**Analogy.** Today Aventra is a personal shopper: it walks the market with one shopping list
+(`config/profile.yaml`) and brings back only what is on it. The new Aventra is a supermarket:
+everything is on the shelves with an honest label, and each shopper walks in with their own
+list. So the pipeline's job changes from "decide what fits Shrey" to "label every job truthfully",
+and deciding what fits moves to the moment a person looks.
+
+Status: a plan. Nothing here is built. The open choices are in the last section.
 
 ## Where we are
 
@@ -18,121 +21,153 @@ work starts.
 |---|---:|
 | Companies in `config/companies.yaml` | 703 |
 | Careers systems we read | 14 (Ashby 361, Greenhouse 82, Workday 53, Lever 41, others 99) |
-| Companies with no system found yet | 67 |
 | Open jobs stored | ~27k (figure from October; to re-measure) |
 | Database used | ~190 MB of 500 MB (figure from 2026-10-19; to re-measure) |
 
-Two things in the code keep the board India-shaped:
+Four things in the code keep the board shaped around one person in India:
 
-1. `india_only` on the big global boards, plus the location screen in `scripts/fetch_jobs.py`,
-   drop non-India jobs before they are stored.
-2. The rules in `extract/` read English only. A German posting that says "3 Jahre
-   Berufserfahrung" has no years found today.
+1. **One shopping list at fetch time.** `scripts/fetch_jobs.py` runs `match_role(...)` against
+   `config/profile.yaml` and stores `role_match` and one of four tech families. Every other
+   job is stored without a family, and the API's default list is `role_match` only.
+2. **Title screen.** `sources/prefilter.py` drops non-tech titles on Workday and Darwinbox before
+   their descriptions are fetched.
+3. **India screen.** `india_only` boards keep India and remote jobs only.
+4. **English only.** The rules in `extract/` read English. "3 Jahre Berufserfahrung" finds no years.
 
-## The constraint that shapes everything: 500 MB
+## Part 1. Label every job, match per person
 
-With the India filter on, the database is already near 40% full. Workday tenants of large
-companies list thousands of jobs each, so turning the filter off for the 703 companies we
-already have would pass 500 MB before a single new company is added. Storage is decided first
-(decision 1 below); the rest of the plan assumes option B.
+### What the pipeline stores (facts about the job, the same for everyone)
+| Fact | Today | Change |
+|---|---|---|
+| Years asked, with the evidence line | Yes | None. The precision rule is unchanged |
+| **Job family** | 4 tech families, only when it fits Shrey's profile | Every job gets one family from a fixed list, with the title words that decided it; "Other" when no rule is sure |
+| Country and city | Yes, India-centred list | Every country (Part 4) |
+| Workplace (remote, hybrid, onsite) | Yes | None |
+| Visa sponsorship, batch years, pay as written | Yes | None |
+| Skills named | Tech skills from `config/skills.yaml` | Same at first; other families get skills later, one catalogue at a time |
+| Language of the posting | No | New (Part 4) |
 
-| Option | How it works | Fits roughly | Cost |
+`role_match` and "target roles" leave the pipeline. `config/profile.yaml` stops deciding what is
+stored; it becomes Shrey's own preferences, like anyone else's.
+
+### The job-family list
+A new `config/job_families.yaml`: about 25 families with title rules, tested on fixtures like the
+years rules. A draft, to be pruned by Shrey:
+
+Software engineering · AI and machine learning · Data and analytics · Mobile · DevOps and
+infrastructure · Security · QA and testing · Hardware and embedded · Product · Design · Marketing ·
+Sales · Customer success and support · Finance and accounting · People and recruiting · Legal ·
+Operations and supply chain · Healthcare and life sciences · Research · Education · Content and
+writing · Manufacturing and skilled trades · Administration · Other.
+
+Same rule as years: a wrong family is worse than "Other". A job filed under "Other" is still
+found by search and by every other filter.
+
+### What each person sets (preferences, kept in their profile)
+Years of experience · families (several) · countries and cities · workplace · whether they need
+visa sponsorship, and from which country · skills · lowest pay, optional.
+
+The job list opens on these and every one can be changed on the page, as now. Matching is a
+database filter at request time, so it has to stay one indexed read: family, country and years
+get a combined index, and counts keep coming from the per-run snapshot.
+
+Signed-out visitors see everything, newest first, with the filters open.
+
+## Part 2. The constraint that shapes everything: 500 MB
+
+With the India and tech screens on, the database is already near 40% full. All roles in all
+countries is far more: one large Workday company lists thousands of jobs.
+
+| Option | How it works | Holds roughly | Cost |
 |---|---|---|---|
-| A. Keep everything in Postgres | No change | ~70k jobs | Full within weeks |
-| **B. Card in Postgres, text in object storage (recommended)** | Postgres keeps what the list and filters need (title, company, location, years, evidence line, skills). The three stored sections move to Cloudflare R2 (free: 10 GB, 1M writes and 10M reads a month) and load when a job is opened | ~400k–500k jobs | The API reads R2 for the detail view; one more moving part |
-| C. Tech roles only | Keep the current title screen (`sources/prefilter.py`) for every board, so sales, retail and operations jobs are never stored | Cuts volume to perhaps a quarter | "All jobs" becomes "all tech jobs" |
-| D. Short shelf life | Delete closed jobs after 14 days instead of keeping them | Saves 20–30% | Less history for Insights |
+| A. Everything in Postgres | No change | ~70k jobs | Full within weeks |
+| **B. Card in Postgres, text elsewhere (recommended)** | Postgres keeps what lists and filters need: title, company, family, places, years, evidence line, skills. The stored description moves to Cloudflare R2 (free: 10 GB, 1M writes and 10M reads a month) and loads when a job is opened | ~400k–500k jobs | The API reads R2 for the detail view; search covers title and company, not full text |
+| D. Short shelf life | Delete closed jobs after 14 days | Saves 20–30% | Less history for Insights; market trends keep weekly totals, not rows |
 
-B and C combine. My recommendation is B + C + D: every country, tech and data roles, text in R2.
-The row-size numbers above are estimates; step 0 measures them.
+Recommended: **B + D**. Option C (tech roles only) is off the table after decision 2.
 
-## The plan, in five layers
+**The honest ceiling.** Free storage holds a few hundred thousand open jobs, not every job on
+earth, which is in the tens of millions. So "all jobs" means all jobs *from the companies we
+read*, and the order in which companies are added decides what people find (decision 2 below).
+These sizes are estimates until step 0 measures a real row.
 
-### 0. Measure (half a day)
-Average bytes per job row and per index, jobs per company by careers system, and how many jobs
-the India screen drops per run today. That one number says how many jobs "everything" is.
+## Part 3. Who and how: companies and careers systems
 
-### 1. Open the tap we already have (largest gain, no new source)
-- Replace `india_only` with a per-company `regions` setting that defaults to all.
-- Remove the India screen for one careers system at a time, smallest first (Greenhouse, Lever,
-  Ashby), watching database size after each. Workday last.
-- Check: jobs stored per country before and after; fetch run stays under 90 minutes.
-
-### 2. Who: find companies in every country
+### Find companies in every country
 | Source | What it adds | Terms |
 |---|---|---|
-| **Common Crawl URL index** | Every address it has seen on the careers systems' own hosts (`*.myworkdayjobs.com`, `jobs.lever.co/*`, `*.jobs.personio.de`, `*.teamtailor.com`, `*.recruitee.com`, `*.gupy.io`...). The system and the company's ID are in the address, so no detection is needed. This was phase C of the India plan with an India filter; without the filter it is the main source | Free, public, built for this use |
-| **Wikidata** | Companies by country with their official website (P17, P856), to feed the detector for countries Common Crawl covers thinly | CC0 |
+| **Common Crawl URL index** | Every address it has seen on the careers systems' own hosts (`*.myworkdayjobs.com`, `jobs.lever.co/*`, `*.jobs.personio.de`, `*.teamtailor.com`, `*.recruitee.com`, `*.gupy.io`...). The system and the company's ID are in the address, so no detection is needed | Free, public, built for this use |
+| **Wikidata** | Companies by country with their official website (P17, P856), for the detector | CC0 |
 | **yc-oss dataset** | Already imported; drop the AI-only filter | Free |
-| **Public GitHub lists** | New-grad and remote-job lists maintained per region | Public repos |
+| **Public GitHub lists** | New-grad and remote-job lists per region | Public repos |
 | **HN "Who is hiring?"** | Already read | Public API |
 
 Still never used: LinkedIn, Indeed, Glassdoor.
 
-Common Crawl will return tens of thousands of boards. Add them in batches of about 500, each
-batch going through the existing verify step, so one bad batch can be undone.
+Common Crawl returns tens of thousands of boards. They go into a generated file beside the
+curated `config/companies.yaml`, in batches of about 500, each through the existing verify step.
 
-### 3. How: careers systems by region
-The 14 systems we read are strong in the US and India. Other regions run on systems we don't
-read yet. Order by how many companies each unlocks; every one gets a robots.txt and terms check
-before an adapter is written, and is skipped if it refuses.
+### Careers systems by region
+Every new system gets a robots.txt and terms check first, and is skipped if it refuses.
 
 | Region | Systems to add | Notes |
 |---|---|---|
-| Europe | Personio, Teamtailor, Recruitee, JOIN | All publish a per-company public feed; Personio's is XML |
+| Europe | Personio, Teamtailor, Recruitee, JOIN | All publish a per-company public feed |
 | US mid-market | Rippling, Gem, BambooHR, iCIMS, Jobvite | The detector already names the first two |
 | Large companies everywhere | SuccessFactors, Phenom, Taleo | Partly covered by `careersite.py` through sitemaps |
 | Latin America | Gupy | Brazil's most common system |
-| Japan and Korea | HRMOS, Herp, Wanted | Postings mostly not in English; depends on layer 4 |
-| Any own careers site | `careersite.py` (schema.org `JobPosting`) | Already works wherever the site has a sitemap |
+| Japan and Korea | HRMOS, Herp, Wanted | Mostly not in English; depends on Part 4 |
+| Any own careers site | `careersite.py` (schema.org `JobPosting`) | Works wherever the site has a sitemap |
 
-### 4. Catalogue: make a world of jobs filterable and correct
-- **Locations.** `config/locations.yaml` is India-centred. Add countries and cities from
-  GeoNames (free, CC BY) so every job gets a country code. One job listed in five cities stays
-  one row with five places.
-- **Languages.** Detect each posting's language. A language without rules gives **"Not stated"**,
-  never fresher: the precision rule holds everywhere. Then add years-of-experience rules one
-  language at a time, each with its own fixtures in `tests/fixtures/` before any rule ships.
-  Suggested order: German, French, Spanish, Portuguese, then Japanese.
-- **Visa.** "Abroad with visa" assumes the reader is in India. The profile needs a home country
-  so the filter means "outside my country, with sponsorship".
-- **The page.** Country as the first location filter, set from the profile; the API query gets
-  an index on country so the list stays one indexed read.
+## Part 4. Make a world of jobs filterable and correct
+- **Locations.** Add countries and cities from GeoNames (free, CC BY) so every job gets a country
+  code. A job listed in five cities stays one row with five places.
+- **Languages.** Detect each posting's language. A language without rules gives **"Not stated"**
+  for years and **"Other"** for family, never a guess. Then add rules one language at a time,
+  each with fixtures first. Suggested order: German, French, Spanish, Portuguese, Japanese.
+- **Visa.** "Abroad with visa" assumes the reader is in India. With a home country in the
+  profile it means "outside my country, with sponsorship".
 
-### 5. Keep: free-tier budget at world scale
+## Part 5. Stay inside the free tiers
 | Limit | Today | At world scale | What we do |
 |---|---|---|---|
-| Supabase 500 MB | ~190 MB | Over, without layer 0 and decision 1 | R2 for text, tech roles only, short shelf life |
-| GitHub Actions | 11–20 min per 3-hourly run | Hours if run as one job | Split by careers system into parallel jobs; big boards daily; ETag so unchanged boards cost one request. Free while the repo is public |
+| Supabase 500 MB | ~190 MB | Over, without Part 2 | R2 for text, short shelf life, measured ceiling |
+| GitHub Actions | 11–20 min per 3-hourly run | Hours as one job | One job per careers system, in parallel; large boards daily; ETag so an unchanged board costs one request. Free while the repo is public |
 | Workers 100k requests a day | Low | Fine for thousands of daily users | Cache list responses at the edge for a minute |
 | Hyperdrive 100k queries a day | Low | Same | Same cache |
-| Careers hosts | Per-host rate limit in `sources/http.py` | 50× the companies on the same hosts | Keep the per-host limit; total run time grows instead of request rate |
+| Careers hosts | Per-host rate limit in `sources/http.py` | Many more companies on the same hosts | Keep the per-host limit; run time grows, request rate does not |
+| Detail requests | Title screen avoids them | Every job's description is needed once | Fetch a description only for a new or changed job (hash of the listing), never per run |
 
 ## Phases
 
 | Phase | Work | Gain | Done when |
 |---|---|---|---|
-| 0 | Measure; decide storage | A real ceiling | Numbers in this file |
-| 1 | Storage change (R2 or chosen option) | Room for ~10× the jobs | A job opens from R2 in production |
-| 2 | Country codes on every job; country filter on the page | The board is usable outside India | Every stored job has a country |
-| 3 | Remove the India screen, system by system | 3–5× the jobs from the companies we have | No `india_only` left |
-| 4 | Common Crawl import for systems we already read | Thousands of companies, mostly US and Europe | First 2,000 verified |
-| 5 | Europe adapters (Personio, Teamtailor, Recruitee, JOIN) | Germany, Nordics, Netherlands, France | Fixtures pass; boards fetched |
-| 6 | German and French years rules | Labels on those jobs, not "Not stated" | Fresher precision on new fixtures does not drop |
-| 7 | Further regions and languages, one at a time | Latin America, Japan, the Gulf, Southeast Asia | Per region |
+| 0 | Measure bytes per job, jobs per company by system, and what the two screens drop today | A real ceiling | Numbers in this file |
+| 1 | Storage: text to R2, slim rows, shelf life | Room for ~10× the jobs | A job opens from R2 in production |
+| 2 | Job families: the list, the rules, fixtures; label every stored job | Every job has a family | Family precision measured on fixtures |
+| 3 | Preferences in the profile; the API filters by them; the page opens on them | The board works for any person | Two test profiles see different lists from the same data |
+| 4 | Country codes on every job; country filter | Usable outside India | Every stored job has a country |
+| 5 | Remove the title screen and the India screen, one careers system at a time, watching size | All jobs from the 703 companies | No `india_only`, no title screen |
+| 6 | Common Crawl import for systems we already read | Thousands of companies | First 2,000 verified |
+| 7 | New regions: adapters, then language rules | Europe first, then the rest | Per region |
 
-Phases 0–3 need no new source and make the board global for the companies already listed.
+Phases 0–5 need no new source. After them Aventra is a general job board for the companies it
+already reads; 6 and 7 are growth.
 
-## Decisions for Shrey
+## Decisions
 
-1. **Storage:** A, B, C, D or a mix. Recommended: B + C + D.
-2. **"All jobs":** every role, or tech and data roles in every country? Recommended: tech and
-   data. Aventra's labels and skills are built for them, and it is a quarter of the volume.
-3. **First region after the US:** Europe, Southeast Asia or the Gulf. Recommended: Europe, since
-   its systems publish clean feeds and many roles there sponsor visas.
-4. **Languages:** English only at first, with other languages shown as "Not stated", or rules
-   for German and French before Europe launches. Recommended: English first.
-5. **Company quality bar:** Common Crawl includes tiny and dead companies. Add everything that
-   verifies, or only boards with at least one open tech job. Recommended: at least one.
-6. **The curated list:** keep `config/companies.yaml` hand-reviewed and put imported companies in
-   a second, generated file. Recommended: yes, so reviews of the curated file stay readable.
+**Decided (Shrey, 2026-11-11):** every country · all roles, filtered per person.
+
+**Open:**
+1. **Storage.** A, B, D or a mix. Recommended: B + D.
+2. **When the free ceiling is reached, who gets in first?** By company size · by a region order ·
+   tech and data companies first, then the rest. Recommended: a region order, so each new
+   region is complete when it launches.
+3. **First region after what we have.** Europe · Southeast Asia · the Gulf. Recommended: Europe;
+   its systems publish clean feeds.
+4. **Languages.** English only at first, others shown as "Not stated" · German and French rules
+   before Europe launches. Recommended: English first.
+5. **Family list.** The ~25 above, pruned by Shrey · fewer, broader families. Recommended: the
+   ~25; merging later is easy, splitting is a re-label.
+6. **Company quality bar for imports.** Everything that verifies · at least one open job.
+   Recommended: at least one.

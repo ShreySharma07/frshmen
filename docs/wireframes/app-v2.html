@@ -47,7 +47,11 @@
   main { display: flex; flex-direction: column; min-width: 0; }
   .top { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 20px; border-bottom: 1px solid var(--line); font-weight: 600; flex: none; }
   .top > span { font-weight: 400; color: var(--muted); }
-  .seg { margin-left: auto; display: flex; border: 1px solid var(--line); border-radius: 8px; padding: 2px; font-weight: 500; font-size: 13px; background: var(--raised); }
+  .bar { display: flex; gap: 8px; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--line); }
+  .bar .find { margin-left: auto; border: 1px solid var(--line); background: var(--raised); border-radius: 8px; padding: 4px 10px; color: var(--muted); font-size: 13px; width: 220px; }
+  .right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .who { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--raised); display: grid; place-items: center; font-weight: 600; font-size: 13px; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; padding: 2px; font-weight: 500; font-size: 13px; background: var(--raised); }
   .seg b { padding: 4px 11px; font-weight: 500; color: var(--muted); border-radius: 6px; } .seg b.on { background: var(--ink); color: var(--raised); }
   .body { flex: 1; min-height: 0; }
   .ask { position: sticky; bottom: 0; padding: 10px 20px 16px; background: linear-gradient(transparent, var(--paper) 30%); }
@@ -131,19 +135,16 @@ const NAV = [["jobs", "Jobs", ""], ["apps", "Applications", ""], ["insights", "I
 const shell = (title, sub, seg, body, ask = true) => `<div class="app"><aside><div class="brand">aventra</div>
   ${NAV.map(([k, l, x]) => `<a class="${k === s || (k === "agent" && s === "resumes") ? "on" : ""}">${l}${x || `<kbd>G ${l[0]}</kbd>`}</a>`).join("")}
   <div class="me"><b>3 years</b> <span class="mu">of experience</span><br><span class="mu">AI/ML, backend</span></div></aside>
-  <main><div class="top">${title} <span>${sub}</span>${seg ? `<div class="seg">${seg[0].map((x, i) => `<b class="${i === seg[1] ? "on" : ""}">${x}</b>`).join("")}</div>` : ""}</div>
+  <main><div class="top">${title} <span>${sub}</span><div class="right">${seg ? `<div class="seg">${seg[0].map((x, i) => `<b class="${i === seg[1] ? "on" : ""}">${x}</b>`).join("")}</div>` : ""}<span class="who" title="Profile and sign out">S</span></div></div>
   <div class="body">${body}</div>
   ${ask ? `<div class="ask"><div><i class="spark"></i>Ask the agent, or search: “remote jobs in India”, “tailor my resume for this”, “who can refer me?”<kbd>Ctrl K</kbd></div></div>` : ""}</main></div>`;
 
 const V = {
   jobs() {
     const row = (j, sel) => `<div class="row ${sel ? "sel" : ""}" style="grid-template-columns:28px 1fr 60px 96px">${co(j[1])}<div style="min-width:0"><div class="clip" style="font-weight:500">${j[6] ? '<span class="hl" style="font-size:11px;font-weight:600;margin-right:6px">New</span>' : ""}${j[0]}</div><div class="mu clip sm">${j[1]}, ${j[2]}, ${j[3]}</div></div><span class="serif" style="font-size:20px;text-align:right">${j[4] == null ? '<span class="mu" style="font:11px var(--sans)">Not stated</span>' : yrs(j[4], j[5])}</span>${ruler(j[4], j[5])}</div>`;
-    const fits = J.filter((j) => j[4] > 0 && j[4] <= ME), fresh = J.filter((j) => j[4] === 0), ns = J.filter((j) => j[4] == null);
     return shell("Jobs", "33 open for 3 years of experience", [["List", "Board by years", "Map"], 0], `<div style="display:grid;grid-template-columns:1fr 430px;height:100%"><div>
-      <div style="display:flex;gap:8px;padding:10px 20px;border-bottom:1px solid var(--line)"><span class="tag">3 years</span><span class="tag q">AI/ML, backend</span><span class="tag q">Anywhere</span><span class="tag q">Any workplace</span><span class="mu sm" style="margin-left:auto;align-self:center">Grouped by fit</span></div>
-      <div class="grp">Asks for your level <span>2 to 3 years, 21 jobs</span></div>${fits.map((j, i) => row(j, i === 1)).join("")}
-      <div class="grp">Asks for less than you have <span>0 to 1 years, 8 jobs</span></div>${fresh.map((j) => row(j)).join("")}
-      <div class="grp">Years not stated <span>read before applying, 4 jobs</span></div>${ns.map((j) => row(j)).join("")}</div>
+      <div class="bar"><span class="tag">3 years</span><span class="tag q">AI/ML, backend</span><span class="tag q">Anywhere</span><span class="tag q">Any workplace</span><span class="tag q">Posted any time</span><span class="mu sm" style="margin-left:auto">Newest first</span></div>
+      ${J.filter((j) => j[4] == null || j[4] <= ME).map((j, i) => row(j, i === 4)).join("")}</div>
       <div class="peek"><div class="mu">Sarvam AI, Bengaluru, onsite</div><h2>ML Engineer (Data), Foundational Models</h2>${ruler(3, null, 370)}
       <blockquote>“<span class="hl">3+ years of experience</span> building large-scale data systems”</blockquote><div class="mu sm">The line that decided it. You have 3, so it fits.</div>
       <div style="display:flex;gap:8px;margin-top:22px;flex-wrap:wrap"><span class="btn">Apply <kbd style="background:none;border-color:rgb(18 17 16/.3);color:var(--ink)">A</kbd></span><span class="btn q">Save <kbd>S</kbd></span><span class="btn q"><i class="spark"></i>Get this ready with the agent</span></div>
@@ -152,6 +153,7 @@ const V = {
   apps() {
     const card = (j, next, days, res, rot, gold = true) => `<div class="note tape" style="transform:rotate(${rot}deg)"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">${co(j[1])}<span class="mu sm">${j[1]}</span><span class="mono mu" style="margin-left:auto;font-size:11.5px">${days}</span></div><h4>${j[0]}</h4><p>${j[2]}</p><span class="tag ${gold ? "" : "q"}">${next}</span>${res ? `<div class="foot sm"><span class="mu">${res}</span><span style="color:var(--link);text-decoration:underline">Open</span></div>` : ""}</div>`;
     return shell("Applications", "11 in progress, 1 needs you this week", [["Board", "List", "Calendar"], 0], `
+      <div class="bar"><span class="tag">All stages</span><span class="tag q">Needs me</span><span class="tag q">Any company</span><span class="tag q">Applied any time</span><span class="tag q">With a tailored resume</span><span class="find">Search your applications</span></div>
       <div style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line)"><div style="display:flex;gap:3px;flex:1"><i style="flex:6;height:8px;border-radius:4px;background:var(--line)"></i><i style="flex:4;height:8px;border-radius:4px;background:var(--soft)"></i><i style="flex:1;height:8px;border-radius:4px;background:var(--gold)"></i><i style="flex:1;height:8px;border-radius:4px;background:var(--surface)"></i></div><span class="sm mu">3 replies from 14 sent in 30 days</span></div>
       <div class="board">
       <div><h3>Saved<span>6</span></h3>${card(J[0], "Closes soon", "9 d", "", -.6)}${card(J[2], "Check my fit first", "1 d", "", .5, false)}${card(J[6], "Fits: asks 2 to 5", "1 d", "", -.3, false)}</div>

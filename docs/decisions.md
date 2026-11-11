@@ -14,6 +14,25 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-11 — All roles, matched per person at request time
+- **Options:** tech and data roles only (a quarter of the volume) · every role
+- **Choice (Shrey):** fetch every job, every role, and let each person filter by their own
+  preferences.
+- **Consequence:** the pipeline stops matching jobs against `config/profile.yaml`. It labels
+  every job with profile-independent facts (a job family from a fixed list, years, places,
+  workplace, visa, skills) and the API filters by the signed-in person's preferences.
+  `role_match` goes; the title screen and the India screen go. Free storage then holds a few
+  hundred thousand open jobs, so the order companies are added in becomes a product decision.
+  Plan and open choices: `docs/strategy/worldwide-coverage.md` (rewritten today).
+
+## 2026-11-11 — App layout approved (Shrey)
+- **Approved:** the four-section sketch in `docs/wireframes/app-v2.html`, with three changes
+  Shrey asked for, now in the sketch: a profile button at the top right of every page; a filter
+  bar above the Applications board; the Jobs list is flat, newest first, without the
+  grouped-by-fit sections.
+- **Next:** build in the order shell and Jobs, Applications, Insights, Agent. The agent's open
+  questions below still stand.
+
 ## 2026-11-11 — The app's four sections, and the layout for them (sketch stage)
 - **Sections (Shrey):** Jobs · Applications (track every job applied to) · Insights, with the
   market merged in (what companies ask for against the person's profile, how to close each gap,
