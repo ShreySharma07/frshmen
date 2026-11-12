@@ -246,3 +246,16 @@ def test_companies_without_a_readable_board_are_retried():
     assert d.retryable("icims (no adapter yet): https://careers.arm.com/")
     assert not d.retryable("ashby: https://jobs.ashbyhq.com/acme")
     assert not d.retryable("same board as ServiceNow (acquired?): https://moveworks.com")
+
+
+def test_website_field_holding_two_addresses_uses_the_first():
+    # yc-oss gave "https://pragmaticleaders.io, https://..."; the leftover 'pragmaticleaders.io, https:'
+    # was kept as the website and stopped the whole run with InvalidURL (2026-11-12).
+    for website in ("pragmaticleaders.io, https:", "https://pragmaticleaders.io, https://other.example",
+                    " pragmaticleaders.io "):
+        http = FakeHttp({"https://pragmaticleaders.io": '<a href="/join">We are hiring</a>',
+                         "https://pragmaticleaders.io/join": FIREWORKS})
+        result = d.detect(http, website)
+        assert result.best.slug == "fireworks", website
+        assert all(" " not in u and "," not in u for u in http.fetched), http.fetched
+        assert d.apply({"name": "Pragmatic Leaders", "category": "yc"}, result)["website"] == "pragmaticleaders.io"

@@ -37,7 +37,7 @@ import yaml  # noqa: E402
 
 from sources import careersite  # noqa: E402
 from sources.http import USER_AGENT, FetchError, HttpClient  # noqa: E402
-from verify_companies import registrable, rewrite_yaml  # noqa: E402
+from verify_companies import first_address, registrable, rewrite_yaml  # noqa: E402
 
 COMPANIES = ROOT / "config" / "companies.yaml"
 YC_SOURCE = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
@@ -207,6 +207,7 @@ class Robots:
 def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Detection:
     """Read the homepage, then the most careers-looking pages, until a readable board turns up."""
     robots = robots or Robots(http)
+    website = first_address(website)
     home = website if website.startswith("http") else f"https://{website}"
     result = Detection(website=home)
     queue = [home] + [urljoin(home, p) for p in CAREER_PATHS]

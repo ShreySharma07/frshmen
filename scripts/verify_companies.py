@@ -156,8 +156,14 @@ def registrable(host: str) -> str:
     return ".".join(parts[-2:])
 
 
+def first_address(website: str) -> str:
+    """The first address in a `website` value: yc-oss sometimes lists two ('acme.io, https://acme.app')."""
+    parts = re.split(r"[\s,;]+", website.strip())
+    return parts[0] if parts else ""
+
+
 def website_domain(company: dict[str, Any]) -> str | None:
-    site = str(company.get("website") or "").strip().lower()
+    site = first_address(str(company.get("website") or "")).lower()
     host = urlparse(site if "//" in site else f"//{site}").netloc
     return registrable(host) if "." in host else None
 

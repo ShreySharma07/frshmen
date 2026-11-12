@@ -102,3 +102,12 @@ def test_pacing_reserves_slots_per_host_across_threads(monkeypatch):
     client._pace("a.example")  # same instant, as if from a second thread
     client._pace("b.example")
     assert sleeps == [http_mod.MIN_SECONDS_PER_HOST]
+
+
+def test_malformed_address_is_a_fetch_error_not_a_crash(monkeypatch, no_sleep):
+    # One bad `website` in companies.yaml must cost one company, not the whole run.
+    import http.client
+    _serve(monkeypatch, [http.client.InvalidURL("URL can't contain control characters. 'acme.io, https'")])
+    with pytest.raises(FetchError, match="acme.io, https"):
+        HttpClient().get_text("https://acme.io, https:/robots.txt")
+    assert no_sleep == []  # not retried: asking again can't fix the address
