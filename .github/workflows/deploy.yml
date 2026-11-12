@@ -61,8 +61,11 @@ jobs:
           SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
           SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # "on" once the job-text bucket is filled (docs/setup-job-text.md): the API then reads
+          # descriptions from Supabase Storage first. Anything else keeps it on the jobs table.
+          JOB_TEXT: ${{ vars.JOB_TEXT || 'off' }}
         run: |
-          uv run pywrangler deploy --var "SUPABASE_URL:$SUPABASE_URL" --var "SUPABASE_PUBLISHABLE_KEY:$SUPABASE_PUBLISHABLE_KEY"
+          uv run pywrangler deploy --var "SUPABASE_URL:$SUPABASE_URL" --var "SUPABASE_PUBLISHABLE_KEY:$SUPABASE_PUBLISHABLE_KEY" --var "JOB_TEXT:$JOB_TEXT"
           # A Worker secret, never a var: copied from the repo secret on each deploy so a new Worker
           # (like the rename to aventra) gets it without a manual step.
           if [ -n "$GEMINI_API_KEY" ]; then

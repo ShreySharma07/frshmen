@@ -17,13 +17,11 @@ one card, its applications and its first_seen_at, and shows the new listing's da
 The whole run is one transaction: a failure leaves Supabase as it was, and the next run (all
 upserts) picks everything up again.
 
-Job text also goes to Cloudflare R2 when the R2_* variables are set (scripts/text_store.py):
-each new or changed job's description is uploaded before the transaction commits, so a failed
-upload rolls the run back and the next run writes it again. Postgres still gets the text too
-until the switch-over is finished (docs/decisions.md, 2026-11-11 storage).
-
-Run:
-  SUPABASE_DB_URL=postgresql://... python scripts/publish_pg.py
+Job text also goes to Supabase Storage when SUPABASE_URL and SUPABASE_SECRET_KEY are set
+(scripts/text_store.py): each new or changed job's description is uploaded before the
+transaction commits, so a failed upload rolls the run back and the next run writes it again.
+The jobs table still gets the text too until the switch-over is finished (docs/decisions.md,
+2026-11-12).
 """
 
 from __future__ import annotations
@@ -226,7 +224,7 @@ def main() -> int:
     url = os.environ.get("SUPABASE_DB_URL") or sys.exit("set SUPABASE_DB_URL")
     payload = json.loads(args.jobs.read_text())
     store = from_env()
-    print("job text: " + ("also written to R2" if store else "Postgres only (R2 not set up)"))
+    print("job text: " + ("also written to Storage" if store else "jobs table only (Storage not set up)"))
     with psycopg.connect(url, autocommit=True, prepare_threshold=None) as pg:
         counts = publish(pg, payload, store=store)
     print("published to Supabase: " + " ".join(f"{k}={v}" for k, v in counts.items()) + " (unchanged jobs not written)")

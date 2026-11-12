@@ -14,6 +14,66 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-12 — The four-section layout, built, with motion
+- **Built from** `docs/wireframes/app-v2.html` (approved 2026-11-11). A route group `(app)` holds
+  the frame: a sidebar on wide screens, a tab bar on phones, and a search bar at the foot of
+  every page that opens the command palette. Each page has a top bar with its own controls, the
+  theme switch and the profile button.
+- **Jobs:** filter chips on top, with years back as the first chip ("I have 3 years", filled
+  marigold when set); a flat list, newest first; the job on the right. The years headline and
+  the filter rail built on 2026-11-11 are removed, as the approved sketch has neither.
+- **Applications** (`/applications`, new): filter bar (needs me, stage, company, with a tailored
+  resume, search), then a board or a list. Built for hundreds: a column shows six cards and
+  "Show more"; applications with no reply in 30 days and the Closed column fold into a stack;
+  past 40 applications the list opens by default, 20 a page, what needs the person first. A
+  marigold tape on a card means it needs them this week. The next step on each card is a rule
+  over stage and dates (`lib/board.ts`), never a guess. `/profile` still receives sign-in links
+  and forwards here.
+- **Insights:** the market merged in. What companies ask for against the resume, and how much of
+  the market is open at the person's years (from the snapshot's `within_years`), above their
+  own week. **Not there, because the pipeline doesn't compute them yet:** change over 30 days,
+  jobs per week, days open, who is hiring most, pay.
+- **Agent** (`/agent`, new). **Options for the parts with no backend (chat, outreach, applying):**
+  show only what is real · hide the tab · show them marked as coming. **Choice (Shrey):** only
+  what is real. The page holds today's strong matches, follow-ups, tailored resumes, fit checks
+  and the daily allowance.
+- **Not built from the sketch:** the calendar view, grouping several jobs at one company into
+  one card, and a server-side page of applications (the tracker still loads them in one request).
+- **Motion, each with a reason:** the sidebar marker and the view switch slide to the choice;
+  a pressed control gives slightly; a page, and a newly chosen job, rise 8 px into place; on
+  phones a job rises as a sheet; counts tick when they change; a card settles into the column
+  it was moved to; the bookmark pops once on save; menus and the palette grow from their corner;
+  chart bars grow from the baseline; the highlighter and ruler from 2026-11-11 stay. CSS only,
+  transform and opacity only, all off under reduced motion.
+- **Budget:** the job list downloads 154.7 KB of JavaScript gzipped (limit 170).
+- **Checked:** lint, types, token sync, static build; screenshots of all four sections at 1360 px,
+  Jobs and Applications at 390 px, Jobs in dark, the tracker at 118 applications as a list, with
+  sample data and a stand-in sign-in. **Not checked:** against the live API and a real account,
+  drag and drop by hand, the board at 118 applications, keyboard navigation, a real phone,
+  throttled-4G timings.
+
+## 2026-11-12 — Job text goes to Supabase Storage, not R2
+- **Why revisit:** Cloudflare needs a payment card to switch R2 on and accepted neither Shrey's
+  RuPay card nor PayPal.
+- **Options:** Supabase Storage (already used for resumes, no card, 1 GB free) · Cloudflare D1
+  (no card, 5 GB free but 500 MB a database, so text would be split across databases) · leave
+  the text in Postgres (~70k jobs, enough for India but not Europe).
+- **Choice (Shrey):** Supabase Storage.
+- **How it differs from the R2 build of 2026-11-11:** a public `job-text` bucket made by a
+  migration; the pipeline writes over Storage's REST API with the project's secret key (one new
+  GitHub secret, `SUPABASE_SECRET_KEY`; boto3 is gone again); the API reads the object's public
+  URL, with the jobs table as the fallback, and only when the repo variable `JOB_TEXT` is `on`.
+  The dual-write order, the rollback on a failed upload, the backfill with its verify step and
+  the measuring script are unchanged. Steps for Shrey: `docs/setup-job-text.md`.
+- **Costs against R2:** 1 GB instead of 10 GB (about 400k descriptions as plain text; compressing
+  them would triple that when needed); the read leaves Cloudflare's network for Supabase's
+  region, so opening a job is likely slower than it would have been with R2; Storage pauses with
+  the database after a week without activity, which the 3-hourly pipeline prevents.
+- **Measured (Shrey's run of "Measure storage", 2026-11-12):** 23,641 open jobs and 39,631 stored
+  in all across 13 careers systems; descriptions average 1.0 to 2.8 KB by system, about 2.3 KB
+  for the three largest. The table and index sizes from the same run are still to be added to
+  `docs/strategy/worldwide-coverage.md`.
+
 ## 2026-11-11 — Moving job text to R2: how (phase 1, first half)
 - **Order. Options:** cut over in one change (drop the column, read only R2) · write to both,
   copy the old rows, read R2 with Postgres as the fallback, drop the column later.

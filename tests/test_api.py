@@ -467,19 +467,18 @@ def test_salary_shows_on_the_list_and_the_job(client):
     assert detail["description_text"].startswith(f"Salary\n{paid[0]['salary']}\n")
 
 
-def test_job_detail_reads_text_from_r2_and_falls_back_to_the_column(client):
-    """During the switch-over both hold the text (job_text.py): R2 wins when it has the job."""
-    from test_text_store import FakeBucket
-    import job_text
+def test_job_detail_reads_text_from_storage_and_falls_back_to_the_column(client):
+    """During the switch-over both hold the text (job_text.py): Storage wins when it has the job."""
+    from test_text_store import reads
 
     in_db = client.get(f"/api/jobs/{HUME}").json()["description_text"]
-    client.app.state.job_text = FakeBucket({job_text.key(HUME): "the text from R2"})
-    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == "the text from R2"
+    client.app.state.job_text = reads({HUME: "the text from Storage"})
+    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == "the text from Storage"
     # A reposted listing's old link reads the text stored under the job it resolved to.
     with psycopg.connect(PG, autocommit=True) as conn:
         conn.execute("INSERT INTO job_aliases VALUES ('ashby:acme:relisted', 'ashby:acme:new')")
-    client.app.state.job_text = FakeBucket({job_text.key("ashby:acme:new"): "the text from R2"})
-    assert client.get("/api/jobs/ashby:acme:relisted").json()["description_text"] == "the text from R2"
-    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == in_db  # not in R2 yet
-    client.app.state.job_text = FakeBucket({}, broken=True)
-    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == in_db  # R2 down: the page still works
+    client.app.state.job_text = reads({"ashby:acme:new": "the text from Storage"})
+    assert client.get("/api/jobs/ashby:acme:relisted").json()["description_text"] == "the text from Storage"
+    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == in_db  # not copied yet
+    client.app.state.job_text = reads({}, broken=True)
+    assert client.get(f"/api/jobs/{HUME}").json()["description_text"] == in_db  # Storage down: the page still works

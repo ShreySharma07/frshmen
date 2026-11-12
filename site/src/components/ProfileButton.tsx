@@ -5,7 +5,6 @@ import { IntentLink } from "./IntentLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { readSession, signOut, subscribeSession } from "@/lib/session";
-import { SECTIONS } from "./SiteNav";
 
 export function ProfileButton() {
   const session = useSyncExternalStore(subscribeSession, readSession, () => null);
@@ -26,7 +25,7 @@ export function ProfileButton() {
 
   if (!session) {
     return (
-      <IntentLink href="/login" className="inline-flex h-9 shrink-0 items-center rounded-md border border-line px-3 text-meta font-medium transition-colors duration-quick hover:bg-surface">
+      <IntentLink href="/login" className="press inline-flex h-9 shrink-0 items-center rounded-md border border-line px-3 text-meta font-medium duration-quick hover:bg-surface max-lg:hidden">
         Sign in
       </IntentLink>
     );
@@ -36,18 +35,12 @@ export function ProfileButton() {
     <div ref={root} className="relative shrink-0">
       <button type="button" aria-haspopup="menu" aria-expanded={open} aria-label={`Account: ${session.email}`}
         onClick={() => setOpen((o) => !o)}
-        className="grid size-9 place-items-center rounded-full bg-accent font-medium text-on-accent transition-colors duration-quick hover:bg-accent-hover">
+        className="press grid size-9 place-items-center rounded-full bg-accent font-medium text-on-accent transition-colors duration-quick hover:bg-accent-hover">
         {initial}
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 top-11 z-40 w-56 overflow-hidden rounded-lg border border-line bg-canvas py-1 shadow-menu">
+        <div role="menu" className="menu-in absolute right-0 top-11 z-40 w-56 overflow-hidden rounded-lg border border-line bg-canvas py-1 shadow-menu">
           <p className="truncate px-3 py-2 text-meta text-muted">{session.email}</p>
-          {/* The header's section links, for phones where the header has no room for them. */}
-          {SECTIONS.map((s) => (
-            <IntentLink key={s.href} role="menuitem" href={s.href} onClick={() => setOpen(false)} className="block px-3 py-2 text-body hover:bg-surface focus:bg-surface focus:outline-none sm:hidden">
-              {s.label}
-            </IntentLink>
-          ))}
           <IntentLink role="menuitem" href="/profile/edit" onClick={() => setOpen(false)} className="block px-3 py-2 text-body hover:bg-surface focus:bg-surface focus:outline-none">
             Your details
           </IntentLink>
