@@ -403,7 +403,7 @@ companies:
   - {name: Meta, category: mnc, hq: us, website: meta.com, india_only: true, careers: not found (6 pages read)}
   - {name: Uber, category: mnc, hq: us, website: uber.com, ats: oracle, slug: iaziqy.fa.ocs.oraclecloud.com/UberCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-10-18', careers: 'oracle: https://jobs.uber.com/en/'}
   - {name: Oracle, category: mnc, hq: us, website: oracle.com, ats: oracle, slug: eeho.fa.us2.oraclecloud.com/jobsearch, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-11-12', careers: 'oracle: https://careers.oracle.com/en/sites/jobsearch/jobs (found by hand)'}
-  - {name: IBM, category: mnc, hq: us, website: ibm.com, india_only: true, careers: not found (6 pages read)}
+  - {name: IBM, category: mnc, hq: us, website: ibm.com, ats: avature, slug: careers.ibm.com/en_US/careers, india_only: true, careers: 'avature: https://careers.ibm.com/en_US/careers/SearchJobs (found by hand)'}
   - {name: Dell Technologies, category: mnc, hq: us, website: dell.com, india_only: true, careers: not found (6 pages read)}
   - {name: AMD, category: mnc, hq: us, website: amd.com, india_only: true, careers: not found (0 pages read)}
   - {name: Texas Instruments, category: mnc, hq: us, website: ti.com, india_only: true, careers: not found (6 pages read)}
@@ -411,7 +411,7 @@ companies:
   - {name: Synopsys, category: mnc, hq: us, website: synopsys.com, india_only: true, careers: not found (6 pages read)}
   - {name: Western Digital, category: mnc, hq: us, website: westerndigital.com, india_only: true, careers: not found (6 pages read)}
   - {name: Palo Alto Networks, category: mnc, hq: us, website: paloaltonetworks.com, ats: workday, slug: paloaltonetworks/wd5/panwexternalcareers, india_only: true, verified: true, jobs: 100, ai_jobs: 10, checked: '2026-10-18', careers: 'workday: https://jobs.paloaltonetworks.com/en/'}
-  - {name: Atlassian, category: mnc, hq: global, website: atlassian.com, india_only: true, careers: 'icims (no adapter yet): https://www.atlassian.com/company/careers/all-jobs'}
+  - {name: Atlassian, category: mnc, hq: global, website: atlassian.com, ats: careersite, slug: careers-apac-atlassian.icims.com, india_only: true, careers: 'careersite: https://careers-apac-atlassian.icims.com/sitemap.xml (found by hand)'}
   - {name: Agoda, category: mnc, hq: global, website: agoda.com, india_only: true, careers: not found (6 pages read)}
   - {name: Booking.com, category: mnc, hq: eu, website: booking.com, india_only: true, careers: 'icims (no adapter yet): https://careers.booking.com/'}
   - {name: SAP, category: mnc, hq: eu, website: sap.com, ats: careersite, slug: jobs.sap.com/en/jobs/sitemap.xml, india_only: true, verified: true, jobs: 467, ai_jobs: 58, checked: '2026-11-12', careers: 'careersite: https://jobs.sap.com/sitemap.xml (found by hand)'}
@@ -906,7 +906,7 @@ companies:
   - {name: InsuranceDekho, category: india, hq: in, website: insurancedekho.com, verified: false}
   - {name: Plum, category: india, hq: in, website: plumhq.com, verified: false}
   - {name: Yubi, category: india, hq: in, website: go-yubi.com, verified: false}
-  - {name: Zoho, category: india, hq: in, website: zoho.com, verified: false}
+  - {name: Zoho, category: india, hq: in, website: zoho.com, ats: zoho_recruit, slug: careers.zohocorp.com, careers: 'zoho_recruit: https://careers.zohocorp.com/jobs/careers (found by hand)'}
   - {name: Icertis, category: india, hq: in, website: icertis.com, verified: false}
   - {name: CleverTap, category: india, hq: in, website: clevertap.com, verified: false}
   - {name: MoEngage, category: india, hq: in, website: moengage.com, verified: false}
