@@ -174,14 +174,15 @@ def test_report_covers_every_company_read_so_far():
 
 
 def test_newly_seen_systems_are_recorded():
+    # Gem, Rippling and YC job pages moved to SUPPORTED on 2026-11-12; Dover is still only noted.
     cases = {
-        '<a href="https://jobs.gem.com/promptql/am9icG9zdDqu29Ys">Apply</a>': "gem",
-        '<a href="https://ats.rippling.com/acme/jobs">Jobs</a>': "rippling",
-        '<a href="https://app.dover.com/apply/acme/1234">Apply</a>': "dover",
-        '<a href="https://www.ycombinator.com/companies/acme/jobs">Jobs</a>': "yc_jobs",
+        '<a href="https://jobs.gem.com/promptql/am9icG9zdDqu29Ys">Apply</a>': ("gem", "promptql", True),
+        '<a href="https://ats.rippling.com/acme/jobs">Jobs</a>': ("rippling", "acme", True),
+        '<a href="https://app.dover.com/apply/acme/1234">Apply</a>': ("dover", None, False),
+        '<a href="https://www.ycombinator.com/companies/acme/jobs">Jobs</a>': ("yc_jobs", "acme", True),
     }
-    for html, system in cases.items():
-        assert [(f.system, f.supported) for f in d.fingerprint(html, "https://acme.com/careers")] == [(system, False)]
+    for html, want in cases.items():
+        assert [(f.system, f.slug, f.supported) for f in d.fingerprint(html, "https://acme.com/careers")] == [want]
 
 
 def test_linkedin_is_noted_but_never_fetched():
@@ -259,3 +260,34 @@ def test_website_field_holding_two_addresses_uses_the_first():
         assert result.best.slug == "fireworks", website
         assert all(" " not in u and "," not in u for u in http.fetched), http.fetched
         assert d.apply({"name": "Pragmatic Leaders", "category": "yc"}, result)["website"] == "pragmaticleaders.io"
+
+
+def test_systems_read_since_2026_11_12_give_their_board():
+    html = ('<a href="https://jobs.gem.com/groq">Jobs</a><a href="https://ats.rippling.com/saturn/jobs">Jobs</a>'
+            '<a href="https://h2oai.applytojob.com/apply/x/AI-Engineer">Jobs</a>'
+            '<a href="https://acme.teamtailor.com/jobs">Jobs</a><a href="https://app.teamtailor.com/companies/x">x</a>'
+            '<a href="https://www.ycombinator.com/companies/brickanta/jobs">Jobs</a>')
+    found = {(f.system, f.slug) for f in d.fingerprint(html, "https://acme.com/careers")}
+    assert {("gem", "groq"), ("rippling", "saturn"), ("jazzhr", "h2oai"), ("teamtailor", "acme.teamtailor.com"),
+            ("yc_jobs", "brickanta")} <= found
+    assert all(f.supported for f in d.fingerprint(html, "https://acme.com/careers"))
+    assert ("teamtailor", "app.teamtailor.com") not in found  # Teamtailor's own app, not a career site
+
+
+def test_teamtailor_site_on_the_companys_own_domain_is_read_on_that_host():
+    html = '<link rel="stylesheet" href="https://assets-aws.teamtailor-cdn.com/assets/packs/css/careersite.css">'
+    assert [(f.system, f.slug) for f in d.fingerprint(html, "https://careers.cerrion.com/jobs")] == \
+        [("teamtailor", "careers.cerrion.com")]
+
+
+def test_a_yc_job_page_is_the_companys_yc_board_not_a_careers_site_for_all_of_yc():
+    html = ('<script type="application/ld+json">{"@type":"JobPosting","title":"ML Engineer"}</script>'
+            '<a href="/companies/brickanta/jobs">All jobs</a>')
+    found = d.fingerprint(html, "https://www.ycombinator.com/companies/brickanta/jobs/dM8327V-ml-engineer")
+    assert {(f.system, f.slug) for f in found} == {("yc_jobs", "brickanta")}
+
+
+def test_yc_listings_noted_before_the_reader_existed_are_retried():
+    assert d.retryable("job listing on ycombinator.com: https://www.ycombinator.com/companies/x/jobs/1-a")
+    assert d.retryable("gem (no adapter yet): https://groq.com")
+    assert not d.retryable("ashby: https://jobs.ashbyhq.com/acme")

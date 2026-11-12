@@ -44,12 +44,13 @@ jobs:
           from sources.http import FetchError, HttpClient
           from sources.models import Company
 
-          from sources import amazon, careersite, eightfold, oracle, smartrecruiters, workday
+          from sources import amazon, careersite, eightfold, oracle, rippling, smartrecruiters, workday, yc_jobs
           # Keep the smoke test small: a few pages and details per board are enough to see the shapes.
           amazon.MAX_PAGES = eightfold.MAX_PAGES = 1
           oracle.MAX_PAGES = 2
           eightfold.MAX_DETAILS = workday.MAX_DETAILS = careersite.MAX_DETAILS = oracle.MAX_DETAILS = 5
           smartrecruiters.MAX_PAGES, smartrecruiters.MAX_DETAILS = 1, 5
+          rippling.MAX_DETAILS = yc_jobs.MAX_DETAILS = 3
 
           http = HttpClient()
           failed = []
@@ -67,6 +68,12 @@ jobs:
               ("KPMG India", "oracle", "ejgk.fa.em2.oraclecloud.com/CX_1"),
               ("Writesonic", "workable", "writesonic"),
               ("Swiggy", "smartrecruiters", "swiggy"),
+              # Read since 2026-11-12 (docs/decisions.md): one known board each.
+              ("Gem", "gem", "gem"),
+              ("Rippling", "rippling", "rippling"),
+              ("Cerrion", "teamtailor", "careers.cerrion.com"),  # Teamtailor on the company's own domain
+              ("H2O.ai", "jazzhr", "h2oai"),
+              ("Brickanta", "yc_jobs", "brickanta"),
           ]:
               try:
                   titles = ADAPTERS[ats].list_titles(http, slug)

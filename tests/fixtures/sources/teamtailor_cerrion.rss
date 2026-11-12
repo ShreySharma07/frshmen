@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:tt="https://teamtailor.com/locations">
+  <channel>
+    <title>Cerrion AG</title>
+    <description>Current job openings</description>
+    <link>https://careers.cerrion.com/jobs</link>
+    <item>
+      <title>Growth Marketer</title>
+      <description>&lt;h5&gt;&lt;span&gt;&lt;strong id="docs-internal-guid-7718010c-7fff-08e6-ad57-b4140a0757ee"&gt;About Cerrion&lt;/strong&gt;&lt;/span&gt;&lt;/h5&gt;&lt;p&gt;&lt;span&gt;At Cerrion, we’re building the future of AI-enabled manufacturing. Headquartered in Zurich with more than $25M in funding from Creandum, Y Combinator, and top Silicon Valley investors, we’re building the industrial AI platform to deploy AI Agents that can see what’s happening on the production floor, automatically spot problems, and instantly intervene to keep lines running smoothly, at scale. Our technology is live in factories across 24+ countries, helping leading manufacturers in glass, beverage, food, CPG, building materials, and wood cut downtime by up to 50%.&lt;/span&gt;&lt;/p&gt;&lt;h5&gt;&lt;span&gt;&lt;strong id="docs-internal-guid-7718010c-7fff-08e6-ad57-b4140a0757ee"&gt;Role Summary&lt;/strong&gt;&lt;/span&gt;&lt;/h5&gt;&lt;p&gt;&lt;span&gt;Join Cerrion as our &lt;strong&gt;Growth Marketer &lt;/strong&gt;to help build our brand, drive demand, and turn attention into qualified pipeline. Working closely with our Marketing Manager, you'll create and run campaigns across LinkedIn, email, paid media, and other channels, while continuously experimenting with creative ways to reach manufacturing decision-makers.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;</description>
+      <pubDate>Sun, 08 Nov 2026 20:32:20 +0100</pubDate>
+      <link>https://careers.cerrion.com/jobs/8685681-growth-marketer</link>
+      <remoteStatus>hybrid</remoteStatus>
+      <guid>89258a2c-16a4-408a-8311-66474c008483</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name/>
+          <tt:address>Dufourstrasse 90</tt:address>
+          <tt:zip>8008</tt:zip>
+          <tt:city>Zurich</tt:city>
+          <tt:country>Switzerland</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Marketing</tt:department>
+      <tt:role>Marketing Field Manager</tt:role>
+    </item>
+    <item>
+      <title>Applied Researcher</title>
+      <description>&lt;h5&gt;&lt;span&gt;&lt;strong id="docs-internal-guid-178940dc-7fff-8713-b230-ce746a25ecc9"&gt;About Cerrion&lt;/strong&gt;&lt;/span&gt;&lt;/h5&gt;&lt;p&gt;&lt;span&gt;Cerrion builds video AI that helps manufacturers detect, understand and respond to production problems in real time. Headquartered in Zurich and backed by Creandum and Y Combinator, our platform connects to factory cameras to identify process deviations, quality issues and safety risks, and trigger alerts or automated actions. Our technology is deployed in factories across more than 15 countries, helping production teams reduce downtime and waste.&lt;/span&gt;&lt;/p&gt;&lt;h5&gt;&lt;span&gt;&lt;strong id="docs-internal-guid-178940dc-7fff-8713-b230-ce746a25ecc9"&gt;The Role&lt;/strong&gt;&lt;/span&gt;&lt;/h5&gt;&lt;p&gt;&lt;span&gt;We’re hiring an &lt;strong&gt;Applied Researcher </description>
+      <pubDate>Sun, 08 Nov 2026 20:22:55 +0100</pubDate>
+      <link>https://careers.cerrion.com/jobs/8685678-applied-researcher</link>
+      <remoteStatus>hybrid</remoteStatus>
+      <guid>e7d9135a-52ad-483d-87eb-90eda9e8f35d</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name/>
+          <tt:address>Dufourstrasse 90</tt:address>
+          <tt:zip>8008</tt:zip>
+          <tt:city>Zurich</tt:city>
+          <tt:country>Switzerland</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Engineering</tt:department>
+      <tt:role>Computer Vision Researcher</tt:role>
+    </item>
+  </channel>
+</rss>
