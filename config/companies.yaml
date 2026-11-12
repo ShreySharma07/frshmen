@@ -386,8 +386,8 @@ companies:
   - {name: S&P Global, category: mnc, hq: us, website: spglobal.com, india_only: true, careers: not found (0 pages read)}
   - {name: Moody's, category: mnc, hq: us, website: moodys.com, ats: careersite, slug: careers.moodys.com, india_only: true, verified: true, jobs: 334, ai_jobs: 22, checked: '2026-10-19', careers: 'careersite: https://careers.moodys.com/en'}
   - {name: MSCI, category: mnc, hq: us, website: msci.com, ats: careersite, slug: careers.msci.com, india_only: true, verified: true, jobs: 110, ai_jobs: 5, checked: '2026-10-19', careers: 'careersite: https://careers.msci.com/'}
-  - {name: Intuit, category: mnc, hq: us, website: intuit.com, ats: careersite, slug: jobs.intuit.com, india_only: true, verified: true, jobs: 612, ai_jobs: 93, checked: '2026-11-12', careers: 'careersite: https://jobs.intuit.com/sitemap.xml (found by hand)'}
-  - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (1 pages read)}
+  - {name: Intuit, category: mnc, hq: us, website: intuit.com, india_only: true, careers: not found (0 pages read)}
+  - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (6 pages read)}
   - {name: Barclays, category: mnc, hq: uk, website: barclays.com, india_only: true, careers: not found (6 pages read)}
   - {name: HSBC, category: mnc, hq: uk, website: hsbc.com, india_only: true, careers: not found (6 pages read)}
   - {name: Standard Chartered, category: mnc, hq: uk, website: sc.com, india_only: true, careers: not found (6 pages read)}
@@ -408,7 +408,7 @@ companies:
   - {name: AMD, category: mnc, hq: us, website: amd.com, india_only: true, careers: not found (0 pages read)}
   - {name: Texas Instruments, category: mnc, hq: us, website: ti.com, india_only: true, careers: not found (6 pages read)}
   - {name: Marvell, category: mnc, hq: us, website: marvell.com, ats: workday, slug: marvell/wd1/MarvellCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 7, checked: '2026-10-18', careers: 'workday: https://www.marvell.com/company/careers.html'}
-  - {name: Synopsys, category: mnc, hq: us, website: synopsys.com, india_only: true, careers: not found (6 pages read)}
+  - {name: Synopsys, category: mnc, hq: us, website: synopsys.com, india_only: true, careers: not found (0 pages read)}
   - {name: Western Digital, category: mnc, hq: us, website: westerndigital.com, india_only: true, careers: not found (6 pages read)}
   - {name: Palo Alto Networks, category: mnc, hq: us, website: paloaltonetworks.com, ats: workday, slug: paloaltonetworks/wd5/panwexternalcareers, india_only: true, verified: true, jobs: 100, ai_jobs: 10, checked: '2026-10-18', careers: 'workday: https://jobs.paloaltonetworks.com/en/'}
   - {name: Atlassian, category: mnc, hq: global, website: atlassian.com, ats: careersite, slug: careers-apac-atlassian.icims.com, india_only: true, verified: true, jobs: 51, ai_jobs: 7, checked: '2026-11-12', careers: 'careersite: https://careers-apac-atlassian.icims.com/sitemap.xml (found by hand)'}
@@ -464,7 +464,7 @@ companies:
 
   # --- Indian fintech, e-commerce and consultancies (careers systems surveyed 2026-10-07; see docs/decisions.md) ---
   - {name: BharatPe, category: india, hq: in, website: bharatpe.com, ats: darwinbox, slug: bharatpe, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
-  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-11-12', careers: not found (5 pages read)}
+  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: MobiKwik, category: india, hq: in, website: mobikwik.com, ats: darwinbox, slug: mobikwik, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: Go Digit, category: india, hq: in, website: godigit.com, ats: darwinbox, slug: godigit, verified: false, checked: '2026-11-12', careers: 'darwinbox: https://www.godigit.com/careers'}
   - {name: smallcase, category: india, hq: in, website: smallcase.com, ats: darwinbox, slug: smallcase, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}

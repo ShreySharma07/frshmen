@@ -104,7 +104,7 @@
 | Moody's | moodys.com | careersite: https://careers.moodys.com/en | yes |
 | MSCI | msci.com | careersite: https://careers.msci.com/ | yes |
 | Intuit | intuit.com | not found (0 pages read) |  |
-| MetLife | metlife.com | not found (1 pages read) |  |
+| MetLife | metlife.com | not found (6 pages read) |  |
 | Barclays | barclays.com | not found (6 pages read) |  |
 | HSBC | hsbc.com | not found (6 pages read) |  |
 | Standard Chartered | sc.com | not found (6 pages read) |  |
@@ -125,7 +125,7 @@
 | AMD | amd.com | not found (0 pages read) |  |
 | Texas Instruments | ti.com | not found (6 pages read) |  |
 | Marvell | marvell.com | workday: https://www.marvell.com/company/careers.html | yes |
-| Synopsys | synopsys.com | not found (6 pages read) |  |
+| Synopsys | synopsys.com | not found (0 pages read) |  |
 | Western Digital | westerndigital.com | not found (6 pages read) |  |
 | Palo Alto Networks | paloaltonetworks.com | workday: https://jobs.paloaltonetworks.com/en/ | yes |
 | Atlassian | atlassian.com | icims (no adapter yet): https://www.atlassian.com/company/careers/all-jobs |  |
@@ -179,7 +179,7 @@
 | Bain & Company | bain.com | not found (6 pages read) |  |
 | Deloitte | deloitte.com | not found (6 pages read) |  |
 | BharatPe | bharatpe.com | not found (6 pages read) |  |
-| Pine Labs | pinelabs.com | not found (5 pages read) |  |
+| Pine Labs | pinelabs.com | not found (0 pages read) |  |
 | MobiKwik | mobikwik.com | not found (0 pages read) |  |
 | Go Digit | godigit.com | darwinbox: https://www.godigit.com/careers |  |
 | smallcase | smallcase.com | not found (6 pages read) |  |
