@@ -30,6 +30,15 @@ Newest first. Each entry: date, options considered, choice, why.
 - **Consequence:** the careers detector retries companies noted "(no adapter yet)" or "job
   listing on ycombinator.com", sets the new board, and the board check verifies it. The fetch
   smoke test reads one live board per new reader.
+- **C, first batch (30 picked by Claude for Shrey to prune):** 9 run on systems we already read
+  and were set by hand: JPMorgan Chase, Oracle and American Express (Oracle Recruiting; Amex's
+  careers domain fronts `egug.fa.us2.oraclecloud.com`), Deutsche Bank (Workday), Intuit and SAP
+  (careers-site sitemaps with schema.org jobs), Unsloth AI, Skyvern and Ubicloud (YC job pages).
+  The rest need something we don't read yet: TurboHire (Flipkart), mynexthire (ShareChat),
+  Avature (IBM), iCIMS (Atlassian), Darwinbox's 403 (Zepto), single-page sites with no job data
+  (Urban Company, Nykaa, Goldman Sachs, Juspay), or own systems (Meta, Apple). Google's robots.txt
+  disallows us. Helicone and Guardrails AI list no jobs on YC. A per-company link pattern (the
+  original idea for C) can't read single-page sites, so it was not built.
 
 ## 2026-11-12 — A board must be tied to the company, not just answer to its name
 - **Problem:** `scripts/verify_companies.py` took the first board that answered a slug guessed from
