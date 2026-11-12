@@ -53,6 +53,12 @@ jobs:
         if: steps.open.outputs.count == '0'
         run: python scripts/detect_careers.py --report docs/careers_detect.md --report-only
 
+      # Detection can add or change a company's website; the site's logo list must follow it
+      # (tests/test_logos.py fails otherwise, and these commits don't trigger the tests).
+      - name: Refresh logo domains
+        if: steps.open.outputs.count == '0'
+        run: python scripts/export_logos.py
+
       - name: Open PR
         if: steps.open.outputs.count == '0'
         run: |
@@ -86,7 +92,7 @@ jobs:
             cat "$RUNNER_TEMP/changes.md"
           } > "$RUNNER_TEMP/pr-body.md"
           git checkout -B "$BRANCH"
-          git add config/companies.yaml docs/careers_detect.md docs/company_check.md
+          git add config/companies.yaml docs/careers_detect.md docs/company_check.md site/public/company-domains.json
           git commit -m "Weekly careers detection: new and changed boards"
           # The branch only ever holds this bot's latest run, so overwriting it is safe.
           git push --force -u origin "$BRANCH"
