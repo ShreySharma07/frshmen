@@ -37,6 +37,7 @@ import yaml  # noqa: E402
 
 from sources import careersite  # noqa: E402
 from sources.http import USER_AGENT, FetchError, HttpClient  # noqa: E402
+from verify_companies import registrable, rewrite_yaml  # noqa: E402
 
 COMPANIES = ROOT / "config" / "companies.yaml"
 YC_SOURCE = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
@@ -178,14 +179,6 @@ def career_links(html: str, base_url: str) -> list[str]:
                 or any(p.search(absolute) for _, p in UNSUPPORTED):
             links.append(absolute)
     return list(dict.fromkeys(links))
-
-
-def registrable(host: str) -> str:
-    """'careers.acme.co.in' -> 'acme.co.in': enough to tell our site from someone else's."""
-    parts = host.lower().split(":")[0].split(".")
-    if len(parts) >= 3 and parts[-2] in {"co", "com", "org", "net", "ac", "gov"} and len(parts[-1]) == 2:
-        return ".".join(parts[-3:])
-    return ".".join(parts[-2:])
 
 
 # --- Reading the web politely ------------------------------------------------------------------
@@ -336,8 +329,6 @@ def report(companies: list[dict[str, Any]], skipped: list[str]) -> str:
 
 
 def main() -> int:
-    from verify_companies import rewrite_yaml  # same one-line-per-company format
-
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--only", nargs="*", help="check only these company names")
     parser.add_argument("--all", action="store_true", help="check every company, even verified ones and ones read before")
