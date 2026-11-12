@@ -15,8 +15,8 @@ export function Today({ userId, matches, followUps, tracked, onSaved }: {
     if ((await saveJob(userId, id)) === "saved") { setSaved((s) => new Set(s).add(id)); onSaved(); }
   }
   return (
-    <section className="rounded-lg border border-line p-4">
-      <h2 className="text-meta font-medium uppercase tracking-wide text-muted">Today</h2>
+    <section className="rounded-lg border border-card-line bg-card p-5">
+      <h2 className="font-display text-[1.375rem] leading-tight">New today, and strongly fits you</h2>
       {matches.length === 0 && followUps.length === 0 && (
         <p className="mt-3 text-body text-muted">Nothing new that strongly fits you today. New jobs arrive every few hours.</p>
       )}
@@ -32,8 +32,8 @@ export function Today({ userId, matches, followUps, tracked, onSaved }: {
                   <span className="block truncate text-meta text-muted">{j.company}</span>
                 </a>
                 <button type="button" onClick={() => save(j.id)} disabled={isSaved} aria-label={isSaved ? `${j.title} is saved` : `Save ${j.title}`}
-                  className="grid size-8 shrink-0 place-items-center rounded-md border border-line text-muted transition-colors duration-quick hover:bg-surface hover:text-ink disabled:border-transparent">
-                  {isSaved ? <BookmarkCheck aria-hidden className="size-4 text-accent" /> : <Bookmark aria-hidden className="size-4" />}
+                  className="press grid size-8 shrink-0 place-items-center rounded-md border border-line text-muted duration-quick hover:bg-surface hover:text-ink disabled:border-transparent">
+                  {isSaved ? <BookmarkCheck aria-hidden className="pop size-4 text-accent-text" /> : <Bookmark aria-hidden className="size-4" />}
                 </button>
               </li>
             );

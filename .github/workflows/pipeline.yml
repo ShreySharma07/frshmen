@@ -47,6 +47,10 @@ jobs:
       - name: Publish to Supabase
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          # Job text also goes to Supabase Storage once the secret key exists
+          # (docs/setup-job-text.md). Until then both are empty and the step writes the table only.
+          SUPABASE_URL: ${{ secrets.SUPABASE_SECRET_KEY && (vars.SUPABASE_URL || secrets.SUPABASE_URL) || '' }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
         run: python -u scripts/publish_pg.py
 
       # GitHub disables scheduled workflows after 60 days without repo activity;

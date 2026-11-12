@@ -25,8 +25,9 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
     return [
       { id: "jobs", label: "Jobs", group: "Go to", run: go("/") },
       ...(signedIn ? [
-        { id: "board", label: "Board", group: "Go to", run: go("/profile") },
+        { id: "applications", label: "Applications", group: "Go to", run: go("/applications") },
         { id: "insights", label: "Insights", group: "Go to", run: go("/insights") },
+        { id: "agent", label: "Agent", group: "Go to", run: go("/agent") },
         { id: "details", label: "Your details", group: "Go to", run: go("/profile/edit") },
       ] : [{ id: "login", label: "Sign in", group: "Go to", run: go("/login") }]),
       { id: "f-fresher", label: "Jobs for freshers (0 years)", group: "Filter jobs", run: go(jobs({ years: 0 })) },
@@ -65,7 +66,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-ink/40 px-4 pt-[12vh] motion-safe:animate-[fade-in_150ms_var(--ease-out-soft)]"
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" aria-label="Command palette" className="w-full max-w-lg overflow-hidden rounded-lg border border-line bg-canvas shadow-menu">
+      <div role="dialog" aria-modal="true" aria-label="Command palette" className="dialog-in w-full max-w-lg overflow-hidden rounded-lg border border-line bg-canvas shadow-menu">
         <div className="flex items-center gap-2 border-b border-line px-3">
           <Search aria-hidden className="size-4 text-muted" />
           <input ref={input} value={query} onChange={(e) => { setQuery(e.target.value); setActive(0); }} onKeyDown={onKey}

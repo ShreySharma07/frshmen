@@ -1,82 +1,92 @@
 @import "tailwindcss";
 
 /*
- * Aventra design tokens (M4.5, docs/decisions.md 2026-10-17). One place for every colour, size,
- * radius, shadow and motion value; components only use these. Mirrored for the future mobile
- * app in src/design/tokens.ts: change both together.
+ * Aventra design tokens. One place for every colour, size, radius, shadow and motion value;
+ * components only use these. Mirrored for the future mobile app in src/design/tokens.ts: change
+ * both together.
  *
- * Contrast (WCAG AA needs 4.5:1 for text): ink 19.7 / 16.8, muted 5.3 / 7.1, accent 5.5 / 6.8
- * (light / dark, on the canvas). `faint` is 2.6 / 3.9, so it is for icons, dividers and
- * disabled things only, never for text people need to read.
+ * The app shares the landing page's "Ink and Marigold" (docs/decisions.md 2026-11-11): paper and
+ * warm ink, with marigold as the highlighter and the one action colour. Marigold is always a fill
+ * under ink (10.5:1), never text on paper; accent-text is the text version.
+ *
+ * Contrast on the canvas (WCAG AA needs 4.5:1 for text), light / dark: ink 16.3 / 15.1,
+ * muted 5.6 / 6.9, accent-text 5.7 / 11.6. `faint` is for icons, dividers and disabled things
+ * only, never for text people need to read.
  */
 
 :root {
-  /* Light theme */
-  --canvas: #ffffff; /* page background */
-  --surface: #fafafb; /* hover, subtle fills */
-  --line: #e7e7ea; /* dividers, input borders */
-  --ink: #0a0a12; /* main text */
-  --muted: #6b6b76; /* secondary text, "Not stated" */
-  --faint: #a1a1aa; /* icons and dividers only */
-  --accent: #5851ec; /* the one brand colour: links, "New", years, primary button */
-  --accent-hover: #4a42d9;
-  --on-accent: #ffffff; /* text on an accent background */
-  --selected: #f6f5ff; /* selected job row */
-  --card: #0a0a12; /* the dark "why it fits" card */
-  --card-text: #ffffff;
-  --card-muted: #d4d4d8;
-  --card-accent: #a5a0ff; /* years number and ticks inside the card */
-  --card-line: rgb(255 255 255 / 0.1);
-  --card-pass: #4ade80; /* on the dark card: matches the posting (10.9:1) */
-  --card-fail: #fb7185; /* on the dark card: works against you (7.0:1) */
-  --code: #f4f4f5; /* keyword pills */
+  /* Light theme: paper */
+  --canvas: #f2eee4; /* paper: page background */
+  --surface: #e9e3d6; /* hover, subtle fills */
+  --line: #d9d3c5; /* dividers, input borders */
+  --ink: #121110; /* main text */
+  --muted: #625d53; /* secondary text, "Not stated" */
+  --faint: #a39d8f; /* icons and dividers only */
+  --accent: #ffb21a; /* marigold: the one action colour, as a fill under ink */
+  --accent-hover: #f0a400;
+  --on-accent: #121110; /* text on an accent fill */
+  --accent-text: #1f4fd8; /* links and accent-coloured text (marigold can't be text on paper) */
+  --mark: #ffb21a; /* highlighter behind the deciding words; ink text stays on top */
+  --selected: #fbf9f4; /* selected job row: raised paper */
+  --card: #fbf9f4; /* the evidence card */
+  --card-text: #121110;
+  --card-muted: #625d53;
+  --card-accent: #121110; /* the years number in the card */
+  --card-line: rgb(18 17 16 / 0.1);
+  --card-pass: #276b43; /* matches the posting */
+  --card-fail: #b5381f; /* works against you */
+  --code: #e9e3d6; /* keyword pills */
   color-scheme: light;
 }
 
-/* Dark theme: designed, not inverted. The canvas is a blue-black so the purple stays warm; the
-   fit card lifts off the canvas with a lighter surface and a hairline instead of going darker. */
+/* Dark theme: designed, not inverted. Warm graphite, the landing's dark chapters; marigold can be
+   text here, and the highlighter turns to a deep amber so light ink stays readable on it. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --canvas: #0b0b10;
-    --surface: #121218;
-    --line: #24242c;
-    --ink: #ededf2;
-    --muted: #9b9ba6;
-    --faint: #6e6e78;
-    --accent: #8f8aff;
-    --accent-hover: #a5a0ff;
-    --on-accent: #0b0b10;
-    --selected: #17162a;
-    --card: #17171f;
-    --card-text: #ededf2;
-    --card-muted: #d4d4d8;
-    --card-accent: #a5a0ff;
-    --card-line: rgb(255 255 255 / 0.08);
-    --card-pass: #4ade80;
-    --card-fail: #fb7185;
-    --code: #1c1c24;
+    --canvas: #14130f;
+    --surface: #1c1b17;
+    --line: #34312a;
+    --ink: #ece7db;
+    --muted: #a39d90;
+    --faint: #6f6a5e;
+    --accent: #ffb21a;
+    --accent-hover: #ffc24d;
+    --on-accent: #121110;
+    --accent-text: #ffc24d;
+    --mark: #4a3a12;
+    --selected: #1f1e1a;
+    --card: #1c1b17;
+    --card-text: #ece7db;
+    --card-muted: #a39d90;
+    --card-accent: #ffb21a;
+    --card-line: rgb(236 231 219 / 0.1);
+    --card-pass: #7fd49b;
+    --card-fail: #f08a75;
+    --code: #26241f;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --canvas: #0b0b10;
-  --surface: #121218;
-  --line: #24242c;
-  --ink: #ededf2;
-  --muted: #9b9ba6;
-  --faint: #6e6e78;
-  --accent: #8f8aff;
-  --accent-hover: #a5a0ff;
-  --on-accent: #0b0b10;
-  --selected: #17162a;
-  --card: #17171f;
-  --card-text: #ededf2;
-  --card-muted: #d4d4d8;
-  --card-accent: #a5a0ff;
-  --card-line: rgb(255 255 255 / 0.08);
-  --card-pass: #4ade80;
-  --card-fail: #fb7185;
-  --code: #1c1c24;
+  --canvas: #14130f;
+  --surface: #1c1b17;
+  --line: #34312a;
+  --ink: #ece7db;
+  --muted: #a39d90;
+  --faint: #6f6a5e;
+  --accent: #ffb21a;
+  --accent-hover: #ffc24d;
+  --on-accent: #121110;
+  --accent-text: #ffc24d;
+  --mark: #4a3a12;
+  --selected: #1f1e1a;
+  --card: #1c1b17;
+  --card-text: #ece7db;
+  --card-muted: #a39d90;
+  --card-accent: #ffb21a;
+  --card-line: rgb(236 231 219 / 0.1);
+  --card-pass: #7fd49b;
+  --card-fail: #f08a75;
+  --code: #26241f;
   color-scheme: dark;
 }
 
@@ -152,6 +162,8 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-on-accent: var(--on-accent);
+  --color-accent-text: var(--accent-text);
+  --color-mark: var(--mark);
   --color-selected: var(--selected);
   --color-card: var(--card);
   --color-card-text: var(--card-text);
@@ -185,14 +197,12 @@
   --color-lp-term-muted: var(--lp-term-muted);
   --color-lp-term-ok: var(--lp-term-ok);
 
-  /* Two families only: Geist for text and headings, Geist Mono for numbers, keywords and protocol
-     chips (set by next/font). */
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Set by next/font in app/layout.tsx. Instrument Serif for headings and the years (the face the
+     wordmark is drawn from), Instrument Sans for text, Geist Mono for data and keywords. */
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  /* Landing only (loaded by app/preview/page.tsx): Instrument Serif for headings, the face the
-     wordmark is drawn from, and Instrument Sans for text. */
   --font-display: var(--font-instrument-serif), Georgia, serif;
-  --font-text: var(--font-instrument-sans), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-text: var(--font-sans);
 }
 
 @theme {
@@ -207,8 +217,12 @@
   --text-base--line-height: 1.5rem;
   --text-title: 1.5rem; /* 24px: job title in the details panel */
   --text-title--line-height: 1.2;
-  --text-display: 1.875rem; /* 30px: the years number in the fit card */
+  --text-display: 1.875rem; /* 30px: big numbers on the board and insights */
   --text-display--line-height: 1;
+  --text-headline: 2rem; /* 32px, serif: the job title in the details panel, the years sentence on phones */
+  --text-headline--line-height: 1.12;
+  --text-hero: 2.75rem; /* 44px, serif: the years sentence on wide screens, the years in the evidence card */
+  --text-hero--line-height: 1.05;
 
   /* Spacing: Tailwind's 4px steps (p-1 = 4px, p-4 = 16px) are kept as they are. */
 
@@ -218,8 +232,8 @@
   --radius-lg: 12px;
 
   /* Elevation: flat by default. One hairline shadow for raised controls, one for menus. */
-  --shadow-raised: 0 1px 2px rgb(10 10 18 / 0.05);
-  --shadow-menu: 0 8px 24px rgb(10 10 18 / 0.12), 0 1px 2px rgb(10 10 18 / 0.06);
+  --shadow-raised: 0 1px 2px rgb(18 17 16 / 0.05);
+  --shadow-menu: 0 8px 24px rgb(18 17 16 / 0.12), 0 1px 2px rgb(18 17 16 / 0.06);
 
   /* Motion: feedback 150-250 ms, layout 300-500 ms (CLAUDE.md). No linear, no bounce. */
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -267,6 +281,58 @@ body {
 ::view-transition-new(root) { animation: 420ms var(--ease-out-expo) both vt-rise; }
 /* A dialog arriving over the page (the tailored resume). */
 @keyframes fade-in { from { opacity: 0; } }
+
+/* --- Motion for the app (docs/decisions.md, 2026-11-12). Each one explains something: what
+   was pressed, what arrived, what changed. Only transform and opacity move; the reduced-motion
+   rule above turns all of it off. ------------------------------------------------------------ */
+
+/* Pressed: the control gives a little under the finger, so a tap on a slow phone still answers. */
+.press { transition-property: transform, color, background-color, border-color; }
+.press:active { transform: scale(0.97); }
+
+/* A page arriving under the chrome, which stays put. */
+.page-in { animation: 300ms var(--ease-out-soft) both rise-in; }
+/* The details of a newly chosen job: a short rise, so the eye sees the panel changed. */
+.detail-in { animation: 250ms var(--ease-out-soft) both rise-in; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* New results after a filter change, and a card landing in a column. */
+.list-in { animation: 200ms var(--ease-out-soft) both fade-in; }
+.card-in { animation: 250ms var(--ease-out-soft) both card-in; }
+@keyframes card-in { from { opacity: 0; transform: scale(0.96); } }
+
+/* A number that just changed (a count, a column total) ticks up into place. */
+.tick { display: inline-block; animation: 250ms var(--ease-out-soft) both tick; }
+@keyframes tick { from { opacity: 0; transform: translateY(0.4em); } }
+
+/* Saved: the bookmark lands with one small overshoot-free pop. */
+.pop { animation: 250ms var(--ease-out-soft) both pop; }
+@keyframes pop { from { transform: scale(0.7); } }
+
+/* Menus and dialogs grow from where they were opened. */
+.menu-in { transform-origin: top right; animation: 150ms var(--ease-out-soft) both menu-in; }
+.dialog-in { animation: 200ms var(--ease-out-soft) both menu-in; }
+@keyframes menu-in { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
+
+/* Phones: a job opens as a sheet rising from the list it came from. */
+.sheet-in { animation: 300ms var(--ease-out-soft) both sheet-in; }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(24px); } }
+
+/* Bars in a chart grow from the baseline. */
+.grow-y { transform-origin: bottom; animation: 500ms var(--ease-out-soft) both grow-y; }
+@keyframes grow-y { from { transform: scaleY(0); } }
+
+/* The highlighter (components/FitCard.tsx): when a job opens, the mark sweeps across the words
+   that decided its label, so the eye lands on the reason first. Only the fill moves (transform);
+   the text never changes colour, so it is readable before, during and without the sweep. */
+.hl { position: relative; isolation: isolate; white-space: nowrap; }
+.hl::before {
+  content: ""; position: absolute; inset: 0.1em -0.14em 0.02em; z-index: -1; border-radius: 2px;
+  background: var(--mark); transform-origin: left; animation: 420ms var(--ease-out-soft) 120ms both hl-sweep;
+}
+@keyframes hl-sweep { from { transform: scaleX(0); } }
+/* The ruler's bar grows from the left edge to the years the job asks for. */
+@keyframes grow-x { from { transform: scaleX(0); } }
 
 @keyframes vt-settle { to { opacity: 0; transform: scale(0.985); } }
 @keyframes vt-rise { from { opacity: 0; transform: translateY(24px); } }

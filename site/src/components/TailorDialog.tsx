@@ -136,7 +136,7 @@ export function TailorDialog({ jobId, title, company, initial, onClose, onMade }
                     {leftOut.map((line) => (
                       <li key={line} className="flex items-start gap-3 text-meta">
                         <span className="min-w-0 flex-1 text-muted">{line}</span>
-                        <button type="button" onClick={() => addBack(line)} className="shrink-0 font-medium text-accent underline underline-offset-2">Add back</button>
+                        <button type="button" onClick={() => addBack(line)} className="shrink-0 font-medium text-accent-text underline underline-offset-2">Add back</button>
                       </li>
                     ))}
                   </ul>

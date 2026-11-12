@@ -4,6 +4,201 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-12 — A board must be tied to the company, not just answer to its name
+- **Problem:** `scripts/verify_companies.py` took the first board that answered a slug guessed from
+  the name. In an India batch "Clear" (clear.in) got Greenhouse `clear` (the US company
+  "CLEAR - Corporate", 61 jobs) and "Apollo" (apollofirst.xyz) got Ashby `apollo` (a bigger Apollo,
+  46 jobs). Another company's jobs under our name breaks the precision rule.
+- **Options:** (1) compare the board's own name with the entry · (2) look for the entry's website
+  in the board's data · (3) send every one-common-word slug to the careers detector
+- **Choice (Claude, from the brief's three ideas; Shrey to confirm):** 1 and 2 together, not 3.
+  `find_board` skips a board unless one of these holds, strongest first:
+  1. `careers` says `detect_careers.py` found this exact board from the company's own site.
+  2. The board's data mentions the entry's website domain (job links, descriptions, e-mail addresses).
+  3. The board gives a name (Greenhouse, SmartRecruiters, Workable) and it is the entry's name,
+     ignoring company suffixes and words like AI, Labs, Careers. A bracketed alias counts:
+     "Anysphere (Cursor)". A different or longer name ("CLEAR - Corporate") is skipped.
+  4. The board gives no name (Lever, Ashby) and the slug contains the website's name: `fampay`
+     fits fampay.in, `scaleai` fits scale.com, `apollo` does not fit apollofirst.xyz. Stock
+     domain extras are ignored (getacme.com, thinkingmachineslab.ai).
+- **Why not 3:** Sierra, Julius, Campfire and Fathom are single dictionary words and are the right
+  boards (slug = website name). A word list would drop them and needs upkeep; rule 4 caught Apollo
+  without one.
+- **Checked against our data** (the hiring systems can't be reached from the sandbox): none of the
+  160 verified Lever/Ashby boards with a website is skipped. Of 24 board names kept in old reports,
+  the rule skips Moveworks → "ServiceNow" (right), and Bosch → "Bosch Group" and Pure Storage →
+  "Everpure" (wrong, both since moved to other systems).
+- **Limits:**
+  - An entry with no website on a nameless board is still taken on the slug alone. New entries
+    should carry a `website`.
+  - A same-name board on a same-name domain passes (a Lever board `clear` for clear.in would).
+  - A renamed or longer board name is skipped. To keep such a board, add the alias in brackets
+    to the entry name, or let the careers detector confirm it.
+- **Consequence:** skipped boards are printed in the run log with the reason and the entry stays
+  `verified: false` for the detector. Runs only re-probe unverified and empty boards, so existing
+  boards are touched only by `--all`. `discover_companies.py` uses the same check.
+
+## 2026-11-11 — Worldwide coverage: every country, all jobs
+- **Options:** every country, all jobs · companies from everywhere but only jobs open to India ·
+  a few regions first
+- **Choice (Shrey):** every country, all jobs. Reverses point 3 of the 2026-10-18 coverage
+  strategy (keep only India, remote and visa/relocation jobs from global companies).
+- **Why:** Aventra is for every job seeker, not only people in India.
+- **Consequence:** the 500 MB database is the first limit (about 190 MB used with the India
+  filter on). The plan and six open choices (storage first) are in
+  `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
+
+## 2026-11-12 — The four-section layout, built, with motion
+- **Built from** `docs/wireframes/app-v2.html` (approved 2026-11-11). A route group `(app)` holds
+  the frame: a sidebar on wide screens, a tab bar on phones, and a search bar at the foot of
+  every page that opens the command palette. Each page has a top bar with its own controls, the
+  theme switch and the profile button.
+- **Jobs:** filter chips on top, with years back as the first chip ("I have 3 years", filled
+  marigold when set); a flat list, newest first; the job on the right. The years headline and
+  the filter rail built on 2026-11-11 are removed, as the approved sketch has neither.
+- **Applications** (`/applications`, new): filter bar (needs me, stage, company, with a tailored
+  resume, search), then a board or a list. Built for hundreds: a column shows six cards and
+  "Show more"; applications with no reply in 30 days and the Closed column fold into a stack;
+  past 40 applications the list opens by default, 20 a page, what needs the person first. A
+  marigold tape on a card means it needs them this week. The next step on each card is a rule
+  over stage and dates (`lib/board.ts`), never a guess. `/profile` still receives sign-in links
+  and forwards here.
+- **Insights:** the market merged in. What companies ask for against the resume, and how much of
+  the market is open at the person's years (from the snapshot's `within_years`), above their
+  own week. **Not there, because the pipeline doesn't compute them yet:** change over 30 days,
+  jobs per week, days open, who is hiring most, pay.
+- **Agent** (`/agent`, new). **Options for the parts with no backend (chat, outreach, applying):**
+  show only what is real · hide the tab · show them marked as coming. **Choice (Shrey):** only
+  what is real. The page holds today's strong matches, follow-ups, tailored resumes, fit checks
+  and the daily allowance.
+- **Not built from the sketch:** the calendar view, grouping several jobs at one company into
+  one card, and a server-side page of applications (the tracker still loads them in one request).
+- **Motion, each with a reason:** the sidebar marker and the view switch slide to the choice;
+  a pressed control gives slightly; a page, and a newly chosen job, rise 8 px into place; on
+  phones a job rises as a sheet; counts tick when they change; a card settles into the column
+  it was moved to; the bookmark pops once on save; menus and the palette grow from their corner;
+  chart bars grow from the baseline; the highlighter and ruler from 2026-11-11 stay. CSS only,
+  transform and opacity only, all off under reduced motion.
+- **Budget:** the job list downloads 154.7 KB of JavaScript gzipped (limit 170).
+- **Checked:** lint, types, token sync, static build; screenshots of all four sections at 1360 px,
+  Jobs and Applications at 390 px, Jobs in dark, the tracker at 118 applications as a list, with
+  sample data and a stand-in sign-in. **Not checked:** against the live API and a real account,
+  drag and drop by hand, the board at 118 applications, keyboard navigation, a real phone,
+  throttled-4G timings.
+
+## 2026-11-12 — Job text goes to Supabase Storage, not R2
+- **Why revisit:** Cloudflare needs a payment card to switch R2 on and accepted neither Shrey's
+  RuPay card nor PayPal.
+- **Options:** Supabase Storage (already used for resumes, no card, 1 GB free) · Cloudflare D1
+  (no card, 5 GB free but 500 MB a database, so text would be split across databases) · leave
+  the text in Postgres (~70k jobs, enough for India but not Europe).
+- **Choice (Shrey):** Supabase Storage.
+- **How it differs from the R2 build of 2026-11-11:** a public `job-text` bucket made by a
+  migration; the pipeline writes over Storage's REST API with the project's secret key (one new
+  GitHub secret, `SUPABASE_SECRET_KEY`; boto3 is gone again); the API reads the object's public
+  URL, with the jobs table as the fallback, and only when the repo variable `JOB_TEXT` is `on`.
+  The dual-write order, the rollback on a failed upload, the backfill with its verify step and
+  the measuring script are unchanged. Steps for Shrey: `docs/setup-job-text.md`.
+- **Costs against R2:** 1 GB instead of 10 GB (about 400k descriptions as plain text; compressing
+  them would triple that when needed); the read leaves Cloudflare's network for Supabase's
+  region, so opening a job is likely slower than it would have been with R2; Storage pauses with
+  the database after a week without activity, which the 3-hourly pipeline prevents.
+- **Measured (Shrey's run of "Measure storage", 2026-11-12):** 23,641 open jobs and 39,631 stored
+  in all across 13 careers systems; descriptions average 1.0 to 2.8 KB by system, about 2.3 KB
+  for the three largest. The table and index sizes from the same run are still to be added to
+  `docs/strategy/worldwide-coverage.md`.
+
+## 2026-11-11 — Moving job text to R2: how (phase 1, first half)
+- **Order. Options:** cut over in one change (drop the column, read only R2) · write to both,
+  copy the old rows, read R2 with Postgres as the fallback, drop the column later.
+  **Choice:** both, then cut over, the same shape as the D1 to Supabase move (2026-10-16). At
+  every step Postgres still has the text, so undoing it is removing two secrets.
+- **Built:** `scripts/text_store.py` (R2 over its S3 API with boto3, a new pipeline-only
+  dependency), `publish_pg.py` uploads each new or changed job's text before its transaction
+  commits (a failed upload rolls the run back; the next run retries), `scripts/backfill_r2.py`
+  with a verify step, `api/src/job_text.py` reading through the Worker's R2 binding, and
+  `scripts/measure_storage.py`. Objects are plain UTF-8 text under `text/<sha256 of job id>`.
+- **Off until set up:** with no R2 secrets the pipeline writes Postgres only, and the Worker's
+  binding is commented out in `wrangler.jsonc` because a deploy fails when its bucket is
+  missing. Steps for Shrey: `docs/setup-r2.md`.
+- **Free tier (checked 2026-11-11):** 10 GB, 1M writes and 10M reads a month. Cloudflare asks
+  for a payment card to switch R2 on; usage inside the limits is not billed. **For Shrey to
+  confirm** against the free-tools rule before step 2 of the setup.
+- **Found on the way, to do before the column can go:** the job list reads pay from the first
+  line of the description, and repost matching compares full texts from Postgres. Pay needs its
+  own column and reposts a stored fingerprint.
+
+## 2026-11-11 — Worldwide coverage: storage, order and languages
+- **Storage. Options:** everything in Postgres (~70k jobs) · slim rows in Postgres with
+  descriptions in Cloudflare R2 and closed jobs deleted after 14 days · the same, keeping closed
+  jobs. **Choice (Shrey):** slim rows + R2, 14-day shelf life. Free tier: R2 10 GB, 1M writes and
+  10M reads a month. Cost: search covers title and company, not full text; Insights keeps weekly
+  totals instead of old rows.
+- **At the free ceiling. Options:** region by region · biggest employers first · tech and data
+  companies first. **Choice (Shrey):** region by region.
+- **First regions (Shrey):** India and Europe.
+- **Languages. Options:** English first, others "Not stated" · rules before a region launches ·
+  hide other languages. **Choice (Shrey):** English first.
+
+## 2026-11-11 — All roles, matched per person at request time
+- **Options:** tech and data roles only (a quarter of the volume) · every role
+- **Choice (Shrey):** fetch every job, every role, and let each person filter by their own
+  preferences.
+- **Consequence:** the pipeline stops matching jobs against `config/profile.yaml`. It labels
+  every job with profile-independent facts (a job family from a fixed list, years, places,
+  workplace, visa, skills) and the API filters by the signed-in person's preferences.
+  `role_match` goes; the title screen and the India screen go. Free storage then holds a few
+  hundred thousand open jobs, so the order companies are added in becomes a product decision.
+  Plan and open choices: `docs/strategy/worldwide-coverage.md` (rewritten today).
+
+## 2026-11-11 — App layout approved (Shrey)
+- **Approved:** the four-section sketch in `docs/wireframes/app-v2.html`, with three changes
+  Shrey asked for, now in the sketch: a profile button at the top right of every page; a filter
+  bar above the Applications board; the Jobs list is flat, newest first, without the
+  grouped-by-fit sections.
+- **Next:** build in the order shell and Jobs, Applications, Insights, Agent. The agent's open
+  questions below still stand.
+
+## 2026-11-11 — The app's four sections, and the layout for them (sketch stage)
+- **Sections (Shrey):** Jobs · Applications (track every job applied to) · Insights, with the
+  market merged in (what companies ask for against the person's profile, how to close each gap,
+  market sentiment) · Agent (talk to it, have it prepare applications and outreach, improve the
+  resume, and keep every tailored resume).
+- **Layout (Shrey liked ideas 1 and 3 of `docs/wireframes/ideas.html`):** Workbench's sidebar,
+  dense grouped rows and command bar, with Pinboard's paper notes for boards, big serif numbers
+  and view switches. The command bar on every page is the agent's input. Sketches:
+  `docs/wireframes/app-v2.html` (`?s=jobs|apps|insights|agent|resumes`), screenshots `v2-*.png`.
+- **Kept from 2026-10-19:** nothing goes out under a person's name without them reading it. In the
+  sketch the agent drafts notes and fills forms; the person sends and submits.
+- **Open, for Shrey:** whether the agent may ever submit an application itself; which model runs
+  the chat and where long agent work runs (Workers allow 10 ms CPU per request); the new market
+  numbers the pipeline must compute (skill share and its change, jobs per week, days open, pay).
+
+## 2026-11-11 — App redesign: the three directions mixed (job list built)
+- **Scope options:** app pages only · landing and app, fresh identity · landing only
+- **Choice (Shrey):** app pages move to the landing page's identity; the landing page stays.
+  Claude builds, Shrey reviews.
+- **Direction (Shrey, after seeing `docs/wireframes/next.html`):** mix all three, because Ledger
+  alone had no visible filters.
+  - From **Ledger:** paper and warm ink, Instrument Serif headings, and the highlighter over the
+    words in the quoted line that decided the label (it sweeps in once when a job opens).
+  - From **Console:** every filter open in a rail beside the list with live counts (chips stay on
+    phones), the ruler (bar = what the job asks, tick = your years) in each row and in the
+    evidence card, and the graphite dark theme.
+  - From **Billboard:** years of experience as the page's headline control ("I have 3 years of
+    experience"), replacing the "Asks" chip.
+- **Tokens:** the app's white and purple are replaced by the landing's paper, ink and marigold in
+  `globals.css` and `tokens.ts`. Marigold is a fill only; new `accent-text` (blue on paper, amber
+  on graphite) is the text version, and `mark` is the highlighter. Every text pair is 4.5:1 or
+  more (computed; figures in `globals.css`).
+- **Type:** Instrument Serif (headings, years), Instrument Sans (text, replaces Geist) and Geist
+  Mono (data), loaded once in the root layout. Three families against CLAUDE.md's two, the same
+  exception the landing page already has; say if the mono should go.
+- **Budget:** the job list downloads 153 KB of JavaScript gzipped (limit 170), no new libraries.
+- **Checked:** lint, types, token sync, static build; screenshots at 390 and 1280 px, light and
+  dark, with sample jobs in place of the API (this sandbox can't reach it). **Not checked:** the
+  signed-in pages (board, insights, profile) on screen, a real phone, throttled-4G timings.
+
 ## 2026-11-07 — App look: "Ledger" with cool paper; a simpler Scout page
 - **Look. Options:** keep white + indigo · Ledger (the landing's paper, ink and marigold) ·
   dark graphite with lime or teal · cool white with cobalt or green · three "premium" looks

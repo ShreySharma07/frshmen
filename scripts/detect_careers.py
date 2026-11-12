@@ -37,6 +37,7 @@ import yaml  # noqa: E402
 
 from sources import careersite  # noqa: E402
 from sources.http import USER_AGENT, FetchError, HttpClient  # noqa: E402
+from verify_companies import first_address, registrable, rewrite_yaml  # noqa: E402
 
 COMPANIES = ROOT / "config" / "companies.yaml"
 YC_SOURCE = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
@@ -180,14 +181,6 @@ def career_links(html: str, base_url: str) -> list[str]:
     return list(dict.fromkeys(links))
 
 
-def registrable(host: str) -> str:
-    """'careers.acme.co.in' -> 'acme.co.in': enough to tell our site from someone else's."""
-    parts = host.lower().split(":")[0].split(".")
-    if len(parts) >= 3 and parts[-2] in {"co", "com", "org", "net", "ac", "gov"} and len(parts[-1]) == 2:
-        return ".".join(parts[-3:])
-    return ".".join(parts[-2:])
-
-
 # --- Reading the web politely ------------------------------------------------------------------
 
 class Robots:
@@ -214,6 +207,7 @@ class Robots:
 def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Detection:
     """Read the homepage, then the most careers-looking pages, until a readable board turns up."""
     robots = robots or Robots(http)
+    website = first_address(website)
     home = website if website.startswith("http") else f"https://{website}"
     result = Detection(website=home)
     queue = [home] + [urljoin(home, p) for p in CAREER_PATHS]
@@ -336,8 +330,6 @@ def report(companies: list[dict[str, Any]], skipped: list[str]) -> str:
 
 
 def main() -> int:
-    from verify_companies import rewrite_yaml  # same one-line-per-company format
-
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--only", nargs="*", help="check only these company names")
     parser.add_argument("--all", action="store_true", help="check every company, even verified ones and ones read before")

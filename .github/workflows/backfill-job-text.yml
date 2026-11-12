@@ -1,0 +1,42 @@
+name: Copy job text to Storage
+
+# One-off (docs/decisions.md, 2026-11-12): copy the descriptions already in the jobs table to
+# the job-text bucket in Supabase Storage. Run a dry run first and read the size, then run for
+# real; it ends by comparing a random sample. The table keeps its copy. Needs the
+# SUPABASE_SECRET_KEY secret (docs/setup-job-text.md).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only count jobs and bytes"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# Shares the pipeline's group so it never overlaps a publish.
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Copy
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python -u scripts/backfill_job_text.py ${{ inputs.dry_run && '--dry-run' || '--verify 300' }}
