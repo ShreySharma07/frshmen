@@ -166,8 +166,12 @@ def fingerprint(html: str, url: str) -> list[Found]:
         # A careers site publishing schema.org jobs: sources/careersite.py reads it by host.
         out.append(Found("careersite", urlparse(url).netloc, True, url))
     for system, pattern in UNSUPPORTED:
-        if pattern.search(text):
-            out.append(Found(system, None, False, url))
+        m = pattern.search(text)
+        if m:
+            # iCIMS: keep the portal host that was linked (careers-apac-atlassian.icims.com); its job
+            # sitemap is there, not on the company page that linked it.
+            host = m.group(0) if system == "icims" else None
+            out.append(Found(system, host, False, url))
     return out
 
 
@@ -253,14 +257,17 @@ def detect(http: HttpClient, website: str, robots: Robots | None = None) -> Dete
         queue = [u for u in career_links(html, final_url) if u not in seen] + queue
     best = result.best
     if best is not None and best.system in SITEMAP_FIRST:
-        host = urlparse(best.url).netloc
-        sitemap = careersite.sitemap_url(host)
-        try:
-            readable = robots.allowed(sitemap) and bool(careersite.list_titles(http, host))
-        except FetchError:
-            readable = False
-        if readable:
-            result.found.append(Found("careersite", host, True, best.url))
+        # The page's own host first (Arm's careers site has the sitemap), then the hiring system's
+        # host when one was linked (an iCIMS portal publishes its own job sitemap).
+        for host in dict.fromkeys(h for h in (urlparse(best.url).netloc, best.slug) if h):
+            sitemap = careersite.sitemap_url(host)
+            try:
+                readable = robots.allowed(sitemap) and bool(careersite.list_titles(http, host))
+            except FetchError:
+                readable = False
+            if readable:
+                result.found.append(Found("careersite", host, True, best.url))
+                break
     return result
 
 
