@@ -753,6 +753,251 @@ companies:
   - {name: Modash.io, category: hn, hq: global, ats: workable, slug: modash, verified: true, jobs: 27, ai_jobs: 0, checked: '2026-10-08'}
   - {name: Mattermost, category: hn, hq: global, website: mattermost.com, ats: greenhouse, slug: mattermost, verified: true, jobs: 14, ai_jobs: 0, checked: '2026-10-08'}
 
+  # --- India-based YC companies imported from yc-oss on 2026-11-12 (scripts/import_yc.py) ---
+  - {name: Adalat AI, category: yc, hq: in, website: adalat.ai, ats: ashby, slug: adalat-ai, verified: false, checked: '2026-11-12'}
+  - {name: Lab0, category: yc, hq: in, website: lab0.ai, ats: ashby, slug: lab0, verified: false, checked: '2026-11-12'}
+  - {name: Infinity, category: yc, hq: in, website: infinityapp.in, ats: ashby, slug: infinity, verified: false, checked: '2026-11-12'}
+  - {name: SureBright, category: yc, hq: in, website: surebright.com, ats: ashby, slug: surebright, verified: false, checked: '2026-11-12'}
+  - {name: Clueso, category: yc, hq: in, website: clueso.io, ats: ashby, slug: clueso, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: Floworks, category: yc, hq: in, website: floworks.ai, ats: ashby, slug: floworks, verified: false, checked: '2026-11-12'}
+  - {name: AlgoTest, category: yc, hq: in, website: algotest.in, ats: ashby, slug: algotest, verified: false, checked: '2026-11-12'}
+  # The Ashby board `apollo` belongs to a different, larger Apollo (46 jobs). Website only, so the
+  # name is not matched again; the careers detector finds the real board from the site.
+  - {name: Apollo (apollofirst.xyz), category: yc, hq: in, website: apollofirst.xyz, verified: false}
+  - {name: Better Opinions, category: yc, hq: in, website: betteropinions.in, ats: ashby, slug: better-opinions, verified: false, checked: '2026-11-12'}
+  - {name: Clinikally, category: yc, hq: in, website: clinikally.com, ats: ashby, slug: clinikally, verified: false, checked: '2026-11-12'}
+  - {name: CompUp, category: yc, hq: in, website: compup.io, ats: ashby, slug: compup, verified: false, checked: '2026-11-12'}
+  - {name: Fieldproxy, category: yc, hq: in, website: fieldproxy.ai, ats: ashby, slug: fieldproxy, verified: false, checked: '2026-11-12'}
+  - {name: Gullak Money, category: yc, hq: in, website: gullak.money, ats: ashby, slug: gullak-money, verified: false, checked: '2026-11-12'}
+  - {name: IMT Care, category: yc, hq: in, website: imt.care, ats: ashby, slug: imt-care, verified: false, checked: '2026-11-12'}
+  - {name: InferEdge, category: yc, hq: in, website: inferedge.com, ats: ashby, slug: inferedge, verified: false, checked: '2026-11-12'}
+  - {name: Kaagaz, category: yc, hq: in, website: kaagaz.app, ats: ashby, slug: kaagaz, verified: false, checked: '2026-11-12'}
+  - {name: Material Depot, category: yc, hq: in, website: materialdepot.in, ats: ashby, slug: material-depot, verified: false, checked: '2026-11-12'}
+  - {name: MySivi, category: yc, hq: in, website: mysivi.ai, ats: ashby, slug: mysivi, verified: false, checked: '2026-11-12'}
+  - {name: National Finance Olympiad, category: yc, hq: in, website: nationalfinanceolympiad.com, ats: ashby, slug: national-finance-olympiad, verified: false, checked: '2026-11-12'}
+  - {name: Peoplebox.ai, category: yc, hq: in, website: peoplebox.ai, ats: ashby, slug: peoplebox, verified: false, checked: '2026-11-12'}
+  - {name: PrimeVault, category: yc, hq: in, website: primevault.com, ats: ashby, slug: primevault, verified: false, checked: '2026-11-12'}
+  - {name: RDash, category: yc, hq: in, website: rdash.io, ats: ashby, slug: rdash, verified: false, checked: '2026-11-12'}
+  - {name: RecordBook, category: yc, hq: in, website: play.google.com, ats: ashby, slug: recordbook, verified: false, checked: '2026-11-12'}
+  - {name: RedBrick AI, category: yc, hq: in, website: redbrickai.com, ats: ashby, slug: redbrick-ai, verified: false, checked: '2026-11-12'}
+  - {name: SALT, category: yc, hq: in, website: salt.pe, ats: ashby, slug: salt, verified: false, checked: '2026-11-12'}
+  - {name: SaveIN, category: yc, hq: in, website: savein.money, ats: ashby, slug: savein, verified: false, checked: '2026-11-12'}
+  - {name: SpadeWorks, category: yc, hq: in, website: spadeworks.co, ats: ashby, slug: spadeworks, verified: false, checked: '2026-11-12'}
+  - {name: Advantage Club, category: yc, hq: in, website: advantageclub.co, ats: ashby, slug: advantage-club, verified: false, checked: '2026-11-12'}
+  - {name: AlgoUniversity, category: yc, hq: in, website: algouniversity.com, ats: ashby, slug: algouniversity, verified: false, checked: '2026-11-12'}
+  - {name: AppX, category: yc, hq: in, website: appx.co.in, ats: ashby, slug: appx, verified: false, checked: '2026-11-12'}
+  - {name: Betterhalf, category: yc, hq: in, website: betterhalf.ai, ats: ashby, slug: betterhalf, verified: false, checked: '2026-11-12'}
+  - {name: Bimaplan, category: yc, hq: in, website: bimaplan.co, ats: ashby, slug: bimaplan, verified: false, checked: '2026-11-12'}
+  - {name: Codingal, category: yc, hq: in, website: codingal.com, ats: ashby, slug: codingal, verified: false, checked: '2026-11-12'}
+  - {name: Flux Auto, category: yc, hq: in, website: fluxauto.ai, ats: ashby, slug: flux-auto, verified: false, checked: '2026-11-12'}
+  - {name: GimBooks, category: yc, hq: in, website: gimbooks.com, ats: ashby, slug: gimbooks, verified: false, checked: '2026-11-12'}
+  - {name: GroMo, category: yc, hq: in, website: gromo.in, ats: ashby, slug: gromo, verified: false, checked: '2026-11-12'}
+  - {name: Ivy Homes, category: yc, hq: in, website: ivy.homes, ats: ashby, slug: ivy-homes, verified: false, checked: '2026-11-12'}
+  - {name: Karbon Card, category: yc, hq: in, website: karboncard.com, ats: ashby, slug: karbon-card, verified: false, checked: '2026-11-12'}
+  - {name: Kodo, category: yc, hq: in, website: kodo.com, ats: smartrecruiters, slug: kodo, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: Koshex, category: yc, hq: in, website: koshex.com, ats: ashby, slug: koshex, verified: false, checked: '2026-11-12'}
+  - {name: marketfeed, category: yc, hq: in, website: marketfeed.com, ats: ashby, slug: marketfeed, verified: false, checked: '2026-11-12'}
+  - {name: Novatr, category: yc, hq: in, website: novatr.com, ats: ashby, slug: novatr, verified: false, checked: '2026-11-12'}
+  - {name: ODWEN, category: yc, hq: in, website: odwen.co.in, ats: ashby, slug: odwen, verified: false, checked: '2026-11-12'}
+  - {name: Pragmatic Leaders (Ankai Inc), category: yc, hq: in, website: pragmaticleaders.io, ats: ashby, slug: pragmatic-leaders-ankai-inc, verified: false, checked: '2026-11-12'}
+  - {name: Reclaim Protocol, category: yc, hq: in, website: reclaimprotocol.org, ats: ashby, slug: reclaim-protocol, verified: false, checked: '2026-11-12'}
+  - {name: Redcliffe Lifetech, category: yc, hq: in, website: redcliffelabs.com, ats: ashby, slug: redcliffe-lifetech, verified: false, checked: '2026-11-12'}
+  - {name: Spark Studio, category: yc, hq: in, website: sparkstudio.co, ats: ashby, slug: spark-studio, verified: false, checked: '2026-11-12'}
+  - {name: Stownest, category: yc, hq: in, website: stownest.com, ats: ashby, slug: stownest, verified: false, checked: '2026-11-12'}
+  - {name: Swipe, category: yc, hq: in, website: getswipe.in, ats: ashby, slug: swipe-2, verified: false, checked: '2026-11-12'}
+  - {name: Tilt, category: yc, hq: in, website: tilt.bike, ats: ashby, slug: tilt-2, verified: false, checked: '2026-11-12'}
+  - {name: Unschool, category: yc, hq: in, website: unschool.in, ats: smartrecruiters, slug: unschool, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: Voosh, category: yc, hq: in, website: voosh.ai, ats: ashby, slug: voosh, verified: false, checked: '2026-11-12'}
+  - {name: Weekday, category: yc, hq: in, website: weekday.works, ats: ashby, slug: weekday, verified: false, checked: '2026-11-12'}
+  - {name: zingbus, category: yc, hq: in, website: zingbus.com, ats: ashby, slug: zingbus, verified: false, checked: '2026-11-12'}
+  - {name: ZOKO, category: yc, hq: in, website: zoko.io, ats: ashby, slug: zoko, verified: false, checked: '2026-11-12'}
+  - {name: Decentro, category: yc, hq: in, website: decentro.tech, ats: ashby, slug: decentro, verified: false, checked: '2026-11-12'}
+  - {name: DocVita, category: yc, hq: in, website: docvita.com, ats: ashby, slug: docvita, verified: false, checked: '2026-11-12'}
+  - {name: EduRev, category: yc, hq: in, website: edurev.in, ats: ashby, slug: edurev, verified: false, checked: '2026-11-12'}
+  - {name: Explorex, category: yc, hq: in, website: explorex.co, ats: ashby, slug: explorex, verified: false, checked: '2026-11-12'}
+  - {name: Farmako Healthcare, category: yc, hq: in, website: farmako.ai, ats: ashby, slug: farmako-healthcare, verified: false, checked: '2026-11-12'}
+  - {name: farmtheory, category: yc, hq: in, website: farmtheory.in, ats: ashby, slug: farmtheory, verified: false, checked: '2026-11-12'}
+  - {name: Hiration, category: yc, hq: in, website: hiration.com, ats: ashby, slug: hiration, verified: false, checked: '2026-11-12'}
+  - {name: Kosh, category: yc, hq: in, website: getkosh.com, ats: ashby, slug: kosh, verified: false, checked: '2026-11-12'}
+  - {name: Loop Health, category: yc, hq: in, website: loophealth.com, ats: smartrecruiters, slug: loophealth, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: 'MedPiper Technologies, Inc', category: yc, hq: in, website: medpiper.com, ats: ashby, slug: medpiper-technologies-inc, verified: false, checked: '2026-11-12'}
+  - {name: Morphle Labs, category: yc, hq: in, website: morphlelabs.com, ats: ashby, slug: morphle-labs, verified: false, checked: '2026-11-12'}
+  - {name: Orange Health Labs, category: yc, hq: in, website: orangehealth.in, ats: ashby, slug: orange-health-labs, verified: false, checked: '2026-11-12'}
+  - {name: Statiq., category: yc, hq: in, website: statiq.in, ats: smartrecruiters, slug: statiq, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: StayQrious, category: yc, hq: in, website: stayqrious.com, ats: ashby, slug: stayqrious, verified: false, checked: '2026-11-12'}
+  - {name: TagMango, category: yc, hq: in, website: tagmango.com, ats: ashby, slug: tagmango, verified: false, checked: '2026-11-12'}
+  - {name: UrbanKisaan, category: yc, hq: in, website: urbankisaan.com, ats: ashby, slug: urbankisaan, verified: false, checked: '2026-11-12'}
+  - {name: Volopay, category: yc, hq: in, website: volopay.com, ats: ashby, slug: volopay, verified: false, checked: '2026-11-12'}
+  - {name: WareIQ, category: yc, hq: in, website: wareiq.com, ats: ashby, slug: wareiq, verified: false, checked: '2026-11-12'}
+  - {name: Zeo Route Planner, category: yc, hq: in, website: zeorouteplanner.com, ats: ashby, slug: zeo-route-planner, verified: false, checked: '2026-11-12'}
+  - {name: Zuddl, category: yc, hq: in, website: zuddl.com, ats: ashby, slug: zuddl, verified: false, checked: '2026-11-12'}
+  - {name: AccioJob, category: yc, hq: in, website: acciojob.com, ats: ashby, slug: acciojob, verified: false, checked: '2026-11-12'}
+  - {name: Binks, category: yc, hq: in, website: getbinks.com, ats: ashby, slug: binks, verified: false, checked: '2026-11-12'}
+  - {name: Cityfurnish, category: yc, hq: in, website: cityfurnish.com, ats: ashby, slug: cityfurnish, verified: false, checked: '2026-11-12'}
+  - {name: Digi-Prex, category: yc, hq: in, website: digi-prex.com, ats: ashby, slug: digi-prex, verified: false, checked: '2026-11-12'}
+  - {name: Edyst, category: yc, hq: in, website: edyst.com, ats: ashby, slug: edyst, verified: false, checked: '2026-11-12'}
+  - {name: Exly, category: yc, hq: in, website: exlyapp.com, ats: ashby, slug: exly, verified: false, checked: '2026-11-12'}
+  - {name: FamPay, category: yc, hq: in, website: fampay.in, ats: lever, slug: fampay, verified: true, jobs: 18, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: Inito, category: yc, hq: in, website: inito.com, ats: ashby, slug: inito, verified: false, checked: '2026-11-12'}
+  - {name: Lokal, category: yc, hq: in, website: getlokalapp.com, ats: smartrecruiters, slug: lokal, verified: true, jobs: 9, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: Mudrex, category: yc, hq: in, website: mudrex.com, ats: ashby, slug: mudrex, verified: false, checked: '2026-11-12'}
+  - {name: Pulse Active Stations Network, category: yc, hq: in, website: getpulse.in, ats: ashby, slug: pulse-active-stations-network, verified: false, checked: '2026-11-12'}
+  - {name: Skill-lync, category: yc, hq: in, website: skill-lync.com, ats: smartrecruiters, slug: skill-lync, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-11-12'}
+  - {name: Swadesh, category: yc, hq: in, website: swadesh.co, ats: ashby, slug: swadesh, verified: false, checked: '2026-11-12'}
+  - {name: Vahan, category: yc, hq: in, website: vahan.ai, ats: ashby, slug: vahan, verified: false, checked: '2026-11-12'}
+  - {name: Helloverify, category: yc, hq: in, website: helloverify.ae, ats: ashby, slug: helloverify, verified: false, checked: '2026-11-12'}
+  - {name: Khatabook, category: yc, hq: in, website: khatabook.com, ats: ashby, slug: khatabook, verified: false, checked: '2026-11-12'}
+  - {name: Leena AI, category: yc, hq: in, website: leena.ai, ats: ashby, slug: leena-ai, verified: false, checked: '2026-11-12'}
+  - {name: OkCredit, category: yc, hq: in, website: okcredit.in, ats: ashby, slug: okcredit, verified: false, checked: '2026-11-12'}
+  - {name: ZiffyHomes, category: yc, hq: in, website: ziffyhomes.com, ats: ashby, slug: ziffyhomes, verified: false, checked: '2026-11-12'}
+  - {name: Bulk MRO Industrial Supply, category: yc, hq: in, website: bulkmro.com, ats: ashby, slug: bulk-mro-industrial-supply, verified: false, checked: '2026-11-12'}
+  - {name: Cashfree Payments, category: yc, hq: in, website: cashfree.com, ats: ashby, slug: cashfree-payments, verified: false, checked: '2026-11-12'}
+  - {name: Dost Education, category: yc, hq: in, website: dosteducation.com, ats: ashby, slug: dost-education, verified: false, checked: '2026-11-12'}
+  - {name: OneFin, category: yc, hq: in, website: onefin.in, ats: ashby, slug: onefin, verified: false, checked: '2026-11-12'}
+  - {name: 'Wifi Dabba, Inc.', category: yc, hq: in, website: dabba.com, ats: ashby, slug: wifi-dabba-inc, verified: false, checked: '2026-11-12'}
+  - {name: GoLorry, category: yc, hq: in, website: golorry.com, ats: ashby, slug: golorry, verified: false, checked: '2026-11-12'}
+  - {name: Drip Capital, category: yc, hq: in, website: dripcapital.com, ats: ashby, slug: drip-capital, verified: false, checked: '2026-11-12'}
+  - {name: RedCarpetUp, category: yc, hq: in, website: redcarpetup.com, ats: ashby, slug: redcarpetup, verified: false, checked: '2026-11-12'}
+  # The Greenhouse board `clear` is "CLEAR - Corporate", the US identity company, not ClearTax.
+  - {name: Clear (ClearTax), category: yc, hq: in, website: clear.in, verified: false}
+
+  # --- Indian startups and scale-ups, drafted 2026-11-12 for Shrey to prune; careers system found from the website ---
+  - {name: Zerodha, category: india, hq: in, website: zerodha.com, verified: false}
+  - {name: PolicyBazaar, category: india, hq: in, website: policybazaar.com, verified: false}
+  - {name: Lenskart, category: india, hq: in, website: lenskart.com, verified: false}
+  - {name: boAt, category: india, hq: in, website: boat-lifestyle.com, verified: false}
+  - {name: OYO, category: india, hq: in, website: oyorooms.com, verified: false}
+  - {name: MakeMyTrip, category: india, hq: in, website: makemytrip.com, verified: false}
+  - {name: ixigo, category: india, hq: in, website: ixigo.com, verified: false}
+  - {name: Cars24, category: india, hq: in, website: cars24.com, verified: false}
+  - {name: CarDekho, category: india, hq: in, website: cardekho.com, verified: false}
+  - {name: PharmEasy, category: india, hq: in, website: pharmeasy.in, verified: false}
+  - {name: Tata 1mg, category: india, hq: in, website: 1mg.com, verified: false}
+  - {name: Practo, category: india, hq: in, website: practo.com, verified: false}
+  - {name: Cult.fit, category: india, hq: in, website: cult.fit, verified: false}
+  - {name: Licious, category: india, hq: in, website: licious.in, verified: false}
+  - {name: Country Delight, category: india, hq: in, website: countrydelight.in, verified: false}
+  - {name: Blinkit, category: india, hq: in, website: blinkit.com, verified: false}
+  - {name: Porter, category: india, hq: in, website: porter.in, verified: false}
+  - {name: Shiprocket, category: india, hq: in, website: shiprocket.in, verified: false}
+  - {name: Xpressbees, category: india, hq: in, website: xpressbees.com, verified: false}
+  - {name: BlackBuck, category: india, hq: in, website: blackbuck.com, verified: false}
+  - {name: Shadowfax, category: india, hq: in, website: shadowfax.in, verified: false}
+  - {name: Ather Energy, category: india, hq: in, website: atherenergy.com, verified: false}
+  - {name: Ola Electric, category: india, hq: in, website: olaelectric.com, verified: false}
+  - {name: Yulu, category: india, hq: in, website: yulu.bike, verified: false}
+  - {name: Ultraviolette, category: india, hq: in, website: ultraviolette.com, verified: false}
+  - {name: Exponent Energy, category: india, hq: in, website: exponent.energy, verified: false}
+  - {name: Navi, category: india, hq: in, website: navi.com, verified: false}
+  - {name: INDmoney, category: india, hq: in, website: indmoney.com, verified: false}
+  - {name: CoinDCX, category: india, hq: in, website: coindcx.com, verified: false}
+  - {name: CoinSwitch, category: india, hq: in, website: coinswitch.co, verified: false}
+  - {name: Acko, category: india, hq: in, website: acko.com, verified: false}
+  - {name: Lendingkart, category: india, hq: in, website: lendingkart.com, verified: false}
+  - {name: KreditBee, category: india, hq: in, website: kreditbee.in, verified: false}
+  - {name: Fi Money, category: india, hq: in, website: fi.money, verified: false}
+  - {name: Open Financial, category: india, hq: in, website: open.money, verified: false}
+  - {name: PayU, category: india, hq: in, website: payu.in, verified: false}
+  - {name: BillDesk, category: india, hq: in, website: billdesk.com, verified: false}
+  - {name: M2P Fintech, category: india, hq: in, website: m2pfintech.com, verified: false}
+  - {name: OneCard, category: india, hq: in, website: getonecard.app, verified: false}
+  - {name: Rupeek, category: india, hq: in, website: rupeek.com, verified: false}
+  - {name: Turtlemint, category: india, hq: in, website: turtlemint.com, verified: false}
+  - {name: InsuranceDekho, category: india, hq: in, website: insurancedekho.com, verified: false}
+  - {name: Plum, category: india, hq: in, website: plumhq.com, verified: false}
+  - {name: Yubi, category: india, hq: in, website: go-yubi.com, verified: false}
+  - {name: Zoho, category: india, hq: in, website: zoho.com, verified: false}
+  - {name: Icertis, category: india, hq: in, website: icertis.com, verified: false}
+  - {name: CleverTap, category: india, hq: in, website: clevertap.com, verified: false}
+  - {name: MoEngage, category: india, hq: in, website: moengage.com, verified: false}
+  - {name: WebEngage, category: india, hq: in, website: webengage.com, verified: false}
+  - {name: LeadSquared, category: india, hq: in, website: leadsquared.com, verified: false}
+  - {name: Zenoti, category: india, hq: in, website: zenoti.com, verified: false}
+  - {name: HighRadius, category: india, hq: in, website: highradius.com, verified: false}
+  - {name: Capillary Technologies, category: india, hq: in, website: capillarytech.com, verified: false}
+  - {name: Amagi, category: india, hq: in, website: amagi.com, verified: false}
+  - {name: Kissflow, category: india, hq: in, website: kissflow.com, verified: false}
+  - {name: Rocketlane, category: india, hq: in, website: rocketlane.com, verified: false}
+  - {name: Facilio, category: india, hq: in, website: facilio.com, verified: false}
+  - {name: Vymo, category: india, hq: in, website: vymo.com, verified: false}
+  - {name: FarEye, category: india, hq: in, website: fareye.com, verified: false}
+  - {name: IDfy, category: india, hq: in, website: idfy.com, verified: false}
+  - {name: HyperVerge, category: india, hq: in, website: hyperverge.co, verified: false}
+  - {name: Tekion, category: india, hq: in, website: tekion.com, verified: false}
+  - {name: Murf AI, category: india, hq: in, website: murf.ai, verified: false}
+  - {name: Skit.ai, category: india, hq: in, website: skit.ai, verified: false}
+  - {name: Entropik, category: india, hq: in, website: entropik.io, verified: false}
+  - {name: Wysa, category: india, hq: in, website: wysa.com, verified: false}
+  - {name: Tricog, category: india, hq: in, website: tricog.com, verified: false}
+  - {name: Cropin, category: india, hq: in, website: cropin.com, verified: false}
+  - {name: DeHaat, category: india, hq: in, website: dehaat.com, verified: false}
+  - {name: Ninjacart, category: india, hq: in, website: ninjacart.com, verified: false}
+  - {name: Udaan, category: india, hq: in, website: udaan.com, verified: false}
+  - {name: Moglix, category: india, hq: in, website: moglix.com, verified: false}
+  - {name: OfBusiness, category: india, hq: in, website: ofbusiness.com, verified: false}
+  - {name: Infra.Market, category: india, hq: in, website: infra.market, verified: false}
+  - {name: Zetwerk, category: india, hq: in, website: zetwerk.com, verified: false}
+  - {name: ElasticRun, category: india, hq: in, website: elastic.run, verified: false}
+  - {name: Purplle, category: india, hq: in, website: purplle.com, verified: false}
+  - {name: FirstCry, category: india, hq: in, website: firstcry.com, verified: false}
+  - {name: Physics Wallah, category: india, hq: in, website: pw.live, verified: false}
+  - {name: Vedantu, category: india, hq: in, website: vedantu.com, verified: false}
+  - {name: Scaler, category: india, hq: in, website: scaler.com, verified: false}
+  - {name: Eruditus, category: india, hq: in, website: eruditus.com, verified: false}
+  - {name: Simplilearn, category: india, hq: in, website: simplilearn.com, verified: false}
+  - {name: Great Learning, category: india, hq: in, website: mygreatlearning.com, verified: false}
+  - {name: Apna, category: india, hq: in, website: apna.co, verified: false}
+  - {name: VerSe Innovation (Dailyhunt), category: india, hq: in, website: verse.in, verified: false}
+  - {name: Pocket FM, category: india, hq: in, website: pocketfm.com, verified: false}
+  - {name: Kuku FM, category: india, hq: in, website: kukufm.com, verified: false}
+  - {name: Mobile Premier League, category: india, hq: in, website: mpl.live, verified: false}
+  - {name: WinZO, category: india, hq: in, website: winzogames.com, verified: false}
+  - {name: Zupee, category: india, hq: in, website: zupee.com, verified: false}
+  - {name: Agnikul Cosmos, category: india, hq: in, website: agnikul.in, verified: false}
+  - {name: Skyroot Aerospace, category: india, hq: in, website: skyroot.in, verified: false}
+  - {name: ideaForge, category: india, hq: in, website: ideaforgetech.com, verified: false}
+  - {name: Detect Technologies, category: india, hq: in, website: detecttechnologies.com, verified: false}
+  - {name: GreyOrange, category: india, hq: in, website: greyorange.com, verified: false}
+  - {name: Addverb, category: india, hq: in, website: addverb.com, verified: false}
+  - {name: NoBroker, category: india, hq: in, website: nobroker.in, verified: false}
+  - {name: Livspace, category: india, hq: in, website: livspace.com, verified: false}
+  - {name: HomeLane, category: india, hq: in, website: homelane.com, verified: false}
+  - {name: Rebel Foods, category: india, hq: in, website: rebelfoods.com, verified: false}
+  - {name: Park+, category: india, hq: in, website: parkplus.io, verified: false}
+  - {name: Pristyn Care, category: india, hq: in, website: pristyncare.com, verified: false}
+  - {name: MediBuddy, category: india, hq: in, website: medibuddy.in, verified: false}
+  - {name: Eka Care, category: india, hq: in, website: eka.care, verified: false}
+  - {name: Mu Sigma, category: india, hq: in, website: mu-sigma.com, verified: false}
+  - {name: Course5 Intelligence, category: india, hq: in, website: course5i.com, verified: false}
+
+  # --- IT services and consultancies in India, drafted 2026-11-12; large boards, so India and remote roles only ---
+  - {name: Tata Consultancy Services, category: consulting, hq: in, website: tcs.com, india_only: true, verified: false}
+  - {name: Infosys, category: consulting, hq: in, website: infosys.com, india_only: true, verified: false}
+  - {name: Tech Mahindra, category: consulting, hq: in, website: techmahindra.com, india_only: true, verified: false}
+  - {name: LTIMindtree, category: consulting, hq: in, website: ltimindtree.com, india_only: true, verified: false}
+  - {name: Mphasis, category: consulting, hq: in, website: mphasis.com, india_only: true, verified: false}
+  - {name: Persistent Systems, category: consulting, hq: in, website: persistent.com, india_only: true, verified: false}
+  - {name: Coforge, category: consulting, hq: in, website: coforge.com, india_only: true, verified: false}
+  - {name: Hexaware, category: consulting, hq: in, website: hexaware.com, india_only: true, verified: false}
+  - {name: Cyient, category: consulting, hq: in, website: cyient.com, india_only: true, verified: false}
+  - {name: Zensar, category: consulting, hq: in, website: zensar.com, india_only: true, verified: false}
+  - {name: Birlasoft, category: consulting, hq: in, website: birlasoft.com, india_only: true, verified: false}
+  - {name: KPIT, category: consulting, hq: in, website: kpit.com, india_only: true, verified: false}
+  - {name: Tata Elxsi, category: consulting, hq: in, website: tataelxsi.com, india_only: true, verified: false}
+  - {name: L&T Technology Services, category: consulting, hq: in, website: ltts.com, india_only: true, verified: false}
+  - {name: Sonata Software, category: consulting, hq: in, website: sonata-software.com, india_only: true, verified: false}
+  - {name: Happiest Minds, category: consulting, hq: in, website: happiestminds.com, india_only: true, verified: false}
+  - {name: Tata Technologies, category: consulting, hq: in, website: tatatechnologies.com, india_only: true, verified: false}
+  - {name: Mastek, category: consulting, hq: in, website: mastek.com, india_only: true, verified: false}
+  - {name: Sasken, category: consulting, hq: in, website: sasken.com, india_only: true, verified: false}
+  - {name: Newgen Software, category: consulting, hq: in, website: newgensoft.com, india_only: true, verified: false}
+  - {name: Intellect Design Arena, category: consulting, hq: in, website: intellectdesign.com, india_only: true, verified: false}
+  - {name: Infogain, category: consulting, hq: in, website: infogain.com, india_only: true, verified: false}
+  - {name: Xoriant, category: consulting, hq: in, website: xoriant.com, india_only: true, verified: false}
+  - {name: Virtusa, category: consulting, hq: global, website: virtusa.com, india_only: true, verified: false}
+  - {name: UST, category: consulting, hq: global, website: ust.com, india_only: true, verified: false}
+  - {name: Nagarro, category: consulting, hq: global, website: nagarro.com, india_only: true, verified: false}
+  - {name: GlobalLogic, category: consulting, hq: global, website: globallogic.com, india_only: true, verified: false}
   # --- Auto-discovered on 2026-11-09 (scripts/discover_companies.py) ---
   - {name: Reddit, category: hn, hq: global, ats: greenhouse, slug: reddit, verified: true, jobs: 163, ai_jobs: 48, checked: '2026-11-09'}
   - {name: Justworks, category: hn, hq: global, ats: greenhouse, slug: justworks, verified: true, jobs: 111, ai_jobs: 11, checked: '2026-11-09'}

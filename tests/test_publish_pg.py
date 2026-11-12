@@ -160,3 +160,70 @@ def test_quotes_and_huge_text_survive(pg):
     run(pg, [job("1", title="O'Reilly's ML Engineer", desc="x" * 100_000)], 0)
     title, size = one(pg, "SELECT title, length(description_text) FROM jobs")
     assert title == "O'Reilly's ML Engineer" and size == job_rows.MAX_DESCRIPTION_CHARS
+
+
+# --- Shelf life: closed jobs are deleted after 14 days (docs/decisions.md, 2026-11-12) --------
+
+def close(pg, hours):
+    """Two runs without job 2 close it; returns the hour of the closing run."""
+    run(pg, [job("1"), job("2")], hours)
+    run(pg, [job("1")], hours + 3)
+    assert run(pg, [job("1")], hours + 6)["closed"] == 1
+    return hours + 6
+
+
+@needs_pg
+def test_closed_job_is_kept_for_14_days_then_deleted_with_its_labels(pg):
+    closed_at = close(pg, 0)
+    assert one(pg, "SELECT closed_at FROM jobs WHERE id = 'ashby:acme:2'") == (T0 + timedelta(hours=closed_at),)
+    assert run(pg, [job("1")], closed_at + 24 * 14 - 1)["purged"] == 0  # one hour short of 14 days
+    assert run(pg, [job("1")], closed_at + 24 * 14 + 1)["purged"] == 1
+    assert one(pg, "SELECT count(*) FROM jobs WHERE id = 'ashby:acme:2'") == (0,)
+    assert one(pg, "SELECT count(*) FROM job_labels WHERE job_id = 'ashby:acme:2'") == (0,)
+    assert one(pg, "SELECT status FROM jobs WHERE id = 'ashby:acme:1'") == ("open",)  # open jobs never go
+
+
+@needs_pg
+def test_job_that_comes_back_within_14_days_reopens_and_is_not_purged(pg):
+    closed_at = close(pg, 0)
+    assert run(pg, [job("1"), job("2")], closed_at + 24 * 5)["reopened"] == 1
+    assert one(pg, "SELECT status, closed_at FROM jobs WHERE id = 'ashby:acme:2'") == ("open", None)
+    assert run(pg, [job("1"), job("2")], closed_at + 24 * 30)["purged"] == 0
+    assert one(pg, "SELECT first_seen_at FROM jobs WHERE id = 'ashby:acme:2'") == (T0,)  # still the first sighting
+
+
+@needs_pg
+def test_closed_job_someone_tracked_is_never_purged(pg):
+    closed_at = close(pg, 0)
+    uid = "00000000-0000-0000-0000-000000000001"
+    pg.execute("INSERT INTO auth.users VALUES (%s)", (uid,))
+    pg.execute("INSERT INTO students (id, name) VALUES (%s, 'A')", (uid,))
+    pg.execute("INSERT INTO applications (student_id, job_id) VALUES (%s, 'ashby:acme:2')", (uid,))
+    assert run(pg, [job("1")], closed_at + 24 * 60)["purged"] == 0
+    assert one(pg, "SELECT count(*) FROM applications WHERE job_id = 'ashby:acme:2'") == (1,)
+
+
+@needs_pg
+def test_purged_jobs_text_is_removed_from_storage_and_a_failure_there_does_not_fail_the_run(pg, capsys):
+    class Store:
+        def __init__(self, broken=False):
+            self.deleted, self.broken = [], broken
+
+        def put_many(self, items):
+            return len(list(items))
+
+        def delete_many(self, ids):
+            if self.broken:
+                raise RuntimeError("storage is down")
+            self.deleted += list(ids)
+
+    closed_at = close(pg, 0)
+    broken = Store(broken=True)
+    payload = {"jobs": [job("1")], "boards_ok": [{"source": "ashby", "company_slug": "acme"}], "errors": {}}
+    counts = p.publish(pg, payload, now=T0 + timedelta(hours=closed_at + 24 * 15), store=broken)
+    assert counts["purged"] == 1 and "could not delete 1" in capsys.readouterr().out
+
+    pg.execute("UPDATE jobs SET status = 'closed', closed_at = %s WHERE id = 'ashby:acme:1'", (T0,))
+    ok = Store()
+    assert p.publish(pg, {**payload, "jobs": []}, now=T0 + timedelta(days=40), store=ok)["purged"] == 1
+    assert ok.deleted == ["ashby:acme:1"]

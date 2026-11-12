@@ -7,7 +7,9 @@ Rules (skills.md §4), on the multi-user schema (db/postgres/):
                        previous label per job are kept, older ones dropped
 - closed but back   -> reopen
 - open but missing from a board that fetched OK -> missed_runs + 1; closed after
-  CLOSE_AFTER_MISSES runs in a row (never deleted)
+  CLOSE_AFTER_MISSES runs in a row
+- closed for KEEP_CLOSED_DAYS -> deleted, with its labels and stored text, unless someone
+  saved it, applied to it, checked their fit or tailored a resume for it
 
 Reposts (docs/decisions.md, 2026-10-16): a new id with the same company + normalised title +
 location as a stored job (repost_key) and a near-identical description is the same role
@@ -32,7 +34,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +51,7 @@ from pg_queries import SNAPSHOT  # noqa: E402
 from text_store import TextStore, from_env  # noqa: E402
 
 KEEP_LABELS = 2  # current + previous, enough to check a rules update for regressions
+KEEP_CLOSED_DAYS = 14  # a closed job stays this long, so a board that comes back reopens it (docs/decisions.md)
 SAME_TEXT = 0.9  # shingle overlap above which two descriptions are the same posting
 _SHINGLE = 5
 
@@ -114,7 +117,7 @@ ON CONFLICT (id) DO UPDATE SET
   location_raw = EXCLUDED.location_raw, department = EXCLUDED.department,
   employment_type = EXCLUDED.employment_type, posted_at = EXCLUDED.posted_at,
   description_text = EXCLUDED.description_text, content_hash = EXCLUDED.content_hash,
-  repost_key = EXCLUDED.repost_key, status = 'open', missed_runs = 0
+  repost_key = EXCLUDED.repost_key, status = 'open', missed_runs = 0, closed_at = NULL
 """
 
 _LFIELDS = ["level", "level_confidence", "level_reason", "yoe_min", "yoe_max", "yoe_evidence", "batch_years",
@@ -125,6 +128,17 @@ UPSERT_LABEL = f"""
 INSERT INTO job_labels ({", ".join(_LCOLS)}) VALUES ({", ".join(f"%({c})s" for c in _LCOLS)})
 ON CONFLICT (job_id, rules_version) DO UPDATE SET
   {", ".join(f"{c} = EXCLUDED.{c}" for c in ["label_hash", *_LFIELDS])}, labelled_at = now()
+"""
+
+# A job a person has touched is theirs to keep seeing: deleting it would take their tracker row,
+# fit check or tailored resume with it (ON DELETE CASCADE).
+PURGE_CLOSED = """
+DELETE FROM jobs j
+WHERE j.status = 'closed' AND j.closed_at < %s
+  AND NOT EXISTS (SELECT 1 FROM applications a WHERE a.job_id = j.id)
+  AND NOT EXISTS (SELECT 1 FROM fit_checks f WHERE f.job_id = j.id)
+  AND NOT EXISTS (SELECT 1 FROM tailored_resumes t WHERE t.job_id = j.id)
+RETURNING j.id
 """
 
 PRUNE_LABELS = """
@@ -141,7 +155,8 @@ def publish(pg: psycopg.Connection, payload: dict[str, Any], now: datetime | Non
     rows = [to_row(j) for j in payload["jobs"]]
     for r in rows:
         r["repost_key"] = repost_key(r["company"], r["title"], r["location_raw"])
-    counts = dict(new=0, changed=0, reclassified=0, reopened=0, reposts=0, missed=0, closed=0, texts=0)
+    counts = dict(new=0, changed=0, reclassified=0, reopened=0, reposts=0, missed=0, closed=0, texts=0, purged=0)
+    purged: list[str] = []
 
     with pg.transaction(), pg.cursor() as cur:
         cur.execute("SELECT id, status, missed_runs, content_hash, repost_key, url, posted_at FROM jobs")
@@ -203,9 +218,14 @@ def publish(pg: psycopg.Connection, payload: dict[str, Any], now: datetime | Non
                    if old[1] == "open" and jid not in targets and jid.startswith(prefixes)] if prefixes else []
         close = [jid for jid, missed in missing if missed + 1 >= CLOSE_AFTER_MISSES]
         miss = [jid for jid, missed in missing if missed + 1 < CLOSE_AFTER_MISSES]
-        cur.execute("UPDATE jobs SET status = 'closed', missed_runs = missed_runs + 1 WHERE id = ANY(%s)", (close,))
+        cur.execute("UPDATE jobs SET status = 'closed', closed_at = %s, missed_runs = missed_runs + 1 WHERE id = ANY(%s)",
+                    (now, close))
         cur.execute("UPDATE jobs SET missed_runs = missed_runs + 1 WHERE id = ANY(%s)", (miss,))
         counts["closed"], counts["missed"] = len(close), len(miss)
+
+        cur.execute(PURGE_CLOSED, (now - timedelta(days=KEEP_CLOSED_DAYS),))
+        purged = [r[0] for r in cur.fetchall()]
+        counts["purged"] = len(purged)
 
         cur.execute(
             "INSERT INTO runs (finished_at, companies_ok, companies_failed, jobs_seen, jobs_new, jobs_changed, "
@@ -214,6 +234,13 @@ def publish(pg: psycopg.Connection, payload: dict[str, Any], now: datetime | Non
              counts["new"], counts["changed"], counts["closed"], Jsonb(payload.get("errors", {}))))
         # Last, so the page's filter counts include this run's writes.
         cur.execute(SNAPSHOT)
+    if store is not None and purged:
+        # After the commit: the rows are gone either way. A failure here only leaves text behind
+        # in Storage that nothing points to, so it is reported and the run still succeeds.
+        try:
+            store.delete_many(purged)
+        except Exception as exc:  # noqa: BLE001
+            print(f"job text: could not delete {len(purged)} purged descriptions from Storage: {exc!r}")
     return counts
 
 

@@ -21,8 +21,10 @@ Status: a plan. Nothing here is built. Decisions, and the two still open, are in
 |---|---:|
 | Companies in `config/companies.yaml` | 703 |
 | Careers systems we read | 14 (Ashby 361, Greenhouse 82, Workday 53, Lever 41, others 99) |
-| Open jobs stored | 23,641 open, 39,631 in all (measured 2026-11-12) |
-| Database used | ~190 MB of 500 MB (figure from 2026-10-19; to re-measure) |
+| Open jobs stored | 23,641 open, 15,990 closed, 39,631 in all (measured 2026-11-12) |
+| Database used | 241.5 MB of 500 MB (48%); our tables and indexes are 229.8 MB of it |
+| Description text | 60.4 MB stored (83.7 MB uncompressed), about 1.6 KB a job in Postgres, 2.2 KB in Storage |
+| Everything else, per job | **4,480 bytes**: the row, two label versions with their evidence, and indexes |
 
 Four things in the code keep the board shaped around one person in India:
 
@@ -86,10 +88,23 @@ countries is far more: one large Workday company lists thousands of jobs.
 
 Recommended: **B + D**. Option C (tech roles only) is off the table after decision 2.
 
-**The honest ceiling.** Free storage holds a few hundred thousand open jobs, not every job on
-earth, which is in the tens of millions. So "all jobs" means all jobs *from the companies we
-read*, and the order in which companies are added decides what people find (decision 2 below).
-These sizes are estimates until step 0 measures a real row.
+**The measured ceiling (2026-11-12).** Moving the text out frees only a quarter of the
+database: 60 MB of 230 MB. The other 4,480 bytes a job stay, so at 85% of the free tier Postgres
+holds about **99,000 jobs, open and closed together**, not the 400,000 estimated before
+measuring. Storage is not the limit (1 GB holds about 480,000 descriptions); the rows are.
+
+What raises the ceiling, in order of gain for the work:
+
+| Step | Gain | Cost |
+|---|---|---|
+| Delete jobs 14 days after they close (**built 2026-11-12**; first purge around 2026-11-26) | 15,990 of 39,631 stored jobs are closed: about 40% of the space today | Insights keeps weekly totals, not old rows |
+| Keep one label version a job, not two | A large part of the 4,480 bytes; to be measured per table | A rules update is checked for regressions before it runs, not after |
+| Store evidence as the one deciding line, not every snippet | To be measured | Less to show when debugging a label |
+| Review indexes against the queries that use them | To be measured | None if an index is unused |
+
+With the first step alone the board holds about 99,000 **open** jobs; with all four, perhaps
+double. Every country and every role is far more than that, so "all jobs" means all jobs *from
+the companies we read*, and the order in which regions are added decides what people find.
 
 ## Part 3. Who and how: companies and careers systems
 

@@ -48,6 +48,69 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-12 — India first: 237 companies added for checking
+- **Asked of Shrey:** which kinds (YC startups in India · funded startups and unicorns · the 54
+  listed but unread · IT services), how many (about 50 · 200 · 500), and which roles (tech for
+  now · all roles now). **Choice:** all four kinds, about 200, tech roles for now.
+- **Added to `config/companies.yaml`, all unverified:**
+  - 103 India-based YC companies of any sector with a website and 10+ people, from the yc-oss
+    dataset (`scripts/import_yc.py --india`; the AI-only filter had kept 14).
+  - 107 Indian startups and scale-ups, drafted by Claude from memory with their websites, for
+    Shrey to prune. A wrong website costs nothing but a failed check.
+  - 27 IT services and consultancies, marked `india_only` because their boards are large.
+- **How they become jobs:** nothing is fetched from an unverified company. The verify workflow
+  probes Greenhouse, Lever, Ashby, Workable and SmartRecruiters by name on this PR; the weekly
+  careers detector reads each website for any other system. From earlier runs, expect roughly a
+  quarter to a third to verify; the rest are on systems we don't read or sites that render in
+  the browser.
+- **The 54 listed but unread: not fixed.** The detector's last run found no readable system for
+  most (Flipkart, Zepto, Ola, Dream11, Myntra: "not found"; Haptik: Freshteam; Chargebee:
+  LinkedIn only; Rapido: Darwinbox, which refuses GitHub's runners). This sandbox can't reach
+  their sites, so the next step is a workflow that saves sample pages for the commonest unread
+  systems (Freshteam first), to build adapters from real fixtures.
+- **IT services:** TCS, Infosys and similar hire freshers through their own portals, some
+  behind a login. Listed so the detector can try; any that need a login stay unread.
+
+## 2026-11-12 — Closed jobs are deleted after 14 days (built)
+- **Decided 2026-11-11 (Shrey); built now** because the measurement put it first: 15,990 of
+  39,631 stored jobs were closed.
+- **How:** a new `jobs.closed_at` (`db/postgres/0009_closed_at.sql`), set when a job closes and
+  cleared when it reopens. Each publish deletes jobs closed 14 days or more, with their labels
+  (cascade) and their text in Storage.
+- **Never deleted:** a job someone saved, applied to, checked their fit against or tailored a
+  resume for. Those rows cascade from `jobs`, so deleting the job would take the person's
+  history with it.
+- **Existing closed jobs. Options:** count them as closed today (all go in 14 days) · count them
+  as closed 14 days ago (all go on the next run). **Choice:** closed today. Some closed
+  yesterday; a job deleted and then re-listed would come back as "New" with a fresh first-seen
+  date, which the 14 days exist to prevent. Cost: the space comes back around 2026-11-26.
+- **What Insights keeps:** `runs` still records jobs opened and closed per run, so trends
+  survive the rows.
+- **Note:** Postgres reuses the freed space for new rows; the database's size on disk doesn't
+  shrink by itself. "Measure storage" before and after shows the effect on what fits.
+
+## 2026-11-12 — Measured: Postgres holds about 99,000 jobs, not 400,000
+- **Measured (Shrey's run of "Measure storage"):** 241.5 MB of 500 MB used; 39,631 jobs stored
+  (23,641 open, 15,990 closed); description text is 60.4 MB; everything else is 4,480 bytes a job.
+- **What it changes:** moving text to Storage frees a quarter of the database, not most of it.
+  The estimate of 400,000 to 500,000 jobs in the plan was wrong by about four times. The rows,
+  labels and indexes are the limit now.
+- **Next, in order:** the 14-day shelf life for closed jobs (decided 2026-11-11; 40% of stored
+  jobs are closed), then one label version a job and slimmer evidence, each measured before and
+  after. Options and costs are in `docs/strategy/worldwide-coverage.md`, Part 2. India plus
+  Europe still fits; "every country, every role" does not fit the free tier at once.
+
+## 2026-11-12 — Hacker News: a person's own profile is not a job
+- **Bug (reported by Shrey):** people post their own profile in the "Who is hiring?" thread in
+  the same "Name | Role | Place" shape as a company, and it was listed as a job.
+- **Fix:** `sources/hn.py` skips a post that uses the job-seekers' template ("Willing to
+  relocate:", "Résumé/CV:") or describes its author in the first person with nothing an employer
+  would say (we, our, hiring, apply, "looking for a backend engineer"). A founder writing "I'm
+  the CTO, we're hiring" is kept. Fixtures first, in `tests/test_hn_source.py`.
+- **Limit:** not tried on the live thread (this sandbox can't reach HN). A real post it drops by
+  mistake is a missed job, which the precision rule accepts. Profiles already stored close by
+  themselves after two pipeline runs, since the source no longer returns them.
+
 ## 2026-11-12 — The four-section layout, built, with motion
 - **Built from** `docs/wireframes/app-v2.html` (approved 2026-11-11). A route group `(app)` holds
   the frame: a sidebar on wide screens, a tab bar on phones, and a search bar at the foot of

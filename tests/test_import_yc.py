@@ -39,3 +39,17 @@ def test_appended_section_parses_and_entries_start_unverified():
     rows = yaml.safe_load(out)["companies"]
     assert rows[-1] == {"name": "New Co", "category": "yc", "hq": "us", "ats": "ashby", "slug": "new-co",
                         "verified": False}
+
+
+def test_india_mode_takes_any_sector_with_a_website_and_ten_people():
+    data = [
+        {**co("Fintech Co", tags=("Fintech",), batch="Winter 2019", regions=("India", "South Asia")), "website": "https://www.fintech.in/home",
+         "isHiring": False},  # not on YC's job site, but may hire on its own board
+        {**co("Tiny", team=4, regions=("India",)), "website": "https://tiny.in"},
+        {**co("No Site", regions=("India",)), "website": ""},
+        {**co("Abroad", regions=("United States of America",)), "website": "https://abroad.com"},
+        {**co("Shut", regions=("India",), status="Inactive"), "website": "https://shut.in"},
+    ]
+    assert yc.new_entries(data, [], india=True) == [
+        {"name": "Fintech Co", "category": "yc", "hq": "in", "website": "fintech.in", "ats": "ashby", "slug": "fintech co", "verified": False}]
+    assert yc.new_entries(data, [{"name": "Fintech Co"}], india=True) == []  # already listed
