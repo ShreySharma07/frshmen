@@ -8,7 +8,13 @@ Filter (see docs/decisions.md): active, hiring, tagged AI/ML, batch 2021 or
 later, and either 10+ people (more likely to post on an ATS and hire new
 grads) or based in India.
 
-Run: python scripts/import_yc.py [--source FILE_OR_URL] [--dry-run]
+With --india (docs/decisions.md, 2026-11-12): every active India-based YC
+company of any sector with a website and 10+ people, from the full dataset.
+YC's "hiring" flag only says whether they post on YC's own job site, so it is
+not used; each entry carries its website, so the careers detector can find the
+real board.
+
+Run: python scripts/import_yc.py [--india] [--source FILE_OR_URL] [--dry-run]
 """
 
 from __future__ import annotations
@@ -28,6 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 COMPANIES = ROOT / "config" / "companies.yaml"
 # raw.githubusercontent.com rather than yc-oss.github.io: same file, and reachable from more networks.
 SOURCE = "https://raw.githubusercontent.com/yc-oss/api/main/companies/hiring.json"
+SOURCE_ALL = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
 USER_AGENT = "aventra-jobboard/0.1 (Aventra job board; +https://github.com/ShreySharma07/frshmen)"
 
 AI_TAGS = {
@@ -65,6 +72,20 @@ def is_candidate(c: dict[str, Any]) -> bool:
     )
 
 
+def is_india_candidate(c: dict[str, Any]) -> bool:
+    return (
+        c.get("status") == "Active"
+        and "India" in (c.get("regions") or [])
+        and bool(c.get("website"))
+        and (c.get("team_size") or 0) >= MIN_TEAM_SIZE
+    )
+
+
+def domain(url: str) -> str:
+    """"https://www.acme.in/about" -> "acme.in", as config/companies.yaml writes websites."""
+    return re.sub(r"^www\.", "", re.sub(r"^https?://", "", url.strip()).split("/")[0].lower())
+
+
 def hq(c: dict[str, Any]) -> str:
     regions = c.get("regions") or []
     for region, code in HQ_BY_REGION.items():
@@ -77,20 +98,23 @@ def norm(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
 
-def new_entries(dataset: list[dict[str, Any]], existing: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def new_entries(dataset: list[dict[str, Any]], existing: list[dict[str, Any]], india: bool = False) -> list[dict[str, Any]]:
     known = {norm(c["name"]) for c in existing} | {norm(str(c["slug"])) for c in existing if c.get("slug")}
+    wanted = is_india_candidate if india else is_candidate
     out = []
     for c in sorted(dataset, key=lambda c: (-batch_year(c.get("batch")), c["name"].lower())):
-        if not is_candidate(c) or norm(c["name"]) in known or norm(c["slug"]) in known:
+        if not wanted(c) or norm(c["name"]) in known or norm(c["slug"]) in known:
             continue
         known.add(norm(c["name"]))
-        out.append({"name": c["name"], "category": "yc", "hq": hq(c), "ats": "ashby",
-                    "slug": c["slug"], "verified": False})
+        entry = {"name": c["name"], "category": "yc", "hq": hq(c)}
+        if india:
+            entry["website"] = domain(c["website"])
+        out.append({**entry, "ats": "ashby", "slug": c["slug"], "verified": False})
     return out
 
 
-def append_section(text: str, entries: list[dict[str, Any]], today: str) -> str:
-    lines = [f"\n  # --- YC AI startups imported from yc-oss on {today} (scripts/import_yc.py) ---\n"]
+def append_section(text: str, entries: list[dict[str, Any]], today: str, what: str = "YC AI startups") -> str:
+    lines = [f"\n  # --- {what} imported from yc-oss on {today} (scripts/import_yc.py) ---\n"]
     for e in entries:
         body = yaml.safe_dump(e, default_flow_style=True, sort_keys=False, width=1000).strip()
         lines.append(f"  - {body}\n")
@@ -99,17 +123,20 @@ def append_section(text: str, entries: list[dict[str, Any]], today: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--source", default=SOURCE, help="yc-oss hiring.json URL or local file")
+    parser.add_argument("--india", action="store_true", help="every active India-based YC company with 10+ people, any sector")
+    parser.add_argument("--source", help="yc-oss JSON URL or local file (default: hiring.json, or all.json with --india)")
     parser.add_argument("--dry-run", action="store_true", help="print what would be added")
     args = parser.parse_args()
 
     text = COMPANIES.read_text()
-    entries = new_entries(load_source(args.source), yaml.safe_load(text)["companies"])
+    source = args.source or (SOURCE_ALL if args.india else SOURCE)
+    entries = new_entries(load_source(source), yaml.safe_load(text)["companies"], india=args.india)
     for e in entries:
         print(f"+ {e['name']} ({e['hq']}, {e['slug']})")
     print(f"{len(entries)} new YC companies")
     if entries and not args.dry_run:
-        COMPANIES.write_text(append_section(text, entries, date.today().isoformat()))
+        what = "India-based YC companies" if args.india else "YC AI startups"
+        COMPANIES.write_text(append_section(text, entries, date.today().isoformat(), what))
     return 0
 
 

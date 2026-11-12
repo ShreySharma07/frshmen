@@ -14,6 +14,29 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-12 — India first: 237 companies added for checking
+- **Asked of Shrey:** which kinds (YC startups in India · funded startups and unicorns · the 54
+  listed but unread · IT services), how many (about 50 · 200 · 500), and which roles (tech for
+  now · all roles now). **Choice:** all four kinds, about 200, tech roles for now.
+- **Added to `config/companies.yaml`, all unverified:**
+  - 103 India-based YC companies of any sector with a website and 10+ people, from the yc-oss
+    dataset (`scripts/import_yc.py --india`; the AI-only filter had kept 14).
+  - 107 Indian startups and scale-ups, drafted by Claude from memory with their websites, for
+    Shrey to prune. A wrong website costs nothing but a failed check.
+  - 27 IT services and consultancies, marked `india_only` because their boards are large.
+- **How they become jobs:** nothing is fetched from an unverified company. The verify workflow
+  probes Greenhouse, Lever, Ashby, Workable and SmartRecruiters by name on this PR; the weekly
+  careers detector reads each website for any other system. From earlier runs, expect roughly a
+  quarter to a third to verify; the rest are on systems we don't read or sites that render in
+  the browser.
+- **The 54 listed but unread: not fixed.** The detector's last run found no readable system for
+  most (Flipkart, Zepto, Ola, Dream11, Myntra: "not found"; Haptik: Freshteam; Chargebee:
+  LinkedIn only; Rapido: Darwinbox, which refuses GitHub's runners). This sandbox can't reach
+  their sites, so the next step is a workflow that saves sample pages for the commonest unread
+  systems (Freshteam first), to build adapters from real fixtures.
+- **IT services:** TCS, Infosys and similar hire freshers through their own portals, some
+  behind a login. Listed so the detector can try; any that need a login stay unread.
+
 ## 2026-11-12 — Closed jobs are deleted after 14 days (built)
 - **Decided 2026-11-11 (Shrey); built now** because the measurement put it first: 15,990 of
   39,631 stored jobs were closed.
