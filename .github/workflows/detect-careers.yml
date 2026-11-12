@@ -72,7 +72,8 @@ jobs:
             echo "No changes."
           else
             git commit -m "Detect careers systems and re-verify boards"
-            # verify-companies may have pushed its own results meanwhile; ours are newer.
-            git pull --rebase -X theirs
+            # A long run can start before newer commits land (2026-11-12: a run queued for an hour
+            # wiped Intuit's hand-set board). On a line both changed, keep the branch's newer version.
+            git pull --rebase -X ours
             git push
           fi

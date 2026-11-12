@@ -61,7 +61,8 @@ jobs:
             echo "No changes."
           else
             git commit -m "Update company board check results"
-            # detect-careers may have pushed its own results meanwhile; ours are newer.
-            git pull --rebase -X theirs
+            # Another workflow or a person may have pushed meanwhile; on a line both changed, keep
+            # the branch's newer version rather than this run's (see detect-careers.yml).
+            git pull --rebase -X ours
             git push
           fi
