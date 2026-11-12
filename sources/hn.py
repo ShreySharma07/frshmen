@@ -3,6 +3,10 @@
 Each top-level comment is one company's post, by convention starting with a header line
 like "Acme AI | ML Engineer | Bangalore, India | ONSITE | https://acme.ai/jobs". Only the
 latest thread is read. Slug: "whoishiring" (the account that posts the threads).
+
+People looking for work sometimes post their own profile in the hiring thread, in the same
+"Name | Role | Place" shape. Those are skipped (`is_candidate_post`): a profile shown as a job
+is a wrong result, a missed post is only a missed job.
 """
 
 from __future__ import annotations
@@ -22,6 +26,28 @@ THREAD_TITLE = "Ask HN: Who is hiring?"
 _ROLE = re.compile(r"engineer|developer|scientist|researcher|\bml\b|\bai\b|intern|analyst|architect|"
                    r"designer|manager|lead|founding|sre|devops|programmer|\bswe\b|\bsde\b", re.I)
 _URL = re.compile(r"https?://\S+|\b[\w-]+\.(?:com|ai|io|co|dev|org|net|app)\b\S*", re.I)
+
+
+# The fields of the "Who wants to be hired?" template. No company's post has them.
+_SEEKER_TEMPLATE = re.compile(r"willing to relocate\s*:|r[ée]sum[ée]\s*(?:/\s*cv)?\s*:|\bcv\s*:", re.I)
+# A person describing themselves or what they are looking for.
+_SELF = re.compile(
+    r"\bI(?:'m|’m| am)\s+(?:an?\b|looking\b|seeking\b|open to\b|currently\b)|"
+    r"\b(?:seeking|looking for)\s+(?:an?\s+)?(?:new\s+|next\s+|full[- ]time\s+|remote\s+)*(?:role|position|job|work|opportunit)|"
+    r"\bmy\s+(?:resume|r[ée]sum[ée]|cv|portfolio|github)\b|\bopen to work\b|\bavailable for (?:hire|work)\b", re.I)
+# An employer speaking: any of these means the post is an opening, even when a founder writes "I".
+_EMPLOYER = re.compile(r"\bwe\b|\bwe['’](?:re|ve|ll)\b|\bour\b|\bhiring\b|\bapply\b|\bjoin (?:us|me|the team)\b|"
+                       # "looking for a backend engineer", but not "looking for a new role".
+                       r"\blooking for (?!(?:an?\s+)?(?:\w+[- ]){0,4}(?:role|position|job|work|opportunit))"
+                       r"(?:an?|\d+|two|three|several|experienced|senior|junior|talented|strong)\b", re.I)
+
+
+def is_candidate_post(text: str) -> bool:
+    """True for someone's own profile rather than an opening: the job-seekers' template, or a
+    first-person description with nothing an employer would say."""
+    if _SEEKER_TEMPLATE.search(text):
+        return True
+    return bool(_SELF.search(text)) and not _EMPLOYER.search(text)
 
 
 def item_url(item_id: Any) -> str:
@@ -71,6 +97,8 @@ def parse(payload: Any, company: Company) -> list[Job]:
         parts = header_parts(text)
         if not text or not parts:
             continue  # deleted, or a reply-style comment rather than a job post
+        if is_candidate_post(html_to_text(text)):
+            continue
         name = company_name(parts)
         rest = [p for p in parts[1:] if not _URL.fullmatch(p)]
         title = next((p for p in rest if _ROLE.search(p)), rest[0] if rest else "")

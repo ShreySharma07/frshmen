@@ -14,6 +14,28 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-12 — Measured: Postgres holds about 99,000 jobs, not 400,000
+- **Measured (Shrey's run of "Measure storage"):** 241.5 MB of 500 MB used; 39,631 jobs stored
+  (23,641 open, 15,990 closed); description text is 60.4 MB; everything else is 4,480 bytes a job.
+- **What it changes:** moving text to Storage frees a quarter of the database, not most of it.
+  The estimate of 400,000 to 500,000 jobs in the plan was wrong by about four times. The rows,
+  labels and indexes are the limit now.
+- **Next, in order:** the 14-day shelf life for closed jobs (decided 2026-11-11; 40% of stored
+  jobs are closed), then one label version a job and slimmer evidence, each measured before and
+  after. Options and costs are in `docs/strategy/worldwide-coverage.md`, Part 2. India plus
+  Europe still fits; "every country, every role" does not fit the free tier at once.
+
+## 2026-11-12 — Hacker News: a person's own profile is not a job
+- **Bug (reported by Shrey):** people post their own profile in the "Who is hiring?" thread in
+  the same "Name | Role | Place" shape as a company, and it was listed as a job.
+- **Fix:** `sources/hn.py` skips a post that uses the job-seekers' template ("Willing to
+  relocate:", "Résumé/CV:") or describes its author in the first person with nothing an employer
+  would say (we, our, hiring, apply, "looking for a backend engineer"). A founder writing "I'm
+  the CTO, we're hiring" is kept. Fixtures first, in `tests/test_hn_source.py`.
+- **Limit:** not tried on the live thread (this sandbox can't reach HN). A real post it drops by
+  mistake is a missed job, which the precision rule accepts. Profiles already stored close by
+  themselves after two pipeline runs, since the source no longer returns them.
+
 ## 2026-11-12 — The four-section layout, built, with motion
 - **Built from** `docs/wireframes/app-v2.html` (approved 2026-11-11). A route group `(app)` holds
   the frame: a sidebar on wide screens, a tab bar on phones, and a search bar at the foot of
