@@ -371,8 +371,8 @@ companies:
   #     docs/strategy/company-coverage.md). Only the website is known; scripts/detect_careers.py
   #     finds the careers system and scripts/verify_companies.py checks it. ---
   - {name: Goldman Sachs, category: mnc, hq: us, website: goldmansachs.com, india_only: true, careers: not found (6 pages read)}
-  - {name: JPMorgan Chase, category: mnc, hq: us, website: jpmorganchase.com, ats: oracle, slug: jpmc.fa.oraclecloud.com/CX_1001, india_only: true, careers: 'oracle: https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001 (found by hand)'}
-  - {name: American Express, category: mnc, hq: us, website: americanexpress.com, ats: oracle, slug: egug.fa.us2.oraclecloud.com/CX_1, india_only: true, careers: 'oracle: https://careers.americanexpress.com/en/sites/CX_1/jobs (found by hand)'}
+  - {name: JPMorgan Chase, category: mnc, hq: us, website: jpmorganchase.com, ats: oracle, slug: jpmc.fa.oraclecloud.com/CX_1001, india_only: true, verified: true, jobs: 100, ai_jobs: 6, checked: '2026-11-12', careers: 'oracle: https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001 (found by hand)'}
+  - {name: American Express, category: mnc, hq: us, website: americanexpress.com, ats: oracle, slug: egug.fa.us2.oraclecloud.com/CX_1, india_only: true, verified: true, jobs: 100, ai_jobs: 9, checked: '2026-11-12', careers: 'oracle: https://careers.americanexpress.com/en/sites/CX_1/jobs (found by hand)'}
   - {name: Citi, category: mnc, hq: us, website: citi.com, ats: workday, slug: citi/wd5/2, india_only: true, verified: true, jobs: 100, ai_jobs: 6, checked: '2026-10-18', careers: 'workday: https://jobs.citi.com/'}
   - {name: Bank of America, category: mnc, hq: us, website: bankofamerica.com, india_only: true, careers: not found (6 pages read)}
   - {name: BNY, category: mnc, hq: us, website: bny.com, ats: oracle, slug: eofe.fa.us2.oraclecloud.com/BNY-Careers, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-10-18', careers: 'oracle: https://www.bny.com/corporate/global/en.html'}
@@ -386,13 +386,13 @@ companies:
   - {name: S&P Global, category: mnc, hq: us, website: spglobal.com, india_only: true, careers: not found (0 pages read)}
   - {name: Moody's, category: mnc, hq: us, website: moodys.com, ats: careersite, slug: careers.moodys.com, india_only: true, verified: true, jobs: 334, ai_jobs: 22, checked: '2026-10-19', careers: 'careersite: https://careers.moodys.com/en'}
   - {name: MSCI, category: mnc, hq: us, website: msci.com, ats: careersite, slug: careers.msci.com, india_only: true, verified: true, jobs: 110, ai_jobs: 5, checked: '2026-10-19', careers: 'careersite: https://careers.msci.com/'}
-  - {name: Intuit, category: mnc, hq: us, website: intuit.com, ats: careersite, slug: jobs.intuit.com, india_only: true, careers: 'careersite: https://jobs.intuit.com/sitemap.xml (found by hand)'}
+  - {name: Intuit, category: mnc, hq: us, website: intuit.com, ats: careersite, slug: jobs.intuit.com, india_only: true, verified: true, jobs: 612, ai_jobs: 93, checked: '2026-11-12', careers: 'careersite: https://jobs.intuit.com/sitemap.xml (found by hand)'}
   - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (1 pages read)}
   - {name: Barclays, category: mnc, hq: uk, website: barclays.com, india_only: true, careers: not found (6 pages read)}
   - {name: HSBC, category: mnc, hq: uk, website: hsbc.com, india_only: true, careers: not found (6 pages read)}
   - {name: Standard Chartered, category: mnc, hq: uk, website: sc.com, india_only: true, careers: not found (6 pages read)}
   - {name: LSEG, category: mnc, hq: uk, website: lseg.com, india_only: true, careers: not found (6 pages read)}
-  - {name: Deutsche Bank, category: mnc, hq: eu, website: db.com, ats: workday, slug: db/wd3/DBWebsite, india_only: true, careers: 'workday: https://db.wd3.myworkdayjobs.com/DBWebsite (found by hand)'}
+  - {name: Deutsche Bank, category: mnc, hq: eu, website: db.com, ats: workday, slug: db/wd3/DBWebsite, india_only: true, verified: true, jobs: 100, ai_jobs: 3, checked: '2026-11-12', careers: 'workday: https://db.wd3.myworkdayjobs.com/DBWebsite (found by hand)'}
   - {name: UBS, category: mnc, hq: eu, website: ubs.com, india_only: true, careers: not found (6 pages read)}
   - {name: BNP Paribas, category: mnc, hq: eu, website: bnpparibas.com, india_only: true, careers: not found (0 pages read)}
   - {name: Societe Generale, category: mnc, hq: eu, website: societegenerale.com, india_only: true, careers: 'taleo (no adapter yet): https://careers.societegenerale.com'}
@@ -402,7 +402,7 @@ companies:
   - {name: Apple, category: mnc, hq: us, website: apple.com, india_only: true, careers: not found (6 pages read)}
   - {name: Meta, category: mnc, hq: us, website: meta.com, india_only: true, careers: not found (6 pages read)}
   - {name: Uber, category: mnc, hq: us, website: uber.com, ats: oracle, slug: iaziqy.fa.ocs.oraclecloud.com/UberCareers, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-10-18', careers: 'oracle: https://jobs.uber.com/en/'}
-  - {name: Oracle, category: mnc, hq: us, website: oracle.com, ats: oracle, slug: eeho.fa.us2.oraclecloud.com/jobsearch, india_only: true, careers: 'oracle: https://careers.oracle.com/en/sites/jobsearch/jobs (found by hand)'}
+  - {name: Oracle, category: mnc, hq: us, website: oracle.com, ats: oracle, slug: eeho.fa.us2.oraclecloud.com/jobsearch, india_only: true, verified: true, jobs: 100, ai_jobs: 1, checked: '2026-11-12', careers: 'oracle: https://careers.oracle.com/en/sites/jobsearch/jobs (found by hand)'}
   - {name: IBM, category: mnc, hq: us, website: ibm.com, india_only: true, careers: not found (6 pages read)}
   - {name: Dell Technologies, category: mnc, hq: us, website: dell.com, india_only: true, careers: not found (6 pages read)}
   - {name: AMD, category: mnc, hq: us, website: amd.com, india_only: true, careers: not found (0 pages read)}
@@ -414,7 +414,7 @@ companies:
   - {name: Atlassian, category: mnc, hq: global, website: atlassian.com, india_only: true, careers: 'icims (no adapter yet): https://www.atlassian.com/company/careers/all-jobs'}
   - {name: Agoda, category: mnc, hq: global, website: agoda.com, india_only: true, careers: not found (6 pages read)}
   - {name: Booking.com, category: mnc, hq: eu, website: booking.com, india_only: true, careers: 'icims (no adapter yet): https://careers.booking.com/'}
-  - {name: SAP, category: mnc, hq: eu, website: sap.com, ats: careersite, slug: jobs.sap.com/en/jobs/sitemap.xml, india_only: true, careers: 'careersite: https://jobs.sap.com/sitemap.xml (found by hand)'}
+  - {name: SAP, category: mnc, hq: eu, website: sap.com, ats: careersite, slug: jobs.sap.com/en/jobs/sitemap.xml, india_only: true, verified: true, jobs: 467, ai_jobs: 58, checked: '2026-11-12', careers: 'careersite: https://jobs.sap.com/sitemap.xml (found by hand)'}
   - {name: Arm, category: mnc, hq: uk, website: arm.com, ats: careersite, slug: careers.arm.com, india_only: true, verified: true, jobs: 416, ai_jobs: 72, checked: '2026-10-19', careers: 'careersite: https://careers.arm.com/'}
   - {name: Infineon, category: mnc, hq: eu, website: infineon.com, india_only: true, careers: 'not found (6 pages read, 1 disallowed)'}
   - {name: NXP, category: mnc, hq: eu, website: nxp.com, india_only: true, careers: not found (6 pages read)}
@@ -586,8 +586,8 @@ companies:
   - {name: TaxGPT, category: yc, hq: us, website: www.taxgpt.com, ats: ashby, slug: taxgpt, verified: false, checked: '2026-11-12', careers: 'gem (no adapter yet): https://www.taxgpt.com/careers/sales-development-representative-sdr'}
   - {name: Thunder Compute, category: yc, hq: us, website: thundercompute.com, ats: ashby, slug: thundercompute, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Trellis AI, category: yc, hq: us, website: runtrellis.com, ats: ashby, slug: trellis-ai, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
-  - {name: Ubicloud, category: yc, hq: us, website: www.ubicloud.com, ats: yc_jobs, slug: ubicloud, careers: 'yc_jobs: https://www.ycombinator.com/companies/ubicloud/jobs (found by hand)'}
-  - {name: Unsloth AI, category: yc, hq: us, website: unsloth.ai, ats: yc_jobs, slug: unsloth-ai, careers: 'yc_jobs: https://www.ycombinator.com/companies/unsloth-ai/jobs (found by hand)'}
+  - {name: Ubicloud, category: yc, hq: us, website: www.ubicloud.com, ats: yc_jobs, slug: ubicloud, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-11-12', careers: 'yc_jobs: https://www.ycombinator.com/companies/ubicloud/jobs (found by hand)'}
+  - {name: Unsloth AI, category: yc, hq: us, website: unsloth.ai, ats: yc_jobs, slug: unsloth-ai, verified: true, jobs: 1, ai_jobs: 1, checked: '2026-11-12', careers: 'yc_jobs: https://www.ycombinator.com/companies/unsloth-ai/jobs (found by hand)'}
   - {name: Usul, category: yc, hq: us, website: usul.com, ats: ashby, slug: usul, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Yondu, category: yc, hq: us, website: yondu.ai, ats: ashby, slug: yondu, verified: false, checked: '2026-11-12', careers: 'job listing on ycombinator.com: https://www.ycombinator.com/companies/yondu/jobs/l6z04IP-senior-robotics-engineer'}
   - {name: Zeit AI, category: yc, hq: eu, website: zeit-ai.com, ats: ashby, slug: zeit-ai, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-10-06'}
@@ -632,7 +632,7 @@ companies:
   - {name: Rollstack, category: yc, hq: us, website: rollstack.com, ats: ashby, slug: rollstack, verified: true, jobs: 2, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Rubbrband, category: yc, hq: us, website: rubbrband.com, ats: careersite, slug: www.rubbrband.com, verified: false, checked: '2026-11-12', careers: 'careersite: https://www.rubbrband.com/careers/'}
   - {name: Salient, category: yc, hq: us, ats: ashby, slug: salient, verified: true, jobs: 17, ai_jobs: 3, checked: '2026-10-06'}
-  - {name: Skyvern, category: yc, hq: us, website: www.skyvern.com, ats: yc_jobs, slug: skyvern, careers: 'yc_jobs: https://www.ycombinator.com/companies/skyvern/jobs (found by hand)'}
+  - {name: Skyvern, category: yc, hq: us, website: www.skyvern.com, ats: yc_jobs, slug: skyvern, verified: true, jobs: 4, ai_jobs: 4, checked: '2026-11-12', careers: 'yc_jobs: https://www.ycombinator.com/companies/skyvern/jobs (found by hand)'}
   - {name: Strada, category: yc, hq: us, website: www.getstrada.com, ats: ashby, slug: stradahq, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://www.getstrada.com/careers'}
   - {name: SuperKalam, category: yc, hq: in, website: superkalam.com, ats: ashby, slug: superkalam, verified: false, checked: '2026-11-12', careers: 'yc_jobs (no adapter yet): https://superkalam.com'}
   - {name: Syncly, category: yc, hq: us, website: syncly.app, ats: careersite, slug: syncly.app, verified: false, checked: '2026-11-12', careers: 'careersite: https://syncly.app/careers/founding-gtm'}
