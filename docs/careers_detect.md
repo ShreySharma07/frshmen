@@ -1,6 +1,6 @@
 # Careers-system detection
 
-320 companies read; 58 now have a readable board. Systems found: not found 183, yc_jobs 26, careersite 22, ashby 20, workday 14, darwinbox 9, gem 7, job listing on ycombinator.com 7, keka 3, oracle 3, icims 3, greenhouse 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, rippling 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, teamtailor 1, dover 1, zoho_recruit 1, lever 1.
+321 companies read; 58 now have a readable board. Systems found: not found 184, yc_jobs 26, careersite 22, ashby 20, workday 14, darwinbox 9, gem 7, job listing on ycombinator.com 7, keka 3, oracle 3, icims 3, greenhouse 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, rippling 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, teamtailor 1, dover 1, zoho_recruit 1, lever 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -76,7 +76,7 @@
 | Kobalt Labs | www.kobaltlabs.com | ashby: https://www.kobaltlabs.com/ | yes |
 | Outerport | outerport.com | not found (6 pages read) |  |
 | Vellum | www.vellum.ai | ashby: https://www.vellum.ai/ |  |
-| Humanloop | humanloop.com | not found (5 pages read) |  |
+| Humanloop | humanloop.com | not found (6 pages read) |  |
 | Trieve | trieve.ai | not found (0 pages read) |  |
 | Hamming AI | hamming.ai | ashby: https://hamming.ai/careers | yes |
 | Medplum | www.medplum.com | not found (6 pages read) |  |
@@ -104,7 +104,7 @@
 | Moody's | moodys.com | careersite: https://careers.moodys.com/en | yes |
 | MSCI | msci.com | careersite: https://careers.msci.com/ | yes |
 | Intuit | intuit.com | not found (0 pages read) |  |
-| MetLife | metlife.com | not found (6 pages read) |  |
+| MetLife | metlife.com | not found (1 pages read) |  |
 | Barclays | barclays.com | not found (6 pages read) |  |
 | HSBC | hsbc.com | not found (6 pages read) |  |
 | Standard Chartered | sc.com | not found (6 pages read) |  |
@@ -179,7 +179,7 @@
 | Bain & Company | bain.com | not found (6 pages read) |  |
 | Deloitte | deloitte.com | not found (6 pages read) |  |
 | BharatPe | bharatpe.com | not found (6 pages read) |  |
-| Pine Labs | pinelabs.com | not found (3 pages read) |  |
+| Pine Labs | pinelabs.com | not found (5 pages read) |  |
 | MobiKwik | mobikwik.com | not found (0 pages read) |  |
 | Go Digit | godigit.com | darwinbox: https://www.godigit.com/careers |  |
 | smallcase | smallcase.com | not found (6 pages read) |  |
@@ -210,6 +210,7 @@
 | Optifye.ai | www.optifye.ai | not found (6 pages read) |  |
 | Proception Inc | proception.ai | not found (6 pages read) |  |
 | QualGent | www.qualgent.ai | not found (6 pages read) |  |
+| Semble | www.sembleai.com | not found (6 pages read) |  |
 | Sixtyfour | www.sixtyfour.ai | yc_jobs (no adapter yet): https://www.sixtyfour.ai |  |
 | Spott | spott.io | careersite: https://spott.io/jobs/business-development-representative-4 | yes |
 | Structured AI | www.getstructured.ai | careersite: https://getstructured.ai/careers/founding-engineer/ |  |

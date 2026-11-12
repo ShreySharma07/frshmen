@@ -282,7 +282,7 @@ companies:
   - {name: Mintlify, category: yc, hq: us, website: mintlify.com, ats: ashby, slug: mintlify, verified: true, jobs: 13, ai_jobs: 2}
   - {name: Resend, category: yc, hq: us, ats: ashby, slug: resend, verified: true, jobs: 10, ai_jobs: 0}
   - {name: Vellum, category: yc, hq: us, website: www.vellum.ai, ats: ashby, slug: vellum, verified: false, checked: '2026-11-12', careers: 'ashby: https://www.vellum.ai/'}
-  - {name: Humanloop, category: yc, hq: uk, website: humanloop.com, ats: ashby, slug: humanloop, verified: false, checked: '2026-11-12', careers: not found (5 pages read)}
+  - {name: Humanloop, category: yc, hq: uk, website: humanloop.com, ats: ashby, slug: humanloop, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Trieve, category: yc, hq: us, website: trieve.ai, ats: ashby, slug: trieve, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: Hamming AI, category: yc, hq: us, website: hamming.ai, ats: ashby, slug: Hamming%20AI, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-18', careers: 'ashby: https://hamming.ai/careers'}
   - {name: Opusclip, category: yc, hq: us, website: opus.pro, ats: ashby, slug: opusclip, verified: true, jobs: 9, ai_jobs: 6}
@@ -387,7 +387,7 @@ companies:
   - {name: Moody's, category: mnc, hq: us, website: moodys.com, ats: careersite, slug: careers.moodys.com, india_only: true, verified: true, jobs: 334, ai_jobs: 22, checked: '2026-10-19', careers: 'careersite: https://careers.moodys.com/en'}
   - {name: MSCI, category: mnc, hq: us, website: msci.com, ats: careersite, slug: careers.msci.com, india_only: true, verified: true, jobs: 110, ai_jobs: 5, checked: '2026-10-19', careers: 'careersite: https://careers.msci.com/'}
   - {name: Intuit, category: mnc, hq: us, website: intuit.com, india_only: true, careers: not found (0 pages read)}
-  - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (6 pages read)}
+  - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (1 pages read)}
   - {name: Barclays, category: mnc, hq: uk, website: barclays.com, india_only: true, careers: not found (6 pages read)}
   - {name: HSBC, category: mnc, hq: uk, website: hsbc.com, india_only: true, careers: not found (6 pages read)}
   - {name: Standard Chartered, category: mnc, hq: uk, website: sc.com, india_only: true, careers: not found (6 pages read)}
@@ -464,7 +464,7 @@ companies:
 
   # --- Indian fintech, e-commerce and consultancies (careers systems surveyed 2026-10-07; see docs/decisions.md) ---
   - {name: BharatPe, category: india, hq: in, website: bharatpe.com, ats: darwinbox, slug: bharatpe, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
-  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-11-12', careers: not found (3 pages read)}
+  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-11-12', careers: not found (5 pages read)}
   - {name: MobiKwik, category: india, hq: in, website: mobikwik.com, ats: darwinbox, slug: mobikwik, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: Go Digit, category: india, hq: in, website: godigit.com, ats: darwinbox, slug: godigit, verified: false, checked: '2026-11-12', careers: 'darwinbox: https://www.godigit.com/careers'}
   - {name: smallcase, category: india, hq: in, website: smallcase.com, ats: darwinbox, slug: smallcase, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
@@ -525,7 +525,7 @@ companies:
   - {name: QualGent, category: yc, hq: us, website: www.qualgent.ai, ats: ashby, slug: qualgent, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Reacher, category: yc, hq: us, ats: ashby, slug: reacher, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-10-06'}
   - {name: SalesPatriot, category: yc, hq: us, website: salespatriot.com, ats: ashby, slug: salespatriot, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
-  - {name: Semble, category: yc, hq: us, ats: lever, slug: semble, verified: false, checked: '2026-11-12'}
+  - {name: Semble, category: yc, hq: us, website: www.sembleai.com, ats: lever, slug: semble, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Sim, category: yc, hq: us, website: sim.ai, ats: ashby, slug: sim, verified: true, jobs: 5, ai_jobs: 0, checked: '2026-10-06'}
   - {name: Sixtyfour, category: yc, hq: us, website: www.sixtyfour.ai, ats: ashby, slug: sixtyfour, verified: false, checked: '2026-11-12', careers: 'yc_jobs (no adapter yet): https://www.sixtyfour.ai'}
   - {name: Spott, category: yc, hq: eu, website: spott.io, ats: careersite, slug: spott.io, verified: true, jobs: 6, ai_jobs: 0, checked: '2026-10-18', careers: 'careersite: https://spott.io/jobs/business-development-representative-4'}
