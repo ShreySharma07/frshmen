@@ -386,7 +386,7 @@ companies:
   - {name: S&P Global, category: mnc, hq: us, website: spglobal.com, india_only: true, careers: not found (0 pages read)}
   - {name: Moody's, category: mnc, hq: us, website: moodys.com, ats: careersite, slug: careers.moodys.com, india_only: true, verified: true, jobs: 334, ai_jobs: 22, checked: '2026-10-19', careers: 'careersite: https://careers.moodys.com/en'}
   - {name: MSCI, category: mnc, hq: us, website: msci.com, ats: careersite, slug: careers.msci.com, india_only: true, verified: true, jobs: 110, ai_jobs: 5, checked: '2026-10-19', careers: 'careersite: https://careers.msci.com/'}
-  - {name: Intuit, category: mnc, hq: us, website: intuit.com, india_only: true, careers: not found (0 pages read)}
+  - {name: Intuit, category: mnc, hq: us, website: intuit.com, ats: careersite, slug: jobs.intuit.com, india_only: true, verified: true, jobs: 612, ai_jobs: 93, checked: '2026-11-12', careers: 'careersite: https://jobs.intuit.com/sitemap.xml (found by hand)'}
   - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (6 pages read)}
   - {name: Barclays, category: mnc, hq: uk, website: barclays.com, india_only: true, careers: not found (6 pages read)}
   - {name: HSBC, category: mnc, hq: uk, website: hsbc.com, india_only: true, careers: not found (6 pages read)}
