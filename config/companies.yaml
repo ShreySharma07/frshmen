@@ -761,7 +761,9 @@ companies:
   - {name: Clueso, category: yc, hq: in, website: clueso.io, ats: ashby, slug: clueso, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-11-12'}
   - {name: Floworks, category: yc, hq: in, website: floworks.ai, ats: ashby, slug: floworks, verified: false, checked: '2026-11-12'}
   - {name: AlgoTest, category: yc, hq: in, website: algotest.in, ats: ashby, slug: algotest, verified: false, checked: '2026-11-12'}
-  - {name: Apollo, category: yc, hq: in, website: apollofirst.xyz, ats: ashby, slug: apollo, verified: true, jobs: 46, ai_jobs: 2, checked: '2026-11-12'}
+  # The Ashby board `apollo` belongs to a different, larger Apollo (46 jobs). Website only, so the
+  # name is not matched again; the careers detector finds the real board from the site.
+  - {name: Apollo (apollofirst.xyz), category: yc, hq: in, website: apollofirst.xyz, verified: false}
   - {name: Better Opinions, category: yc, hq: in, website: betteropinions.in, ats: ashby, slug: better-opinions, verified: false, checked: '2026-11-12'}
   - {name: Clinikally, category: yc, hq: in, website: clinikally.com, ats: ashby, slug: clinikally, verified: false, checked: '2026-11-12'}
   - {name: CompUp, category: yc, hq: in, website: compup.io, ats: ashby, slug: compup, verified: false, checked: '2026-11-12'}
@@ -856,7 +858,8 @@ companies:
   - {name: GoLorry, category: yc, hq: in, website: golorry.com, ats: ashby, slug: golorry, verified: false, checked: '2026-11-12'}
   - {name: Drip Capital, category: yc, hq: in, website: dripcapital.com, ats: ashby, slug: drip-capital, verified: false, checked: '2026-11-12'}
   - {name: RedCarpetUp, category: yc, hq: in, website: redcarpetup.com, ats: ashby, slug: redcarpetup, verified: false, checked: '2026-11-12'}
-  - {name: Clear, category: yc, hq: in, website: clear.in, ats: greenhouse, slug: clear, verified: true, jobs: 61, ai_jobs: 0, checked: '2026-11-12'}
+  # The Greenhouse board `clear` is "CLEAR - Corporate", the US identity company, not ClearTax.
+  - {name: Clear (ClearTax), category: yc, hq: in, website: clear.in, verified: false}
 
   # --- Indian startups and scale-ups, drafted 2026-11-12 for Shrey to prune; careers system found from the website ---
   - {name: Zerodha, category: india, hq: in, website: zerodha.com, verified: false}
