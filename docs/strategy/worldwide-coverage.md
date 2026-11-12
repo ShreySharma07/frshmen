@@ -97,7 +97,7 @@ What raises the ceiling, in order of gain for the work:
 
 | Step | Gain | Cost |
 |---|---|---|
-| Delete jobs 14 days after they close (already decided) | 15,990 of 39,631 stored jobs are closed: about 40% of the space today | Insights keeps weekly totals, not old rows |
+| Delete jobs 14 days after they close (**built 2026-11-12**; first purge around 2026-11-26) | 15,990 of 39,631 stored jobs are closed: about 40% of the space today | Insights keeps weekly totals, not old rows |
 | Keep one label version a job, not two | A large part of the 4,480 bytes; to be measured per table | A rules update is checked for regressions before it runs, not after |
 | Store evidence as the one deciding line, not every snippet | To be measured | Less to show when debugging a label |
 | Review indexes against the queries that use them | To be measured | None if an index is unused |

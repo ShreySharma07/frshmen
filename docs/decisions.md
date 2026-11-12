@@ -14,6 +14,24 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-12 — Closed jobs are deleted after 14 days (built)
+- **Decided 2026-11-11 (Shrey); built now** because the measurement put it first: 15,990 of
+  39,631 stored jobs were closed.
+- **How:** a new `jobs.closed_at` (`db/postgres/0009_closed_at.sql`), set when a job closes and
+  cleared when it reopens. Each publish deletes jobs closed 14 days or more, with their labels
+  (cascade) and their text in Storage.
+- **Never deleted:** a job someone saved, applied to, checked their fit against or tailored a
+  resume for. Those rows cascade from `jobs`, so deleting the job would take the person's
+  history with it.
+- **Existing closed jobs. Options:** count them as closed today (all go in 14 days) · count them
+  as closed 14 days ago (all go on the next run). **Choice:** closed today. Some closed
+  yesterday; a job deleted and then re-listed would come back as "New" with a fresh first-seen
+  date, which the 14 days exist to prevent. Cost: the space comes back around 2026-11-26.
+- **What Insights keeps:** `runs` still records jobs opened and closed per run, so trends
+  survive the rows.
+- **Note:** Postgres reuses the freed space for new rows; the database's size on disk doesn't
+  shrink by itself. "Measure storage" before and after shows the effect on what fits.
+
 ## 2026-11-12 — Measured: Postgres holds about 99,000 jobs, not 400,000
 - **Measured (Shrey's run of "Measure storage"):** 241.5 MB of 500 MB used; 39,631 jobs stored
   (23,641 open, 15,990 closed); description text is 60.4 MB; everything else is 4,480 bytes a job.

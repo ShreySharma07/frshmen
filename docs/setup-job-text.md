@@ -32,7 +32,6 @@ reads and writes the `jobs` table as before.
 - Stop writing the text to the `jobs` table and drop the column. Before that: pay moves to its
   own column (the list reads it from the first line of the text today), and repost matching
   stores a small fingerprint instead of comparing full texts.
-- Delete a job's text from Storage 14 days after it closes.
 
 ## Undo
 
