@@ -169,3 +169,113 @@ def test_companies_added_with_only_a_website_wait_for_detection(tmp_path, monkey
     vc.main()
     assert probed == ["Beta"]
     assert "| Acme | mnc | not checked yet |" in (tmp_path / "report.md").read_text()
+
+
+# --- Wrong-company matches (2026-11-12): a board that answers to the name isn't proof it is theirs.
+
+GH = "https://boards-api.greenhouse.io/v1/boards/"
+ASHBY = "https://api.ashbyhq.com/posting-api/job-board/"
+LEVER = "https://api.lever.co/v0/postings/{}?mode=json"
+SR = "https://api.smartrecruiters.com/v1/companies/{}/postings"
+
+# Shapes of the two boards that were taken for Indian companies of the same name.
+CLEAR_US = {
+    GH + "clear/jobs": {"jobs": [{"title": "Airport Ambassador", "absolute_url": "https://www.clearme.com/careers?gh_jid=1"}]},
+    GH + "clear": {"name": "CLEAR - Corporate", "content": "<p>Identity for airports and stadiums.</p>"},
+}
+APOLLO_OTHER = {
+    ASHBY + "apollo": {"jobs": [{"title": "Account Executive", "jobUrl": "https://jobs.ashbyhq.com/apollo/1",
+                                 "descriptionHtml": "<p>Join the sales platform used by millions.</p>"}]},
+}
+
+
+def test_board_named_for_another_company_is_rejected():
+    get, _ = fake_get(CLEAR_US)
+    company = {"name": "Clear", "website": "clear.in", "ats": "greenhouse", "slug": "clear"}
+    assert vc.find_board(get, company) is None
+
+
+def test_board_named_for_another_company_is_rejected_without_a_website_too():
+    get, _ = fake_get(CLEAR_US)
+    assert vc.find_board(get, {"name": "Clear", "ats": "greenhouse", "slug": "clear"}) is None
+
+
+def test_nameless_board_on_a_slug_shorter_than_the_website_is_rejected():
+    get, _ = fake_get(APOLLO_OTHER)
+    company = {"name": "Apollo", "website": "apollofirst.xyz", "ats": "ashby", "slug": "apollo"}
+    assert vc.find_board(get, company) is None
+
+
+def test_wrong_company_board_is_rejected_even_when_empty():
+    # An empty board is kept as a fallback and marked verified; it would fill with the other company's jobs.
+    get, _ = fake_get({ASHBY + "apollo": {"jobs": []}})
+    company = {"name": "Apollo", "website": "apollofirst.xyz", "ats": "ashby", "slug": "apollo"}
+    assert vc.find_board(get, company) is None
+
+
+def test_nameless_board_whose_slug_is_the_website_name_is_accepted():
+    get, _ = fake_get({LEVER.format("fampay"): [{"text": "Backend Engineer", "hostedUrl": "https://jobs.lever.co/fampay/1"}]})
+    board = vc.find_board(get, {"name": "FamPay", "website": "fampay.in", "ats": "ashby", "slug": "fampay"})
+    assert (board.ats, board.slug) == ("lever", "fampay")
+
+
+def test_board_with_the_same_name_is_accepted():
+    get, _ = fake_get({SR.format("lokal"): {"content": [{"id": "7", "name": "ML Engineer", "company": {"name": "Lokal"}}]}})
+    board = vc.find_board(get, {"name": "Lokal", "ats": "ashby", "slug": "lokal"})
+    assert (board.ats, board.slug, board.board_name) == ("smartrecruiters", "lokal", "Lokal")
+
+
+def test_same_name_is_enough_when_the_website_is_spelled_differently():
+    get, _ = fake_get({SR.format("lokal"): {"content": [{"id": "7", "name": "ML Engineer", "company": {"name": "Lokal"}}]}})
+    company = {"name": "Lokal", "website": "getlokalapp.example", "ats": "smartrecruiters", "slug": "lokal"}
+    assert vc.find_board(get, company).slug == "lokal"
+
+
+def test_company_suffixes_and_spacing_do_not_make_a_different_name():
+    for entry, board_name in [("Piramidal", "Piramidal, Inc."), ("OpenAI", "Open AI"), ("Sarvam AI", "Sarvam"),
+                              ("Anysphere (Cursor)", "Cursor"), ("Observe.AI", "Observe.AI Careers"),
+                              ("Rubrik", "Rubrik Job Board")]:
+        assert vc.same_name(entry, board_name), (entry, board_name)
+    for entry, board_name in [("Clear", "CLEAR - Corporate"), ("Apollo", "Apollo Global Management"),
+                              ("Clear", "ClearTax"), ("Moveworks", "ServiceNow")]:
+        assert not vc.same_name(entry, board_name), (entry, board_name)
+
+
+def test_board_that_mentions_the_company_website_is_accepted():
+    # Whatever the slug or board name, a link or address on the company's own domain ties the board to it.
+    get, _ = fake_get({
+        GH + "clear/jobs": {"jobs": [{"title": "SDE 1", "absolute_url": "https://www.clear.in/careers?gh_jid=9"}]},
+        GH + "clear": {"name": "Defmacro Software", "content": None},
+        ASHBY + "apollo": {"jobs": [{"title": "Founding Engineer", "jobUrl": "https://jobs.ashbyhq.com/apollo/2",
+                                     "descriptionHtml": "<p>Write to jobs@apollofirst.xyz</p>"}]},
+    })
+    assert vc.find_board(get, {"name": "Clear", "website": "https://www.clear.in/", "ats": "greenhouse", "slug": "clear"}).slug == "clear"
+    assert vc.find_board(get, {"name": "Apollo", "website": "apollofirst.xyz", "ats": "ashby", "slug": "apollo"}).slug == "apollo"
+
+
+def test_a_longer_domain_is_not_a_mention_of_the_website():
+    get, _ = fake_get({ASHBY + "apollo": {"jobs": [{"title": "AE", "jobUrl": "u", "descriptionHtml": "see notapollofirst.xyz and apollofirst.xyz.example.com"}]}})
+    assert vc.find_board(get, {"name": "Apollo", "website": "apollofirst.xyz", "ats": "ashby", "slug": "apollo"}) is None
+
+
+def test_board_the_careers_detector_found_on_the_company_site_is_trusted():
+    get, _ = fake_get(APOLLO_OTHER)
+    company = {"name": "Apollo", "website": "apollofirst.xyz", "ats": "ashby", "slug": "apollo",
+               "careers": "ashby: https://apollofirst.xyz/careers"}
+    assert vc.find_board(get, company).slug == "apollo"
+    # ...but only that board: a note about a different system or an unreadable one confirms nothing.
+    for note in ("greenhouse: https://apollofirst.xyz/careers", "not found (6 pages read)"):
+        assert vc.find_board(get, dict(company, careers=note)) is None
+
+
+def test_website_names_with_a_stock_prefix_or_suffix_still_match_the_slug():
+    for website, slug in [("thinkingmachineslab.ai", "thinkingmachines"), ("getacme.com", "acme"),
+                          ("essential.ai", "essentialai"), ("acme.co.in", "acme-labs")]:
+        get, _ = fake_get({ASHBY + slug: {"jobs": [{"title": "ML Engineer", "jobUrl": "u"}]}})
+        assert vc.find_board(get, {"name": "X", "website": website, "ats": "ashby", "slug": slug}), (website, slug)
+
+
+def test_rejected_board_does_not_stop_the_search():
+    get, _ = fake_get(dict(CLEAR_US, **{SR.format("clear"): {"content": [{"id": "3", "name": "SDE 1", "company": {"name": "Clear"}}]}}))
+    board = vc.find_board(get, {"name": "Clear", "website": "clear.in", "ats": "greenhouse", "slug": "clear"})
+    assert (board.ats, board.slug) == ("smartrecruiters", "clear")

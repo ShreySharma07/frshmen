@@ -8,6 +8,7 @@ send ETag / If-Modified-Since so unchanged boards cost the host almost nothing.
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import sys
 import threading
@@ -108,6 +109,9 @@ class HttpClient:
                 if e.code not in RETRY_STATUSES or attempt == self.retries:
                     raise FetchError(f"{host}: HTTP {e.code}") from e
                 self._back_off(host, attempt, e.headers.get("Retry-After"))
+            except http.client.InvalidURL as e:
+                # A malformed address on file (e.g. two websites in one field): no retry can fix it.
+                raise FetchError(f"{host}: {e}") from e
             except (urllib.error.URLError, TimeoutError) as e:
                 if attempt == self.retries:
                     raise FetchError(f"{host}: {e}") from e

@@ -1,7 +1,8 @@
 """Check which ATS board each company in config/companies.yaml actually uses.
 
 For each company, try the guessed (ats, slug) first, then every other supported ATS
-with a few slug variants derived from the name. The first board that answers wins.
+with a few slug variants derived from the name. The first board that answers and can be
+tied to the company wins: a board that merely shares the name is skipped (see `mismatch`).
 Results are written back into companies.yaml (one line per company, comments kept)
 and summarised in docs/company_check.md so Shrey can prune.
 
@@ -11,12 +12,14 @@ Run: python scripts/verify_companies.py [--only NAME ...]
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import Any, Callable
+from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
@@ -57,6 +60,8 @@ class Board:
     titles: list[str]
     board_name: str | None = None
     sample_url: str | None = None
+    # The responses the board was read from, searched for the company's own domain.
+    raw: Any = field(default=None, repr=False)
 
 
 GetJson = Callable[[str], Any]
@@ -69,7 +74,7 @@ def probe_greenhouse(get: GetJson, slug: str) -> Board | None:
     meta = get(f"https://boards-api.greenhouse.io/v1/boards/{slug}") or {}
     jobs = data["jobs"]
     return Board("greenhouse", slug, [j.get("title", "") for j in jobs], meta.get("name"),
-                 jobs[0].get("absolute_url") if jobs else None)
+                 jobs[0].get("absolute_url") if jobs else None, [data, meta])
 
 
 def probe_lever(get: GetJson, slug: str) -> Board | None:
@@ -77,7 +82,7 @@ def probe_lever(get: GetJson, slug: str) -> Board | None:
     if not isinstance(data, list):
         return None
     return Board("lever", slug, [j.get("text", "") for j in data], None,
-                 data[0].get("hostedUrl") if data else None)
+                 data[0].get("hostedUrl") if data else None, data)
 
 
 def probe_ashby(get: GetJson, slug: str) -> Board | None:
@@ -86,7 +91,7 @@ def probe_ashby(get: GetJson, slug: str) -> Board | None:
         return None
     jobs = data["jobs"]
     return Board("ashby", slug, [j.get("title", "") for j in jobs], None,
-                 jobs[0].get("jobUrl") if jobs else None)
+                 jobs[0].get("jobUrl") if jobs else None, data)
 
 
 def probe_workable(get: GetJson, slug: str) -> Board | None:
@@ -97,7 +102,7 @@ def probe_workable(get: GetJson, slug: str) -> Board | None:
         return None
     jobs = data["jobs"]
     return Board("workable", slug, [j.get("title", "") for j in jobs], data.get("name"),
-                 jobs[0].get("url") if jobs else None)
+                 jobs[0].get("url") if jobs else None, data)
 
 
 def probe_smartrecruiters(get: GetJson, slug: str) -> Board | None:
@@ -109,7 +114,7 @@ def probe_smartrecruiters(get: GetJson, slug: str) -> Board | None:
     jobs = data["content"]
     company = (jobs[0].get("company") or {}).get("name")
     return Board("smartrecruiters", slug, [j.get("name", "") for j in jobs], company,
-                 f"https://jobs.smartrecruiters.com/{slug}/{jobs[0].get('id')}")
+                 f"https://jobs.smartrecruiters.com/{slug}/{jobs[0].get('id')}", data)
 
 
 PROBES: dict[str, Callable[[GetJson, str], Board | None]] = {
@@ -130,6 +135,96 @@ def slug_variants(company: dict[str, Any]) -> list[str]:
     return list(dict.fromkeys(v for v in variants if v))
 
 
+# --- Is the board this company's? ---------------------------------------------------------------
+# A slug that answers proves only that some company took that name: "Clear" (clear.in) hit the US
+# company CLEAR on Greenhouse, "Apollo" (apollofirst.xyz) hit a bigger Apollo on Ashby.
+
+# Words that don't tell two companies apart. Kept short on purpose: "Apollo Global" is not "Apollo".
+GENERIC_NAME_WORDS = {"inc", "llc", "ltd", "limited", "pvt", "private", "corp", "corporation", "gmbh", "plc", "pbc",
+                      "ai", "labs", "lab", "technologies", "technology", "tech", "hq", "careers", "jobs", "job", "board",
+                      "the"}
+# What startups add to a name to get a free domain: getacme.com, acmehq.com, acmelabs.ai.
+DOMAIN_PREFIXES = ("get", "try", "use", "join", "hey", "with", "go")
+DOMAIN_SUFFIXES = ("technologies", "foundation", "labs", "lab", "tech", "app", "inc", "hq", "ai")
+
+
+def registrable(host: str) -> str:
+    """'careers.acme.co.in' -> 'acme.co.in': enough to tell our site from someone else's."""
+    parts = host.lower().split(":")[0].split(".")
+    if len(parts) >= 3 and parts[-2] in {"co", "com", "org", "net", "ac", "gov"} and len(parts[-1]) == 2:
+        return ".".join(parts[-3:])
+    return ".".join(parts[-2:])
+
+
+def first_address(website: str) -> str:
+    """The first address in a `website` value: yc-oss sometimes lists two ('acme.io, https://acme.app')."""
+    parts = re.split(r"[\s,;]+", website.strip())
+    return parts[0] if parts else ""
+
+
+def website_domain(company: dict[str, Any]) -> str | None:
+    site = first_address(str(company.get("website") or "")).lower()
+    host = urlparse(site if "//" in site else f"//{site}").netloc
+    return registrable(host) if "." in host else None
+
+
+def _name_keys(name: str) -> set[str]:
+    """The name squeezed to letters and digits, with and without the generic words."""
+    words = re.findall(r"[a-z0-9]+", name.lower())
+    return {"".join(words), "".join(w for w in words if w not in GENERIC_NAME_WORDS)} - {""}
+
+
+def same_name(entry_name: str, board_name: str) -> bool:
+    # "Anysphere (Cursor)" goes by either name.
+    names = [re.sub(r"\(.*?\)", " ", entry_name)] + re.findall(r"\((.*?)\)", entry_name)
+    return any(_name_keys(n) & _name_keys(board_name) for n in names)
+
+
+def mentions(raw: Any, domain: str) -> bool:
+    """Whether the board's own data links or writes to the domain (job URLs, descriptions, e-mail addresses)."""
+    # Not part of a longer name on either side: neither notclear.in nor clear.in.example.com counts.
+    pattern = r"(?<![a-z0-9-])" + re.escape(domain) + r"(?![a-z0-9-]|\.[a-z0-9])"
+    return re.search(pattern, json.dumps(raw).lower()) is not None
+
+
+def slug_fits_domain(slug: str, domain: str) -> bool:
+    """The slug says at least as much as the website's name: 'scaleai' fits scale.com, 'apollo' doesn't fit apollofirst.xyz."""
+    label = re.sub(r"[^a-z0-9]", "", domain.split(".")[0])
+    slug = re.sub(r"[^a-z0-9]", "", slug.lower())
+    if label and label in slug:
+        return True
+    bare = label
+    for prefix in DOMAIN_PREFIXES:
+        if bare.startswith(prefix):
+            bare = bare[len(prefix):]
+            break
+    for suffix in DOMAIN_SUFFIXES:
+        if bare.endswith(suffix):
+            bare = bare[:-len(suffix)]
+            break
+    return len(bare) >= 3 and bare == slug
+
+
+def mismatch(company: dict[str, Any], board: Board) -> str | None:
+    """Why the board is probably another company's, or None when something ties it to this one.
+
+    Strongest evidence first: the company's own site pointing at the board, the board pointing at
+    the company's site, the board's own name, and last the slug against the website's name.
+    Precision over recall: a rejected board is left for scripts/detect_careers.py to confirm.
+    """
+    on_file = (company.get("ats"), str(company.get("slug")))
+    if (board.ats, board.slug) == on_file and str(company.get("careers") or "").startswith(f"{board.ats}:"):
+        return None  # detect_careers.py found this board from the company's own website
+    domain = website_domain(company)
+    if domain and mentions(board.raw, domain):
+        return None
+    if board.board_name:
+        return None if same_name(company["name"], board.board_name) else f"the board is named {board.board_name!r}"
+    if domain and not slug_fits_domain(board.slug, domain):
+        return f"nothing ties it to {domain}"
+    return None  # no name and no website to check against: taken on the slug alone, as before
+
+
 def probe_exact(http: HttpClient | None, ats: str, slug: str) -> Board | None:
     try:
         titles = ADAPTERS[ats].list_titles(http, slug) if http is not None else None
@@ -146,7 +241,8 @@ def probe_exact(http: HttpClient | None, ats: str, slug: str) -> Board | None:
 def find_board(get: GetJson, company: dict[str, Any], http: HttpClient | None = None) -> Board | None:
     """Return the first board with open jobs; an empty board only if nothing better exists.
 
-    An empty board on the guessed ATS is often a stale account, so keep looking.
+    An empty board on the guessed ATS is often a stale account, so keep looking. A board that
+    looks like another company's (`mismatch`) is skipped whether or not it has jobs.
     """
     guessed = company["ats"]
     if guessed in EXACT_SLUG_ATS:
@@ -166,6 +262,10 @@ def find_board(get: GetJson, company: dict[str, Any], http: HttpClient | None = 
             errors.append(str(e))
             continue
         if board is None:
+            continue
+        reason = mismatch(company, board)
+        if reason:
+            print(f"  {company['name']}: skipped {ats}/{slug}, {reason}", file=sys.stderr, flush=True)
             continue
         if board.titles:
             return board
