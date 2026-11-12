@@ -4,6 +4,40 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-12 — A board must be tied to the company, not just answer to its name
+- **Problem:** `scripts/verify_companies.py` took the first board that answered a slug guessed from
+  the name. In an India batch "Clear" (clear.in) got Greenhouse `clear` (the US company
+  "CLEAR - Corporate", 61 jobs) and "Apollo" (apollofirst.xyz) got Ashby `apollo` (a bigger Apollo,
+  46 jobs). Another company's jobs under our name breaks the precision rule.
+- **Options:** (1) compare the board's own name with the entry · (2) look for the entry's website
+  in the board's data · (3) send every one-common-word slug to the careers detector
+- **Choice (Claude, from the brief's three ideas; Shrey to confirm):** 1 and 2 together, not 3.
+  `find_board` skips a board unless one of these holds, strongest first:
+  1. `careers` says `detect_careers.py` found this exact board from the company's own site.
+  2. The board's data mentions the entry's website domain (job links, descriptions, e-mail addresses).
+  3. The board gives a name (Greenhouse, SmartRecruiters, Workable) and it is the entry's name,
+     ignoring company suffixes and words like AI, Labs, Careers. A bracketed alias counts:
+     "Anysphere (Cursor)". A different or longer name ("CLEAR - Corporate") is skipped.
+  4. The board gives no name (Lever, Ashby) and the slug contains the website's name: `fampay`
+     fits fampay.in, `scaleai` fits scale.com, `apollo` does not fit apollofirst.xyz. Stock
+     domain extras are ignored (getacme.com, thinkingmachineslab.ai).
+- **Why not 3:** Sierra, Julius, Campfire and Fathom are single dictionary words and are the right
+  boards (slug = website name). A word list would drop them and needs upkeep; rule 4 caught Apollo
+  without one.
+- **Checked against our data** (the hiring systems can't be reached from the sandbox): none of the
+  160 verified Lever/Ashby boards with a website is skipped. Of 24 board names kept in old reports,
+  the rule skips Moveworks → "ServiceNow" (right), and Bosch → "Bosch Group" and Pure Storage →
+  "Everpure" (wrong, both since moved to other systems).
+- **Limits:**
+  - An entry with no website on a nameless board is still taken on the slug alone. New entries
+    should carry a `website`.
+  - A same-name board on a same-name domain passes (a Lever board `clear` for clear.in would).
+  - A renamed or longer board name is skipped. To keep such a board, add the alias in brackets
+    to the entry name, or let the careers detector confirm it.
+- **Consequence:** skipped boards are printed in the run log with the reason and the entry stays
+  `verified: false` for the detector. Runs only re-probe unverified and empty boards, so existing
+  boards are touched only by `--all`. `discover_companies.py` uses the same check.
+
 ## 2026-11-11 — Worldwide coverage: every country, all jobs
 - **Options:** every country, all jobs · companies from everywhere but only jobs open to India ·
   a few regions first
