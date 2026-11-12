@@ -260,7 +260,7 @@ def create_app() -> FastAPI:
         jobs = await db.all(f"SELECT id, title, company, description_text FROM job_cards WHERE id = {RESOLVE}", [job_id])
         if not jobs:
             raise HTTPException(status_code=404, detail="job not found")
-        stored = await job_text.read(job_text.bucket_of(request), jobs[0]["id"])
+        stored = await job_text.read(job_text.reader(request), jobs[0]["id"])
         if stored is not None:
             jobs[0]["description_text"] = stored
         profile = await db.all("SELECT name, resume_text FROM students WHERE id = $1", [uid])
@@ -334,9 +334,9 @@ def create_app() -> FastAPI:
         rows = await db.all(f"SELECT *, {SALARY} FROM job_cards WHERE id = {RESOLVE}", [job_id])
         if not rows:
             raise HTTPException(status_code=404, detail="job not found")
-        # The description comes from R2 once it is there; the column is the fallback while both
-        # hold it (job_text.py). The row's own id, because the path may be a reposted alias.
-        stored = await job_text.read(job_text.bucket_of(request), rows[0]["id"])
+        # The description comes from Storage once it is there; the column is the fallback while
+        # both hold it (job_text.py). The row's own id, because the path may be a reposted alias.
+        stored = await job_text.read(job_text.reader(request), rows[0]["id"])
         if stored is not None:
             rows[0]["description_text"] = stored
         return _decode(rows[0])

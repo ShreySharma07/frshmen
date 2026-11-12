@@ -14,6 +14,28 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-12 — Job text goes to Supabase Storage, not R2
+- **Why revisit:** Cloudflare needs a payment card to switch R2 on and accepted neither Shrey's
+  RuPay card nor PayPal.
+- **Options:** Supabase Storage (already used for resumes, no card, 1 GB free) · Cloudflare D1
+  (no card, 5 GB free but 500 MB a database, so text would be split across databases) · leave
+  the text in Postgres (~70k jobs, enough for India but not Europe).
+- **Choice (Shrey):** Supabase Storage.
+- **How it differs from the R2 build of 2026-11-11:** a public `job-text` bucket made by a
+  migration; the pipeline writes over Storage's REST API with the project's secret key (one new
+  GitHub secret, `SUPABASE_SECRET_KEY`; boto3 is gone again); the API reads the object's public
+  URL, with the jobs table as the fallback, and only when the repo variable `JOB_TEXT` is `on`.
+  The dual-write order, the rollback on a failed upload, the backfill with its verify step and
+  the measuring script are unchanged. Steps for Shrey: `docs/setup-job-text.md`.
+- **Costs against R2:** 1 GB instead of 10 GB (about 400k descriptions as plain text; compressing
+  them would triple that when needed); the read leaves Cloudflare's network for Supabase's
+  region, so opening a job is likely slower than it would have been with R2; Storage pauses with
+  the database after a week without activity, which the 3-hourly pipeline prevents.
+- **Measured (Shrey's run of "Measure storage", 2026-11-12):** 23,641 open jobs and 39,631 stored
+  in all across 13 careers systems; descriptions average 1.0 to 2.8 KB by system, about 2.3 KB
+  for the three largest. The table and index sizes from the same run are still to be added to
+  `docs/strategy/worldwide-coverage.md`.
+
 ## 2026-11-11 — Moving job text to R2: how (phase 1, first half)
 - **Order. Options:** cut over in one change (drop the column, read only R2) · write to both,
   copy the old rows, read R2 with Postgres as the fallback, drop the column later.

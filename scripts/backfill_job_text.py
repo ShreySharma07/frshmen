@@ -1,13 +1,13 @@
-"""Copy every stored job description from Postgres to Cloudflare R2, once (docs/decisions.md,
-2026-11-11 storage). New and changed jobs are written by publish_pg.py; this covers the jobs
-that were already stored. Safe to run twice: a PUT of the same text changes nothing.
+"""Copy every stored job description from the jobs table to Supabase Storage, once
+(docs/decisions.md, 2026-11-12). New and changed jobs are written by publish_pg.py; this covers
+the jobs that were already stored. Safe to run twice: writing the same text again changes nothing.
 
-Postgres keeps its copy. Dropping that column is a later, separate step, taken only after
+The jobs table keeps its copy. Dropping that column is a later, separate step, taken only after
 --verify passes.
 
 Run:
-  SUPABASE_DB_URL=... R2_ACCOUNT_ID=... R2_ACCESS_KEY_ID=... R2_SECRET_ACCESS_KEY=... R2_BUCKET=... \\
-    python scripts/backfill_r2.py [--dry-run] [--verify 200]
+  SUPABASE_DB_URL=... SUPABASE_URL=... SUPABASE_SECRET_KEY=... \\
+    python scripts/backfill_job_text.py [--dry-run] [--verify 200]
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ def copy_all(pg: psycopg.Connection, store: TextStore | None, log=print) -> tupl
     last = ""
     while True:
         # Keyset paging: each batch is its own short query, so nothing is held open on the
-        # pooled connection while R2 uploads run.
+        # pooled connection while uploads run.
         rows = pg.execute(f"SELECT id, description_text FROM jobs WHERE {WITH_TEXT} AND id > %s ORDER BY id LIMIT %s",
                           (last, BATCH)).fetchall()
         if not rows:
@@ -46,7 +46,7 @@ def copy_all(pg: psycopg.Connection, store: TextStore | None, log=print) -> tupl
 
 
 def verify(pg: psycopg.Connection, store: TextStore, sample: int) -> list[str]:
-    """Ids from a random sample whose R2 text is missing or differs from the column."""
+    """Ids from a random sample whose stored text is missing or differs from the column."""
     rows = pg.execute(f"SELECT id, description_text FROM jobs WHERE {WITH_TEXT} ORDER BY random() LIMIT %s",
                       (sample,)).fetchall()
     return [jid for jid, text in rows if store.get(jid) != text]
@@ -55,10 +55,10 @@ def verify(pg: psycopg.Connection, store: TextStore, sample: int) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dry-run", action="store_true", help="count jobs and bytes, upload nothing")
-    parser.add_argument("--verify", type=int, default=0, metavar="N", help="afterwards compare N random jobs with R2")
+    parser.add_argument("--verify", type=int, default=0, metavar="N", help="afterwards compare N random jobs with Storage")
     args = parser.parse_args()
     url = os.environ.get("SUPABASE_DB_URL") or sys.exit("set SUPABASE_DB_URL")
-    store = None if args.dry_run else (from_env() or sys.exit("set the R2_* variables (docs/setup-r2.md)"))
+    store = None if args.dry_run else (from_env() or sys.exit("set SUPABASE_URL and SUPABASE_SECRET_KEY (docs/setup-job-text.md)"))
     with psycopg.connect(url, autocommit=True, prepare_threshold=None) as pg:
         jobs, size = copy_all(pg, store)
         print(f"{'would copy' if args.dry_run else 'copied'} {jobs:,} descriptions, {size / 1024 / 1024:.1f} MB")

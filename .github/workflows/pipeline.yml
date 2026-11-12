@@ -47,12 +47,10 @@ jobs:
       - name: Publish to Supabase
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-          # Job text also goes to Cloudflare R2 once these exist (docs/setup-r2.md). Until the
-          # access key is added all four are empty and the step writes to Postgres only.
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCESS_KEY_ID && secrets.CLOUDFLARE_ACCOUNT_ID || '' }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET: ${{ secrets.R2_ACCESS_KEY_ID && (vars.R2_BUCKET || 'aventra-job-text') || '' }}
+          # Job text also goes to Supabase Storage once the secret key exists
+          # (docs/setup-job-text.md). Until then both are empty and the step writes the table only.
+          SUPABASE_URL: ${{ secrets.SUPABASE_SECRET_KEY && (vars.SUPABASE_URL || secrets.SUPABASE_URL) || '' }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
         run: python -u scripts/publish_pg.py
 
       # GitHub disables scheduled workflows after 60 days without repo activity;

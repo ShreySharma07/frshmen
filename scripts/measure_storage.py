@@ -3,7 +3,7 @@
 
 Reports the database's size against Supabase's free 500 MB, each table with its indexes, how
 much of the jobs table is description text, the cost of one job without that text, how many
-jobs fit once the text lives in R2, and open jobs per careers system.
+jobs fit once the text lives in Supabase Storage, and open jobs per careers system.
 
 Run:
   SUPABASE_DB_URL=postgresql://... python scripts/measure_storage.py
@@ -63,17 +63,17 @@ def report(pg: psycopg.Connection) -> str:
 
     if jobs:
         # Everything in our tables except the description text, spread over the jobs: labels,
-        # indexes and the job row itself. This is what a job costs once its text is in R2.
+        # indexes and the job row itself. This is what a job costs once its text is in Storage.
         slim = (ours - text_stored) / jobs
         fits = int(FREE_BYTES * HEADROOM / slim) if slim > 0 else 0
         out += ["", "## What one job costs", "",
                 f"- Description text: {mb(text_stored)} stored ({mb(text_raw)} before Postgres compresses it), "
                 f"**{text_stored / max(with_text, 1):,.0f} bytes** a job on average.",
                 f"- Everything else (row, labels, indexes): **{slim:,.0f} bytes** a job.",
-                f"- With the text in R2 and {HEADROOM:.0%} of the free tier used, Postgres holds about "
+                f"- With the text in Storage and {HEADROOM:.0%} of the free tier used, Postgres holds about "
                 f"**{fits:,} jobs** (open and closed together).",
-                f"- In R2 the same text is {text_raw / max(with_text, 1):,.0f} bytes a job uncompressed, so 10 GB "
-                f"holds about {int(10 * 1024**3 / max(text_raw / max(with_text, 1), 1)):,} jobs."]
+                f"- In Storage the same text is {text_raw / max(with_text, 1):,.0f} bytes a job uncompressed, so the "
+                f"free 1 GB holds about {int(1024**3 / max(text_raw / max(with_text, 1), 1)):,} jobs."]
     out += ["", "## Open jobs by careers system", "", "| System | Open | All | Avg text, bytes |", "|---|---:|---:|---:|"]
     out += [f"| {src} | {o:,} | {total:,} | {avg:,} |" for src, o, total, avg in sources]
     return "\n".join(out) + "\n"

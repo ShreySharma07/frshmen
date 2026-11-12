@@ -21,7 +21,7 @@ Status: a plan. Nothing here is built. Decisions, and the two still open, are in
 |---|---:|
 | Companies in `config/companies.yaml` | 703 |
 | Careers systems we read | 14 (Ashby 361, Greenhouse 82, Workday 53, Lever 41, others 99) |
-| Open jobs stored | ~27k (figure from October; to re-measure) |
+| Open jobs stored | 23,641 open, 39,631 in all (measured 2026-11-12) |
 | Database used | ~190 MB of 500 MB (figure from 2026-10-19; to re-measure) |
 
 Four things in the code keep the board shaped around one person in India:
@@ -81,7 +81,7 @@ countries is far more: one large Workday company lists thousands of jobs.
 | Option | How it works | Holds roughly | Cost |
 |---|---|---|---|
 | A. Everything in Postgres | No change | ~70k jobs | Full within weeks |
-| **B. Card in Postgres, text elsewhere (recommended)** | Postgres keeps what lists and filters need: title, company, family, places, years, evidence line, skills. The stored description moves to Cloudflare R2 (free: 10 GB, 1M writes and 10M reads a month) and loads when a job is opened | ~400k–500k jobs | The API reads R2 for the detail view; search covers title and company, not full text |
+| **B. Card in Postgres, text elsewhere (chosen)** | Postgres keeps what lists and filters need: title, company, family, places, years, evidence line, skills. The stored description moves to Supabase Storage (free: 1 GB; R2 was the first choice but needs a card Cloudflare would not accept, 2026-11-12) and loads when a job is opened | ~400k jobs | The API reads R2 for the detail view; search covers title and company, not full text |
 | D. Short shelf life | Delete closed jobs after 14 days | Saves 20–30% | Less history for Insights; market trends keep weekly totals, not rows |
 
 Recommended: **B + D**. Option C (tech roles only) is off the table after decision 2.
@@ -131,7 +131,7 @@ Every new system gets a robots.txt and terms check first, and is skipped if it r
 ## Part 5. Stay inside the free tiers
 | Limit | Today | At world scale | What we do |
 |---|---|---|---|
-| Supabase 500 MB | ~190 MB | Over, without Part 2 | R2 for text, short shelf life, measured ceiling |
+| Supabase 500 MB | ~190 MB | Over, without Part 2 | Storage for text, short shelf life, measured ceiling |
 | GitHub Actions | 11–20 min per 3-hourly run | Hours as one job | One job per careers system, in parallel; large boards daily; ETag so an unchanged board costs one request. Free while the repo is public |
 | Workers 100k requests a day | Low | Fine for thousands of daily users | Cache list responses at the edge for a minute |
 | Hyperdrive 100k queries a day | Low | Same | Same cache |
@@ -140,15 +140,15 @@ Every new system gets a robots.txt and terms check first, and is skipped if it r
 
 ## Latency and scaling (estimates until measured in production)
 
-**Analogy.** Postgres becomes the library's card catalogue and R2 the stacks. Browsing the
+**Analogy.** Postgres becomes the library's card catalogue and Storage the stacks. Browsing the
 catalogue gets faster because the cards are small; fetching one book takes one extra walk.
 
-| Request | Today | With text in R2 |
+| Request | Today | With text in Storage |
 |---|---|---|
 | Job list (20 rows) | 1–2 Postgres queries. Each row also reads its long text to pull the pay line | Same queries on rows a fraction of the size; faster once pay has its own column |
-| One job opened | 1 Postgres query | The same query plus one R2 read from inside Cloudflare's network, typically tens of milliseconds. Job text rarely changes, so the response can be cached at the edge |
-| Fit check, tailored resume | 1 query, then seconds of Gemini | One extra R2 read; not noticeable next to Gemini |
-| Pipeline run | Writes changed rows | Plus one R2 write per new or changed job, 16 in parallel |
+| One job opened | 1 Postgres query | The same query plus one request to Supabase Storage's public URL, likely 50 to 200 ms depending on the reader's distance from the project's region. Job text rarely changes, so the response can be cached at Cloudflare's edge |
+| Fit check, tailored resume | 1 query, then seconds of Gemini | One extra Storage read; not noticeable next to Gemini |
+| Pipeline run | Writes changed rows | Plus one upload per new or changed job, 8 in parallel |
 
 What grows with the number of jobs, and the answer to each:
 
@@ -158,8 +158,8 @@ What grows with the number of jobs, and the answer to each:
 | Exact totals ("33 jobs") | Counting reads every matching row: 23 ms at 27k jobs, roughly linear after | Counts from the per-run snapshot; show "1,000+" past a cap |
 | Search by title or company | A scan over every row | A trigram index on title and company names; costs storage, so measured first |
 | Hyperdrive 100k queries a day | About 50k page views a day at 2 queries each | Cache list responses at the edge for 60 seconds |
-| R2 1M writes a month | About 33k new or changed jobs a day | Only changed jobs are written; fine for a few hundred thousand open jobs |
-| R2 10M reads a month | About 330k job opens a day | Edge cache on job pages |
+| Storage 1 GB | About 400k descriptions as plain text | Compress the text (about 3×) when two thirds full; delete text 14 days after a job closes |
+| Storage egress (5 GB a month on the free tier) | About 2M job opens a month | Edge cache on job pages |
 | One `jobs.json` and one transaction per run | Memory and run time: the publisher loads every stored job id and the whole fetch at once | Publish per careers system, in batches. **Needed before the screens come off (phase 5)** |
 | Fetch time | Hours as one job | One Actions job per careers system, in parallel; large boards daily |
 
@@ -172,7 +172,7 @@ splitting jobs across databases; neither is needed for India plus Europe at the 
 | Phase | Work | Gain | Done when |
 |---|---|---|---|
 | 0 | Measure bytes per job, jobs per company by system, and what the two screens drop today. **Built 2026-11-11:** the "Measure storage" workflow; the fetch log now prints what the India screen drops | A real ceiling | Numbers in this file (waiting for the first run) |
-| 1 | Storage: text to R2, slim rows, shelf life. **Built 2026-11-11:** text written to both, backfill, API reads R2 with Postgres as fallback; all off until `docs/setup-r2.md` is followed. **Left:** drop the column (pay column and repost fingerprint first), 14-day shelf life | Room for ~10× the jobs | A job opens from R2 in production |
+| 1 | Storage: text out of the jobs table, slim rows, shelf life. **Built 2026-11-12:** text written to both the table and Supabase Storage, backfill, API reads Storage with the table as fallback; all off until `docs/setup-job-text.md` is followed. **Left:** drop the column (pay column and repost fingerprint first), 14-day shelf life | Room for ~10× the jobs | A job opens from R2 in production |
 | 2 | Job families: the list, the rules, fixtures; label every stored job | Every job has a family | Family precision measured on fixtures |
 | 3 | Preferences in the profile; the API filters by them; the page opens on them | The board works for any person | Two test profiles see different lists from the same data |
 | 4 | Country codes on every job; country filter | Usable outside India | Every stored job has a country |
@@ -187,8 +187,8 @@ already reads; 6 and 7 are growth.
 
 **Decided (Shrey, 2026-11-11):**
 - Every country; all roles, filtered per person.
-- **Storage:** slim rows in Postgres, descriptions in Cloudflare R2, closed jobs deleted after
-  14 days (options B + D).
+- **Storage:** slim rows in Postgres, descriptions in Supabase Storage (R2 until 2026-11-12, when
+  Cloudflare would not accept a card), closed jobs deleted after 14 days (options B + D).
 - **At the ceiling:** region by region, each finished before the next starts.
 - **Region order:** India and Europe first. India means finishing `company-coverage.md` (GCCs,
   Darwinbox, Keka, Zoho Recruit, own careers sites) with the screens off; Europe means Personio,
