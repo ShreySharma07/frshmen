@@ -1,29 +1,23 @@
 "use client";
-// The job screen: header with search, filter chips, then the list on the left and the selected
-// job on the right (a full-screen sheet on phones). The page around it is static; this asks /api
+// The job screen: the top bar with search, filter chips, then the list on the left and the
+// selected job on the right (a sheet that rises over the list on phones). The page around it is static; this asks /api
 // for jobs once it opens in the browser.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { fetchJob, fetchJobs, fetchMeta, type JobDetail, type JobSummary, type Meta } from "@/lib/api";
 import { DEFAULTS, toApiParams, toSearch, type Filters } from "@/lib/filters";
 import { useUrlFilters } from "@/lib/useUrlFilters";
 import { FilterBar } from "./FilterBar";
-import { FilterRail } from "./FilterRail";
-import { YearsDial } from "./YearsDial";
 import { JobDetailView } from "./JobDetailView";
 import { JobRow } from "./JobRow";
-import { ProfileButton } from "./ProfileButton";
-import { SiteNav } from "./SiteNav";
-import { CommandLauncher } from "./CommandLauncher";
 import { SavedNote } from "./SavedNote";
 import { SearchBox } from "./SearchBox";
-import { ThemeToggle } from "./ThemeToggle";
+import { PageBar } from "./shell/PageBar";
 
 const NEW_SINCE_DAYS = 3; // until visits are remembered (with sign-in), "New" = first seen in the last 3 days
 
 type ListState = { status: "loading" } | { status: "error"; message: string } | { status: "ready" };
 
-/** `logo` is rendered by the static page and passed in, so its SVG paths stay out of this bundle. */
-export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
+export function JobWorkspace() {
   const [filters, navigate] = useUrlFilters();
   // Filter choices and their counts, from the pipeline's per-run snapshot (one cheap request).
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -37,29 +31,16 @@ export function JobWorkspace({ logo }: { logo: React.ReactNode }) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas/90 backdrop-blur-md">
-        <div className="mx-auto flex h-full max-w-[1280px] items-center gap-4 px-4 lg:px-6">
-          {logo}
-          <SiteNav />
-          <div className="ml-auto flex w-full items-center justify-end gap-2">
-            {filters && <SearchBox value={filters.q} onSearch={onSearch} />}
-            <CommandLauncher />
-            <ThemeToggle />
-            <ProfileButton />
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-[1360px] pb-4 lg:px-2">
+      <PageBar title="Jobs" sub="Every open job, newest first">
+        {filters && <SearchBox value={filters.q} onSearch={onSearch} />}
+      </PageBar>
+      <main className="pb-4">
         {filters ? (
           <>
             <SavedNote filters={filters} />
-            <YearsDial filters={filters} onChange={(f) => navigate(f)} />
             <FilterBar filters={filters} countries={meta?.countries.slice(0, 12).map((c) => c.country) ?? []} onChange={(f) => navigate(f)} />
-            <div className="grid grid-cols-1 items-start lg:mt-6 lg:grid-cols-[228px_1fr]">
-              <FilterRail filters={filters} meta={meta} onChange={(f) => navigate(f)} />
-              {/* A new key per filter set starts the results fresh: page 1, first job selected. */}
-              <Results key={toSearch(filters)} filters={filters} fitCheck={fitCheck} onClear={() => navigate(DEFAULTS)} />
-            </div>
+            {/* A new key per filter set starts the results fresh: page 1, first job selected. */}
+            <Results key={toSearch(filters)} filters={filters} fitCheck={fitCheck} onClear={() => navigate(DEFAULTS)} />
           </>
         ) : <Skeleton />}
       </main>
@@ -156,9 +137,9 @@ function Results({ filters, fitCheck, onClear }: { filters: Filters; fitCheck: b
     );
 
   return (
-    <div className="grid min-w-0 grid-cols-1 items-start lg:grid-cols-[minmax(340px,400px)_1fr]">
-      <section aria-label="Jobs" className="min-w-0 lg:pr-6">
-        <p className="mb-2 px-4 text-meta text-muted" aria-live="polite"><span className="font-mono text-ink">{(total ?? jobs.length).toLocaleString("en")}</span> {(total ?? jobs.length) === 1 ? "job" : "jobs"}, newest first</p>
+    <div className="list-in grid min-w-0 grid-cols-1 items-start lg:grid-cols-[minmax(360px,460px)_1fr]">
+      <section aria-label="Jobs" className="min-w-0 lg:px-2">
+        <p className="px-4 pb-1 pt-3 text-meta text-muted" aria-live="polite"><span key={total} className="tick font-mono text-ink">{(total ?? jobs.length).toLocaleString("en")}</span> {(total ?? jobs.length) === 1 ? "job" : "jobs"}, newest first</p>
         <div className="relative">
           {bar && (
             <span aria-hidden className="pointer-events-none absolute left-0 top-0 hidden w-[3px] rounded-r-sm bg-ink transition-transform dark:bg-accent duration-move ease-out-soft lg:block"
@@ -173,7 +154,7 @@ function Results({ filters, fitCheck, onClear }: { filters: Filters; fitCheck: b
         </div>
         {hasMore && (
           <button type="button" onClick={() => setPage((p) => p + 1)} disabled={list.status === "loading"}
-            className="mx-4 mt-4 rounded-md border border-line px-4 py-2 text-meta font-medium transition-colors duration-quick hover:bg-surface disabled:opacity-50">
+            className="press mx-4 mt-4 rounded-md border border-line px-4 py-2 text-meta font-medium duration-quick hover:bg-surface disabled:opacity-50">
             {list.status === "loading" ? "Loading…" : "Show 20 more"}
           </button>
         )}
@@ -184,9 +165,10 @@ function Results({ filters, fitCheck, onClear }: { filters: Filters; fitCheck: b
       </section>
 
       <aside aria-live="polite"
-        className={`${sheetOpen ? "fixed inset-0 z-40 block overflow-y-auto bg-canvas p-5" : "hidden"} lg:sticky lg:inset-auto lg:top-[72px] lg:z-auto lg:block lg:h-[calc(100vh-88px)] lg:overflow-y-auto lg:border-l lg:border-line lg:bg-transparent lg:px-8 lg:py-1`}>
+        className={`${sheetOpen ? "sheet-in fixed inset-0 z-40 block overflow-y-auto bg-canvas p-5 max-lg:pb-24" : "hidden"} lg:sticky lg:inset-auto lg:top-14 lg:z-auto lg:block lg:h-[calc(100dvh-56px)] lg:animate-none lg:overflow-y-auto lg:border-l lg:border-line lg:bg-card lg:px-8 lg:pb-24 lg:pt-6`}>
         {detail === "error" ? <p className="text-body text-muted">Couldn&apos;t load this job.</p>
-          : detail ? <JobDetailView job={detail} fitCheck={fitCheck} you={filters.years} onBack={closeSheet} />
+          // A new key per job: the panel's short rise shows that its contents changed.
+          : detail ? <div key={detail.id} className="detail-in"><JobDetailView job={detail} fitCheck={fitCheck} you={filters.years} onBack={closeSheet} /></div>
           : current ? <DetailSkeleton /> : null}
       </aside>
     </div>
@@ -209,7 +191,7 @@ function ErrorLine({ message, onRetry }: { message: string; onRetry: () => void 
 // Loading states: the shape of what's coming, no spinner (docs/briefs/job-list.md).
 function Skeleton() {
   return (
-    <ol aria-busy="true" aria-label="Loading jobs" className="max-w-[420px] space-y-0.5">
+    <ol aria-busy="true" aria-label="Loading jobs" className="max-w-[460px] space-y-0.5 lg:px-2">
       {Array.from({ length: 6 }, (_, i) => (
         <li key={i} className="px-4 py-3.5">
           <div className="h-3.5 w-3/4 animate-pulse rounded-sm bg-surface" />

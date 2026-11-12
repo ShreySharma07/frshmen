@@ -282,6 +282,46 @@ body {
 /* A dialog arriving over the page (the tailored resume). */
 @keyframes fade-in { from { opacity: 0; } }
 
+/* --- Motion for the app (docs/decisions.md, 2026-11-12). Each one explains something: what
+   was pressed, what arrived, what changed. Only transform and opacity move; the reduced-motion
+   rule above turns all of it off. ------------------------------------------------------------ */
+
+/* Pressed: the control gives a little under the finger, so a tap on a slow phone still answers. */
+.press { transition-property: transform, color, background-color, border-color; }
+.press:active { transform: scale(0.97); }
+
+/* A page arriving under the chrome, which stays put. */
+.page-in { animation: 300ms var(--ease-out-soft) both rise-in; }
+/* The details of a newly chosen job: a short rise, so the eye sees the panel changed. */
+.detail-in { animation: 250ms var(--ease-out-soft) both rise-in; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* New results after a filter change, and a card landing in a column. */
+.list-in { animation: 200ms var(--ease-out-soft) both fade-in; }
+.card-in { animation: 250ms var(--ease-out-soft) both card-in; }
+@keyframes card-in { from { opacity: 0; transform: scale(0.96); } }
+
+/* A number that just changed (a count, a column total) ticks up into place. */
+.tick { display: inline-block; animation: 250ms var(--ease-out-soft) both tick; }
+@keyframes tick { from { opacity: 0; transform: translateY(0.4em); } }
+
+/* Saved: the bookmark lands with one small overshoot-free pop. */
+.pop { animation: 250ms var(--ease-out-soft) both pop; }
+@keyframes pop { from { transform: scale(0.7); } }
+
+/* Menus and dialogs grow from where they were opened. */
+.menu-in { transform-origin: top right; animation: 150ms var(--ease-out-soft) both menu-in; }
+.dialog-in { animation: 200ms var(--ease-out-soft) both menu-in; }
+@keyframes menu-in { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
+
+/* Phones: a job opens as a sheet rising from the list it came from. */
+.sheet-in { animation: 300ms var(--ease-out-soft) both sheet-in; }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(24px); } }
+
+/* Bars in a chart grow from the baseline. */
+.grow-y { transform-origin: bottom; animation: 500ms var(--ease-out-soft) both grow-y; }
+@keyframes grow-y { from { transform: scaleY(0); } }
+
 /* The highlighter (components/FitCard.tsx): when a job opens, the mark sweeps across the words
    that decided its label, so the eye lands on the reason first. Only the fill moves (transform);
    the text never changes colour, so it is readable before, during and without the sweep. */

@@ -30,7 +30,7 @@ export function SearchBox({ value, onSearch }: { value: string; onSearch: (q: st
   }, []);
 
   return (
-    <label className="flex h-9 w-full max-w-[380px] items-center gap-2 rounded-md border border-line bg-canvas px-3 text-body text-muted focus-within:border-ink/40">
+    <label className="flex h-9 w-full max-w-[320px] min-w-0 items-center gap-2 rounded-md border border-line bg-canvas px-3 text-body text-muted focus-within:border-ink/40">
       <Search aria-hidden className="size-4 shrink-0" />
       <input ref={input} type="search" value={draft} maxLength={100} aria-label="Search jobs by title or company"
         placeholder="Search title or company…" onChange={(e) => setDraft(e.target.value)}

@@ -40,8 +40,8 @@ export function JobDetailView({ job, fitCheck, you, onBack }: { job: JobDetail; 
       {/* The actions stay in reach while a long posting scrolls under them. */}
       {/* Offset by the panel's own top padding (p-5 on phones, py-1 beside the list), so text
           doesn't show through the gap above the bar. */}
-      <div className="sticky -top-5 z-10 -mx-1 mt-4 lg:-top-1 flex flex-wrap items-center gap-2 border-b border-line bg-canvas px-1 py-3">
-        <a href={job.url} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 text-meta font-medium text-on-accent transition-colors duration-quick hover:bg-accent-hover">
+      <div className="sticky -top-5 z-10 -mx-1 mt-4 flex flex-wrap items-center gap-2 border-b border-line bg-canvas px-1 py-3 lg:-top-6 lg:bg-card">
+        <a href={job.url} target="_blank" rel="noopener" className="press inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 text-meta font-medium text-on-accent duration-quick hover:bg-accent-hover">
           Apply on {job.company} <ArrowUpRight className="size-3.5" />
           <kbd className="ml-1 hidden rounded-sm border border-on-accent/30 px-1 font-mono text-caption leading-4 opacity-70 lg:inline">A</kbd>
         </a>

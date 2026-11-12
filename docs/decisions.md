@@ -14,6 +14,44 @@ Newest first. Each entry: date, options considered, choice, why.
   filter on). The plan and six open choices (storage first) are in
   `docs/strategy/worldwide-coverage.md`. Nothing is built until Shrey picks.
 
+## 2026-11-12 — The four-section layout, built, with motion
+- **Built from** `docs/wireframes/app-v2.html` (approved 2026-11-11). A route group `(app)` holds
+  the frame: a sidebar on wide screens, a tab bar on phones, and a search bar at the foot of
+  every page that opens the command palette. Each page has a top bar with its own controls, the
+  theme switch and the profile button.
+- **Jobs:** filter chips on top, with years back as the first chip ("I have 3 years", filled
+  marigold when set); a flat list, newest first; the job on the right. The years headline and
+  the filter rail built on 2026-11-11 are removed, as the approved sketch has neither.
+- **Applications** (`/applications`, new): filter bar (needs me, stage, company, with a tailored
+  resume, search), then a board or a list. Built for hundreds: a column shows six cards and
+  "Show more"; applications with no reply in 30 days and the Closed column fold into a stack;
+  past 40 applications the list opens by default, 20 a page, what needs the person first. A
+  marigold tape on a card means it needs them this week. The next step on each card is a rule
+  over stage and dates (`lib/board.ts`), never a guess. `/profile` still receives sign-in links
+  and forwards here.
+- **Insights:** the market merged in. What companies ask for against the resume, and how much of
+  the market is open at the person's years (from the snapshot's `within_years`), above their
+  own week. **Not there, because the pipeline doesn't compute them yet:** change over 30 days,
+  jobs per week, days open, who is hiring most, pay.
+- **Agent** (`/agent`, new). **Options for the parts with no backend (chat, outreach, applying):**
+  show only what is real · hide the tab · show them marked as coming. **Choice (Shrey):** only
+  what is real. The page holds today's strong matches, follow-ups, tailored resumes, fit checks
+  and the daily allowance.
+- **Not built from the sketch:** the calendar view, grouping several jobs at one company into
+  one card, and a server-side page of applications (the tracker still loads them in one request).
+- **Motion, each with a reason:** the sidebar marker and the view switch slide to the choice;
+  a pressed control gives slightly; a page, and a newly chosen job, rise 8 px into place; on
+  phones a job rises as a sheet; counts tick when they change; a card settles into the column
+  it was moved to; the bookmark pops once on save; menus and the palette grow from their corner;
+  chart bars grow from the baseline; the highlighter and ruler from 2026-11-11 stay. CSS only,
+  transform and opacity only, all off under reduced motion.
+- **Budget:** the job list downloads 154.7 KB of JavaScript gzipped (limit 170).
+- **Checked:** lint, types, token sync, static build; screenshots of all four sections at 1360 px,
+  Jobs and Applications at 390 px, Jobs in dark, the tracker at 118 applications as a list, with
+  sample data and a stand-in sign-in. **Not checked:** against the live API and a real account,
+  drag and drop by hand, the board at 118 applications, keyboard navigation, a real phone,
+  throttled-4G timings.
+
 ## 2026-11-12 — Job text goes to Supabase Storage, not R2
 - **Why revisit:** Cloudflare needs a payment card to switch R2 on and accepted neither Shrey's
   RuPay card nor PayPal.

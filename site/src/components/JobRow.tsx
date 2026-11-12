@@ -26,7 +26,7 @@ export function JobRow({ job, selected, isNew, you, onSelect }: { job: JobSummar
           </span>
           {job.salary && <span className="mt-0.5 block truncate text-meta text-ink/80">{job.salary}</span>}
         </span>
-        <span className="w-16 shrink-0">
+        <span className="w-20 shrink-0">
           <span className={`mb-1.5 block text-right ${y == null ? "pt-1 text-caption text-muted" : "font-display text-[1.375rem] leading-none"}`}>
             {y == null ? "Not stated" : <>{y} <span className="font-sans text-caption text-muted">{y === "1" ? "yr" : "yrs"}</span></>}
           </span>

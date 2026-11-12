@@ -14,7 +14,7 @@ import { checkFit, fitQuota, saveJob, stageOf, STAGES, type Stage, type Verdict 
 const TailorDialog = dynamic(() => import("./TailorDialog").then((m) => m.TailorDialog), { ssr: false });
 
 const NOTICE_KEY = "aventra:gemini-notice"; // set once the person has read the privacy note
-const btn = "inline-flex h-10 items-center gap-1.5 rounded-md border border-line px-3.5 text-meta font-medium transition-colors duration-quick hover:bg-surface disabled:opacity-60";
+const btn = "press inline-flex h-10 items-center gap-1.5 rounded-md border border-line px-3.5 text-meta font-medium transition-colors duration-quick hover:bg-surface disabled:opacity-60";
 
 /** `panels` is where the fit check's note and verdict go: below the sticky action bar, so a tall
  *  verdict scrolls with the posting instead of covering it. */
@@ -53,7 +53,7 @@ function SaveButton({ userId, jobId }: { userId: string; jobId: string }) {
   return (
     <>
       {stage && stage !== "loading" ? (
-        <IntentLink href="/profile" className={btn}><BookmarkCheck aria-hidden className="size-4 text-accent-text" />{label} · tracker</IntentLink>
+        <IntentLink href="/applications" className={btn}><BookmarkCheck aria-hidden className="pop size-4 text-accent-text" />{label} · tracker</IntentLink>
       ) : (
         <button type="button" onClick={save} disabled={stage === "loading"} className={btn}><Bookmark aria-hidden className="size-4" />Save</button>
       )}

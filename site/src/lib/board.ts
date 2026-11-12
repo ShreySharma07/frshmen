@@ -36,3 +36,25 @@ export function brief(strong: number, followUps: number): string {
 export function missingSkills(demand: { skill: string; n: number }[], have: Set<string>, count = 5) {
   return demand.filter((d) => !have.has(d.skill)).slice(0, count);
 }
+
+export const QUIET_DAYS = 30; // applied this long ago with no move: off the board, kept in the list
+export const STALE_SAVE_DAYS = 14;
+
+export interface Step { text: string; due: boolean; quiet: boolean }
+
+/** What an application needs next, from its stage and dates alone. `due` means it needs the
+ *  person this week; `quiet` means it has gone long enough without news to leave the board. */
+export function nextStep(t: Tracked, now = Date.now()): Step {
+  const step = (text: string, due = false, quiet = false): Step => ({ text, due, quiet });
+  if (t.status === "interview") return step("Interviewing: prepare", true);
+  if (t.status === "offer") return step("Offer: reply", true);
+  if (t.status === "rejected") return step("Closed");
+  if (t.status === "applied") {
+    const d = daysAgo(t.applied_at ?? t.updated_at, now);
+    if (d >= QUIET_DAYS) return step(`No reply in ${d} days`, false, true);
+    if (d >= FOLLOW_UP_DAYS) return step(`Follow up: applied ${d} days ago`, true);
+    return step(d === 0 ? "Applied today" : `Applied ${d} ${d === 1 ? "day" : "days"} ago`);
+  }
+  const d = daysAgo(t.created_at, now);
+  return d >= STALE_SAVE_DAYS ? step(`Saved ${d} days ago: apply or drop`, true) : step("Not applied yet");
+}
