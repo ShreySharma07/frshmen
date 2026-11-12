@@ -1,0 +1,41 @@
+[
+ {
+  "uuid": "ef0b7266-678c-4a23-a439-1a5e7362b604",
+  "name": " Account Executive, Broker Channel (Arkansas) ",
+  "department": {
+   "id": "Sales",
+   "label": "Sales"
+  },
+  "url": "https://ats.rippling.com/rippling/jobs/ef0b7266-678c-4a23-a439-1a5e7362b604",
+  "workLocation": {
+   "label": "AR",
+   "id": "AR"
+  }
+ },
+ {
+  "uuid": "2f770fc2-e1f2-4538-beba-ca9cb69352a6",
+  "name": "Account Executive, Broker Channel (Boston)",
+  "department": {
+   "id": "Sales",
+   "label": "Sales"
+  },
+  "url": "https://ats.rippling.com/rippling/jobs/2f770fc2-e1f2-4538-beba-ca9cb69352a6",
+  "workLocation": {
+   "label": "Boston, MA",
+   "id": "Boston, MA"
+  }
+ },
+ {
+  "uuid": "98b559a6-c8b2-4ede-85d9-cbf4883da996",
+  "name": "Director of Engineering, HRIS Core Flows",
+  "department": {
+   "id": "Engineering",
+   "label": "Engineering"
+  },
+  "url": "https://ats.rippling.com/rippling/jobs/98b559a6-c8b2-4ede-85d9-cbf4883da996",
+  "workLocation": {
+   "label": "San Francisco, CA",
+   "id": "San Francisco, CA"
+  }
+ }
+]

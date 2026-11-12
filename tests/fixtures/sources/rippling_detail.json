@@ -1,0 +1,28 @@
+{
+ "uuid": "2f770fc2-e1f2-4538-beba-ca9cb69352a6",
+ "name": "Account Executive, Broker Channel (Boston)",
+ "description": {
+  "company": "<p>About Rippling</p><p>Rippling gives businesses one place to run HR, IT, and Finance.</p>",
+  "role": "<p>About the role</p><p>The Channel Account Executive role at Rippling provides an extremely unique opportunity.</p><p>What you will need</p><ul><li>5+ years sales experience, particularly in SaaS markets selling B2B</li></ul>"
+ },
+ "workLocations": [
+  "Boston, MA"
+ ],
+ "department": {
+  "name": "Broker",
+  "base_department": "Sales",
+  "department_tree": [
+   "Sales",
+   "Channel Sales Account Executives",
+   "Broker"
+  ]
+ },
+ "employmentType": {
+  "label": "SALARIED_FT",
+  "id": "Salaried, full-time"
+ },
+ "createdOn": "2026-10-26T11:38:33.947000-07:00",
+ "url": "https://ats.rippling.com/rippling/jobs/2f770fc2-e1f2-4538-beba-ca9cb69352a6",
+ "companyName": "Rippling",
+ "jsonLd": null
+}

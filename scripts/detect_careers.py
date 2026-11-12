@@ -67,7 +67,16 @@ SUPPORTED: list[tuple[str, re.Pattern[str], Slug]] = [
     ("darwinbox", re.compile(r"\b([a-z0-9-]+)\.darwinbox\.in\b"), lambda m: m[1]),
     ("keka", re.compile(r"\b([a-z0-9-]+)\.keka\.com/careers"), lambda m: m[1]),
     ("zoho_recruit", re.compile(r"\b([a-z0-9-]+\.zohorecruit\.(?:in|com))\b"), lambda m: m[1]),
+    ("gem", re.compile(r"\bjobs\.gem\.com/([a-z0-9-]+)"), lambda m: m[1]),
+    ("rippling", re.compile(r"\bats\.rippling\.com/([a-z0-9-]+)"), lambda m: m[1]),
+    ("jazzhr", re.compile(r"\b([a-z0-9-]+)\.applytojob\.com"), lambda m: m[1]),
+    ("teamtailor", re.compile(r"\b((?!app\.|www\.)[a-z0-9-]+\.teamtailor\.com)\b"), lambda m: m[1]),
+    ("yc_jobs", re.compile(r"\bycombinator\.com/companies/([a-z0-9-]+)/jobs"), lambda m: m[1]),
 ]
+
+# Teamtailor career sites load their scripts and images from Teamtailor's CDN, whatever their domain.
+# (careers.cerrion.com, seen 2026-11-12: "assets-aws.teamtailor-cdn.com/assets/...").
+TEAMTAILOR_ASSETS = re.compile(r"\b[a-z0-9-]+\.teamtailor-cdn\.com/")
 
 # Systems we recognise but can't read yet: counted for phase D (new adapters).
 UNSUPPORTED: list[tuple[str, re.Pattern[str]]] = [
@@ -80,16 +89,11 @@ UNSUPPORTED: list[tuple[str, re.Pattern[str]]] = [
     ("bamboohr", re.compile(r"\b[a-z0-9-]+\.bamboohr\.com/(?:careers|jobs)")),
     ("freshteam", re.compile(r"\b[a-z0-9-]+\.freshteam\.com")),
     ("recruitee", re.compile(r"\b[a-z0-9-]+\.recruitee\.com")),
-    ("teamtailor", re.compile(r"\bteamtailor\.com")),
     ("personio", re.compile(r"jobs\.personio\.(?:de|com)")),
     # Seen on the 2026-10-18 spot check of companies where nothing was recognised.
-    ("gem", re.compile(r"\bjobs\.gem\.com/[a-z0-9-]+")),
-    ("rippling", re.compile(r"\bats\.rippling\.com/[a-z0-9-]+")),
     ("dover", re.compile(r"\bapp\.dover\.(?:com|io)/(?:apply|jobs)/")),
     ("wellfound", re.compile(r"\bwellfound\.com/company/[a-z0-9-]+/jobs")),
     ("breezy", re.compile(r"\b[a-z0-9-]+\.breezy\.hr")),
-    ("jazzhr", re.compile(r"\b[a-z0-9-]+\.applytojob\.com")),
-    ("yc_jobs", re.compile(r"\bycombinator\.com/companies/[a-z0-9-]+/jobs")),
     # Recorded so the report says why, never fetched: CLAUDE.md rules out scraping LinkedIn.
     ("linkedin_only", re.compile(r"\blinkedin\.com/company/[a-z0-9-]+/jobs")),
 ]
@@ -154,7 +158,11 @@ def fingerprint(html: str, url: str) -> list[Found]:
             if system == "workday" and "internal" in slug.lower():
                 continue  # employees' own site (Novartis "Internal_Careers_for_Acquired_Entities")
             out.append(Found(system, slug, True, url))
-    if JOB_POSTING.search(html):
+    if TEAMTAILOR_ASSETS.search(html) and not any(f.system == "teamtailor" for f in out):
+        # A Teamtailor site on the company's own domain (careers.cerrion.com): its feed is on that host.
+        out.append(Found("teamtailor", urlparse(url).netloc, True, url))
+    if JOB_POSTING.search(html) and registrable(urlparse(url).netloc) != "ycombinator.com":
+        # (YC's job pages carry this too; sources/yc_jobs.py reads those per company, never the whole site.)
         # A careers site publishing schema.org jobs: sources/careersite.py reads it by host.
         out.append(Found("careersite", urlparse(url).netloc, True, url))
     for system, pattern in UNSUPPORTED:
@@ -311,7 +319,9 @@ def apply(company: dict[str, Any], d: Detection, owners: dict[tuple[str, str], s
 
 def retryable(careers: str) -> bool:
     """Nothing found, or a system we couldn't read: worth another look once the detector learns more."""
-    return careers.startswith("not found") or "(no adapter yet)" in careers
+    # "job listing on ycombinator.com": YC company pages are readable now (sources/yc_jobs.py).
+    return careers.startswith("not found") or "(no adapter yet)" in careers \
+        or careers.startswith("job listing on ycombinator.com")
 
 
 def report(companies: list[dict[str, Any]], skipped: list[str]) -> str:

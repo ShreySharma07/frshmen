@@ -4,6 +4,33 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-12 — Companies without a readable board: new readers first, then per-company hints
+- **Problem:** 271 companies have no readable board. 144 have a careers page the detector can't
+  read, 38 never answered, about 55 use a hiring system we had no reader for, and 12 refuse our
+  bot (Darwinbox, Keka: HTTP 403).
+- **Options:** (A) readers for the missing hiring systems, biggest first · (B) a general
+  careers-page reader that collects job links by pattern · (C) a per-company hint in
+  `companies.yaml` (careers URL plus job-link pattern), added by hand
+- **Choice (Shrey):** A now; C next, for Indian startups, big firms and top YC startups. B not
+  built: of the three it is the most likely to list wrong jobs.
+- **A, built:** five readers, each on the system's public, keyless feed, checked live on 2026-11-12:
+  - `gem`: Gem's documented Job Board API (`api.gem.com/job_board/v0/<slug>/job_posts/`).
+  - `rippling`: the board's public JSON (`api.rippling.com/platform/api/ats/v1/board/<slug>/jobs`),
+    then one call per job. Only titles that could be a target role get that call, as with Workday.
+  - `teamtailor`: the `/jobs.rss` feed every Teamtailor career site publishes, on its own host
+    (Cerrion's is careers.cerrion.com; the detector spots these by Teamtailor's asset CDN).
+  - `jazzhr`: JazzHR's XML export (`app.jazz.co/feeds/export/jobs/<slug>`), the feed its help
+    centre documents for career pages. Its experience field is kept in the text as evidence.
+  - `yc_jobs`: a YC company's own page, `ycombinator.com/companies/<slug>/jobs`. Public, allowed
+    by YC's robots.txt (only `/companies?<filters>` is disallowed), and each job page carries
+    schema.org job data. Never the login-walled Work at a Startup pages. This narrows the
+    2026-10-05 note "not by scraping login-walled YC pages": the public company pages are read.
+- **Not built:** Dover (1 company), iCIMS and Taleo (already tried through their job sitemaps),
+  LinkedIn-only (never fetched, `CLAUDE.md`), Darwinbox/Keka 403s (their refusal stands).
+- **Consequence:** the careers detector retries companies noted "(no adapter yet)" or "job
+  listing on ycombinator.com", sets the new board, and the board check verifies it. The fetch
+  smoke test reads one live board per new reader.
+
 ## 2026-11-12 — A board must be tied to the company, not just answer to its name
 - **Problem:** `scripts/verify_companies.py` took the first board that answered a slug guessed from
   the name. In an India batch "Clear" (clear.in) got Greenhouse `clear` (the US company
