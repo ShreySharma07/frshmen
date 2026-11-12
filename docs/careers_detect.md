@@ -1,6 +1,6 @@
 # Careers-system detection
 
-320 companies read; 55 now have a readable board. Systems found: not found 184, yc_jobs 29, ashby 20, careersite 20, workday 14, darwinbox 9, gem 6, job listing on ycombinator.com 6, keka 3, oracle 3, icims 3, greenhouse 3, dover 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, rippling 1, zoho_recruit 1, lever 1.
+320 companies read; 58 now have a readable board. Systems found: not found 183, yc_jobs 26, careersite 22, ashby 20, workday 14, darwinbox 9, gem 7, job listing on ycombinator.com 7, keka 3, oracle 3, icims 3, greenhouse 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, rippling 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, teamtailor 1, dover 1, zoho_recruit 1, lever 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -76,7 +76,7 @@
 | Kobalt Labs | www.kobaltlabs.com | ashby: https://www.kobaltlabs.com/ | yes |
 | Outerport | outerport.com | not found (6 pages read) |  |
 | Vellum | www.vellum.ai | ashby: https://www.vellum.ai/ |  |
-| Humanloop | humanloop.com | not found (6 pages read) |  |
+| Humanloop | humanloop.com | not found (5 pages read) |  |
 | Trieve | trieve.ai | not found (0 pages read) |  |
 | Hamming AI | hamming.ai | ashby: https://hamming.ai/careers | yes |
 | Medplum | www.medplum.com | not found (6 pages read) |  |
@@ -103,7 +103,7 @@
 | S&P Global | spglobal.com | not found (0 pages read) |  |
 | Moody's | moodys.com | careersite: https://careers.moodys.com/en | yes |
 | MSCI | msci.com | careersite: https://careers.msci.com/ | yes |
-| Intuit | intuit.com | not found (6 pages read) |  |
+| Intuit | intuit.com | not found (0 pages read) |  |
 | MetLife | metlife.com | not found (6 pages read) |  |
 | Barclays | barclays.com | not found (6 pages read) |  |
 | HSBC | hsbc.com | not found (6 pages read) |  |
@@ -121,7 +121,7 @@
 | Uber | uber.com | oracle: https://jobs.uber.com/en/ | yes |
 | Oracle | oracle.com | not found (0 pages read) |  |
 | IBM | ibm.com | not found (6 pages read) |  |
-| Dell Technologies | dell.com | not found (1 pages read) |  |
+| Dell Technologies | dell.com | not found (6 pages read) |  |
 | AMD | amd.com | not found (0 pages read) |  |
 | Texas Instruments | ti.com | not found (6 pages read) |  |
 | Marvell | marvell.com | workday: https://www.marvell.com/company/careers.html | yes |
@@ -195,7 +195,7 @@
 | Besimple AI | besimple.ai | careersite: https://besimple.ai/jobs/rl-environment-engineer/ | yes |
 | Bluejay | getbluejay.ai | yc_jobs (no adapter yet): https://getbluejay.ai |  |
 | Bolna AI | bolna.ai | ashby: https://jobs.ashbyhq.com/bolna | yes |
-| Brickanta | www.brickanta.com | not found (6 pages read) |  |
+| Brickanta | www.brickanta.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/brickanta/jobs/dM8327V-forward-deployed-construction-engineer-belgium |  |
 | Calltree | calltree.ai | not found (6 pages read) |  |
 | Closure | closure-intel.com | not found (6 pages read) |  |
 | ComplyDo | www.complydo.io | not found (6 pages read) |  |
@@ -223,11 +223,11 @@
 | Alex | alexcodes.app | not found (6 pages read) |  |
 | Arva AI | www.arva.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/arva-ai/jobs/bPPv8fg-head-of-research |  |
 | Assembly HOA | assemblyhoa.com | not found (6 pages read) |  |
-| Brighterway | www.brighterway.ai | not found (0 pages read, 8 disallowed) |  |
+| Brighterway | www.brighterway.ai | not found (0 pages read, 8 disallowed) | yes |
 | Capitol AI | www.capitol.ai | yc_jobs (no adapter yet): https://www.capitol.ai |  |
 | Carma | www.joincarma.com | yc_jobs (no adapter yet): https://www.joincarma.com |  |
 | Cartage | cartage.ai | not found (6 pages read) |  |
-| Corgi Insurance | corgi.com | yc_jobs (no adapter yet): https://www.corgi.insure/careers |  |
+| Corgi Insurance | corgi.com | careersite: https://corgi.com/careers/business-development-representative-san-francisco-ca-jzys6k |  |
 | Coval | coval.dev | yc_jobs (no adapter yet): https://www.coval.ai/careers |  |
 | Deepnight | www.deepnight.com | yc_jobs (no adapter yet): https://deepnight.com/pages/careers |  |
 | Domu Technology Inc. | www.domu.ai | not found (6 pages read) |  |
@@ -242,10 +242,10 @@
 | ProSights | prosights.co | careersite: https://www.prosights.co/careers/ai-forward-deployed-engineer |  |
 | Respan | respan.ai | yc_jobs (no adapter yet): https://www.respan.ai/careers |  |
 | RetailReady | www.retailreadyai.com | not found (6 pages read) |  |
-| Saturn | www.SaturnOS.com | not found (6 pages read) |  |
+| Saturn | www.SaturnOS.com | rippling (no adapter yet): https://www.SaturnOS.com/careers |  |
 | Syntra | www.syntra.com | not found (6 pages read) |  |
 | TaxGPT | www.taxgpt.com | gem (no adapter yet): https://www.taxgpt.com/careers/sales-development-representative-sdr |  |
-| Trellis AI | runtrellis.com | yc_jobs (no adapter yet): https://runtrellis.com |  |
+| Trellis AI | runtrellis.com | not found (6 pages read) |  |
 | Ubicloud | www.ubicloud.com | not found (6 pages read) |  |
 | Unsloth AI | unsloth.ai | not found (6 pages read) |  |
 | Yondu | yondu.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/yondu/jobs/l6z04IP-senior-robotics-engineer |  |
@@ -266,7 +266,7 @@
 | loopfour | www.loopfour.com | not found (6 pages read) |  |
 | Maven Bio | mavenbio.com | yc_jobs (no adapter yet): https://mavenbio.com |  |
 | Middleware | www.middleware.io | not found (6 pages read) |  |
-| Numen | www.numen.com | yc_jobs (no adapter yet): https://www.numen.com |  |
+| Numen | www.numen.com | not found (6 pages read) |  |
 | Readily | readily.ai | yc_jobs (no adapter yet): https://www.readily.ai/ |  |
 | Rubbrband | rubbrband.com | careersite: https://www.rubbrband.com/careers/ |  |
 | Skyvern | www.skyvern.com | not found (6 pages read) |  |
@@ -277,16 +277,16 @@
 | VectorShift | www.vectorshift.ai | not found (1 pages read) |  |
 | Ankr Health | ankr.us | not found (6 pages read) |  |
 | AstroForge | www.astroforge.io | gem (no adapter yet): https://www.astroforge.com/careers |  |
-| AviaryAI | www.helloaviary.ai | dover (no adapter yet): https://www.helloaviary.ai |  |
+| AviaryAI | www.helloaviary.ai | gem (no adapter yet): https://www.helloaviary.ai |  |
 | Axross Pte Ltd | www.axross.co | not found (6 pages read) |  |
 | Bemlo | www.bemlo.com | not found (6 pages read) |  |
 | Broccoli AI | www.broccoli.com | not found (6 pages read) |  |
-| Cerrion | www.cerrion.com | dover (no adapter yet): https://www.cerrion.com |  |
+| Cerrion | www.cerrion.com | teamtailor (no adapter yet): https://careers.cerrion.com/jobs/8685681-growth-marketer/applications/new |  |
 | Cogram | cogram.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/cogram/jobs/1iW19df-account-executive-full-cycle |  |
 | Coris | coris.ai | yc_jobs (no adapter yet): https://www.coris.ai/ |  |
 | Curacel | curacel.co | yc_jobs (no adapter yet): https://www.curacel.co/careers |  |
 | Dart | www.dartai.com | yc_jobs (no adapter yet): https://www.dartai.com |  |
-| Dynamo AI | dynamo.ai | rippling (no adapter yet): https://www.dynamo.ai/ |  |
+| Dynamo AI | dynamo.ai | rippling (no adapter yet): https://www.dynamo.ai/ | yes |
 | Flagright | flagright.com | ashby: https://jobs.ashbyhq.com/flagright.com | yes |
 | Gym Class | gymclass.com | yc_jobs (no adapter yet): https://www.gymclass.com/ |  |
 | HOMLI | thehomli.com | not found (0 pages read) |  |
@@ -311,7 +311,7 @@
 | Datrics | datrics.ai | not found (6 pages read) |  |
 | DigiBuild | digibuild.com | not found (6 pages read) |  |
 | Kalam Labs | www.kalamlabs.in | not found (6 pages read) |  |
-| Lamar Health | www.lamarhealth.com | not found (6 pages read) |  |
+| Lamar Health | www.lamarhealth.com | careersite: https://lamarhealth.com/jobs/head-of-engineering | yes |
 | MindFi | www.mindfi.co | dover (no adapter yet): https://mindfi.co/ |  |
 | Neodocs | www.neodocs.in | not found (6 pages read) |  |
 | RocketSDR | rocketsdr.ai | not found (6 pages read) |  |
