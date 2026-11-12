@@ -262,6 +262,35 @@ Newest first. Each entry: date, options considered, choice, why.
   dark, with sample jobs in place of the API (this sandbox can't reach it). **Not checked:** the
   signed-in pages (board, insights, profile) on screen, a real phone, throttled-4G timings.
 
+## 2026-11-07 — App look: "Ledger" with cool paper; a simpler Scout page
+- **Look. Options:** keep white + indigo · Ledger (the landing's paper, ink and marigold) ·
+  dark graphite with lime or teal · cool white with cobalt or green · three "premium" looks
+  (quiet luxury, fintech polish, rich dark with glow). **Choice (Shrey):** Ledger, but with
+  **cooler paper** and **marigold only as the highlighter behind evidence quotes**.
+- **Tokens (mockup values, checked for WCAG AA):** light: paper `#eef0ee`, panels `#f8f9f7`,
+  lines `#d3d7d2`, ink `#111312`, muted `#5b605b` (6.1:1 on panels), highlighter `#ffd27a`
+  (13:1 with ink). Dark: paper `#111314`, panels `#191b1d`, ink `#e9ebe8`, muted `#9ca19c`,
+  highlighter `#5a4512`. The primary button and "you / this week" in charts use ink, not
+  marigold. Status colours (takes you / stretch / excluded) and the agent's bottle green stay.
+- **Charts (Shrey, after seeing an all-grey Insights page):** keep the first Insights look: data
+  series in dark ink `#343835`, and marigold `#ffb21a` for "this week / you / now" in charts. So
+  marigold has two jobs, both about pointing: the evidence highlight and "now" in a chart.
+  Buttons stay ink.
+- **Navigation. Options:** keep the 2026-11-04 pages (Jobs, Board, Insights) · five tabs ·
+  four tabs (Jobs, Today, Tracker, Market). **Choice (Shrey):** five tabs: **Jobs · Today ·
+  Applications · Insights · Market**, replacing the 2026-11-04 page list. Today takes the Board's
+  brief and Needs-you list; Applications holds the table and kanban; Scout opens from the header.
+  On phones the same five sit in a bottom tab bar.
+  Instrument Serif for headings, Instrument Sans for text; Geist leaves the app.
+- **Why:** one identity across landing and app; the earlier Ledger read too beige, and a
+  marigold button competed with the evidence highlight, which is the product's whole promise.
+- **Scout page (Shrey: "too much going on"):** one column, "Needs your OK" first, one item
+  open at a time; a 3-number strip; "Recent" with Undo; limits, permissions and the full log
+  one tap away. Follow-ups are templates filled from the tracker, with **Copy email** and
+  **Open in mail app**, not Gmail drafts (Gmail compose needs Google app verification and a
+  domain). No made-up run times: Scout checks after each data refresh.
+- Mockups (not code yet) were reviewed as screenshots; building follows the existing build order.
+
 ## 2026-11-04 — Job list polish and the pipeline-first dashboard
 - **Brief (Shrey):** on the job list, real logos or per-company tints, a sticky action bar,
   visibly active filter chips with "Clear all", a requirements card without dead space and with

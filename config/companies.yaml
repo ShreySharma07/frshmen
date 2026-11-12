@@ -998,3 +998,16 @@ companies:
   - {name: UST, category: consulting, hq: global, website: ust.com, india_only: true, verified: false}
   - {name: Nagarro, category: consulting, hq: global, website: nagarro.com, india_only: true, verified: false}
   - {name: GlobalLogic, category: consulting, hq: global, website: globallogic.com, india_only: true, verified: false}
+  # --- Auto-discovered on 2026-11-09 (scripts/discover_companies.py) ---
+  - {name: Reddit, category: hn, hq: global, ats: greenhouse, slug: reddit, verified: true, jobs: 163, ai_jobs: 48, checked: '2026-11-09'}
+  - {name: Justworks, category: hn, hq: global, ats: greenhouse, slug: justworks, verified: true, jobs: 111, ai_jobs: 11, checked: '2026-11-09'}
+  - {name: Mozilla, category: hn, hq: global, ats: greenhouse, slug: mozilla, verified: true, jobs: 114, ai_jobs: 5, checked: '2026-11-09'}
+  - {name: Apollo Research, category: hn, hq: global, ats: lever, slug: apolloresearch, verified: true, jobs: 12, ai_jobs: 5, checked: '2026-11-09'}
+  - {name: GiveDirectly, category: hn, hq: global, ats: greenhouse, slug: givedirectly, verified: true, jobs: 34, ai_jobs: 1, checked: '2026-11-09'}
+  - {name: Dodo, category: yc, hq: us, ats: ashby, slug: dodo, verified: true, jobs: 6, ai_jobs: 1, checked: '2026-11-09'}
+  - {name: Tolmo, category: hn, hq: global, ats: ashby, slug: tolmo, verified: true, jobs: 5, ai_jobs: 1, checked: '2026-11-09'}
+  - {name: Pharos, category: yc, hq: us, ats: ashby, slug: pharos, verified: true, jobs: 3, ai_jobs: 1, checked: '2026-11-09'}
+  - {name: Lapel, category: yc, hq: us, ats: ashby, slug: lapel, verified: true, jobs: 8, ai_jobs: 0, checked: '2026-11-09'}
+  - {name: Stream, category: hn, hq: global, ats: ashby, slug: stream, verified: true, jobs: 7, ai_jobs: 0, checked: '2026-11-09'}
+  - {name: Equall, category: hn, hq: global, ats: ashby, slug: equall, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-11-09'}
+  - {name: Vola Dynamics, category: hn, hq: global, ats: ashby, slug: voladynamics, verified: true, jobs: 3, ai_jobs: 0, checked: '2026-11-09'}
