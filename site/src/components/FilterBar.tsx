@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
-import { DEFAULTS, isDefault, type Filters, type Posted, type Workplace } from "@/lib/filters";
+import { BAND_CHOICES, bandOf, DEFAULTS, isDefault, type Filters, type Posted, type Workplace } from "@/lib/filters";
 import type { Role } from "@/lib/api";
+import { CATEGORY } from "@/lib/describe";
 
 /**
  * Filter chips above the job list. Each is a real <select> dressed as a chip: no extra JavaScript, keyboard and
@@ -16,18 +17,27 @@ export function FilterBar({ filters, countries, onChange }: {
   return (
     <div className="flex items-center gap-2 overflow-x-auto border-b border-line px-4 py-2.5 [scrollbar-width:none] lg:px-6">
       {/* Years first: the question Aventra answers. Filled marigold when set, like a highlighted word. */}
-      <Chip label="I have" strong on={filters.years !== null} value={filters.years === null ? "" : String(filters.years)}
+      {/* Each band stands for a typical number of years, so a years value from an older link still selects its band. */}
+      <Chip label="I have" strong on={filters.years !== null}
+        value={filters.years === null ? "" : String(BAND_CHOICES.find((c) => c.band === bandOf(filters.years!))!.years)}
         onChange={(v) => set({ years: v === "" ? null : Number(v) })}>
         <option value="">any experience</option>
-        <option value="0">0 years (fresher)</option>
-        {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} {n === 1 ? "year" : "years"}</option>)}
+        {BAND_CHOICES.map((c) => <option key={c.band} value={c.years}>{c.label}</option>)}
       </Chip>
-      <Chip label="Role" on={filters.role !== DEFAULTS.role} value={filters.role} onChange={(v) => set({ role: v as Role })}>
-        <option value="target">AI/ML, backend, mobile</option>
-        <option value="ai_ml">AI/ML</option>
-        <option value="backend">Backend</option>
-        <option value="mobile">Mobile</option>
-        <option value="all">All roles</option>
+      {/* "My roles" are the profile's target roles; "Every job in" covers everyone's (a category). */}
+      <Chip label="Role" on={filters.category !== "" || filters.role !== DEFAULTS.role}
+        value={filters.category ? `cat:${filters.category}` : filters.role}
+        onChange={(v) => set(v.startsWith("cat:") ? { category: v.slice(4) } : { category: "", role: v as Role })}>
+        <optgroup label="My roles">
+          <option value="target">AI/ML, backend, mobile</option>
+          <option value="ai_ml">AI/ML</option>
+          <option value="backend">Backend</option>
+          <option value="mobile">Mobile</option>
+        </optgroup>
+        <optgroup label="Every job in">
+          {Object.entries(CATEGORY).map(([k, label]) => <option key={k} value={`cat:${k}`}>{label}</option>)}
+          <option value="all">All roles</option>
+        </optgroup>
       </Chip>
       <Chip label="Where" on={filters.country !== ""} value={filters.country} onChange={(v) => set({ country: v })}>
         <option value="">Anywhere</option>

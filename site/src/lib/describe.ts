@@ -56,6 +56,13 @@ export function highlightParts(text: string, tech: string[]): { text: string; ma
 }
 
 export const FAMILY: Record<string, string> = { ai_ml: "AI/ML", backend: "Backend", mobile: "Mobile", generic_swe: "Software engineering with Python + AI/ML" };
+/** General categories, in config/role_families.yaml order (labels mirror it). */
+export const CATEGORY: Record<string, string> = {
+  ai_ml: "AI/ML & data science", data: "Data & analytics", backend: "Backend", frontend: "Frontend",
+  fullstack: "Full stack", mobile: "Mobile", software: "Software engineering", devops: "DevOps, SRE & cloud",
+  qa: "QA & testing", security: "Security", hardware: "Embedded & hardware", design: "Design", product: "Product",
+  other: "Other",
+};
 export const ATS: Record<string, string> = { ashby: "Ashby", greenhouse: "Greenhouse", lever: "Lever", workday: "Workday", keka: "Keka",
   workable: "Workable", smartrecruiters: "SmartRecruiters", eightfold: "Eightfold", oracle: "Oracle Recruiting", careersite: "Careers site",
   gem: "Gem", rippling: "Rippling", teamtailor: "Teamtailor", jazzhr: "JazzHR", yc_jobs: "Y Combinator" };
