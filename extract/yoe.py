@@ -105,6 +105,10 @@ def _mention(text: str, m: re.Match[str], preferred: bool, evidence: str) -> Yoe
         return None
     if not (_FOLLOWED_BY.search(after) or _EXPERIENCE_CONTEXT.search(text) or _EXPERIENCE_CONTEXT.search(evidence)):
         return None
+    return _range(m, before, evidence, required=not preferred)
+
+
+def _range(m: re.Match[str], before: str, evidence: str, required: bool = True) -> YoeMention:
     unit = m.group("unit")
     groups = m.groupdict()
     a = _to_years(groups["a"], unit) if groups.get("a") else None
@@ -116,4 +120,33 @@ def _mention(text: str, m: re.Match[str], preferred: bool, evidence: str) -> Yoe
         lo, hi = a, b
     else:
         lo, hi = a, (None if plus else a)
-    return YoeMention(min_years=lo, max_years=hi, required=not preferred, evidence=evidence.strip())
+    return YoeMention(min_years=lo, max_years=hi, required=required, evidence=evidence.strip())
+
+
+# A title naming a program, contract or internship gives its length, not experience asked for:
+# "Graduate Apprentice (2 years)", "ML Intern - 6 Months", "12 Month Contract".
+_TITLE_DURATION = re.compile(
+    r"\b(intern(ship)?s?|apprentice(ship)?s?|trainee(ship)?s?|contract(or)?|fixed[- ]term|temporary|program(me)?|"
+    r"fellow(ship)?s?|secondment|placement)\b",
+    re.I,
+)
+
+
+def title_mentions(title: str) -> list[YoeMention]:
+    """Years in a title ("Software Engineer | 8-12 yrs") are a requirement: titles don't tell
+    company history, so no experience word is needed. Months are left out (they're durations)."""
+    if _TITLE_DURATION.search(title):
+        return []
+    found: list[YoeMention] = []
+    taken: list[tuple[int, int]] = []
+    for pattern in _PATTERNS:
+        for m in pattern.finditer(title):
+            if any(s < m.end() and m.start() < e for s, e in taken):
+                continue
+            taken.append((m.start(), m.end()))
+            if m.group("unit").lower().startswith("mo") or _HYPHEN_ADJ.search(m.group(0)):
+                continue
+            if _NOT_EXPERIENCE_BEFORE.search(title[: m.start()]):
+                continue
+            found.append(_range(m, title[: m.start()], title))
+    return found

@@ -12,7 +12,7 @@ from typing import Any
 
 from extract.sections import clauses
 from extract.signals import batch_years, fresher_signals, senior_title
-from extract.yoe import YoeMention, find_mentions
+from extract.yoe import YoeMention, find_mentions, title_mentions
 
 EXACT_BATCH = {2026}
 SOFT_BATCH = {2025, 2027}
@@ -37,7 +37,7 @@ class Classification:
 def classify(title: str, description: str, exact_batch: set[int] = EXACT_BATCH,
              soft_batch: set[int] = SOFT_BATCH) -> Classification:
     parts = clauses(description)
-    mentions = find_mentions(parts)
+    mentions = title_mentions(title) + find_mentions(parts)
     required = [m for m in mentions if m.required]
     preferred = [m for m in mentions if not m.required]
     fresh = fresher_signals(title, parts)
