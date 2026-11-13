@@ -324,9 +324,10 @@ body {
 
 /* The highlighter (components/FitCard.tsx): when a job opens, the mark sweeps across the words
    that decided its label, so the eye lands on the reason first. Only the fill moves (transform);
-   the text never changes colour, so it is readable before, during and without the sweep. */
-.hl { position: relative; isolation: isolate; white-space: nowrap; }
-.hl::before {
+   the text never changes colour, so it is readable before, during and without the sweep.
+   Named apart from the landing hero's .hl section: sharing a name painted the whole hero marigold. */
+.mark-sweep { position: relative; isolation: isolate; white-space: nowrap; }
+.mark-sweep::before {
   content: ""; position: absolute; inset: 0.1em -0.14em 0.02em; z-index: -1; border-radius: 2px;
   background: var(--mark); transform-origin: left; animation: 420ms var(--ease-out-soft) 120ms both hl-sweep;
 }
