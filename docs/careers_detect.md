@@ -1,6 +1,6 @@
 # Careers-system detection
 
-550 companies read; 87 now have a readable board. Systems found: not found 354, careersite 33, yc_jobs 33, darwinbox 23, ashby 20, workday 15, keka 11, oracle 8, gem 7, job listing on ycombinator.com 7, linkedin_only 5, greenhouse 5, zoho_recruit 5, workable 3, jazzhr 2, on another company's site 2, taleo 2, icims 2, rippling 2, dover 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, avature 1, teamtailor 1, lever 1, job listing on weekday.works 1, same board as Fi Money 1, successfactors 1.
+550 companies read; 125 now have a readable board. Systems found: not found 354, yc_jobs 39, careersite 33, darwinbox 23, ashby 20, workday 15, keka 11, oracle 8, gem 7, linkedin_only 5, greenhouse 5, zoho_recruit 5, on another company's site 3, workable 3, jazzhr 2, taleo 2, icims 2, rippling 2, dover 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, blocked 1, teamtailor 1, lever 1, job listing on weekday.works 1, same board as Fi Money 1, successfactors 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -120,7 +120,7 @@
 | Meta | meta.com | not found (6 pages read) |  |
 | Uber | uber.com | oracle: https://jobs.uber.com/en/ | yes |
 | Oracle | oracle.com | oracle: https://careers.oracle.com/en/sites/jobsearch/jobs (found by hand) | yes |
-| IBM | ibm.com | avature: https://careers.ibm.com/en_US/careers/SearchJobs (found by hand) |  |
+| IBM | ibm.com | blocked: careers.ibm.com (Avature) answers bots with an AWS WAF challenge |  |
 | Dell Technologies | dell.com | not found (6 pages read) |  |
 | AMD | amd.com | not found (0 pages read) |  |
 | Texas Instruments | ti.com | not found (6 pages read) |  |
@@ -193,13 +193,13 @@
 | Ressl AI | ressl.ai | not found (6 pages read) |  |
 | Revion | revion.inc | careersite: https://revion.inc/careers/backend-engineer |  |
 | Besimple AI | besimple.ai | careersite: https://besimple.ai/jobs/rl-environment-engineer/ | yes |
-| Bluejay | getbluejay.ai | yc_jobs (no adapter yet): https://getbluejay.ai |  |
+| Bluejay | getbluejay.ai | yc_jobs: https://getbluejay.ai | yes |
 | Bolna AI | bolna.ai | ashby: https://jobs.ashbyhq.com/bolna | yes |
-| Brickanta | www.brickanta.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/brickanta/jobs/dM8327V-forward-deployed-construction-engineer-belgium |  |
+| Brickanta | www.brickanta.com | yc_jobs: https://www.brickanta.com/jobs/forward-deployed-construction-engineer-belgium | yes |
 | Calltree | calltree.ai | not found (6 pages read) |  |
 | Closure | closure-intel.com | not found (6 pages read) |  |
 | ComplyDo | www.complydo.io | not found (6 pages read) |  |
-| Contrario | contrario.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/contrario/jobs/QExVgmb-bizops |  |
+| Contrario | contrario.ai | yc_jobs: https://www.contrario.ai/careers | yes |
 | F2 | f2.ai | ashby: https://f2.ai/ | yes |
 | Forge Automation | www.forgeautomation.ca | not found (6 pages read) |  |
 | Godela | godela.ai | not found (6 pages read) |  |
@@ -211,7 +211,7 @@
 | Proception Inc | proception.ai | not found (6 pages read) |  |
 | QualGent | www.qualgent.ai | not found (6 pages read) |  |
 | Semble | www.sembleai.com | not found (6 pages read) |  |
-| Sixtyfour | www.sixtyfour.ai | yc_jobs (no adapter yet): https://www.sixtyfour.ai |  |
+| Sixtyfour | www.sixtyfour.ai | yc_jobs: https://www.sixtyfour.ai | yes |
 | Spott | spott.io | careersite: https://spott.io/jobs/business-development-representative-4 | yes |
 | Structured AI | www.getstructured.ai | careersite: https://getstructured.ai/careers/founding-engineer/ |  |
 | Synthio Labs | synthiolabs.com | careersite: https://synthiolabs.com/openroles |  |
@@ -220,19 +220,19 @@
 | Trelium | www.trelium.com | not found (6 pages read) |  |
 | Vesence | vesence.com | not found (6 pages read) |  |
 | YouShift | www.you-shift.com | not found (6 pages read) |  |
-| Zalos | www.zalos.ai | gem (no adapter yet): https://www.zalos.ai/careers |  |
+| Zalos | www.zalos.ai | gem: https://www.zalos.ai/careers | yes |
 | Alex | alexcodes.app | not found (6 pages read) |  |
-| Arva AI | www.arva.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/arva-ai/jobs/bPPv8fg-head-of-research |  |
+| Arva AI | www.arva.ai | yc_jobs: https://arva.ai/careers/talent-lead | yes |
 | Assembly HOA | assemblyhoa.com | not found (6 pages read) |  |
 | Brighterway | www.brighterway.ai | not found (0 pages read, 8 disallowed) | yes |
-| Capitol AI | www.capitol.ai | yc_jobs (no adapter yet): https://www.capitol.ai |  |
-| Carma | www.joincarma.com | yc_jobs (no adapter yet): https://www.joincarma.com |  |
+| Capitol AI | www.capitol.ai | yc_jobs: https://www.capitol.ai | yes |
+| Carma | www.joincarma.com | yc_jobs: https://www.joincarma.com | yes |
 | Cartage | cartage.ai | not found (6 pages read) |  |
 | Corgi Insurance | corgi.com | careersite: https://corgi.com/careers/business-development-representative-san-francisco-ca-jzys6k |  |
-| Coval | coval.dev | yc_jobs (no adapter yet): https://www.coval.ai/careers |  |
-| Deepnight | www.deepnight.com | yc_jobs (no adapter yet): https://deepnight.com/pages/careers |  |
+| Coval | coval.dev | yc_jobs: https://www.coval.ai/careers | yes |
+| Deepnight | www.deepnight.com | yc_jobs: https://deepnight.com/pages/careers | yes |
 | Domu Technology Inc. | www.domu.ai | not found (6 pages read) |  |
-| Drillbit | www.drillbit.com | yc_jobs (no adapter yet): https://www.drillbit.com |  |
+| Drillbit | www.drillbit.com | yc_jobs: https://www.drillbit.com | yes |
 | Entangl | www.entangl.com | not found (6 pages read) |  |
 | FINNY AI | www.finny.com | ashby: https://finny.com/join-our-team/ | yes |
 | Merlin AI | www.merlinai.co | not found (6 pages read) |  |
@@ -241,72 +241,72 @@
 | Open | open.cx | workable: https://careers.open.cx | yes |
 | Piramidal | piramidal.ai | greenhouse: https://piramidal.ai/join-us/ | yes |
 | ProSights | prosights.co | careersite: https://www.prosights.co/careers/ai-forward-deployed-engineer |  |
-| Respan | respan.ai | yc_jobs (no adapter yet): https://www.respan.ai/careers |  |
+| Respan | respan.ai | yc_jobs: https://www.respan.ai/careers | yes |
 | RetailReady | www.retailreadyai.com | not found (6 pages read) |  |
-| Saturn | www.SaturnOS.com | rippling (no adapter yet): https://www.SaturnOS.com/careers |  |
+| Saturn | www.SaturnOS.com | rippling: https://www.SaturnOS.com/careers |  |
 | Syntra | www.syntra.com | not found (6 pages read) |  |
-| TaxGPT | www.taxgpt.com | gem (no adapter yet): https://www.taxgpt.com/careers/sales-development-representative-sdr |  |
+| TaxGPT | www.taxgpt.com | gem: https://www.taxgpt.com/careers/sales-development-representative-sdr | yes |
 | Trellis AI | runtrellis.com | not found (6 pages read) |  |
 | Ubicloud | www.ubicloud.com | yc_jobs: https://www.ycombinator.com/companies/ubicloud/jobs (found by hand) | yes |
 | Unsloth AI | unsloth.ai | yc_jobs: https://www.ycombinator.com/companies/unsloth-ai/jobs (found by hand) | yes |
-| Yondu | yondu.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/yondu/jobs/l6z04IP-senior-robotics-engineer |  |
-| Zep AI | www.getzep.com | yc_jobs (no adapter yet): https://www.getzep.com/careers/ |  |
+| Yondu | yondu.ai | yc_jobs: https://www.yondu.ai/careers | yes |
+| Zep AI | www.getzep.com | yc_jobs: https://www.getzep.com/careers/ | yes |
 | 1stCollab | 1stcollab.com | not found (6 pages read) |  |
 | 222 | 222.place | not found (6 pages read) |  |
 | Accend | www.withaccend.com | not found (6 pages read) |  |
-| Alguna | alguna.com | yc_jobs (no adapter yet): https://alguna.com |  |
-| Boundary | www.boundaryml.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/boundary/jobs/f31pAPu-engineers-that-enjoy-hard-things-like-compilers |  |
-| Clearest Health | clearesthealth.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/clearest-health/jobs/vSiCt2K-idr-filing-specialist |  |
+| Alguna | alguna.com | yc_jobs: https://alguna.com | yes |
+| Boundary | www.boundaryml.com | on another company's site (acquired?): https://github.com/BoundaryML/baml/tree/canary/jobs |  |
+| Clearest Health | clearesthealth.com | yc_jobs: https://clearesthealth.com/careers | yes |
 | Credal.ai | credal.ai | ashby: https://credal.ai/careers | yes |
 | Diffuse Bio | diffuse.bio | not found (6 pages read) |  |
-| dili | www.dili.com | yc_jobs (no adapter yet): https://www.dili.com |  |
+| dili | www.dili.com | yc_jobs: https://www.dili.com | yes |
 | Elyos AI | www.elyos.ai | ashby: https://elyos.ai/careers | yes |
 | Giga | giga.ai | ashby: https://giga.ai/careers | yes |
 | HappyRobot | happyrobot.ai | ashby: https://www.happyrobot.ai/careers | yes |
-| kapa.ai | www.kapa.ai | yc_jobs (no adapter yet): https://www.kapa.ai |  |
+| kapa.ai | www.kapa.ai | yc_jobs: https://www.kapa.ai | yes |
 | loopfour | www.loopfour.com | not found (6 pages read) |  |
-| Maven Bio | mavenbio.com | yc_jobs (no adapter yet): https://mavenbio.com |  |
+| Maven Bio | mavenbio.com | yc_jobs: https://mavenbio.com | yes |
 | Middleware | www.middleware.io | not found (6 pages read) |  |
 | Numen | www.numen.com | not found (6 pages read) |  |
-| Readily | readily.ai | yc_jobs (no adapter yet): https://www.readily.ai/ |  |
+| Readily | readily.ai | yc_jobs: https://www.readily.ai/ | yes |
 | Rubbrband | rubbrband.com | careersite: https://www.rubbrband.com/careers/ |  |
 | Skyvern | www.skyvern.com | yc_jobs: https://www.ycombinator.com/companies/skyvern/jobs (found by hand) | yes |
 | Strada | www.getstrada.com | ashby: https://www.getstrada.com/careers | yes |
-| SuperKalam | superkalam.com | yc_jobs (no adapter yet): https://superkalam.com |  |
+| SuperKalam | superkalam.com | yc_jobs: https://superkalam.com | yes |
 | Syncly | syncly.app | careersite: https://syncly.app/careers/founding-gtm |  |
 | Variance | www.variance.com | ashby: https://www.variance.com/careers | yes |
 | VectorShift | www.vectorshift.ai | not found (1 pages read) |  |
 | Ankr Health | ankr.us | not found (6 pages read) |  |
-| AstroForge | www.astroforge.io | gem (no adapter yet): https://www.astroforge.com/careers |  |
-| AviaryAI | www.helloaviary.ai | gem (no adapter yet): https://www.helloaviary.ai |  |
+| AstroForge | www.astroforge.io | gem: https://www.astroforge.com/careers | yes |
+| AviaryAI | www.helloaviary.ai | gem: https://www.helloaviary.ai | yes |
 | Axross Pte Ltd | www.axross.co | not found (6 pages read) |  |
 | Bemlo | www.bemlo.com | not found (6 pages read) |  |
 | Broccoli AI | www.broccoli.com | not found (6 pages read) |  |
-| Cerrion | www.cerrion.com | teamtailor (no adapter yet): https://careers.cerrion.com/jobs/8685681-growth-marketer/applications/new |  |
-| Cogram | cogram.com | job listing on ycombinator.com: https://www.ycombinator.com/companies/cogram/jobs/1iW19df-account-executive-full-cycle |  |
-| Coris | coris.ai | yc_jobs (no adapter yet): https://www.coris.ai/ |  |
-| Curacel | curacel.co | yc_jobs (no adapter yet): https://www.curacel.co/careers |  |
-| Dart | www.dartai.com | yc_jobs (no adapter yet): https://www.dartai.com |  |
+| Cerrion | www.cerrion.com | teamtailor: https://careers.cerrion.com/jobs/8685681-growth-marketer/applications/new |  |
+| Cogram | cogram.com | yc_jobs: https://cogram.com/careers | yes |
+| Coris | coris.ai | yc_jobs: https://www.coris.ai/ | yes |
+| Curacel | curacel.co | yc_jobs: https://www.curacel.co/careers | yes |
+| Dart | www.dartai.com | yc_jobs: https://www.dartai.com | yes |
 | Dynamo AI | dynamo.ai | rippling (no adapter yet): https://www.dynamo.ai/ | yes |
 | Flagright | flagright.com | ashby: https://jobs.ashbyhq.com/flagright.com | yes |
-| Gym Class | gymclass.com | yc_jobs (no adapter yet): https://www.gymclass.com/ |  |
+| Gym Class | gymclass.com | yc_jobs: https://www.gymclass.com/ | yes |
 | HOMLI | thehomli.com | not found (0 pages read) |  |
-| KorrAI | www.korrai.com | yc_jobs (no adapter yet): https://www.korrai.com |  |
-| Landeed | www.landeed.com | yc_jobs (no adapter yet): https://www.landeed.com/careers |  |
+| KorrAI | www.korrai.com | yc_jobs: https://www.korrai.com | yes |
+| Landeed | www.landeed.com | yc_jobs: https://www.landeed.com/careers | yes |
 | Layerup | www.uselayerup.com | not found (6 pages read) |  |
 | NewsCatcher | newscatcherapi.com | not found (6 pages read) |  |
-| Paces | paces.com | gem (no adapter yet): https://jobs.gem.com/paces |  |
+| Paces | paces.com | gem: https://jobs.gem.com/paces | yes |
 | Pasito | pasito.ai | not found (6 pages read) |  |
 | Polymath Robotics | www.polymathrobotics.com | not found (6 pages read) |  |
 | Pump.co | www.pump.co | greenhouse: https://www.pump.co/ | yes |
 | Reforged Labs | reforgedlabs.com | not found (6 pages read) |  |
-| Typewise | typewise.app | yc_jobs (no adapter yet): https://www.typewise.app/ |  |
-| Velt | velt.dev | yc_jobs (no adapter yet): https://velt.dev |  |
+| Typewise | typewise.app | yc_jobs: https://www.typewise.app/ | yes |
+| Velt | velt.dev | yc_jobs: https://velt.dev | yes |
 | Alinea | alinea-invest.com | not found (6 pages read) |  |
-| arnata | arnata.com | yc_jobs (no adapter yet): https://www.arnata.com/ |  |
-| BoldVoice | boldvoice.com | yc_jobs (no adapter yet): https://boldvoice.com |  |
+| arnata | arnata.com | yc_jobs: https://www.arnata.com/ | yes |
+| BoldVoice | boldvoice.com | yc_jobs: https://boldvoice.com | yes |
 | BusinessOnBot | www.businessonbot.com | not found (6 pages read) |  |
-| CoLoop | coloop.ai | yc_jobs (no adapter yet): https://www.coloop.ai/ |  |
+| CoLoop | coloop.ai | yc_jobs: https://www.coloop.ai/ | yes |
 | Coulomb AI | coulomb.ai | not found (6 pages read) |  |
 | Cyble | cyble.com | linkedin_only (no adapter yet): https://cyble.com/careers/ |  |
 | Datrics | datrics.ai | not found (6 pages read) |  |
@@ -316,7 +316,7 @@
 | MindFi | www.mindfi.co | dover (no adapter yet): https://mindfi.co/ |  |
 | Neodocs | www.neodocs.in | not found (6 pages read) |  |
 | RocketSDR | rocketsdr.ai | not found (6 pages read) |  |
-| Rootly | rootly.com | gem (no adapter yet): https://rootly.com/careers |  |
+| Rootly | rootly.com | gem: https://rootly.com/careers | yes |
 | SalaryBox | salarybox.in | zoho_recruit: https://salarybox.in/careers/ | yes |
 | Scispot | scispot.io | not found (0 pages read) |  |
 | Sully | www.sully.ai | careersite: https://sullyai.teamtailor.com/jobs/8511548-customer-success-manager-mena | yes |
