@@ -20,7 +20,7 @@ const DECIDING = /\d+\s*(?:(?:[–-]|to)\s*\d+)?\+?\s*(?:years?|yrs?)(?:\s+of\s+
 function Quote({ text }: { text: string }) {
   const m = DECIDING.exec(text);
   if (!m) return <>{text}</>;
-  return <>{text.slice(0, m.index)}<mark className="hl bg-transparent text-inherit">{m[0]}</mark>{text.slice(m.index + m[0].length)}</>;
+  return <>{text.slice(0, m.index)}<mark className="mark-sweep bg-transparent text-inherit">{m[0]}</mark>{text.slice(m.index + m[0].length)}</>;
 }
 
 /** One sentence: what the posting asks against the years picked in the dial. */
