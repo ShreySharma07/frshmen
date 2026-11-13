@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -15,10 +16,13 @@ import psycopg
 from psycopg.types.json import Jsonb
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))  # extract/ when run from scripts/
+from extract.category import job_category  # noqa: E402
+
 DEFAULT_JOBS = ROOT / "data" / "jobs.json"
 
 # Bump when extract/ rules change so every stored job gets re-classified once.
-EXTRACT_VERSION = 6  # 2: countries/location_type; 3: Indian cities; 4: mobile roles, visa, eligibility; 5: skills; 6: years and level codes in titles
+EXTRACT_VERSION = 6  # 2: countries/location_type; 3: Indian cities; 4: mobile roles, visa, eligibility; 5: skills; 6: years and level codes in titles, category
 # Real descriptions are ~5 KB; a cap keeps one malformed page from bloating the database.
 MAX_DESCRIPTION_CHARS = 60_000
 # Closed (never deleted) after this many runs in a row missing from a board that answered.
@@ -27,13 +31,13 @@ CLOSE_AFTER_MISSES = 2
 # Fingerprinted by extract_hash: when none of these change, the label isn't rewritten.
 EXTRACT_FIELDS = [
     "extract_version", "location_type", "countries", "cities", "visa_sponsorship", "eligible", "yoe_min", "yoe_max", "yoe_evidence", "batch_years", "level", "level_confidence",
-    "level_reason", "role_match", "role_family", "role_reason", "skills", "evidence", "extract_hash",
+    "level_reason", "role_match", "role_family", "role_reason", "category", "skills", "evidence", "extract_hash",
 ]
 LOCATION_TYPES = {"remote", "hybrid", "onsite"}
 VISA = {"yes", "no", "unknown"}
 LABEL_FIELDS = [
     "level", "level_confidence", "level_reason", "yoe_min", "yoe_max", "yoe_evidence", "batch_years",
-    "role_match", "role_family", "role_reason", "location_type", "countries", "cities", "eligible",
+    "role_match", "role_family", "role_reason", "category", "location_type", "countries", "cities", "eligible",
     "visa_sponsorship", "skills", "evidence",
 ]
 
@@ -83,6 +87,8 @@ def _row(job: dict[str, Any]) -> dict[str, Any]:
         "role_match": bool(job.get("role_match")),
         "role_family": job.get("role_family"),
         "role_reason": job.get("role_reason"),
+        # Older jobs.json files predate extract/category.py.
+        "category": job.get("category") or job_category(job["title"], job.get("role_family")),
         "skills": job.get("skills") or [],
         "evidence": {"level": job.get("evidence") or [], "role": job.get("role_evidence") or [],
                      "location": job.get("location_evidence") or [],
@@ -134,6 +140,7 @@ def label_row(r: dict[str, Any]) -> dict[str, Any]:
         "role_match": bool(r.get("role_match")),
         "role_family": r.get("role_family"),
         "role_reason": r.get("role_reason"),
+        "category": r.get("category"),
         "location_type": r.get("location_type") if r.get("location_type") in LOCATION_TYPES else None,
         "countries": _texts(r.get("countries")),
         "cities": _texts(r.get("cities")),
