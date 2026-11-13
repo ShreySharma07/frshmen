@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_JOBS = ROOT / "data" / "jobs.json"
 
 # Bump when extract/ rules change so every stored job gets re-classified once.
-EXTRACT_VERSION = 6  # 2: countries/location_type; 3: Indian cities; 4: mobile roles, visa, eligibility; 5: skills; 6: years in titles
+EXTRACT_VERSION = 6  # 2: countries/location_type; 3: Indian cities; 4: mobile roles, visa, eligibility; 5: skills; 6: years and level codes in titles
 # Real descriptions are ~5 KB; a cap keeps one malformed page from bloating the database.
 MAX_DESCRIPTION_CHARS = 60_000
 # Closed (never deleted) after this many runs in a row missing from a board that answered.

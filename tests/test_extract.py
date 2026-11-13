@@ -121,6 +121,22 @@ def test_long_requirement_line_is_not_a_heading():
     ("Machine Learning Fellow - Human Frontier Collective", False),
     ("ML Engineer", False),
     ("Software Engineer - New Grad", False),
+    # Level codes and words the first list missed.
+    ("SDE III, Payments", True),
+    ("SDE-3 (Backend)", True),
+    ("SWE 4 - Infra", True),
+    ("Software Engineer IV - Platform", True),
+    ("Machine Learning Engineer, L5", True),
+    ("Team Leader - Data Engineering", True),
+    ("Head - Data Science", True),
+    ("Snr Data Scientist", True),
+    # Level II is a new-grad level at some firms (Google's L3 is "Software Engineer II").
+    ("Software Engineer II", False),
+    ("SDE 2", False),
+    ("SDE 1 - Python", False),
+    ("Lead Generation Executive", True),  # not our role anyway; never fresher is the safe side
+    ("Headless CMS Developer", False),
+    ("Python Developer (L1 support)", False),
 ])
 def test_senior_title(title, senior):
     assert (senior_title(title) is not None) == senior
