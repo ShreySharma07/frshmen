@@ -112,10 +112,20 @@ def list_titles(http: HttpClient, slug: str) -> list[str] | None:
     return [_words(url) for url, _ in entries] if entries else None
 
 
+def page_url(url: str) -> str:
+    """The address to fetch for a job page. An iCIMS portal serves a plain client the company's
+    branded wrapper, with the job in an iframe; the job itself (and its schema.org data) is at
+    ?in_iframe=1. The job keeps its public address."""
+    host = urlparse(url).netloc.lower()
+    if host.endswith(".icims.com") and "in_iframe=" not in url:
+        return f"{url}{'&' if '?' in url else '?'}in_iframe=1"
+    return url
+
+
 def fetch(http: HttpClient, company: Company) -> list[Job]:
     jobs = []
     for url in screen(job_entries(http, company.slug), company.india_only)[:MAX_DETAILS]:
-        job = parse_page(http.get_text(url, fresh_days=DETAIL_FRESH_DAYS) or "", url, company)
+        job = parse_page(http.get_text(page_url(url), fresh_days=DETAIL_FRESH_DAYS) or "", url, company)
         if job:
             jobs.append(job)
     return jobs
