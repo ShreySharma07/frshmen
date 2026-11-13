@@ -1,6 +1,6 @@
 # Careers-system detection
 
-321 companies read; 58 now have a readable board. Systems found: not found 184, yc_jobs 26, careersite 22, ashby 20, workday 14, darwinbox 9, gem 7, job listing on ycombinator.com 7, keka 3, oracle 3, icims 3, greenhouse 3, jazzhr 2, on another company's site 2, linkedin_only 2, taleo 2, workable 2, rippling 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, eightfold 1, teamtailor 1, dover 1, zoho_recruit 1, lever 1.
+550 companies read; 87 now have a readable board. Systems found: not found 354, careersite 33, yc_jobs 33, darwinbox 23, ashby 20, workday 15, keka 11, oracle 8, gem 7, job listing on ycombinator.com 7, linkedin_only 5, greenhouse 5, zoho_recruit 5, workable 3, jazzhr 2, on another company's site 2, taleo 2, icims 2, rippling 2, dover 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, avature 1, teamtailor 1, lever 1, job listing on weekday.works 1, same board as Fi Money 1, successfactors 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -10,14 +10,14 @@
 | Contextual AI | contextual.ai | not found (6 pages read) |  |
 | Fireworks AI | fireworks.ai | ashby: https://fireworks.ai/careers | yes |
 | Replicate | replicate.com | not found (6 pages read) |  |
-| Groq | groq.com | gem (no adapter yet): https://groq.com |  |
+| Groq | groq.com | gem: https://groq.com | yes |
 | Weights & Biases | wandb.ai | not found (6 pages read) |  |
 | Qdrant | qdrant.tech | not found (6 pages read) |  |
 | OctoAI | octo.ai | not found (6 pages read) |  |
 | Predibase | predibase.com | not found (0 pages read) |  |
 | Clarifai | clarifai.com | not found (0 pages read) |  |
 | DataRobot | datarobot.com | workday: https://www.datarobot.com/careers/open-positions/job/102685/ | yes |
-| H2O.ai | h2o.ai | jazzhr (no adapter yet): https://h2o.ai/company/careers |  |
+| H2O.ai | h2o.ai | jazzhr: https://h2o.ai/company/careers | yes |
 | Hebbia | hebbia.com | ashby: https://www.hebbia.com/careers/ | yes |
 | Jina AI | jina.ai | not found (6 pages read) |  |
 | Hippocratic AI | hippocraticai.com | not found (6 pages read) |  |
@@ -49,7 +49,7 @@
 | upGrad | upgrad.com | not found (6 pages read) |  |
 | Hasura | hasura.io | on another company's site (acquired?): https://promptql.io/careers |  |
 | Juspay | juspay.in | not found (6 pages read) |  |
-| Jar | myjar.app | jazzhr (no adapter yet): https://www.myjar.app/careers |  |
+| Jar | myjar.app | jazzhr: https://www.myjar.app/careers | yes |
 | Locus | locus.sh | darwinbox: https://locus.sh/careers/ |  |
 | HealthifyMe | healthifyme.com | darwinbox: https://www.healthifyme.com:443/careers/ |  |
 | Pixxel | pixxel.space | darwinbox: https://www.pixxel.space/careers |  |
@@ -88,8 +88,8 @@
 | Perfios | perfios.com | darwinbox: https://perfios.ai/careers/ |  |
 | Darwinbox | darwinbox.com | darwinbox: https://darwinbox.com/en-us/careers |  |
 | Goldman Sachs | goldmansachs.com | not found (6 pages read) |  |
-| JPMorgan Chase | jpmorganchase.com | not found (6 pages read) |  |
-| American Express | americanexpress.com | eightfold (no adapter yet): https://www.americanexpress.com/en-us/careers/?inav=en_us_footer_About_Careers |  |
+| JPMorgan Chase | jpmorganchase.com | oracle: https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001 (found by hand) | yes |
+| American Express | americanexpress.com | oracle: https://careers.americanexpress.com/en/sites/CX_1/jobs (found by hand) | yes |
 | Citi | citi.com | workday: https://jobs.citi.com/ | yes |
 | Bank of America | bankofamerica.com | not found (6 pages read) |  |
 | BNY | bny.com | oracle: https://www.bny.com/corporate/global/en.html | yes |
@@ -103,13 +103,13 @@
 | S&P Global | spglobal.com | not found (0 pages read) |  |
 | Moody's | moodys.com | careersite: https://careers.moodys.com/en | yes |
 | MSCI | msci.com | careersite: https://careers.msci.com/ | yes |
-| Intuit | intuit.com | not found (0 pages read) |  |
+| Intuit | intuit.com | careersite: https://jobs.intuit.com/sitemap.xml (found by hand) | yes |
 | MetLife | metlife.com | not found (6 pages read) |  |
 | Barclays | barclays.com | not found (6 pages read) |  |
 | HSBC | hsbc.com | not found (6 pages read) |  |
 | Standard Chartered | sc.com | not found (6 pages read) |  |
 | LSEG | lseg.com | not found (6 pages read) |  |
-| Deutsche Bank | db.com | not found (6 pages read) |  |
+| Deutsche Bank | db.com | workday: https://db.wd3.myworkdayjobs.com/DBWebsite (found by hand) | yes |
 | UBS | ubs.com | not found (6 pages read) |  |
 | BNP Paribas | bnpparibas.com | not found (0 pages read) |  |
 | Societe Generale | societegenerale.com | taleo (no adapter yet): https://careers.societegenerale.com |  |
@@ -119,8 +119,8 @@
 | Apple | apple.com | not found (6 pages read) |  |
 | Meta | meta.com | not found (6 pages read) |  |
 | Uber | uber.com | oracle: https://jobs.uber.com/en/ | yes |
-| Oracle | oracle.com | not found (0 pages read) |  |
-| IBM | ibm.com | not found (6 pages read) |  |
+| Oracle | oracle.com | oracle: https://careers.oracle.com/en/sites/jobsearch/jobs (found by hand) | yes |
+| IBM | ibm.com | avature: https://careers.ibm.com/en_US/careers/SearchJobs (found by hand) |  |
 | Dell Technologies | dell.com | not found (6 pages read) |  |
 | AMD | amd.com | not found (0 pages read) |  |
 | Texas Instruments | ti.com | not found (6 pages read) |  |
@@ -128,10 +128,10 @@
 | Synopsys | synopsys.com | not found (0 pages read) |  |
 | Western Digital | westerndigital.com | not found (6 pages read) |  |
 | Palo Alto Networks | paloaltonetworks.com | workday: https://jobs.paloaltonetworks.com/en/ | yes |
-| Atlassian | atlassian.com | icims (no adapter yet): https://www.atlassian.com/company/careers/all-jobs |  |
+| Atlassian | atlassian.com | careersite: https://careers-apac-atlassian.icims.com/sitemap.xml (found by hand) | yes |
 | Agoda | agoda.com | not found (6 pages read) |  |
 | Booking.com | booking.com | icims (no adapter yet): https://careers.booking.com/ |  |
-| SAP | sap.com | not found (0 pages read, 8 disallowed) |  |
+| SAP | sap.com | careersite: https://jobs.sap.com/sitemap.xml (found by hand) | yes |
 | Arm | arm.com | careersite: https://careers.arm.com/ | yes |
 | Infineon | infineon.com | not found (6 pages read, 1 disallowed) |  |
 | NXP | nxp.com | not found (6 pages read) |  |
@@ -247,8 +247,8 @@
 | Syntra | www.syntra.com | not found (6 pages read) |  |
 | TaxGPT | www.taxgpt.com | gem (no adapter yet): https://www.taxgpt.com/careers/sales-development-representative-sdr |  |
 | Trellis AI | runtrellis.com | not found (6 pages read) |  |
-| Ubicloud | www.ubicloud.com | not found (6 pages read) |  |
-| Unsloth AI | unsloth.ai | not found (6 pages read) |  |
+| Ubicloud | www.ubicloud.com | yc_jobs: https://www.ycombinator.com/companies/ubicloud/jobs (found by hand) | yes |
+| Unsloth AI | unsloth.ai | yc_jobs: https://www.ycombinator.com/companies/unsloth-ai/jobs (found by hand) | yes |
 | Yondu | yondu.ai | job listing on ycombinator.com: https://www.ycombinator.com/companies/yondu/jobs/l6z04IP-senior-robotics-engineer |  |
 | Zep AI | www.getzep.com | yc_jobs (no adapter yet): https://www.getzep.com/careers/ |  |
 | 1stCollab | 1stcollab.com | not found (6 pages read) |  |
@@ -270,7 +270,7 @@
 | Numen | www.numen.com | not found (6 pages read) |  |
 | Readily | readily.ai | yc_jobs (no adapter yet): https://www.readily.ai/ |  |
 | Rubbrband | rubbrband.com | careersite: https://www.rubbrband.com/careers/ |  |
-| Skyvern | www.skyvern.com | not found (6 pages read) |  |
+| Skyvern | www.skyvern.com | yc_jobs: https://www.ycombinator.com/companies/skyvern/jobs (found by hand) | yes |
 | Strada | www.getstrada.com | ashby: https://www.getstrada.com/careers | yes |
 | SuperKalam | superkalam.com | yc_jobs (no adapter yet): https://superkalam.com |  |
 | Syncly | syncly.app | careersite: https://syncly.app/careers/founding-gtm |  |
@@ -325,3 +325,232 @@
 | Waydev | waydev.co | not found (6 pages read) |  |
 | Writesonic | writesonic.com | workable: https://writesonic.com/careers | yes |
 | Zuma | www.getzuma.com | lever: https://www.getzuma.com/ | yes |
+| Adalat AI | adalat.ai | not found (6 pages read) |  |
+| Lab0 | lab0.ai | not found (6 pages read) |  |
+| Infinity | infinityapp.in | not found (6 pages read) |  |
+| SureBright | surebright.com | not found (6 pages read) |  |
+| Floworks | floworks.ai | not found (6 pages read) |  |
+| AlgoTest | algotest.in | not found (6 pages read) |  |
+| Apollo (apollofirst.xyz) | apollofirst.xyz | not found (6 pages read) |  |
+| Better Opinions | betteropinions.in | not found (0 pages read) |  |
+| Clinikally | clinikally.com | not found (6 pages read) |  |
+| CompUp | compup.io | not found (6 pages read) |  |
+| Fieldproxy | fieldproxy.ai | not found (6 pages read) |  |
+| Gullak Money | gullak.money | not found (6 pages read) |  |
+| IMT Care | imt.care | not found (1 pages read) |  |
+| InferEdge | inferedge.com | yc_jobs: https://www.inferedge.com:443/ | yes |
+| Kaagaz | kaagaz.app | yc_jobs: https://kaagaz.app/joinus | yes |
+| Material Depot | materialdepot.in | not found (6 pages read) |  |
+| MySivi | mysivi.ai | not found (0 pages read) |  |
+| National Finance Olympiad | nationalfinanceolympiad.com | not found (6 pages read) |  |
+| Peoplebox.ai | peoplebox.ai | not found (6 pages read) |  |
+| PrimeVault | primevault.com | not found (6 pages read) |  |
+| RDash | rdash.io | linkedin_only (no adapter yet): https://rdash.ai/career/ |  |
+| RecordBook | play.google.com | not found (6 pages read) |  |
+| RedBrick AI | redbrickai.com | not found (6 pages read) |  |
+| SALT | salt.pe | not found (6 pages read) |  |
+| SaveIN | savein.money | not found (0 pages read) |  |
+| SpadeWorks | spadeworks.co | not found (0 pages read) |  |
+| Advantage Club | advantageclub.co | not found (6 pages read) |  |
+| AlgoUniversity | algouniversity.com | not found (6 pages read) |  |
+| AppX | appx.co.in | not found (6 pages read) |  |
+| Betterhalf | betterhalf.ai | not found (6 pages read) |  |
+| Bimaplan | bimaplan.co | not found (6 pages read) |  |
+| Codingal | codingal.com | dover (no adapter yet): https://www.codingal.com:443/en-us/ |  |
+| Flux Auto | fluxauto.ai | not found (6 pages read) |  |
+| GimBooks | gimbooks.com | not found (6 pages read) |  |
+| GroMo | gromo.in | zoho_recruit: https://gromo.in/careers |  |
+| Ivy Homes | ivy.homes | not found (6 pages read) |  |
+| Karbon Card | karboncard.com | not found (6 pages read) |  |
+| Koshex | koshex.com | yc_jobs: https://koshex.com | yes |
+| marketfeed | marketfeed.com | careersite: https://www.marketfeed.com/careers/senior-youtube-video-creative |  |
+| Novatr | novatr.com | not found (6 pages read) |  |
+| ODWEN | odwen.co.in | not found (6 pages read) |  |
+| Pragmatic Leaders (Ankai Inc) | pragmaticleaders.io | not found (6 pages read) |  |
+| Reclaim Protocol | reclaimprotocol.org | yc_jobs: https://www.reclaimprotocol.org/ | yes |
+| Redcliffe Lifetech | redcliffelabs.com | not found (0 pages read) |  |
+| Spark Studio | sparkstudio.co | not found (6 pages read) |  |
+| Stownest | stownest.com | not found (6 pages read) |  |
+| Swipe | getswipe.in | not found (6 pages read) |  |
+| Tilt | tilt.bike | not found (6 pages read) |  |
+| Voosh | voosh.ai | not found (6 pages read) |  |
+| Weekday | weekday.works | workable: https://www.weekday.works/ | yes |
+| zingbus | zingbus.com | not found (6 pages read) |  |
+| ZOKO | zoko.io | not found (6 pages read) |  |
+| Decentro | decentro.tech | not found (6 pages read) |  |
+| DocVita | docvita.com | not found (6 pages read) |  |
+| EduRev | edurev.in | not found (6 pages read) |  |
+| Explorex | explorex.co | not found (6 pages read) |  |
+| Farmako Healthcare | farmako.ai | not found (0 pages read) |  |
+| farmtheory | farmtheory.in | not found (6 pages read) |  |
+| Hiration | hiration.com | not found (4 pages read) |  |
+| Kosh | getkosh.com | not found (6 pages read) |  |
+| MedPiper Technologies, Inc | medpiper.com | not found (6 pages read) |  |
+| Morphle Labs | morphlelabs.com | not found (0 pages read, 8 disallowed) |  |
+| Orange Health Labs | orangehealth.in | darwinbox: https://www.orangehealth.in/jobs |  |
+| StayQrious | stayqrious.com | not found (6 pages read) |  |
+| TagMango | tagmango.com | not found (6 pages read) |  |
+| UrbanKisaan | urbankisaan.com | not found (6 pages read) |  |
+| Volopay | volopay.com | not found (6 pages read) |  |
+| WareIQ | wareiq.com | job listing on weekday.works: https://jobs.weekday.works/wareiq-enterprise-sales-manager-%E2%80%93-warehousing-%26-fulfilment?source=jobsPlatform |  |
+| Zeo Route Planner | zeorouteplanner.com | not found (6 pages read) |  |
+| Zuddl | zuddl.com | keka: https://www.zuddl.com/culture |  |
+| AccioJob | acciojob.com | keka: https://acciojob.com |  |
+| Binks | getbinks.com | not found (6 pages read) |  |
+| Cityfurnish | cityfurnish.com | careersite: https://cityfurnish.com/pages/careers/jobs/finance-and-accounts-manager |  |
+| Digi-Prex | digi-prex.com | not found (6 pages read) |  |
+| Edyst | edyst.com | not found (0 pages read) |  |
+| Exly | exlyapp.com | not found (6 pages read) |  |
+| Inito | inito.com | not found (6 pages read) |  |
+| Mudrex | mudrex.com | not found (6 pages read) |  |
+| Pulse Active Stations Network | getpulse.in | not found (0 pages read) |  |
+| Swadesh | swadesh.co | not found (6 pages read) |  |
+| Vahan | vahan.ai | not found (6 pages read) |  |
+| Helloverify | helloverify.ae | not found (0 pages read) |  |
+| Khatabook | khatabook.com | not found (6 pages read) |  |
+| Leena AI | leena.ai | not found (6 pages read) |  |
+| OkCredit | okcredit.in | not found (6 pages read) |  |
+| ZiffyHomes | ziffyhomes.com | not found (6 pages read) |  |
+| Bulk MRO Industrial Supply | bulkmro.com | not found (6 pages read) |  |
+| Cashfree Payments | cashfree.com | not found (5 pages read) |  |
+| Dost Education | dosteducation.com | not found (6 pages read) |  |
+| OneFin | onefin.in | not found (6 pages read) |  |
+| Wifi Dabba, Inc. | dabba.com | not found (6 pages read) |  |
+| GoLorry | golorry.com | not found (0 pages read) |  |
+| Drip Capital | dripcapital.com | not found (6 pages read) |  |
+| RedCarpetUp | redcarpetup.com | not found (0 pages read) |  |
+| Clear (ClearTax) | clear.in | darwinbox: https://www.clear.in/s/careers |  |
+| Zerodha | zerodha.com | not found (4 pages read) |  |
+| PolicyBazaar | policybazaar.com | not found (0 pages read) |  |
+| Lenskart | lenskart.com | not found (6 pages read) |  |
+| boAt | boat-lifestyle.com | linkedin_only (no adapter yet): https://www.boat-lifestyle.com/pages/boat-careers |  |
+| OYO | oyorooms.com | linkedin_only (no adapter yet): https://www.oyorooms.com/ |  |
+| MakeMyTrip | makemytrip.com | not found (0 pages read) |  |
+| ixigo | ixigo.com | not found (6 pages read) |  |
+| Cars24 | cars24.com | not found (6 pages read, 1 disallowed) |  |
+| CarDekho | cardekho.com | darwinbox: https://careers.cardekho.com |  |
+| PharmEasy | pharmeasy.in | darwinbox: https://pharmeasy.in/careers/ |  |
+| Tata 1mg | 1mg.com | darwinbox: https://www.1mg.com/jobs |  |
+| Practo | practo.com | not found (6 pages read) |  |
+| Cult.fit | cult.fit | not found (6 pages read) |  |
+| Licious | licious.in | not found (6 pages read) |  |
+| Country Delight | countrydelight.in | not found (6 pages read) |  |
+| Blinkit | blinkit.com | not found (0 pages read) |  |
+| Porter | porter.in | not found (0 pages read) |  |
+| Shiprocket | shiprocket.in | not found (6 pages read) |  |
+| Xpressbees | xpressbees.com | not found (6 pages read) |  |
+| BlackBuck | blackbuck.com | not found (1 pages read) |  |
+| Shadowfax | shadowfax.in | not found (6 pages read) |  |
+| Ather Energy | atherenergy.com | not found (0 pages read) |  |
+| Ola Electric | olaelectric.com | not found (6 pages read) |  |
+| Yulu | yulu.bike | not found (0 pages read) |  |
+| Ultraviolette | ultraviolette.com | not found (6 pages read) |  |
+| Exponent Energy | exponent.energy | keka: https://www.exponent.energy/careers |  |
+| Navi | navi.com | not found (0 pages read) |  |
+| INDmoney | indmoney.com | not found (0 pages read) |  |
+| CoinDCX | coindcx.com | not found (0 pages read) |  |
+| CoinSwitch | coinswitch.co | not found (6 pages read) |  |
+| Acko | acko.com | not found (6 pages read) |  |
+| Lendingkart | lendingkart.com | darwinbox: https://www.lendingkart.com/job |  |
+| KreditBee | kreditbee.in | darwinbox: https://www.kreditbee.in/ |  |
+| Fi Money | fi.money | same board as Fi Money (epiFi) (acquired?): https://fi.money/careers |  |
+| Open Financial | open.money | keka: https://open.money/company/careers |  |
+| PayU | payu.in | careersite: https://careers.payu.in/PayU/go/_/514880/?locale=en_GB&previewCategory=true&referrerSave=false | yes |
+| BillDesk | billdesk.com | not found (0 pages read) |  |
+| M2P Fintech | m2pfintech.com | not found (6 pages read) |  |
+| OneCard | getonecard.app | not found (2 pages read) |  |
+| Rupeek | rupeek.com | not found (0 pages read) |  |
+| Turtlemint | turtlemint.com | not found (6 pages read) |  |
+| InsuranceDekho | insurancedekho.com | darwinbox: https://careers.insurancedekho.com/ |  |
+| Plum | plumhq.com | not found (6 pages read) |  |
+| Yubi | go-yubi.com | not found (0 pages read) |  |
+| Zoho | zoho.com | zoho_recruit: https://careers.zohocorp.com/jobs/careers (found by hand) | yes |
+| Icertis | icertis.com | oracle: https://www.icertis.com/company/careers/ | yes |
+| CleverTap | clevertap.com | darwinbox: https://clevertap.com/careers/ |  |
+| MoEngage | moengage.com | not found (6 pages read) |  |
+| WebEngage | webengage.com | not found (0 pages read) |  |
+| LeadSquared | leadsquared.com | darwinbox: https://www.leadsquared.com/careers/ |  |
+| Zenoti | zenoti.com | greenhouse: https://www.zenoti.com/company/careers | yes |
+| HighRadius | highradius.com | greenhouse: https://www.highradius.com/about/career/ | yes |
+| Capillary Technologies | capillarytech.com | not found (0 pages read) |  |
+| Amagi | amagi.com | not found (6 pages read) |  |
+| Kissflow | kissflow.com | not found (6 pages read) |  |
+| Rocketlane | rocketlane.com | not found (6 pages read) |  |
+| Facilio | facilio.com | not found (5 pages read) |  |
+| Vymo | vymo.com | not found (6 pages read) |  |
+| FarEye | fareye.com | darwinbox: https://fareye.com/about/careers |  |
+| IDfy | idfy.com | not found (6 pages read) |  |
+| HyperVerge | hyperverge.co | not found (6 pages read) |  |
+| Tekion | tekion.com | not found (6 pages read) |  |
+| Murf AI | murf.ai | not found (6 pages read) |  |
+| Skit.ai | skit.ai | keka: https://skit.ai/careers/ |  |
+| Entropik | entropik.io | keka: https://www.askdecode.ai/ |  |
+| Wysa | wysa.com | not found (6 pages read) |  |
+| Tricog | tricog.com | zoho_recruit: https://tricog.com/careers/ | yes |
+| Cropin | cropin.com | keka: https://www.cropin.com/career/ |  |
+| DeHaat | dehaat.com | not found (6 pages read) |  |
+| Ninjacart | ninjacart.com | darwinbox: https://ninjacart.com/careers/ |  |
+| Udaan | udaan.com | not found (1 pages read) |  |
+| Moglix | moglix.com | not found (6 pages read) |  |
+| OfBusiness | ofbusiness.com | not found (6 pages read) |  |
+| Infra.Market | infra.market | not found (6 pages read) |  |
+| Zetwerk | zetwerk.com | not found (6 pages read) |  |
+| ElasticRun | elastic.run | not found (6 pages read) |  |
+| Purplle | purplle.com | not found (6 pages read) |  |
+| FirstCry | firstcry.com | not found (3 pages read) |  |
+| Physics Wallah | pw.live | darwinbox: https://www.pw.live/ |  |
+| Vedantu | vedantu.com | not found (6 pages read) |  |
+| Scaler | scaler.com | not found (6 pages read) |  |
+| Eruditus | eruditus.com | not found (6 pages read) |  |
+| Simplilearn | simplilearn.com | not found (6 pages read) |  |
+| Great Learning | mygreatlearning.com | not found (6 pages read) |  |
+| Apna | apna.co | careersite: https://apna.co/job/bengaluru-bangalore/hiring-for-fresher-retail-staff-254312894 |  |
+| VerSe Innovation (Dailyhunt) | verse.in | not found (6 pages read) |  |
+| Pocket FM | pocketfm.com | not found (6 pages read) |  |
+| Kuku FM | kukufm.com | not found (0 pages read, 8 disallowed) |  |
+| Mobile Premier League | mpl.live | not found (6 pages read) |  |
+| WinZO | winzogames.com | not found (6 pages read) |  |
+| Zupee | zupee.com | not found (6 pages read) |  |
+| Agnikul Cosmos | agnikul.in | not found (6 pages read) |  |
+| Skyroot Aerospace | skyroot.in | zoho_recruit: https://www.skyroot.in/careers | yes |
+| ideaForge | ideaforgetech.com | not found (6 pages read) |  |
+| Detect Technologies | detecttechnologies.com | careersite: https://detecttechnologies.com/current-openings |  |
+| GreyOrange | greyorange.com | not found (6 pages read) |  |
+| Addverb | addverb.com | not found (6 pages read) |  |
+| NoBroker | nobroker.in | not found (6 pages read) |  |
+| Livspace | livspace.com | not found (6 pages read) |  |
+| HomeLane | homelane.com | darwinbox: https://www.homelane.com/ |  |
+| Rebel Foods | rebelfoods.com | not found (0 pages read) |  |
+| Park+ | parkplus.io | not found (6 pages read) |  |
+| Pristyn Care | pristyncare.com | not found (6 pages read) |  |
+| MediBuddy | medibuddy.in | not found (0 pages read) |  |
+| Eka Care | eka.care | keka: https://www.eka.care:443/ |  |
+| Mu Sigma | mu-sigma.com | not found (6 pages read) |  |
+| Course5 Intelligence | course5i.com | not found (6 pages read) |  |
+| Tata Consultancy Services | tcs.com | not found (0 pages read) |  |
+| Infosys | infosys.com | not found (0 pages read) |  |
+| Tech Mahindra | techmahindra.com | not found (6 pages read) |  |
+| LTIMindtree | ltimindtree.com | successfactors (no adapter yet): https://careers.ltm.com/search/ |  |
+| Mphasis | mphasis.com | not found (6 pages read) |  |
+| Persistent Systems | persistent.com | not found (2 pages read) |  |
+| Coforge | coforge.com | not found (6 pages read) |  |
+| Hexaware | hexaware.com | not found (6 pages read) |  |
+| Cyient | cyient.com | not found (0 pages read) |  |
+| Zensar | zensar.com | oracle: https://www.zensar.com/ | yes |
+| Birlasoft | birlasoft.com | careersite: https://jobs.birlasoft.com/ | yes |
+| KPIT | kpit.com | not found (6 pages read) |  |
+| Tata Elxsi | tataelxsi.com | not found (6 pages read) |  |
+| L&T Technology Services | ltts.com | not found (0 pages read) |  |
+| Sonata Software | sonata-software.com | not found (6 pages read) |  |
+| Happiest Minds | happiestminds.com | not found (6 pages read, 1 disallowed) |  |
+| Tata Technologies | tatatechnologies.com | not found (0 pages read) |  |
+| Mastek | mastek.com | careersite: https://careers.mastek.com/search | yes |
+| Sasken | sasken.com | not found (6 pages read) |  |
+| Newgen Software | newgensoft.com | not found (6 pages read) |  |
+| Intellect Design Arena | intellectdesign.com | not found (6 pages read) |  |
+| Infogain | infogain.com | not found (0 pages read) |  |
+| Xoriant | xoriant.com | careersite: https://careers.xoriant.com/in/en | yes |
+| Virtusa | virtusa.com | not found (0 pages read) |  |
+| UST | ust.com | not found (6 pages read) |  |
+| Nagarro | nagarro.com | not found (6 pages read) |  |
+| GlobalLogic | globallogic.com | not found (6 pages read) |  |
