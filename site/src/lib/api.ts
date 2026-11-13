@@ -4,6 +4,8 @@
 export type Level = "fresher" | "maybe" | "experienced";
 export type Experience = "all" | "fresher" | "internship" | "0-1" | "0-2" | "0-3" | "0-5" | "unstated" | "experienced";
 export type Role = "all" | "target" | "ai_ml" | "backend" | "mobile";
+/** Minimum years a job asks, in bands (api/src/pg_queries.py BANDS). */
+export type Band = "0-1" | "1-3" | "3-5" | "5-8" | "8+";
 
 export interface JobSummary {
   id: string;
@@ -22,6 +24,7 @@ export interface JobSummary {
   yoe_evidence: string | null;
   batch_years: number[];
   role_family: "ai_ml" | "backend" | "generic_swe" | "mobile" | null;
+  category?: string | null; // general category for everyone's roles (config/role_families.yaml)
   visa_sponsorship: "yes" | "no" | "unknown";
   highlight: { kind: string; text: string } | null;
   skills?: string[]; // catalogued skills the posting names (extract/skills.py): the board's strong-match rule
@@ -61,6 +64,8 @@ export interface Meta {
   visa_or_relocation?: number; // in snapshots written since 2026-10-23
   within_years?: Record<"0" | "1" | "2" | "3" | "4" | "5", number>; // jobs open to someone with N years
   roles: Partial<Record<Role, number>>;
+  bands?: Record<Band, number>;
+  categories?: Record<string, number>;
   companies: { company: string; n: number }[]; // companies with open jobs
   countries: { country: string; n: number }[];
   cities: { city: string; n: number }[];

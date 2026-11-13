@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { IntentLink } from "./IntentLink";
 import { useEffect, useState } from "react";
 import type { Role } from "@/lib/api";
-import { SAVED_KEY, type Filters } from "@/lib/filters";
+import { BAND_CHOICES, bandOf, SAVED_KEY, type Filters } from "@/lib/filters";
 
 const ROLE_LABEL: Record<Role, string> = {
   all: "all roles", target: "AI/ML, backend and mobile", ai_ml: "AI/ML", backend: "backend", mobile: "mobile",
@@ -23,7 +23,8 @@ export function SavedNote({ filters }: { filters: Filters }) {
     } catch {}
   }, []);
   if (!shown) return null;
-  const years = filters.years === null ? "any years" : filters.years === 0 ? "freshers (0 years)" : `up to ${filters.years} ${filters.years === 1 ? "year" : "years"}`;
+  const years = filters.years === null ? "any years"
+    : `${BAND_CHOICES.find((c) => c.band === bandOf(filters.years!))!.label}`;
   return (
     <div role="status" className="mx-4 mt-3 flex items-center gap-3 rounded-md border border-line bg-surface px-3 py-2 text-body lg:mx-6">
       <p className="min-w-0 flex-1">

@@ -279,6 +279,67 @@ def test_include_unstated_adds_maybe_jobs_without_years_but_never_senior_ones(by
     assert got == {"Fresher", "One year", "Unstated"}
 
 
+@pytest.mark.parametrize("band,titles", [
+    # Bands sort jobs by the minimum years they ask (docs/decisions.md, 2026-11-13).
+    ("0-1", {"Fresher"}),
+    ("1-3", {"One year", "Two years"}),
+    ("3-5", {"ML Intern", "Internal Tools Engineer", "Data Science Trainee"}),
+    ("5-8", {"Five years"}),
+    ("8+", set()),
+])
+def test_experience_bands(by_yoe, band, titles):
+    got = {j["title"] for j in by_yoe.get("/api/jobs", params={"band": band}).json()["jobs"]}
+    assert got == titles
+
+
+@pytest.mark.parametrize("band,extra", [
+    # Juniors get unstated "maybe" jobs only; from 3 years, senior titles without a number join.
+    ("0-1", {"Unstated"}),
+    ("1-3", {"Unstated"}),
+    ("3-5", {"Unstated", "Senior ML Engineer"}),
+    ("8+", {"Unstated", "Senior ML Engineer"}),
+])
+def test_bands_with_unstated(by_yoe, band, extra):
+    plain = {j["title"] for j in by_yoe.get("/api/jobs", params={"band": band}).json()["jobs"]}
+    got = {j["title"] for j in by_yoe.get("/api/jobs", params={"band": band, "include_unstated": "true"}).json()["jobs"]}
+    assert got - plain == extra
+
+
+def test_band_rejects_unknown_values(by_yoe):
+    assert by_yoe.get("/api/jobs?band=2-4").status_code == 422
+
+
+def test_category_filter_and_counts():
+    reset()
+    base = dict(records()[0], company="Acme", company_slug="acme", source="ashby", level="maybe",
+                yoe_min=None, yoe_max=None, role_match=False, role_family=None)
+    rows = [
+        dict(base, id="ashby:acme:a", title="Frontend Engineer", content_hash="c1"),
+        dict(base, id="ashby:acme:b", title="Java Developer", content_hash="c2"),
+        dict(base, id="ashby:acme:c", title="Site Reliability Engineer", content_hash="c3"),
+        # A target plain SWE whose description showed Python + AI/ML counts as AI/ML.
+        dict(base, id="ashby:acme:d", title="Software Engineer", role_match=True, role_family="generic_swe",
+             content_hash="c4"),
+    ]
+    publish(rows, datetime.now(timezone.utc))
+    client = app_client()
+    titles = lambda c: {j["title"] for j in client.get("/api/jobs", params={"category": c}).json()["jobs"]}
+    assert titles("frontend") == {"Frontend Engineer"}
+    assert titles("backend") == {"Java Developer"}
+    assert titles("devops") == {"Site Reliability Engineer"}
+    assert titles("ai_ml") == {"Software Engineer"}
+    job = client.get("/api/jobs", params={"category": "frontend"}).json()["jobs"][0]
+    assert job["category"] == "frontend"
+    meta = client.get("/api/meta").json()
+    assert meta["categories"] == {"ai_ml": 1, "backend": 1, "devops": 1, "frontend": 1}
+    assert client.get("/api/jobs?category=Robert'); DROP").status_code == 422
+
+
+def test_meta_counts_bands(by_yoe):
+    bands = by_yoe.get("/api/meta").json()["bands"]
+    assert bands == {"0-1": 1, "1-3": 2, "3-5": 3, "5-8": 1, "8+": 0}
+
+
 def test_old_postings_stay_listed_unless_filtered_and_newest_posting_sorts_first():
     reset()
     now = datetime.now(timezone.utc)

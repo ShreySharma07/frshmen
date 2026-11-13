@@ -81,7 +81,8 @@ export function Highlighter({ counts }: { counts: Counts }) {
   }, [mode]);
 
   const within = years <= 5 ? counts.within?.[String(years)] : counts.total;
-  const jobsHref = years <= 5 ? `/?yrs=${years}` : "/";
+  // The job list filters by band (0–1, 1–3, 3–5, 5–8, 8+): send each choice to the band its label names.
+  const jobsHref = `/?yrs=${({ 0: 0, 2: 2, 5: 4, 10: 6 } as Record<number, number>)[years] ?? years}`;
   const label = YEARS.find((y) => y.years === years)?.label ?? "";
 
   return (

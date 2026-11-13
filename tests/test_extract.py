@@ -121,6 +121,22 @@ def test_long_requirement_line_is_not_a_heading():
     ("Machine Learning Fellow - Human Frontier Collective", False),
     ("ML Engineer", False),
     ("Software Engineer - New Grad", False),
+    # Level codes and words the first list missed.
+    ("SDE III, Payments", True),
+    ("SDE-3 (Backend)", True),
+    ("SWE 4 - Infra", True),
+    ("Software Engineer IV - Platform", True),
+    ("Machine Learning Engineer, L5", True),
+    ("Team Leader - Data Engineering", True),
+    ("Head - Data Science", True),
+    ("Snr Data Scientist", True),
+    # Level II is a new-grad level at some firms (Google's L3 is "Software Engineer II").
+    ("Software Engineer II", False),
+    ("SDE 2", False),
+    ("SDE 1 - Python", False),
+    ("Lead Generation Executive", True),  # not our role anyway; never fresher is the safe side
+    ("Headless CMS Developer", False),
+    ("Python Developer (L1 support)", False),
 ])
 def test_senior_title(title, senior):
     assert (senior_title(title) is not None) == senior
@@ -148,6 +164,16 @@ def test_batch_years(text, years):
     ("ML Engineer", "Open to 2024 batch graduates only.", "maybe"),  # other batch: not Shrey's
     ("ML Engineer", "Build models with PyTorch.", "maybe"),
     ("Senior ML Engineer", "We welcome new grads.", "experienced"),
+    # Years written in the title are a requirement too (real Cisco posting, shown as fresher).
+    ("Software Engineer (Python, Go, Ansible | 8-12 yrs)", "Freshers welcome. 2026 batch.", "experienced"),
+    ("Software Engineer (Python, Go, Ansible | 8-12 yrs)", "Build automation.", "experienced"),
+    ("Data Scientist - 3+ Years", "Build models.", "experienced"),
+    ("ML Engineer (0-1 Yrs)", "Build models.", "fresher"),
+    ("ML Engineer | 1-3 years", "Build models.", "maybe"),
+    # In a title, a duration is the program's length, not experience asked for.
+    ("Graduate Apprentice (2 years)", "Freshers welcome.", "fresher"),
+    ("ML Intern - 6 Months", "Freshers welcome.", "fresher"),
+    ("Data Analyst - 12 Month Contract", "Freshers welcome.", "fresher"),
 ])
 def test_decision_table(title, text, level):
     assert classify(title, text).level == level
@@ -158,6 +184,12 @@ def test_preferred_years_lower_fresher_confidence():
     softened = classify("ML Engineer", "Entry level role.\nNice to have:\n- 2+ years of experience")
     assert softened.level == plain.level == "fresher"
     assert softened.level_confidence < plain.level_confidence
+
+
+def test_title_years_are_the_evidence():
+    r = classify("Software Engineer (Python, Go, Ansible | 8-12 yrs)", "Build automation.")
+    assert (r.yoe_min, r.yoe_max) == (8, 12)
+    assert r.yoe_evidence == "Software Engineer (Python, Go, Ansible | 8-12 yrs)"
 
 
 def test_result_carries_schema_fields():

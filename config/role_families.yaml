@@ -1,0 +1,58 @@
+# General job categories for every posting (docs/decisions.md, 2026-11-13), so people whose
+# roles aren't in config/profile.yaml can filter by theirs. Matched against the title
+# (case-insensitive, whole words); the FIRST category with a hit wins, so order matters:
+# "ML Platform Engineer" is ai_ml before devops, "Embedded Software Engineer" is hardware
+# before software, "Sales Engineer" is other before software.
+categories:
+  - key: ai_ml
+    label: AI/ML & data science
+    titles: [machine learning, ml, ai, artificial intelligence, deep learning, data scientist, data science,
+             applied scientist, research scientist, research engineer, nlp, computer vision, llm, genai,
+             generative ai, mlops, ml ops]
+  - key: security
+    label: Security
+    titles: [security, cybersecurity, cyber security, appsec, penetration tester, soc analyst]
+  - key: qa
+    label: QA & testing
+    titles: [qa, quality assurance, sdet, test engineer, tester, test automation, automation tester,
+             quality engineer]
+  - key: data
+    label: Data & analytics
+    titles: [data engineer, data analyst, business analyst, product analyst, analytics, business intelligence,
+             bi developer, bi engineer, etl, big data, data platform, data warehouse]
+  # Non-engineering roles whose titles also say "engineer" or "developer".
+  - key: other
+    label: Other
+    titles: [sales, account executive, business development, business developer, marketing, recruiter, talent acquisition,
+             customer success, support engineer]
+  - key: design
+    label: Design
+    titles: [designer, ux, ui/ux, ux researcher, user researcher, user experience]
+  - key: hardware
+    label: Embedded & hardware
+    titles: [embedded, firmware, hardware, vlsi, fpga, asic, rtl, silicon, chip design, pcb]
+  - key: mobile
+    label: Mobile
+    titles: [android, ios, react native, flutter, mobile, kotlin, swift]
+  - key: devops
+    label: DevOps, SRE & cloud
+    titles: [devops, site reliability, sre, cloud, infrastructure, infra, platform engineer, kubernetes,
+             devsecops, network engineer, database administrator, dba]
+  - key: fullstack
+    label: Full stack
+    titles: [full stack, full-stack, fullstack]
+  - key: frontend
+    label: Frontend
+    titles: [frontend, front end, front-end, ui developer, ui engineer, react developer, angular, web developer]
+  - key: backend
+    label: Backend
+    titles: [backend, back end, back-end, java developer, java engineer, golang, go developer, go engineer,
+             python developer, python engineer, node.js, nodejs, node developer, .net, api engineer,
+             ruby, php, scala, rust engineer]
+  - key: product
+    label: Product
+    titles: [product manager, product owner, program manager, technical program manager]
+  - key: software
+    label: Software engineering
+    titles: [software engineer, software developer, software development engineer, sde, swe, programmer,
+             member of technical staff, developer]

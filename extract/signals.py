@@ -26,9 +26,12 @@ _FRESHER_TITLE = re.compile(
 )
 # Seniority in the title outranks everything in the text. "Assistant/Associate Manager"
 # and "Associate Product Manager" are common entry-level titles, so they don't count.
+# Level codes count from 3 up: level II is a new-grad level at some firms (Google's L3 is
+# "Software Engineer II"), and L1/L2 often mean support tiers.
 _SENIOR_TITLE = re.compile(
-    r"\b(senior|sr\.?|staff|lead|principal|director|head of|vp|vice president|chief|architect|distinguished)\b|"
-    r"\b(iii|iv|v)\b\s*$",
+    r"\b(senior|sr\.?|snr|staff|lead(er)?|principal|director|head|vp|vice president|chief|architect|distinguished)\b|"
+    r"\b(iii|iv)\b|\bv\b\s*(?:$|[-–,|(/])|"
+    r"\b(sde|swe|mts|se)[\s-]*(?:[3-9]|iii|iv)\b|\bl[5-9]\b",
     re.I,
 )
 _MANAGER = re.compile(r"\bmanager\b", re.I)

@@ -121,7 +121,7 @@ ON CONFLICT (id) DO UPDATE SET
 """
 
 _LFIELDS = ["level", "level_confidence", "level_reason", "yoe_min", "yoe_max", "yoe_evidence", "batch_years",
-            "role_match", "role_family", "role_reason", "location_type", "countries", "cities", "eligible",
+            "role_match", "role_family", "role_reason", "category", "location_type", "countries", "cities", "eligible",
             "visa_sponsorship", "skills", "evidence"]
 _LCOLS = ["job_id", "rules_version", "label_hash", *_LFIELDS]
 UPSERT_LABEL = f"""

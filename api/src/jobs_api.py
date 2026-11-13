@@ -23,7 +23,7 @@ import job_text
 import tailor
 from auth import auth_config, current_user
 
-from pg_queries import FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
+from pg_queries import BAND_UNSTATED, BANDS, FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
 from storage import Database, connect
 
 # The stored description starts with "Salary\n<range>" when the posting states pay
@@ -31,7 +31,7 @@ from storage import Database, connect
 SALARY = r"substring(description_text from '^Salary\n([^\n]+)') AS salary"
 LIST_COLUMNS = (
     "id, company, title, url, location_raw, location_type, countries, cities, posted_at, first_seen_at, "
-    "level, level_confidence, level_reason, yoe_min, yoe_max, yoe_evidence, batch_years, role_family, "
+    "level, level_confidence, level_reason, yoe_min, yoe_max, yoe_evidence, batch_years, role_family, category, "
     f"visa_sponsorship, eligible, skills, evidence, {SALARY}"
 )
 # Which evidence decides a label, in order of preference. The page shows this one line per job.
@@ -126,11 +126,18 @@ PENDING = '{"pending": true}'
 
 Experience = Literal["all", "fresher", "internship", "0-0", "0-1", "0-2", "0-3", "0-4", "0-5", "unstated", "experienced"]
 RoleName = Literal["all", "target", "ai_ml", "backend", "mobile"]
+Band = Literal["0-1", "1-3", "3-5", "5-8", "8+"]
 
 
-def experience_role_filters(p: Params, experience: str, include_unstated: bool, role: str) -> list[str]:
+def experience_role_filters(p: Params, experience: str, include_unstated: bool, role: str,
+                            band: str | None = None, category: str | None = None) -> list[str]:
     """The Asks and Role filters, shared by the job list and the dashboard's skill counts."""
     where = []
+    if band:
+        unstated = f" OR ({BAND_UNSTATED[band]})" if include_unstated else ""
+        where.append(f"(({BANDS[band]}){unstated})")
+    if category:
+        where.append(f"category = {p(category)}")
     if experience == "fresher":
         where.append("level = 'fresher'")
     elif experience == "experienced":
@@ -173,6 +180,10 @@ def create_app() -> FastAPI:
         include_unstated: bool = False,
         # "target": the roles in config/profile.yaml (AI/ML, Python backend, Android/React Native).
         role: RoleName = "all",
+        # Minimum years asked, in bands; include_unstated applies here too. Combines with experience.
+        band: Band | None = None,
+        # A general category (config/role_families.yaml keys), for everyone's roles.
+        category: str | None = Query(None, max_length=20, pattern=r"^[a-z_]+$"),
         # "24h" is new to us (first seen); 7d/30d use the posting date where the source gives one.
         posted: Literal["any", "24h", "7d", "30d"] = "any",
         eligible_only: bool = False,
@@ -188,7 +199,7 @@ def create_app() -> FastAPI:
         db: Database = Depends(get_db),
     ) -> dict[str, Any]:
         p = Params()
-        where = [OPEN, *experience_role_filters(p, experience, include_unstated, role)]
+        where = [OPEN, *experience_role_filters(p, experience, include_unstated, role, band, category)]
         if eligible_only:
             where.append(ELIGIBLE)
         if posted == "24h":

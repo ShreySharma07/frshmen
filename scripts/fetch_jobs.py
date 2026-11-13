@@ -26,6 +26,7 @@ from extract.classify import classify  # noqa: E402
 from extract.eligibility import check_eligibility  # noqa: E402
 from extract.location import REMOTE_UNSPECIFIED, extract_location  # noqa: E402
 from extract.profile import load_profile  # noqa: E402
+from extract.category import job_category  # noqa: E402
 from extract.role import match_role  # noqa: E402
 from extract.skills import skills_in  # noqa: E402
 from extract.stored_text import compact  # noqa: E402
@@ -147,6 +148,7 @@ def main() -> int:
             **match_role(j.title, j.description_text, profile).to_dict(),
             **location_fields(j, profile.hide_onsite_only_in or frozenset({"bengaluru", "hyderabad"})),
         }
+        record["category"] = job_category(j.title, record["role_family"])
         record["skills"] = skills_in(j.description_text)
         # Extractors have read the full text; only the sections a candidate needs are stored
         # (extract/stored_text.py). content_hash stays that of the full text.
