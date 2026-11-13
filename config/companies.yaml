@@ -920,7 +920,7 @@ companies:
   - {name: Rocketlane, category: india, hq: in, website: rocketlane.com, verified: false, careers: not found (6 pages read)}
   - {name: Facilio, category: india, hq: in, website: facilio.com, verified: false, careers: not found (5 pages read)}
   - {name: Vymo, category: india, hq: in, website: vymo.com, verified: false, careers: not found (6 pages read)}
-  - {name: FarEye, category: india, hq: in, website: fareye.com, ats: darwinbox, slug: fareye, careers: 'darwinbox: https://fareye.com/about/careers'}
+  - {name: FarEye, category: india, hq: in, website: fareye.com, ats: darwinbox, slug: fareye, verified: false, checked: '2026-11-13', careers: 'darwinbox: https://fareye.com/about/careers'}
   - {name: IDfy, category: india, hq: in, website: idfy.com, verified: false, careers: not found (6 pages read)}
   - {name: HyperVerge, category: india, hq: in, website: hyperverge.co, verified: false, careers: not found (6 pages read)}
   - {name: Tekion, category: india, hq: in, website: tekion.com, verified: false, careers: not found (6 pages read)}
