@@ -104,6 +104,17 @@ jobs:
               # Every fetched job must carry text, or the YoE rules have nothing to check.
               if titles is None or (titles and not jobs) or any(not j.description_text for j in jobs):
                   failed.append(ats)
+                  # Show what our bot was served, since a browser may see a different page.
+                  probe = {"avature": lambda: avature.search_url(slug, 0),
+                           "careersite": lambda: careersite.screen(careersite.job_entries(http, slug), True)[0]}.get(ats)
+                  if probe:
+                      try:
+                          url = probe()
+                          body = http.get_text(url) or ""
+                          print(f"  probe {url}: {len(body)} chars, ld+json={'ld+json' in body}, "
+                                f"articles={body.count('<article')}, start={body[:300]!r}")
+                      except Exception as e:  # noqa: BLE001 - diagnostics only
+                          print(f"  probe failed: {e!r}")
           # Workday search: the India facet must be found and must page past the sitemap's 100.
           first = http.post_json(workday.search_url("nvidia/wd5/NVIDIAExternalCareerSite"), workday._search_body(0, {}))
           india = workday.india_facet((first or {}).get("facets") or [])
