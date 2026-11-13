@@ -4,6 +4,26 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-12 — Companies without a readable board, round 2: Avature, iCIMS, not TurboHire
+- **Options (step 3 then 1, Shrey):** check the 7 unchecked companies of the first batch, then
+  readers for TurboHire, Avature and iCIMS
+- **Step 3:** Zoho runs Zoho Recruit on careers.zohocorp.com (read already, set by hand). Ola posts
+  on TurboHire, like Flipkart. Games24x7 uses Darwinbox, which refuses us (403). Myntra's and
+  Dream11's careers pages are apps with no job data in the HTML. Krutrim and Martian publish no
+  job board we could find.
+- **TurboHire: not built.** Its robots.txt (seen on flipkart.turbohire.co) disallows every bot
+  except Googlebot and LinkedInBot, and its job API answers only to requests claiming to come
+  from the careers page. Flipkart and Ola stay unread.
+- **Avature: built, then removed.** IBM's portal pages read fine in a browser, but CI showed our
+  bot gets an AWS WAF challenge page instead (2026-11-13). That is a deliberate bot block, so IBM
+  stays unread, and with no other Avature site to verify against, the reader was removed.
+- **iCIMS: no new reader needed.** An iCIMS portal publishes a job sitemap and its job pages carry
+  schema.org data, so `careersite` reads it (Atlassian: careers-apac-atlassian.icims.com). A plain
+  client gets the company's branded wrapper page, so job pages are fetched at `?in_iframe=1`, the
+  frame the wrapper embeds. The
+  detector now also tries the linked iCIMS host's sitemap; before, it only tried the company's
+  own site. iCIMS fills unknown address parts with "UNAVAILABLE", now dropped.
+
 ## 2026-11-12 — Companies without a readable board: new readers first, then per-company hints
 - **Problem:** 271 companies have no readable board. 144 have a careers page the detector can't
   read, 38 never answered, about 55 use a hiring system we had no reader for, and 12 refuse our

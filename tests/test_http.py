@@ -111,3 +111,15 @@ def test_malformed_address_is_a_fetch_error_not_a_crash(monkeypatch, no_sleep):
     with pytest.raises(FetchError, match="acme.io, https"):
         HttpClient().get_text("https://acme.io, https:/robots.txt")
     assert no_sleep == []  # not retried: asking again can't fix the address
+
+
+def test_dropped_connection_is_retried_then_a_fetch_error(monkeypatch, no_sleep):
+    # 2026-11-12: a site closed the connection mid-response during careers detection; the
+    # http.client error escaped and stopped the run at company 179 of 461.
+    import http.client
+    _serve(monkeypatch, [http.client.RemoteDisconnected("Remote end closed connection without response"),
+                         _Resp(b"<html>ok</html>")])
+    assert HttpClient().get_text("https://www.firstcry.com/careers") == "<html>ok</html>"
+    _serve(monkeypatch, [ConnectionResetError("reset")] * 5)
+    with pytest.raises(FetchError, match="www.firstcry.com"):
+        HttpClient().get_text("https://www.firstcry.com/careers")

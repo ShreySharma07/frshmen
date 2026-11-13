@@ -130,3 +130,23 @@ def test_yc_fetch_reads_job_pages_whose_titles_could_fit():
     job = jobs[0]
     assert job.title == "Forward Deployed Construction Engineer (Belgium)" and job.location_raw == "Remote"
     assert job.posted_at == "2026-11-12T11:43:35Z" and "Brickanta" in job.description_text
+
+
+# --- iCIMS (Atlassian), saved live on 2026-11-12, description shortened ---
+
+from sources import careersite  # noqa: E402
+
+
+def test_icims_job_pages_are_fetched_from_the_inner_frame():
+    # A plain client gets Atlassian's branded wrapper without the job data (seen in CI 2026-11-13).
+    url = "https://careers-apac-atlassian.icims.com/jobs/26758/software-engineer/job"
+    assert careersite.page_url(url) == url + "?in_iframe=1"
+    assert careersite.page_url("https://careers.ey.com/ey/job/Kolkata-AI/1/") == "https://careers.ey.com/ey/job/Kolkata-AI/1/"
+
+
+def test_icims_job_page_id_and_placeholder_address():
+    url = "https://careers-apac-atlassian.icims.com/jobs/26758/software-engineer/job"
+    job = careersite.parse_page(text("icims_atlassian_job.html"), url,
+                                Company("Atlassian", "careersite", "careers-apac-atlassian.icims.com"))
+    assert job.external_id == "26758"
+    assert "UNAVAILABLE" not in job.location_raw and job.location_raw == "Remote"

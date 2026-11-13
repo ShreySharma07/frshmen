@@ -112,7 +112,9 @@ class HttpClient:
             except http.client.InvalidURL as e:
                 # A malformed address on file (e.g. two websites in one field): no retry can fix it.
                 raise FetchError(f"{host}: {e}") from e
-            except (urllib.error.URLError, TimeoutError) as e:
+            # A server that drops the connection raises http.client/OS errors, not URLError
+            # (RemoteDisconnected, ConnectionResetError): the same kind of failure, retried the same.
+            except (urllib.error.URLError, TimeoutError, http.client.HTTPException, ConnectionError) as e:
                 if attempt == self.retries:
                     raise FetchError(f"{host}: {e}") from e
                 self._back_off(host, attempt, None)

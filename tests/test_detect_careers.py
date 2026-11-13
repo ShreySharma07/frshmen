@@ -291,3 +291,11 @@ def test_yc_listings_noted_before_the_reader_existed_are_retried():
     assert d.retryable("job listing on ycombinator.com: https://www.ycombinator.com/companies/x/jobs/1-a")
     assert d.retryable("gem (no adapter yet): https://groq.com")
     assert not d.retryable("ashby: https://jobs.ashbyhq.com/acme")
+
+
+def test_an_icims_portal_publishes_its_own_job_sitemap():
+    page = '<a href="https://careers-apac-atlassian.icims.com/jobs/search">All jobs</a>'
+    http = FakeHttp({"https://atlassian.com": page,
+                     "https://careers-apac-atlassian.icims.com/sitemap.xml": SITEMAP})
+    result = d.detect(http, "atlassian.com")
+    assert (result.best.system, result.best.slug) == ("careersite", "careers-apac-atlassian.icims.com")
