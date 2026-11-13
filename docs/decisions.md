@@ -4,6 +4,41 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-13 — Every level of experience: bands on the years asked
+- **Why now:** Aventra serves job-seekers at every level, not one 2026 fresher. fresher / maybe /
+  experienced lumped "2 years" with "12 years" and left most jobs in maybe.
+- **Options:** (A) bands on the minimum years a job asks (0–1, 1–3, 3–5, 5–8, 8+, plus "not
+  stated"); (B) keep the three labels and add a years filter on top; (C) a per-user label (fits /
+  stretch / not for you) computed from each signed-in person's years.
+- **Choice (Shrey):** A.
+- **How:** no schema change. A job sits in the band of its `yoe_min`; fresher-labelled jobs with no
+  number are 0–1, and a job labelled experienced is never 0–1. "Also show jobs with no years
+  stated" adds unlabelled (`maybe`) jobs for 0–1 and 1–3, and from 3–5 up also senior titles that
+  state no number. API: `/api/jobs?band=`, counts in `/api/meta` `bands`. The site's "I have" chip
+  lists the bands. The level labels stay (precision of the fresher bucket is still tested).
+- **Same day, a precision bug (no decision needed):** years in a title ("Software Engineer (Python,
+  Go, Ansible | 8-12 yrs)" at Cisco) were never read, so a batch line in the text made it fresher.
+  Titles now count, except those naming an internship, program or contract (a length, not
+  experience). Level codes SDE III / SDE-3 / L5+, Head, Snr and Team Leader now mean senior; level
+  II stays neutral (Google's new-grad L3 is "Software Engineer II"). EXTRACT_VERSION 6.
+- **Not yet:** the profile form still caps years at "3+"; widening it is part of per-user work.
+
+## 2026-11-13 — Role families for everyone: a general category per job
+- **Options:** (A) tag every job with a general category and let anyone filter by it, the profile's
+  target roles staying as "My roles"; (B) keep target roles as Shrey's list until accounts exist.
+- **Choice (Shrey):** A.
+- **How:** `extract/category.py` reads `config/role_families.yaml` (14 categories, first title match
+  wins, so the order is the rule). A plain "Software Engineer" that passed the profile's Python +
+  AI/ML check counts as AI/ML. Stored in a new `job_labels.category` column (migration 0010), not
+  in `role_family`: Oracle, SmartRecruiters and career-site readers use `role_family` to decide
+  which jobs to fetch, so its meaning stays. API `category=`, counts in `/api/meta` `categories`;
+  the Role chip gains "Every job in …".
+- **Known gap:** those three readers still fetch only jobs that could be target roles, so their
+  companies show few jobs in other categories. Widening them costs fetches and storage (a separate
+  decision).
+- **Seniority (Shrey):** of the "stronger role matching" choices, only more seniority words in
+  titles; stack mismatch (e.g. Go/Ansible under a plain SWE title) is not demoted.
+
 ## 2026-11-12 — Companies without a readable board, round 2: Avature, iCIMS, not TurboHire
 - **Options (step 3 then 1, Shrey):** check the 7 unchecked companies of the first batch, then
   readers for TurboHire, Avature and iCIMS
