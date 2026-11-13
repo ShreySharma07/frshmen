@@ -20,6 +20,22 @@ INTERN = ("(title ILIKE '%intern' OR title ILIKE '%intern %' OR title ILIKE '%in
 FAMILIES = {"ai_ml": ("ai_ml", "generic_swe"), "backend": ("backend",), "mobile": ("mobile",)}
 
 
+# Experience bands for every level of experience (docs/decisions.md, 2026-11-13): a job sits in
+# the band of the minimum years it asks. Fresher-labelled jobs with no number are 0-1; a job
+# labelled experienced (e.g. a senior title) never is.
+BANDS = {
+    "0-1": "level <> 'experienced' AND (level = 'fresher' OR yoe_min < 1)",
+    "1-3": "yoe_min >= 1 AND yoe_min < 3",
+    "3-5": "yoe_min >= 3 AND yoe_min < 5",
+    "5-8": "yoe_min >= 5 AND yoe_min < 8",
+    "8+": "yoe_min >= 8",
+}
+# "Also show jobs that state no years": juniors get the unlabelled ones only (precision first);
+# from 3 years up, senior titles without a number are for them too.
+BAND_UNSTATED = {band: ("level = 'maybe' AND yoe_min IS NULL" if band in ("0-1", "1-3")
+                        else "level <> 'fresher' AND yoe_min IS NULL") for band in BANDS}
+
+
 def _family(name: str) -> str:
     members = ", ".join(f"'{m}'" for m in FAMILIES[name])
     return f"'{name}', COUNT(*) FILTER (WHERE role_match AND role_family IN ({members}))"
@@ -52,6 +68,10 @@ META_SELECT = f"""SELECT jsonb_build_object(
                          OR evidence -> 'location' @> '[{{"kind": "relocation"}}]')),
   'roles', (SELECT jsonb_build_object('target', COUNT(*) FILTER (WHERE role_match),
                                       {', '.join(_family(f) for f in FAMILIES)}) FROM {_OPEN_CARDS}),
+  'bands', (SELECT jsonb_build_object({', '.join(f"'{b}', COUNT(*) FILTER (WHERE {sql})" for b, sql in BANDS.items())})
+             FROM {_OPEN_CARDS}),
+  'categories', (SELECT COALESCE(jsonb_object_agg(category, n), '{{}}')
+                 FROM (SELECT category, COUNT(*) AS n FROM {_OPEN_CARDS} AND category IS NOT NULL GROUP BY category) s),
   'companies', {_list('company', 'company', 'company', _OPEN_CARDS)},
   'countries', {_list('unnest(countries)', 'country', 'n DESC, country', _OPEN_CARDS)},
   'cities', {_list('unnest(cities)', 'city', 'n DESC, city', _OPEN_CARDS)}
