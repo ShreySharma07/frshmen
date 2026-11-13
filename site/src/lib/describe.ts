@@ -58,6 +58,6 @@ export function highlightParts(text: string, tech: string[]): { text: string; ma
 export const FAMILY: Record<string, string> = { ai_ml: "AI/ML", backend: "Backend", mobile: "Mobile", generic_swe: "Software engineering with Python + AI/ML" };
 export const ATS: Record<string, string> = { ashby: "Ashby", greenhouse: "Greenhouse", lever: "Lever", workday: "Workday", keka: "Keka",
   workable: "Workable", smartrecruiters: "SmartRecruiters", eightfold: "Eightfold", oracle: "Oracle Recruiting", careersite: "Careers site",
-  gem: "Gem", rippling: "Rippling", teamtailor: "Teamtailor", jazzhr: "JazzHR", yc_jobs: "Y Combinator", avature: "Avature" };
+  gem: "Gem", rippling: "Rippling", teamtailor: "Teamtailor", jazzhr: "JazzHR", yc_jobs: "Y Combinator" };
 
 export const isDetail = (j: unknown): j is JobDetail => typeof j === "object" && j !== null && "description_text" in j;

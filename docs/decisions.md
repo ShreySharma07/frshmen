@@ -14,12 +14,13 @@ Newest first. Each entry: date, options considered, choice, why.
 - **TurboHire: not built.** Its robots.txt (seen on flipkart.turbohire.co) disallows every bot
   except Googlebot and LinkedInBot, and its job API answers only to requests claiming to come
   from the careers page. Flipkart and Ola stay unread.
-- **Avature: built** (`sources/avature.py`, IBM). The portal's own search pages list jobs as plain
-  HTML, paged with `jobOffset`; each job page carries schema.org job data. robots.txt allows these
-  pages. Cards are screened by title and, for india_only boards, by the place on the card before
-  any job page is fetched.
+- **Avature: built, then removed.** IBM's portal pages read fine in a browser, but CI showed our
+  bot gets an AWS WAF challenge page instead (2026-11-13). That is a deliberate bot block, so IBM
+  stays unread, and with no other Avature site to verify against, the reader was removed.
 - **iCIMS: no new reader needed.** An iCIMS portal publishes a job sitemap and its job pages carry
-  schema.org data, so `careersite` reads it (Atlassian: careers-apac-atlassian.icims.com). The
+  schema.org data, so `careersite` reads it (Atlassian: careers-apac-atlassian.icims.com). A plain
+  client gets the company's branded wrapper page, so job pages are fetched at `?in_iframe=1`, the
+  frame the wrapper embeds. The
   detector now also tries the linked iCIMS host's sitemap; before, it only tried the company's
   own site. iCIMS fills unknown address parts with "UNAVAILABLE", now dropped.
 

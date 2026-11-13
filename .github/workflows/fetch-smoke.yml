@@ -44,14 +44,13 @@ jobs:
           from sources.http import FetchError, HttpClient
           from sources.models import Company
 
-          from sources import amazon, avature, careersite, eightfold, oracle, rippling, smartrecruiters, workday, yc_jobs
+          from sources import amazon, careersite, eightfold, oracle, rippling, smartrecruiters, workday, yc_jobs
           # Keep the smoke test small: a few pages and details per board are enough to see the shapes.
           amazon.MAX_PAGES = eightfold.MAX_PAGES = 1
           oracle.MAX_PAGES = 2
           eightfold.MAX_DETAILS = workday.MAX_DETAILS = careersite.MAX_DETAILS = oracle.MAX_DETAILS = 5
           smartrecruiters.MAX_PAGES, smartrecruiters.MAX_DETAILS = 1, 5
-          rippling.MAX_DETAILS = yc_jobs.MAX_DETAILS = avature.MAX_DETAILS = 3
-          avature.MAX_PAGES = 1
+          rippling.MAX_DETAILS = yc_jobs.MAX_DETAILS = 3
 
           http = HttpClient()
           failed = []
@@ -75,7 +74,6 @@ jobs:
               ("Cerrion", "teamtailor", "careers.cerrion.com"),  # Teamtailor on the company's own domain
               ("H2O.ai", "jazzhr", "h2oai"),
               ("Brickanta", "yc_jobs", "brickanta"),
-              ("IBM", "avature", "careers.ibm.com/en_US/careers"),
               ("Atlassian", "careersite", "careers-apac-atlassian.icims.com"),  # iCIMS portal sitemap
           ]:
               try:
@@ -105,8 +103,8 @@ jobs:
               if titles is None or (titles and not jobs) or any(not j.description_text for j in jobs):
                   failed.append(ats)
                   # Show what our bot was served, since a browser may see a different page.
-                  probe = {"avature": lambda: avature.search_url(slug, 0),
-                           "careersite": lambda: careersite.screen(careersite.job_entries(http, slug), True)[0]}.get(ats)
+                  probe = {"careersite": lambda: careersite.page_url(
+                      careersite.screen(careersite.job_entries(http, slug), True)[0])}.get(ats)
                   if probe:
                       try:
                           url = probe()

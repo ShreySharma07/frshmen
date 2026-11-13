@@ -132,50 +132,16 @@ def test_yc_fetch_reads_job_pages_whose_titles_could_fit():
     assert job.posted_at == "2026-11-12T11:43:35Z" and "Brickanta" in job.description_text
 
 
-# --- Avature (IBM) and iCIMS (Atlassian), saved live on 2026-11-12, descriptions shortened ---
+# --- iCIMS (Atlassian), saved live on 2026-11-12, description shortened ---
 
-from sources import avature, careersite  # noqa: E402
-
-
-def test_avature_search_page_cards():
-    cards = avature.cards(text("avature_ibm_list.html"))
-    assert [c["id"] for c in cards] == ["136808", "136789", "136791"]
-    first = cards[0]
-    assert first["url"] == "https://careers.ibm.com/en_US/careers/JobDetail?jobId=136808"
-    assert first["title"] == "(2027 Campus Hire-Kaohsiung) Application Developer | Apply by 3/28"
-    assert "Kaohsiung" in first["text"]  # the card's place, used to screen india_only boards
+from sources import careersite  # noqa: E402
 
 
-def test_avature_pages_through_the_search_and_stops_on_a_short_page():
-    slug = "careers.ibm.com/en_US/careers"
-    http = FakeHttp(text_by_url={avature.search_url(slug, 0): text("avature_ibm_list.html")})
-    assert avature.list_titles(http, slug)[1].startswith("(2027 Campus Hire) Associate Application Consultant")
-    assert http.asked == [avature.search_url(slug, 0)]  # 3 cards < a full page: no second request
-    assert avature.list_titles(FakeHttp(), slug) is None
-
-
-def test_avature_job_page_keeps_the_job_id():
-    url = "https://careers.ibm.com/en_US/careers/JobDetail?jobId=138430"
-    job = avature.parse_page(text("avature_ibm_job.html"), url, Company("IBM", "avature", "careers.ibm.com/en_US/careers"))
-    assert job.id == "avature:careers.ibm.com/en_US/careers:138430"
-    assert job.title == "Applied AI Specialist-Cloud FullStack" and job.location_raw == "Bangalore, India"
-    assert job.posted_at == "2026-11-04T00:00:00Z" and job.description_text
-
-
-def test_avature_india_only_skips_cards_placed_elsewhere_and_fetches_india_first():
-    slug = "careers.ibm.com/en_US/careers"
-    page = ('<article><h3><a href="https://careers.ibm.com/en_US/careers/JobDetail?jobId=1">Data Engineer</a></h3>'
-            '<a href="x">Professional Paris, France</a></article>'
-            '<article><h3><a href="https://careers.ibm.com/en_US/careers/JobDetail?jobId=2">ML Engineer</a></h3>'
-            '<a href="x">Professional</a></article>'
-            '<article><h3><a href="https://careers.ibm.com/en_US/careers/JobDetail?jobId=3">AI Engineer</a></h3>'
-            '<a href="x">Entry Level Bangalore, India</a></article>'
-            '<article><h3><a href="https://careers.ibm.com/en_US/careers/JobDetail?jobId=4">Sales Lead</a></h3>'
-            '<a href="x">Professional Bangalore, India</a></article>')
-    http = FakeHttp(text_by_url={avature.search_url(slug, 0): page})
-    avature.fetch(http, Company("IBM", "avature", slug, india_only=True))
-    details = [u.rsplit("=", 1)[-1] for u in http.asked if "JobDetail" in u]
-    assert details == ["3", "2"]  # India first, then no stated place; never France, never sales
+def test_icims_job_pages_are_fetched_from_the_inner_frame():
+    # A plain client gets Atlassian's branded wrapper without the job data (seen in CI 2026-11-13).
+    url = "https://careers-apac-atlassian.icims.com/jobs/26758/software-engineer/job"
+    assert careersite.page_url(url) == url + "?in_iframe=1"
+    assert careersite.page_url("https://careers.ey.com/ey/job/Kolkata-AI/1/") == "https://careers.ey.com/ey/job/Kolkata-AI/1/"
 
 
 def test_icims_job_page_id_and_placeholder_address():
