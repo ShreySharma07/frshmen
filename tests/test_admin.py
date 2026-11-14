@@ -111,3 +111,52 @@ def test_bad_jobs_are_refused(admin_client, change):
 
 def test_closing_an_unknown_job_is_404(admin_client):
     assert admin_client.post("/api/admin/jobs/999/close", headers=bearer("admin-token")).status_code == 404
+
+
+HR_CSV = "Full Name,Organisation,Designation,Email ID,Mobile\nPriya Sharma,Razorpay,TA Lead,priya@razorpay.com,+91 98765 43210\n" \
+         "Rahul Verma,Zoho,Campus Recruiter,,\n,Nobody,HR,x@y.com,\n"
+
+
+def test_contacts_preview_saves_nothing(admin_client):
+    res = admin_client.post("/api/admin/contacts/import", headers=bearer("admin-token"),
+                            json={"kind": "hr", "source": "Shrey's HR list, Nov 2026", "csv": HR_CSV, "dry_run": True})
+    assert res.status_code == 200
+    body = res.json()
+    assert (body["valid"], body["added"], body["updated"]) == (2, 0, 0)
+    assert body["errors"] == [{"row": 4, "reason": "name is missing"}]
+    assert body["sample"][0]["name"] == "Priya Sharma"
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM contacts").fetchone() == (0,)
+
+
+def test_contacts_import_adds_then_updates_by_email(admin_client):
+    admin = bearer("admin-token")
+    body = {"kind": "hr", "source": "Shrey's HR list, Nov 2026", "csv": HR_CSV}
+    assert admin_client.post("/api/admin/contacts/import", headers=admin, json=body).json()["added"] == 2
+    again = admin_client.post("/api/admin/contacts/import", headers=admin,
+                              json={**body, "csv": "Name,Company,Email,Title\nPriya S.,Razorpay,PRIYA@razorpay.com,Head of TA\n"}).json()
+    assert (again["added"], again["updated"]) == (0, 1)
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT name, title, phone FROM contacts WHERE email = 'priya@razorpay.com'").fetchone() == \
+            ("Priya S.", "Head of TA", "+91 98765 43210")  # a later file without phones keeps the earlier one
+    summary = admin_client.get("/api/admin/contacts", headers=admin).json()
+    assert summary["total"] == 2
+    assert summary["lists"] == [{"kind": "hr", "source": "Shrey's HR list, Nov 2026", "n": 2, "with_email": 1, "with_phone": 1}]
+
+
+def test_contacts_removal_by_email_or_whole_upload(admin_client):
+    admin = bearer("admin-token")
+    admin_client.post("/api/admin/contacts/import", headers=admin, json={"kind": "hr", "source": "list A", "csv": HR_CSV})
+    admin_client.post("/api/admin/contacts/import", headers=admin, json={"kind": "founder", "source": "YC founders",
+                      "csv": "name,company,email\nAna Diaz,Brickanta,ana@brickanta.com\n"})
+    assert admin_client.post("/api/admin/contacts/delete", headers=admin, json={"email": "PRIYA@razorpay.com"}).json() == {"deleted": 1}
+    assert admin_client.post("/api/admin/contacts/delete", headers=admin, json={"source": "list A"}).json() == {"deleted": 1}
+    assert admin_client.get("/api/admin/contacts", headers=admin).json()["total"] == 1
+    assert admin_client.post("/api/admin/contacts/delete", headers=admin, json={}).status_code == 422
+
+
+def test_only_admins_touch_contacts(admin_client):
+    student = bearer("student-token")
+    assert admin_client.get("/api/admin/contacts", headers=student).status_code == 403
+    assert admin_client.post("/api/admin/contacts/import", headers=student,
+                             json={"kind": "hr", "source": "x", "csv": HR_CSV}).status_code == 403

@@ -8,12 +8,13 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Response
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from auth import current_user
+from contacts_csv import ALIASES, parse
 from pg_queries import BANDS, OPEN
 from storage import Database
 
@@ -37,6 +38,49 @@ class ManualJob(BaseModel):
         if not v.strip():
             raise ValueError("must not be blank")
         return v.strip()
+
+
+class ContactImport(BaseModel):
+    kind: Literal["hr", "founder"]
+    source: str = Field(min_length=1, max_length=200)  # where the list came from; kept on every row
+    csv: str = Field(min_length=1, max_length=2_000_000)
+    dry_run: bool = False  # preview: parse and report, save nothing
+
+
+class ContactDelete(BaseModel):
+    email: str | None = Field(None, max_length=254)  # a removal request
+    source: str | None = Field(None, max_length=200)  # a whole upload that shouldn't be there
+
+    @model_validator(mode="after")
+    def one_of(self) -> "ContactDelete":
+        if bool(self.email) == bool(self.source):
+            raise ValueError("give exactly one of email or source")
+        return self
+
+
+CONTACT_COLUMNS = ("kind", *ALIASES)
+# One statement per upload (the Worker has 10 ms of CPU per request): rows with an email are
+# matched on it, case-insensitive; a later file fills in what it has and keeps what it lacks.
+UPSERT_CONTACTS = f"""
+INSERT INTO contacts ({", ".join(CONTACT_COLUMNS)}, source)
+SELECT u.*, $12 FROM unnest({", ".join(f"${i}::text[]" for i in range(1, 12))}) AS u({", ".join(CONTACT_COLUMNS)})
+ON CONFLICT (lower(email)) WHERE email IS NOT NULL DO UPDATE SET
+  kind = EXCLUDED.kind, name = EXCLUDED.name, company = EXCLUDED.company, source = EXCLUDED.source,
+  {", ".join(f"{c} = COALESCE(EXCLUDED.{c}, contacts.{c})" for c in ALIASES if c not in ("name", "company", "email"))}
+RETURNING (xmax = 0) AS inserted
+"""
+# Rows without an email can't be matched on it: skip a name already listed at the same company.
+INSERT_NO_EMAIL = f"""
+INSERT INTO contacts ({", ".join(CONTACT_COLUMNS)}, source)
+SELECT u.*, $12 FROM unnest({", ".join(f"${i}::text[]" for i in range(1, 12))}) AS u({", ".join(CONTACT_COLUMNS)})
+WHERE NOT EXISTS (SELECT 1 FROM contacts c WHERE c.email IS NULL AND c.kind = u.kind
+                  AND lower(c.name) = lower(u.name) AND lower(c.company) = lower(u.company))
+RETURNING true AS inserted
+"""
+
+
+def _columns_of(rows: list[dict[str, Any]]) -> list[list[Any]]:
+    return [[r[c] for r in rows] for c in CONTACT_COLUMNS]
 
 
 MANUAL_COLUMNS = ("id, company, title, url, location_raw, posted_at, added_at, closed_at, "
@@ -119,5 +163,53 @@ def router(get_db: Callable[..., Any]) -> APIRouter:
         if not rows:
             raise HTTPException(status_code=404, detail="no such job")
         return rows[0]
+
+    @r.get("/contacts")
+    async def contacts(response: Response, _: str = Depends(require_admin), db: Database = Depends(get_db)) -> dict[str, Any]:
+        """What's in the lists, never the people: counts per upload, and reveals this week."""
+        response.headers["Cache-Control"] = "no-store"
+        lists = await db.all("SELECT kind, source, COUNT(*) AS n, COUNT(email) AS with_email, COUNT(phone) AS with_phone "
+                             "FROM contacts GROUP BY 1, 2 ORDER BY 1, 2")
+        reveals = await db.all("SELECT COUNT(*) AS n FROM contact_reveals WHERE created_at > now() - interval '7 days'")
+        return {"total": sum(int(x["n"]) for x in lists), "reveals_7d": int(reveals[0]["n"]),
+                "lists": [{k: (int(v) if k in ("n", "with_email", "with_phone") else v) for k, v in x.items()} for x in lists]}
+
+    @r.post("/contacts/import")
+    async def import_contacts(body: ContactImport, response: Response, _: str = Depends(require_admin),
+                              db: Database = Depends(get_db)) -> dict[str, Any]:
+        response.headers["Cache-Control"] = "no-store"
+        rows, errors = parse(body.csv, body.kind)
+        # The same email twice in one file: the later row wins (one statement can't update a row twice).
+        by_email: dict[str, dict[str, Any]] = {}
+        no_email = []
+        for row in rows:
+            if row["email"]:
+                by_email[row["email"]] = row
+            else:
+                no_email.append(row)
+        report = {"valid": len(rows), "errors": errors[:50], "error_count": len(errors), "added": 0, "updated": 0,
+                  # The preview shows a few parsed rows, phone numbers masked: it's for checking columns.
+                  "sample": [{**row, "phone": "•••" if row["phone"] else None} for row in rows[:5]]}
+        if body.dry_run or not rows:
+            return report
+        source = body.source.strip()
+        async with db.transaction():
+            done = []
+            if by_email:
+                done += await db.all(UPSERT_CONTACTS, [*_columns_of(list(by_email.values())), source])
+            if no_email:
+                done += await db.all(INSERT_NO_EMAIL, [*_columns_of(no_email), source])
+        report["added"] = sum(1 for d in done if d["inserted"])
+        report["updated"] = len(done) - report["added"]
+        return report
+
+    @r.post("/contacts/delete")
+    async def delete_contacts(body: ContactDelete, _: str = Depends(require_admin), db: Database = Depends(get_db)) -> dict[str, int]:
+        async with db.transaction():
+            if body.email:
+                gone = await db.all("DELETE FROM contacts WHERE lower(email) = lower($1) RETURNING id", [body.email.strip()])
+            else:
+                gone = await db.all("DELETE FROM contacts WHERE source = $1 RETURNING id", [body.source.strip()])
+        return {"deleted": len(gone)}
 
     return r
