@@ -41,6 +41,8 @@ jobs:
           # Unset, /login and /profile say sign-in isn't switched on yet.
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
+          # Cloudflare Web Analytics (site/src/app/layout.tsx). Unset, the site ships without the beacon.
+          NEXT_PUBLIC_CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN || secrets.CF_BEACON_TOKEN }}
         # Fail loudly instead of shipping a site whose sign-in is silently off.
         # (Remove this guard if sign-in should ever be deliberately off.)
         run: |

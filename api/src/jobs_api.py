@@ -21,6 +21,7 @@ from fastapi.responses import JSONResponse
 import fit
 import job_text
 import tailor
+import admin
 from auth import auth_config, current_user
 
 from pg_queries import BAND_UNSTATED, BANDS, FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
@@ -162,6 +163,7 @@ def _since(hours: int) -> datetime:
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Aventra", docs_url="/api/docs", openapi_url="/api/openapi.json")
+    app.include_router(admin.router(get_db))
 
     @app.exception_handler(Exception)
     async def report_errors(request: Request, exc: Exception) -> JSONResponse:

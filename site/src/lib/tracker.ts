@@ -76,10 +76,13 @@ export async function recentChecks(limit = 5): Promise<FitCheck[]> {
   return (await ok(res)).json();
 }
 
-async function api(path: string, init: RequestInit = {}) {
+/** Our own API as the signed-in person. Errors carry the HTTP status (401 sign in again, 403 not allowed). */
+export async function api(path: string, init: RequestInit = {}) {
   const token = await freshToken();
   if (!token) throw Object.assign(new Error("sign in again"), { status: 401 });
-  const res = await fetch(path, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
+  const headers: Record<string, string> = { Authorization: `Bearer ${token}`, Accept: "application/json" };
+  if (init.body) headers["Content-Type"] = "application/json";
+  const res = await fetch(path, { ...init, headers });
   const body = await res.json().catch(() => null);
   if (!res.ok) {
     const detail = body?.detail;

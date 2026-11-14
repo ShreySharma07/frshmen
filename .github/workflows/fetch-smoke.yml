@@ -121,5 +121,8 @@ jobs:
                 "india postings (10 pages max)", None if india_postings is None else len(india_postings))
           if india is None or not india_postings:
               failed.append("workday-search")
+              # What the search answered, so a changed payload or a block can be told apart.
+              print("  workday search answered:", type(first).__name__,
+                    repr(first)[:400] if not isinstance(first, dict) else {k: repr(v)[:80] for k, v in list(first.items())[:8]})
           assert not failed, f"adapters returned nothing: {failed}"
           EOF

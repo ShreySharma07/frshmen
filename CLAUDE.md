@@ -63,6 +63,7 @@ Read `skills.md` before touching extraction, sources, or filtering. It holds the
 - Keep modules small: one adapter per source in `sources/`, extraction in `extract/`, nothing source-specific leaks outside adapters.
 - Config in `config/` (profile, company list, keyword lists), not hardcoded.
 - Prefer boring, readable code with type hints. Comment the why, not the what.
+- Keys, tokens and IDs of outside services never go in the source, even public ones (a publishable key, an analytics token): read them from the environment and list each in an `.env.example` with a placeholder and where to find it (Shrey, 2026-11-14).
 
 ## Frontend standards (read before any UI work)
 The site must look designed by a person with taste, not generated. Web first; a mobile app

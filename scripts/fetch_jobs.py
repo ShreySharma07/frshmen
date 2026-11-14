@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from collections import Counter
@@ -31,7 +32,7 @@ from extract.role import match_role  # noqa: E402
 from extract.skills import skills_in  # noqa: E402
 from extract.stored_text import compact  # noqa: E402
 from extract.visa import extract_visa  # noqa: E402
-from sources import ADAPTERS  # noqa: E402
+from sources import ADAPTERS, manual  # noqa: E402
 from sources.http import FetchError, HttpClient  # noqa: E402
 from sources.models import Company, Job  # noqa: E402
 
@@ -138,6 +139,18 @@ def main() -> int:
             jobs.extend(found)
             print(f"[{i}/{len(companies)}] {company.name}: {len(found)} jobs", flush=True)
 
+    # Jobs added by hand in /admin, after the boards so a board's own copy of the same role wins
+    # the dedupe. Full runs only (a smoke run names companies); a failure skips them and their
+    # board entries, so nothing of theirs is closed by mistake.
+    manual_boards: list[dict[str, str]] = []
+    if os.environ.get("SUPABASE_DB_URL") and not (args.company or args.limit):
+        try:
+            found, manual_boards = manual.load(os.environ["SUPABASE_DB_URL"])
+            jobs.extend(found)
+            print(f"manual: {len(found)} jobs added by hand", flush=True)
+        except Exception as e:  # noqa: BLE001 - the boards' jobs still publish
+            errors["manual jobs"] = f"{type(e).__name__}: {e}"[:300]
+
     unique = dedupe(jobs)
     profile = load_profile()
     records = []
@@ -158,7 +171,8 @@ def main() -> int:
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
         # Boards that answered: publish_pg.py only closes missing jobs from these.
-        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company],
+        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company]
+                     + manual_boards,
         "errors": errors,
         "jobs": records,
     }

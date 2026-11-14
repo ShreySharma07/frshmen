@@ -4,6 +4,36 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-14 — `/admin` layout: one dashboard (concept A)
+- **Options:** (A) one dashboard: every number on one scrolling page, add-a-job at the bottom ·
+  (B) a "needs you" inbox first, numbers on the side · (C) an activity timeline with numbers pinned
+  on top. Wireframes in `docs/wireframes/admin/`.
+- **Choice (Shrey):** A.
+- **Built:** four stat cards (open jobs, users, visits as a link to Cloudflare Web Analytics, last
+  pipeline run), sign-ups for 14 days, AI use in 24 hours, open jobs by category / experience /
+  source, the last 10 runs with the latest errors, then the add-a-job form and the jobs added by
+  hand with Close. Unlinked, `noindex`; anyone not in `admins` sees "admins only".
+- **Visits:** Cloudflare Web Analytics has no free read API without an account token, so the card
+  links to the dashboard instead of showing a number.
+
+## 2026-11-13 — Agent, connections, contact lists and admin (plan: `docs/strategy/agent-admin-launch.md`)
+- **Options and facts:** in the plan, section 7.
+- **Choices (Shrey: "go with recommended"):**
+  - **A1 model:** Gemini free tier, with a daily message cap per person (~20 to start).
+  - **A2 host:** the same API Worker; CPU time measured in the first week, a separate host only if it doesn't fit.
+  - **B1 Gmail:** "Open in Gmail" with the text filled in at launch; sending from Aventra with
+    `gmail.send` once Google verifies the app. No `gmail.compose`: it is a restricted scope with a
+    yearly paid security assessment.
+  - **B2 Apollo:** each person connects their own Apollo key (their credits, their licence).
+  - **C1 HR list source:** Shrey uploads it; small. Each row keeps its source; rows with no
+    explainable source stay out.
+  - **C2 contacts:** used by the agent only. Phone numbers are never shown to users; emails appear
+    one person at a time, inside a draft, with a daily cap and a log. A removal address is listed.
+  - **D1 adding jobs:** Aventra's own form in `/admin`, not Google Forms.
+- **Why:** free tools only; nothing sent under a person's name unread; contact data is personal
+  data under India's DPDP Act, so it gets the narrowest use.
+- **Order:** admin basics first (the plan's section 6).
+
 ## 2026-11-13 — Every level of experience: bands on the years asked
 - **Why now:** Aventra serves job-seekers at every level, not one 2026 fresher. fresher / maybe /
   experienced lumped "2 years" with "12 years" and left most jobs in maybe.
