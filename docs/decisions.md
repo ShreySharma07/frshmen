@@ -4,6 +4,19 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-14 — Agent chat layout: one conversation, drafts open beside it (concept A)
+- **Options:** (A) one conversation with results as cards · (B) chat plus a workspace for drafts,
+  people and jobs · (C) the agent in the command bar on every page. Wireframes in
+  `docs/wireframes/agent/`.
+- **Choice (Shrey):** A, with a draft opening on the right like a document (the idea from B):
+  read, edit, copy, "Open in Gmail". On phones it covers the page as a sheet.
+- **Built:** `/agent` opens on **Chat**; what was there is under **Today**. The conversation is kept
+  in the browser tab only; 20 messages a day; suggestions to start; every answer lists where it
+  came from.
+- **Same day (Shrey):** the Jobs page's own search box goes on wide screens (the command bar at the
+  bottom already searches jobs; `/` now opens it), and the command bar is hidden on `/agent` so
+  there is one place to type. Phones keep the Jobs search box: they have no command bar.
+
 ## 2026-11-14 — `/admin` layout: one dashboard (concept A)
 - **Options:** (A) one dashboard: every number on one scrolling page, add-a-job at the bottom ·
   (B) a "needs you" inbox first, numbers on the side · (C) an activity timeline with numbers pinned
