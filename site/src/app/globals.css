@@ -340,3 +340,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+
+/* The agent's draft panel slides in from the right edge, the way a document opens beside a chat. */
+.panel-in { animation: 300ms var(--ease-out-soft) both panel-in; }
+@keyframes panel-in { from { opacity: 0; transform: translateX(32px); } }
