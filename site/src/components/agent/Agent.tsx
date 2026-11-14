@@ -1,9 +1,7 @@
 "use client";
-// /agent (docs/decisions.md, 2026-11-12): what Aventra already does on the person's behalf,
-// gathered in one place. Today that is three real things: picking out new jobs that strongly fit
-// the resume, checking fit with Gemini (5 a day), and tailoring the resume to one job (2 a day),
-// each kept here to reopen. Chat, outreach and applying come to this page when they are built;
-// nothing is shown for them until then.
+// /agent (docs/decisions.md, 2026-11-12 and 2026-11-14): the agent chat first (./Chat.tsx), and
+// under "Today" what Aventra already does on the person's behalf: new jobs that strongly fit the
+// resume, fit checks with Gemini (5 a day) and tailored resumes (2 a day), each kept to reopen.
 import type { User } from "@supabase/supabase-js";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -19,6 +17,7 @@ import { skillsIn } from "@/lib/skills";
 import { authConfigured, type Profile } from "@/lib/supabase";
 import { fitQuota, recentChecks, recentTailored, trackedJobs, type FitCheck, type Quota, type TailoredRow, type Tracked } from "@/lib/tracker";
 import { useProfile } from "@/lib/useProfile";
+import { Chat } from "./Chat";
 
 // Reopening a tailored resume (and pdf-lib) loads only when asked.
 const TailorDialog = dynamic(() => import("@/components/TailorDialog").then((m) => m.TailorDialog), { ssr: false });
@@ -38,6 +37,7 @@ function Page({ user, profile }: { user: User; profile: Profile }) {
   const have = useMemo(() => skillsIn(profile.resume_text), [profile.resume_text]);
   const [data, setData] = useState<Data | null>(null);
   const [open, setOpen] = useState<TailoredRow | null>(null);
+  const [view, setView] = useState<"chat" | "today">("chat");
 
   const reloadTracked = useCallback(() => { trackedJobs().then((tracked) => setData((d) => (d ? { ...d, tracked } : d))).catch(() => {}); }, []);
   useEffect(() => {
@@ -57,7 +57,16 @@ function Page({ user, profile }: { user: User; profile: Profile }) {
   const followUps = followUpsDue(data?.tracked ?? []);
 
   return (
-    <AccountShell title="Agent" sub="What Aventra has done for you" wide>
+    <AccountShell title="Agent" sub={view === "chat" ? "Ask about jobs, companies or people" : "What Aventra has done for you"} wide>
+      <div role="tablist" aria-label="Agent" className="mb-6 flex gap-1.5">
+        {(["chat", "today"] as const).map((v) => (
+          <button key={v} type="button" role="tab" aria-selected={view === v} onClick={() => setView(v)}
+            className={`rounded-full border px-4 py-1.5 text-meta font-medium transition-colors duration-quick ${view === v ? "border-ink bg-ink text-canvas" : "border-line hover:border-ink"}`}>
+            {v === "chat" ? "Chat" : "Today"}
+          </button>
+        ))}
+      </div>
+      {view === "chat" ? <Chat name={profile.name} initialRemaining={data?.quota?.agent?.remaining ?? null} /> : <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h2 className="max-w-[24ch] font-display text-headline lg:text-hero" aria-live="polite">{data ? brief(strong.length, followUps.length) : "Reading today's jobs…"}</h2>
         <Link href={"/" + toSearch({ ...filters, posted: "24h" })}
@@ -121,6 +130,7 @@ function Page({ user, profile }: { user: User; profile: Profile }) {
           </Panel>
         </aside>
       </div>
+      </>}
       {open && <TailorDialog jobId={open.job_id} title={open.jobs?.title ?? ""} company={open.jobs?.companies?.name ?? ""} initial={open.result} onClose={() => setOpen(null)} />}
     </AccountShell>
   );

@@ -68,7 +68,7 @@ export interface Verdict {
 }
 export interface FitCheck { id: number; job_id: string; result: Verdict; created_at: string; jobs: Tracked["jobs"] }
 export interface Allowance { limit: number; used: number; remaining: number; frees_at: string | null }
-export interface Quota extends Allowance { enabled: boolean; tailor: Allowance }
+export interface Quota extends Allowance { enabled: boolean; tailor: Allowance; agent?: Allowance }
 
 export async function recentChecks(limit = 5): Promise<FitCheck[]> {
   // Checks still waiting for Gemini hold {"pending": true}; only finished verdicts are listed.
