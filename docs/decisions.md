@@ -4,6 +4,18 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-14 — `/admin` layout: one dashboard (concept A)
+- **Options:** (A) one dashboard: every number on one scrolling page, add-a-job at the bottom ·
+  (B) a "needs you" inbox first, numbers on the side · (C) an activity timeline with numbers pinned
+  on top. Wireframes in `docs/wireframes/admin/`.
+- **Choice (Shrey):** A.
+- **Built:** four stat cards (open jobs, users, visits as a link to Cloudflare Web Analytics, last
+  pipeline run), sign-ups for 14 days, AI use in 24 hours, open jobs by category / experience /
+  source, the last 10 runs with the latest errors, then the add-a-job form and the jobs added by
+  hand with Close. Unlinked, `noindex`; anyone not in `admins` sees "admins only".
+- **Visits:** Cloudflare Web Analytics has no free read API without an account token, so the card
+  links to the dashboard instead of showing a number.
+
 ## 2026-11-13 — Agent, connections, contact lists and admin (plan: `docs/strategy/agent-admin-launch.md`)
 - **Options and facts:** in the plan, section 7.
 - **Choices (Shrey: "go with recommended"):**
