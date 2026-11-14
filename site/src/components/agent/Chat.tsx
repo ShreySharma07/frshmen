@@ -4,11 +4,15 @@
 // (a sheet on phones) to read, edit, copy or open in Gmail. The conversation is kept in this tab
 // only (sessionStorage); the server stores nothing but a count of messages.
 import { ArrowUp, Copy, ExternalLink, FileText, X } from "lucide-react";
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type Turn } from "@/lib/agent";
 
 const STORE = "aventra:agent-chat";
+// Motion tokens (globals.css: --ease-out-soft; 300-500 ms for layout moves).
+const EASE = [0.2, 0.8, 0.2, 1] as const;
+const MOVE = 0.34;
 const SUGGESTIONS = ["Which YC startups would suit me?", "Jobs I fit that were posted this week", "Who could I ask for a referral at Razorpay?"];
 
 export function Chat({ name, initialRemaining }: { name: string; initialRemaining: number | null }) {
@@ -16,7 +20,9 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [remaining, setRemaining] = useState<number | null>(initialRemaining);
+  // The allowance loads after the page does: show it until a reply brings a newer count.
+  const [counted, setRemaining] = useState<number | null>(null);
+  const remaining = counted ?? initialRemaining;
   const [open, setOpen] = useState<AgentDraft | null>(null);
   const list = useRef<HTMLOListElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
@@ -61,12 +67,15 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
     }
   };
 
+  const still = useReducedMotion();
   return (
+    <LayoutGroup>
     <div className={`grid gap-6 ${open ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]" : ""}`}>
       {/* The conversation scrolls inside its own area and the box to write in stays under it. The
           height leaves room for the page's header and tabs above, and the app's tab bar below on
           phones (wide screens have no command bar on /agent). */}
-      <section aria-label="Conversation" className="mx-auto flex h-[calc(100svh-15rem)] min-h-[24rem] w-full max-w-[46rem] flex-col lg:h-[calc(100svh-12rem)]">
+      {/* When a draft opens, the conversation slides left to make room rather than jumping. */}
+      <motion.section layout="position" transition={{ duration: still ? 0 : MOVE, ease: EASE }} aria-label="Conversation" className="mx-auto flex h-[calc(100svh-15rem)] min-h-[24rem] w-full max-w-[46rem] flex-col lg:h-[calc(100svh-12rem)]">
         <div className="mb-3 flex items-center justify-between gap-3">
           <p className="text-meta text-muted">{remaining === null ? "" : `${remaining} of 20 messages left today`}</p>
           {turns.length > 0 && (
@@ -82,13 +91,21 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
             </li>
           )}
           {turns.map((t, i) => t.role === "user"
-            ? <li key={i} className="max-w-[85%] self-end whitespace-pre-wrap rounded-lg bg-ink px-4 py-2.5 text-body text-canvas">{t.text}</li>
+            ? <li key={i} className="msg-sent max-w-[85%] self-end whitespace-pre-wrap rounded-lg bg-ink px-4 py-2.5 text-body text-canvas">{t.text}</li>
             : <li key={i} className="detail-in max-w-full self-start rounded-lg border border-card-line bg-card px-4 py-3 text-body">
                 <p className="whitespace-pre-wrap">{t.text}</p>
-                {t.cards?.map((c, j) => <Card key={j} card={c} onOpen={setOpen} />)}
+                {/* Each card arrives just after the text, one after another: the order the agent found them. */}
+                {t.cards?.map((c, j) => <div key={j} className="card-in" style={{ animationDelay: `${120 + j * 80}ms` }}><Card card={c} onOpen={setOpen} /></div>)}
                 {!!t.sources?.length && <p className="mt-3 border-t border-line pt-2 text-caption text-muted">From: {t.sources.join(" · ")}</p>}
               </li>)}
-          {busy && <li aria-busy="true" className="self-start rounded-lg border border-card-line bg-card px-4 py-3 text-body text-muted">Looking…</li>}
+          {busy && (
+            <li aria-busy="true" className="detail-in flex items-center gap-2.5 self-start rounded-lg border border-card-line bg-card px-4 py-3 text-body text-muted">
+              <span aria-hidden className="flex gap-1">
+                {[0, 1, 2].map((d) => <span key={d} className="typing-dot size-1.5 rounded-full bg-muted" />)}
+              </span>
+              Looking through jobs and people…
+            </li>
+          )}
         </ol>
 
         {error && <p role="alert" className="mt-3 text-meta text-card-fail">{error}</p>}
@@ -110,10 +127,13 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
             <ArrowUp aria-hidden className="size-5" />
           </button>
         </form>
-      </section>
+      </motion.section>
 
-      {open && <DraftPanel key={`${open.contact.id}:${open.subject}`} draft={open} onClose={() => setOpen(null)} />}
+      <AnimatePresence mode="wait">
+        {open && <DraftPanel key={`${open.contact.id}:${open.subject}`} draft={open} onClose={() => setOpen(null)} />}
+      </AnimatePresence>
     </div>
+    </LayoutGroup>
   );
 }
 
@@ -190,14 +210,23 @@ function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void
     } catch {}
   };
   const wide = useWide();
+  const still = useReducedMotion();
+  // Wide: slides in from the right edge and back out, like a document opening beside the chat.
+  // Phones: rises as a sheet and drops away. A plain fade when motion is reduced.
+  const motionProps = {
+    initial: still ? { opacity: 0 } : wide ? { opacity: 0, x: 32 } : { opacity: 0, y: 40 },
+    animate: { opacity: 1, x: 0, y: 0 },
+    exit: still ? { opacity: 0 } : wide ? { opacity: 0, x: 32 } : { opacity: 0, y: 40 },
+    transition: { duration: still ? 0.12 : 0.3, ease: EASE },
+  };
   const field = "mt-1 w-full rounded-md border border-line bg-canvas px-3 py-2 text-body outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-accent/40";
 
   const panel = (
     // Beside the chat on wide screens, like a document opened next to a conversation; a sheet on phones.
     // The wide panel stops above the app's command bar (about 6rem at the bottom of the column).
-    <aside aria-labelledby="draft-title"
-      className={wide ? "panel-in sticky top-4 flex max-h-[calc(100svh-6rem)] flex-col self-start rounded-lg border border-card-line bg-card p-5"
-        : "sheet-in fixed inset-0 z-50 flex flex-col bg-card p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"}>
+    <motion.aside {...motionProps} aria-labelledby="draft-title"
+      className={wide ? "sticky top-4 flex max-h-[calc(100svh-6rem)] flex-col self-start rounded-lg border border-card-line bg-card p-5"
+        : "fixed inset-0 z-50 flex flex-col bg-card p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 id="draft-title" ref={heading} tabIndex={-1} className="font-display text-[1.375rem] leading-tight outline-none">Draft to {draft.contact.name}</h2>
@@ -233,7 +262,7 @@ function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void
           </a>
         )}
       </div>
-    </aside>
+    </motion.aside>
   );
   return wide ? panel : createPortal(panel, document.body);
 }
