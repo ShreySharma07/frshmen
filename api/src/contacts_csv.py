@@ -14,7 +14,7 @@ from typing import Any
 
 # Our column -> header names seen in real exports (compared lowercase, spaces and _ ignored).
 ALIASES: dict[str, tuple[str, ...]] = {
-    "name": ("name", "full name", "contact name"),
+    "name": ("name", "full name", "contact name", "founder name", "founder", "person name"),
     "company": ("company", "company name", "organisation", "organization", "startup", "employer"),
     "title": ("title", "designation", "role", "position", "job title"),
     "email": ("email", "email id", "email address", "e-mail", "mail"),
@@ -25,6 +25,8 @@ ALIASES: dict[str, tuple[str, ...]] = {
     "company_url": ("company url", "website", "url", "company website"),
     "notes": ("notes", "note", "comments", "remarks"),
 }
+# Read into notes with a label, since the agent should know it ("Company status: Inactive").
+LABELLED_NOTES = {"company status": "Company status", "status": "Company status"}
 LIMITS = {"name": 120, "company": 120, "title": 160, "email": 254, "phone": 40, "linkedin": 300, "location": 120,
           "yc_batch": 12, "company_url": 300, "notes": 1000}
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -57,7 +59,8 @@ def parse(text: str, kind: str) -> tuple[list[dict[str, Any]], list[dict[str, An
     cols = _columns(reader.fieldnames or [])
     for need in ("name", "company"):
         if need not in cols:
-            return [], [{"row": 1, "reason": f"no {need} column (expected one of: {', '.join(ALIASES[need])})"}]
+            found = ", ".join(h.strip() for h in reader.fieldnames or []) or "none"
+            return [], [{"row": 1, "reason": f"no {need} column (expected one of: {', '.join(ALIASES[need])}; found: {found})"}]
 
     rows, errors = [], []
     for n, raw in enumerate(reader, start=2):
@@ -78,6 +81,10 @@ def parse(text: str, kind: str) -> tuple[list[dict[str, Any]], list[dict[str, An
             errors.append({"row": n, "reason": f"email {value['email']!r} is not an address"})
             continue
         row = {"kind": kind, **{col: value.get(col) for col in ALIASES}, "email": email}
+        extra = [f"{label}: {(raw.get(h) or '').strip()}" for h in (reader.fieldnames or [])
+                 for key, label in LABELLED_NOTES.items() if _key(h) == key and (raw.get(h) or "").strip()]
+        if extra:
+            row["notes"] = "; ".join([*extra, *([row["notes"]] if row["notes"] else [])])[: LIMITS["notes"]]
         for link in ("linkedin", "company_url"):
             if row[link] and not re.match(r"^https?://", row[link]):
                 row[link] = None  # only web links, never javascript: or anything else
