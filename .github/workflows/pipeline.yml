@@ -41,7 +41,10 @@ jobs:
           restore-keys: http-cache-
 
       - name: Fetch and classify
-        # A manual run reads everything, like the daily one.
+        # A manual run reads everything, like the daily one. The database URL lets it read the
+        # jobs added by hand in /admin (sources/manual.py).
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: python -u scripts/fetch_jobs.py ${{ github.event.schedule == '17 0,6,9,12,15,18,21 * * *' && '--skip-global' || '' }}
 
       - name: Publish to Supabase
