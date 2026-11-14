@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin wireframe</title>
+<style>
+  /* Low fidelity on purpose: layout and content only, no styling decisions. */
+  body{font:14px/1.45 system-ui,sans-serif;margin:0;background:#f4f4f4;color:#222}
+  .page{max-width:1180px;margin:0 auto;padding:20px}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  h1{font-size:20px;margin:0} h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;color:#555}
+  .tabs span{border:1px solid #999;padding:4px 10px;margin-left:4px;border-radius:4px;background:#fff}
+  .tabs span.on{background:#222;color:#fff}
+  .row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+  .box{background:#fff;border:1.5px dashed #999;border-radius:6px;padding:12px}
+  .big{font-size:28px;font-weight:600}
+  .two{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px} td,th{border-bottom:1px solid #ddd;padding:4px;text-align:left}
+  .bar{height:10px;background:#bbb;display:inline-block;vertical-align:middle}
+  .field{border:1px solid #999;background:#fafafa;border-radius:4px;padding:6px;margin:4px 0 8px;color:#888}
+  .btn{display:inline-block;border:1.5px solid #222;border-radius:4px;padding:6px 12px;font-weight:600}
+  .note{color:#777;font-size:12px}
+  @media (max-width:700px){.row{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+</style></head>
+<body><div class="page">
+<header><h1>Aventra admin</h1><div class="tabs"><span class="on">Overview</span><span>Add a job</span><span>Contacts (later)</span></div></header>
+
+<div class="row">
+  <div class="box"><h2>Open jobs</h2><div class="big">23,390</div><div class="note">+412 new in 24 h</div></div>
+  <div class="box"><h2>Users</h2><div class="big">128</div><div class="note">+9 today</div></div>
+  <div class="box"><h2>Visits (7 days)</h2><div class="big">—</div><div class="note">Cloudflare Web Analytics, opens in Cloudflare</div></div>
+  <div class="box"><h2>Last pipeline run</h2><div class="big">2 h ago</div><div class="note">512 boards ok · 6 failed</div></div>
+</div>
+
+<div class="two">
+  <div class="box"><h2>Sign-ups, last 14 days</h2>
+    <div class="note">bar chart, one bar per day</div>
+    <div style="display:flex;gap:4px;align-items:flex-end;height:80px;margin-top:8px">
+      <i class="bar" style="height:20px;width:6%"></i><i class="bar" style="height:35px;width:6%"></i><i class="bar" style="height:15px;width:6%"></i><i class="bar" style="height:50px;width:6%"></i><i class="bar" style="height:30px;width:6%"></i><i class="bar" style="height:60px;width:6%"></i><i class="bar" style="height:45px;width:6%"></i>
+    </div></div>
+  <div class="box"><h2>AI use, last 24 h</h2><p>Fit checks: 31 <span class="note">(5 per person a day)</span></p><p>Tailored résumés: 7 <span class="note">(2 per person)</span></p></div>
+</div>
+
+<div class="two">
+  <div class="box"><h2>Jobs by category · experience band · source</h2>
+    <table><tr><th>Category</th><th>Open</th><th></th></tr>
+    <tr><td>Software engineering</td><td>6,210</td><td><i class="bar" style="width:120px"></i></td></tr>
+    <tr><td>AI/ML &amp; data science</td><td>2,840</td><td><i class="bar" style="width:60px"></i></td></tr>
+    <tr><td>Backend</td><td>1,950</td><td><i class="bar" style="width:40px"></i></td></tr>
+    <tr><td colspan="3" class="note">same table for bands (0–1 … 8+) and sources, switched by small tabs</td></tr></table></div>
+  <div class="box"><h2>Pipeline: last 10 runs</h2>
+    <table><tr><th>When</th><th>New</th><th>Closed</th><th>Errors</th></tr>
+    <tr><td>14 Nov 09:17</td><td>212</td><td>40</td><td>6 ▸</td></tr>
+    <tr><td>14 Nov 06:17</td><td>98</td><td>12</td><td>5 ▸</td></tr></table>
+    <div class="note">▸ opens the latest run's errors: company → message</div></div>
+</div>
+
+<div class="box"><h2>Add a job by hand</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>Company<div class="field">Acme AI</div>Title<div class="field">ML Engineer – New Grad</div>Link<div class="field">https://…</div>Location<div class="field">Bengaluru, India</div></div>
+    <div>Description (paste the posting)<div class="field" style="height:150px">…</div><span class="btn">Add job</span> <span class="note">Listed after the next pipeline run, labelled like every job</span></div>
+  </div>
+  <h2 style="margin-top:14px">Added by hand</h2>
+  <table><tr><th>Company</th><th>Title</th><th>Added</th><th>Status</th><th></th></tr>
+  <tr><td>Acme AI</td><td>ML Engineer – New Grad</td><td>14 Nov</td><td>open</td><td><u>Close</u></td></tr></table>
+</div>
+</div></body></html>
