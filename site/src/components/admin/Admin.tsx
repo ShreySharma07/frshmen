@@ -2,7 +2,7 @@
 // /admin (docs/decisions.md 2026-11-13; concept A in docs/wireframes/admin/): every number on one
 // page for whoever runs Aventra, then a form to add a job by hand. Unlinked; the API answers only
 // accounts in the admins table, so anyone else sees "admins only".
-import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ChevronRight, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { AccountShell, NotSetUp } from "@/components/account/AccountShell";
 import { addJob, adminOverview, closeJob, manualJobs, type ManualJob, type NewJob, type Overview } from "@/lib/admin";
@@ -223,8 +223,9 @@ function AddJob() {
             <textarea required maxLength={60000} rows={9} className={input} {...field("description_text")} />
           </label>
           <div className="flex flex-wrap items-center gap-3">
-            <button type="submit" disabled={state.kind === "saving"}
-              className="rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98] disabled:opacity-60">
+            <button type="submit" disabled={state.kind === "saving"} aria-busy={state.kind === "saving"}
+              className="inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98] disabled:opacity-60">
+              {state.kind === "saving" && <Loader2 aria-hidden className="size-4 animate-spin" />}
               {state.kind === "saving" ? "Adding…" : "Add job"}
             </button>
             <p role="status" className={`text-meta ${state.kind === "error" ? "text-card-fail" : "text-muted"}`}>

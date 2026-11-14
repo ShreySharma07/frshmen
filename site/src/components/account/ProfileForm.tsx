@@ -3,6 +3,7 @@
 // resume. Reads and writes go straight to Supabase as the signed-in person; RLS limits them to
 // their own row and their own <id>/resume.pdf (db/postgres/0004_profiles.sql).
 import type { User } from "@supabase/supabase-js";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { profileFilters, SAVED_KEY, toSearch } from "@/lib/filters";
@@ -184,9 +185,10 @@ export function ProfileForm() {
         <div>
           <p className="text-meta text-muted">Resume</p>
           <div className="mt-1.5 flex flex-wrap items-center gap-3 rounded-md border border-dashed border-line p-3">
-            <button type="button" onClick={() => fileInput.current?.click()} disabled={busy}
-              className="h-9 rounded-md border border-line bg-canvas px-3 text-meta font-medium shadow-raised transition-colors duration-quick hover:bg-surface disabled:opacity-60">
-              {form.resume_name ? "Replace PDF" : "Upload PDF"}
+            <button type="button" onClick={() => fileInput.current?.click()} disabled={busy} aria-busy={save.kind === "reading"}
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-line bg-canvas px-3 text-meta font-medium shadow-raised transition-colors duration-quick hover:bg-surface disabled:opacity-60">
+              {save.kind === "reading" && <Loader2 aria-hidden className="size-4 animate-spin" />}
+              {save.kind === "reading" ? "Reading PDF…" : form.resume_name ? "Replace PDF" : "Upload PDF"}
             </button>
             <input ref={fileInput} type="file" accept="application/pdf" className="sr-only" tabIndex={-1} aria-label="Resume PDF"
               onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
@@ -208,8 +210,9 @@ export function ProfileForm() {
         </Field>
 
         <div className="flex items-center gap-4 border-t border-line pt-6">
-          <button type="submit" disabled={busy}
-            className="h-11 rounded-md bg-accent px-6 text-base font-medium text-on-accent transition-colors duration-quick hover:bg-accent-hover disabled:opacity-60">
+          <button type="submit" disabled={busy} aria-busy={save.kind === "saving"}
+            className="inline-flex h-11 items-center gap-2 rounded-md bg-accent px-6 text-base font-medium text-on-accent transition-colors duration-quick hover:bg-accent-hover disabled:opacity-60">
+            {save.kind === "saving" && <Loader2 aria-hidden className="size-4 animate-spin" />}
             {save.kind === "saving" ? "Saving…" : "Save profile"}
           </button>
           <p aria-live="polite" className="text-body text-muted">
