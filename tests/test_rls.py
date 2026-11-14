@@ -378,3 +378,11 @@ def test_weekly_goal_is_the_users_own_and_checked():
     assert rowcount(as_alice(), "UPDATE students SET weekly_goal = 9 WHERE id = %s", (BOB,)) == 0
     with as_alice() as conn, pytest.raises(errors.CheckViolation):
         conn.execute("UPDATE students SET weekly_goal = 0")
+
+
+@pytest.mark.parametrize("role", ["anon", "authenticated"])
+def test_admins_table_is_invisible_to_the_data_api(role):
+    # Being an admin opens /api/admin; nobody may read the list or add themselves to it.
+    ctx = (lambda: as_alice()) if role == "authenticated" else (lambda: as_role("anon"))
+    assert denied(ctx(), "SELECT * FROM admins")
+    assert denied(ctx(), "INSERT INTO admins (user_id) VALUES (%s)", (ALICE,))
