@@ -21,9 +21,10 @@ export const metadata: Metadata = {
 const THEME_SCRIPT = `try{var t=localStorage.getItem("aventra.theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`;
 
 // Cloudflare Web Analytics (docs/decisions.md, 2026-11-13): page views with no cookies, read in the
-// Cloudflare dashboard. The token is public by design (it only names the site). Deferred, ~6 KB,
-// so it never holds up the job list's first paint.
-const CF_BEACON = JSON.stringify({ token: "25a4057f25164516be73808935e69fd5" });
+// Cloudflare dashboard. The token only names the site, but like every key it comes from the build
+// environment (site/.env.example), not the source. Unset, no beacon. Deferred, ~6 KB, so it never
+// holds up the job list's first paint.
+const CF_TOKEN = process.env.NEXT_PUBLIC_CF_BEACON_TOKEN ?? "";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -38,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full">
         {children}
-        <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={CF_BEACON} />
+        {CF_TOKEN && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: CF_TOKEN })} />}
       </body>
     </html>
   );
