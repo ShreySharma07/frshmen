@@ -2,7 +2,7 @@
 // Under a job's Apply button: Save it to the tracker, and ask Gemini how well it fits the saved
 // resume (5 a day, docs/decisions.md 2026-11-04). Both need sign-in; neither loads supabase-js
 // unless a token has to be refreshed.
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { IntentLink } from "./IntentLink";
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -99,7 +99,8 @@ function FitCheck({ jobId, title, company, panels }: { jobId: string; title: str
 
   return (
     <>
-      <button type="button" onClick={start} disabled={state.kind === "checking" || left === 0} className={btn}>
+      <button type="button" onClick={start} disabled={state.kind === "checking" || left === 0} aria-busy={state.kind === "checking"} className={btn}>
+        {state.kind === "checking" && <Loader2 aria-hidden className="size-4 animate-spin" />}
         {state.kind === "checking" ? "Checking with Gemini…" : "Check my fit"}
         {left !== null && state.kind !== "checking" && <span className="font-mono font-normal text-muted">· {left} left today</span>}
       </button>

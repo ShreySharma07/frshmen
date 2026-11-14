@@ -44,7 +44,7 @@ def test_founder_columns():
 
 def test_a_file_without_name_or_company_columns_is_refused_whole():
     rows, errors = parse("first,last\nA,B\n", "hr")
-    assert rows == [] and errors == [{"row": 1, "reason": "no name column (expected one of: name, full name, contact name)"}]
+    assert rows == [] and errors[0]["row"] == 1 and errors[0]["reason"].startswith("no name column (expected one of: name, full name")
 
 
 def test_bom_and_semicolons_from_excel_exports():
@@ -55,3 +55,22 @@ def test_bom_and_semicolons_from_excel_exports():
 def test_unsafe_links_are_dropped_not_kept():
     rows, _ = parse("name,company,linkedin\nA,B,javascript:alert(1)\n", "hr")
     assert rows[0]["linkedin"] is None
+
+
+YC_EXPORT = ("Founder Name,Email,Company,Title,YC Batch,Company Status,LinkedIn,Twitter,Company Website,Email Domain\n"
+             "Ana Diaz,ana@brickanta.com,Brickanta,Co-founder,W25,Active,https://linkedin.com/in/ana,https://x.com/ana,"
+             "https://brickanta.com,brickanta.com\n")
+
+
+def test_reads_a_yc_founders_export():
+    # Shrey's YC list (2026-11-14): "Founder Name" was refused as "no name column".
+    rows, errors = parse(YC_EXPORT, "founder")
+    assert errors == []
+    r = rows[0]
+    assert (r["name"], r["company"], r["title"], r["email"], r["yc_batch"]) == ("Ana Diaz", "Brickanta", "Co-founder", "ana@brickanta.com", "W25")
+    assert (r["linkedin"], r["company_url"], r["notes"]) == ("https://linkedin.com/in/ana", "https://brickanta.com", "Company status: Active")
+
+
+def test_missing_column_error_lists_the_columns_found():
+    _, errors = parse("first,last\nA,B\n", "hr")
+    assert "found: first, last" in errors[0]["reason"]

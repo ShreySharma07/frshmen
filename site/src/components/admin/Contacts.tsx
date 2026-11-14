@@ -2,6 +2,7 @@
 // The HR and YC founder lists (docs/decisions.md, 2026-11-13, C1/C2): uploaded here as CSV,
 // straight into a private table the browser can't read. Preview first (nothing saved), then save.
 // The page shows counts per upload, never the people; removal is by email or by whole upload.
+import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { contactsSummary, deleteContacts, importContacts, type ContactKind, type ContactsSummary, type ImportReport } from "@/lib/admin";
 
@@ -15,7 +16,8 @@ export function Contacts({ Card }: { Card: React.ComponentType<{ title: string; 
   const [source, setSource] = useState("");
   const [file, setFile] = useState<{ name: string; text: string } | null>(null);
   const [report, setReport] = useState<{ saved: boolean; r: ImportReport } | null>(null);
-  const [busy, setBusy] = useState(false);
+  // What's in progress, so the button doing it can say so: reading the file, checking it, saving it.
+  const [busy, setBusy] = useState<"reading" | "preview" | "save" | null>(null);
   const [message, setMessage] = useState<{ error: boolean; text: string } | null>(null);
   const [removeEmail, setRemoveEmail] = useState("");
   const refresh = useCallback(() => { contactsSummary().then(setSummary).catch(() => {}); }, []);
@@ -27,13 +29,14 @@ export function Contacts({ Card }: { Card: React.ComponentType<{ title: string; 
     setMessage(null);
     if (!f) return setFile(null);
     if (f.size > MAX_BYTES) { setFile(null); return setMessage({ error: true, text: "That file is over 2 MB. Split it into smaller files." }); }
-    setFile({ name: f.name, text: await f.text() });
+    setBusy("reading");
+    try { setFile({ name: f.name, text: await f.text() }); } finally { setBusy(null); }
     if (!source) setSource(f.name.replace(/\.csv$/i, ""));
   };
 
   const run = async (dryRun: boolean) => {
     if (!file) return;
-    setBusy(true);
+    setBusy(dryRun ? "preview" : "save");
     setMessage(null);
     try {
       const r = await importContacts({ kind, source: source.trim(), csv: file.text, dry_run: dryRun });
@@ -46,7 +49,7 @@ export function Contacts({ Card }: { Card: React.ComponentType<{ title: string; 
     } catch (err) {
       setMessage({ error: true, text: (err as Error).message });
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   };
 
@@ -90,10 +93,20 @@ export function Contacts({ Card }: { Card: React.ComponentType<{ title: string; 
             <input type="file" accept=".csv,text/csv" onChange={pick} className={`${input} file:mr-3 file:rounded file:border-0 file:bg-surface file:px-2 file:py-1`} />
           </label>
           <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={!file || !source.trim() || busy} onClick={() => run(true)} className={`${button} border border-ink`}>Preview</button>
-            <button type="button" disabled={!file || !source.trim() || busy || !report || report.saved || report.r.valid === 0} onClick={() => run(false)}
-              className={`${button} bg-ink text-canvas`}>Save {report && !report.saved ? n(report.r.valid) : ""} contacts</button>
+            <button type="button" disabled={!file || !source.trim() || !!busy} onClick={() => run(true)} aria-busy={busy === "preview" || busy === "reading"}
+              className={`${button} inline-flex items-center gap-2 border border-ink`}>
+              {(busy === "preview" || busy === "reading") && <Loader2 aria-hidden className="size-4 animate-spin" />}
+              {busy === "reading" ? "Reading file…" : busy === "preview" ? "Checking…" : "Preview"}
+            </button>
+            <button type="button" disabled={!file || !source.trim() || !!busy || !report || report.saved || report.r.valid === 0} onClick={() => run(false)}
+              aria-busy={busy === "save"} className={`${button} inline-flex items-center gap-2 bg-ink text-canvas`}>
+              {busy === "save" && <Loader2 aria-hidden className="size-4 animate-spin" />}
+              {busy === "save" ? `Saving ${report ? n(report.r.valid) : ""} contacts…` : `Save ${report && !report.saved ? n(report.r.valid) : ""} contacts`}
+            </button>
           </div>
+          {report && !report.saved && report.r.valid === 0 && !busy && (
+            <p className="text-meta text-muted">Nothing to save yet: fix the refused rows (see the right), then Preview again.</p>
+          )}
           {message && <p role="status" className={`text-meta ${message.error ? "text-card-fail" : "text-card-pass"}`}>{message.text}</p>}
         </div>
         <div aria-live="polite">{report && <Report r={report.r} />}</div>
@@ -140,7 +153,7 @@ function Report({ r }: { r: ImportReport }) {
               <tr key={i} className="border-t border-line"><td className="py-1 pr-3">{s.name}</td><td className="pr-3">{s.company}</td><td className="pr-3">{s.title ?? "—"}</td><td>{s.email ?? "—"}</td></tr>
             ))}</tbody>
           </table>
-          <p className="mt-1 text-muted">The first {r.sample.length} rows, to check the columns were read right.</p>
+          <p className="mt-1 text-muted">{r.sample.length === 1 ? "The first row" : `The first ${r.sample.length} rows`}, to check the columns were read right.</p>
         </div>
       )}
       {r.errors.length > 0 && (
