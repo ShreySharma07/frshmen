@@ -10,18 +10,19 @@ once per run. Hyperdrive's free tier allows 100k queries/day; a page view costs 
 from __future__ import annotations
 
 import json
+import traceback
 from datetime import datetime, timedelta, timezone
 from typing import Any, AsyncIterator, Literal
 
-import traceback
-
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
+import admin
+import agent
 import fit
 import job_text
 import tailor
-import admin
 from auth import auth_config, current_user
 
 from pg_queries import BAND_UNSTATED, BANDS, FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
@@ -119,7 +120,8 @@ def fit_check_enabled(request: Request) -> bool:
 # Gemini fit checks and tailored resumes per person in any 24 hours (docs/decisions.md, 2026-11-04).
 FIT_DAILY = 5
 TAILOR_DAILY = 2
-LIMITS = {"fit_checks": FIT_DAILY, "tailored_resumes": TAILOR_DAILY}
+AGENT_DAILY = 20  # agent chat messages (docs/decisions.md, 2026-11-13, A1)
+LIMITS = {"fit_checks": FIT_DAILY, "tailored_resumes": TAILOR_DAILY, "agent_messages": AGENT_DAILY}
 FIT_WINDOW = "interval '24 hours'"
 # A check holds its place while Gemini answers; one that fails is removed and doesn't count.
 PENDING = '{"pending": true}'
@@ -128,6 +130,16 @@ PENDING = '{"pending": true}'
 Experience = Literal["all", "fresher", "internship", "0-0", "0-1", "0-2", "0-3", "0-4", "0-5", "unstated", "experienced"]
 RoleName = Literal["all", "target", "ai_ml", "backend", "mobile"]
 Band = Literal["0-1", "1-3", "3-5", "5-8", "8+"]
+
+
+class ChatTurn(BaseModel):
+    role: Literal["user", "model"]
+    text: str = Field(max_length=8000)
+
+
+class ChatRequest(BaseModel):
+    # The browser keeps the conversation; it sends the recent turns, the last one the person's.
+    messages: list[ChatTurn] = Field(min_length=1, max_length=40)
 
 
 def experience_role_filters(p: Params, experience: str, include_unstated: bool, role: str,
@@ -248,6 +260,34 @@ def create_app() -> FastAPI:
                             "GROUP BY s ORDER BY n DESC, s", p)
         return {"total": total, "skills": rows}
 
+    @app.post("/api/agent/chat")
+    async def agent_chat(body: ChatRequest, request: Request, uid: str = Depends(current_user),
+                         db: Database = Depends(get_db)) -> dict[str, Any]:
+        config = fit_config(request)
+        if config is None:
+            raise HTTPException(status_code=404, detail="the agent is turned off")
+        if body.messages[-1].role != "user" or not body.messages[-1].text.strip():
+            raise HTTPException(status_code=422, detail="the last message must be yours")
+        rows = await db.all("SELECT name, yoe, grad_year, target_roles, resume_text FROM students WHERE id = $1", [uid])
+        if not rows:
+            raise HTTPException(status_code=409, detail="save your profile first")
+        async with db.transaction():
+            await db.all("SELECT 1 FROM students WHERE id = $1 FOR UPDATE", [uid])
+            used, frees = await used_in_window(db, "agent_messages", uid)
+            if used >= AGENT_DAILY:
+                raise HTTPException(status_code=429, detail={"message": f"all {AGENT_DAILY} messages used for now",
+                                                             "frees_at": frees.isoformat() if frees else None})
+            held = (await db.all("INSERT INTO agent_messages (student_id) VALUES ($1) RETURNING id", [uid]))[0]["id"]
+        profile = rows[0]
+        tools = agent.Tools(db, uid, float(profile["yoe"] or 0))
+        try:
+            answer = await agent.chat([t.model_dump() for t in body.messages], profile, tools, *config)
+        except fit.FitUnavailable as e:
+            # A failed message doesn't count against the allowance.
+            await db.all("DELETE FROM agent_messages WHERE id = $1", [held])
+            raise HTTPException(status_code=503, detail=str(e)) from None
+        return {**answer, "remaining": AGENT_DAILY - used - 1}
+
     async def used_in_window(db: Database, table: str, uid: str) -> tuple[int, datetime | None]:
         """(uses in the last 24 hours, when the oldest of them stops counting). `table` is one of LIMITS."""
         row = (await db.all(f"SELECT COUNT(*) AS used, MIN(created_at) + {FIT_WINDOW} AS frees FROM {table} "
@@ -262,7 +302,7 @@ def create_app() -> FastAPI:
     @app.get("/api/fit/quota")
     async def quota(request: Request, uid: str = Depends(current_user), db: Database = Depends(get_db)) -> dict[str, Any]:
         return {**await allowance(db, "fit_checks", uid), "enabled": fit_check_enabled(request),
-                "tailor": await allowance(db, "tailored_resumes", uid)}
+                "tailor": await allowance(db, "tailored_resumes", uid), "agent": await allowance(db, "agent_messages", uid)}
 
     async def gemini_job(request: Request, db: Database, uid: str, job_id: str, table: str):
         """The shared start of a Gemini run for one job: config, job, saved resume, and a held place
