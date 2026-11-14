@@ -17,6 +17,8 @@ const ROW = 40; // one sidebar row plus its gap, in px: the marker moves by this
 /** The wordmark, for the page's top bar on phones (where there is no sidebar to carry it). */
 export const LogoContext = createContext<React.ReactNode>(null);
 
+const WIDE = () => matchMedia("(min-width: 64rem)").matches;
+
 export function AppChrome({ logo, children }: { logo: React.ReactNode; children: React.ReactNode }) {
   const session = useSyncExternalStore(subscribeSession, readSession, () => null);
   const path = usePathname();
@@ -27,8 +29,19 @@ export function AppChrome({ logo, children }: { logo: React.ReactNode; children:
   const close = useCallback(() => setPalette(false), []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((o) => !o); }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((o) => !o); return; }
+      // "/" searches too. On phones the job list's own box takes it (SearchBox); on wide screens, this bar.
+      if (e.key === "/" && WIDE() && !(e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable]"))) {
+        e.preventDefault();
+        setPalette(true);
+      }
     };
+    // Arrived from the landing page's "/": open the search straight away. Read once from
+    // sessionStorage, which only exists in the browser, so it can't be initial state.
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (WIDE() && sessionStorage.getItem("aventra:search")) { sessionStorage.removeItem("aventra:search"); setPalette(true); }
+    } catch {}
     addEventListener("keydown", onKey);
     return () => removeEventListener("keydown", onKey);
   }, []);
@@ -64,15 +77,16 @@ export function AppChrome({ logo, children }: { logo: React.ReactNode; children:
 
         <div className="flex min-h-dvh min-w-0 flex-col pb-16 lg:pb-0">
           <div className="flex-1">{children}</div>
-          {/* The search bar, within reach on every page (wide screens; phones have the tab bar). */}
-          <div className="pointer-events-none sticky bottom-0 z-20 hidden bg-gradient-to-t from-canvas from-40% px-6 pb-4 pt-6 lg:block">
+          {/* The search bar, within reach on every page (wide screens; phones have the tab bar). Not on
+              /agent: the chat's own box is where you type there, and two boxes at the bottom compete. */}
+          {!path?.startsWith("/agent") && <div className="pointer-events-none sticky bottom-0 z-20 hidden bg-gradient-to-t from-canvas from-40% px-6 pb-4 pt-6 lg:block">
             <button type="button" onClick={() => setPalette(true)}
               className="press pointer-events-auto flex h-11 w-full items-center gap-2.5 rounded-lg border border-ink/70 bg-card px-3.5 text-left text-body text-muted shadow-menu transition-colors duration-quick hover:border-ink">
               <Search aria-hidden className="size-4" />
               Search jobs, jump to a page, or apply a filter
               <kbd className="ml-auto rounded-sm border border-line px-1.5 font-mono text-caption">Ctrl K</kbd>
             </button>
-          </div>
+          </div>}
         </div>
 
         <nav aria-label="Sections" className="fixed inset-x-0 bottom-0 z-30 flex h-16 border-t border-line bg-canvas/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">

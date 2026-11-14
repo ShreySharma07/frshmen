@@ -2,7 +2,9 @@
 import { Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-/** Search title or company. Waits for a pause in typing before asking the API; "/" focuses it. */
+/** Search title or company, on phones only: wide screens search from the command bar at the
+ *  bottom of every page (AppChrome), so a second box there was a duplicate. Waits for a pause in
+ *  typing before asking the API; "/" focuses it when it's showing. */
 export function SearchBox({ value, onSearch }: { value: string; onSearch: (q: string) => void }) {
   const [draft, setDraft] = useState(value);
   const [seen, setSeen] = useState(value);
@@ -17,20 +19,20 @@ export function SearchBox({ value, onSearch }: { value: string; onSearch: (q: st
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "/" || (e.target instanceof HTMLElement && e.target.closest("input, textarea, select"))) return;
+      if (e.key !== "/" || !input.current?.offsetParent || (e.target instanceof HTMLElement && e.target.closest("input, textarea, select"))) return;
       e.preventDefault();
       input.current?.focus();
     };
     addEventListener("keydown", onKey);
     // Arrived from the landing page's "/": the reader wants to type straight away.
     try {
-      if (sessionStorage.getItem("aventra:search")) { sessionStorage.removeItem("aventra:search"); input.current?.focus(); }
+      if (input.current?.offsetParent && sessionStorage.getItem("aventra:search")) { sessionStorage.removeItem("aventra:search"); input.current.focus(); }
     } catch {}
     return () => removeEventListener("keydown", onKey);
   }, []);
 
   return (
-    <label className="flex h-9 w-full max-w-[320px] min-w-0 items-center gap-2 rounded-md border border-line bg-canvas px-3 text-body text-muted focus-within:border-ink/40">
+    <label className="flex h-9 w-full max-w-[320px] min-w-0 items-center lg:hidden gap-2 rounded-md border border-line bg-canvas px-3 text-body text-muted focus-within:border-ink/40">
       <Search aria-hidden className="size-4 shrink-0" />
       <input ref={input} type="search" value={draft} maxLength={100} aria-label="Search jobs by title or company"
         placeholder="Search title or company…" onChange={(e) => setDraft(e.target.value)}
