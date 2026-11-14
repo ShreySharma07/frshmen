@@ -388,7 +388,7 @@ def test_admins_table_is_invisible_to_the_data_api(role):
     assert denied(ctx(), "INSERT INTO admins (user_id) VALUES (%s)", (ALICE,))
 
 
-@pytest.mark.parametrize("table", ["contacts", "contact_reveals"])
+@pytest.mark.parametrize("table", ["contacts", "contact_reveals", "agent_messages"])
 @pytest.mark.parametrize("role", ["anon", "authenticated"])
 def test_contact_lists_are_invisible_to_the_data_api(role, table):
     # Personal data: only the API reads it, one email at a time, never the browser directly.
