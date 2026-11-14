@@ -7,9 +7,11 @@ gets 403, which says no more than that the page exists (it is unlinked).
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from typing import Any, Callable
 
 from fastapi import APIRouter, Depends, HTTPException, Response
+from pydantic import BaseModel, Field, field_validator
 
 from auth import current_user
 from pg_queries import BANDS, OPEN
@@ -18,6 +20,27 @@ from storage import Database
 RUNS_SHOWN = 10
 SIGNUP_DAYS = 14
 ERRORS_SHOWN = 30
+
+
+class ManualJob(BaseModel):
+    """A job typed in by an admin. Limits match db/postgres/0012_manual_jobs.sql."""
+    company: str = Field(min_length=1, max_length=120)
+    title: str = Field(min_length=1, max_length=200)
+    url: str = Field(max_length=2000, pattern=r"^https?://\S+$")
+    location_raw: str = Field("", max_length=200)
+    description_text: str = Field(min_length=1, max_length=60000)
+    posted_at: datetime | None = None
+
+    @field_validator("company", "title", "description_text")
+    @classmethod
+    def not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("must not be blank")
+        return v.strip()
+
+
+MANUAL_COLUMNS = ("id, company, title, url, location_raw, posted_at, added_at, closed_at, "
+                  "CASE WHEN closed_at IS NULL THEN 'open' ELSE 'closed' END AS status")
 
 
 def _json(value: Any) -> Any:
@@ -72,5 +95,29 @@ def router(get_db: Callable[..., Any]) -> APIRouter:
                 "usage_24h": {k: int(v) for k, v in usage.items()},
             },
         }
+
+    @r.get("/jobs")
+    async def manual_jobs(response: Response, _: str = Depends(require_admin), db: Database = Depends(get_db)) -> dict[str, Any]:
+        response.headers["Cache-Control"] = "no-store"
+        return {"jobs": await db.all(f"SELECT {MANUAL_COLUMNS} FROM manual_jobs ORDER BY id DESC LIMIT 200")}
+
+    @r.post("/jobs", status_code=201)
+    async def add_job(job: ManualJob, uid: str = Depends(require_admin), db: Database = Depends(get_db)) -> dict[str, Any]:
+        # Listed after the next pipeline run, labelled by the same rules as every job (sources/manual.py).
+        async with db.transaction():
+            rows = await db.all(
+                "INSERT INTO manual_jobs (company, title, url, location_raw, description_text, posted_at, added_by) "
+                f"VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING {MANUAL_COLUMNS}",
+                [job.company, job.title, job.url, job.location_raw.strip(), job.description_text, job.posted_at, uid])
+        return rows[0]
+
+    @r.post("/jobs/{job_id}/close")
+    async def close_job(job_id: int, _: str = Depends(require_admin), db: Database = Depends(get_db)) -> dict[str, Any]:
+        async with db.transaction():
+            rows = await db.all(f"UPDATE manual_jobs SET closed_at = COALESCE(closed_at, now()) WHERE id = $1 "
+                                f"RETURNING {MANUAL_COLUMNS}", [job_id])
+        if not rows:
+            raise HTTPException(status_code=404, detail="no such job")
+        return rows[0]
 
     return r
