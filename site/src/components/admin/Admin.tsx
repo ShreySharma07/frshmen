@@ -11,6 +11,7 @@ import { BAND_CHOICES } from "@/lib/filters";
 import { shortDate } from "@/lib/format";
 import { authConfigured } from "@/lib/supabase";
 import { useProfile } from "@/lib/useProfile";
+import { Contacts } from "./Contacts";
 
 const n = (x: number) => x.toLocaleString("en-IN");
 const ANALYTICS = "https://dash.cloudflare.com/?to=/:account/web-analytics";
@@ -42,6 +43,7 @@ function Page() {
     <AccountShell title="Admin" sub="Jobs, pipeline and people, live" wide>
       {!data ? <div aria-busy="true" className="h-72 animate-pulse rounded-lg bg-surface" /> : <Numbers o={data} />}
       <AddJob />
+      <Contacts Card={Card} />
     </AccountShell>
   );
 }
