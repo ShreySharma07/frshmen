@@ -20,6 +20,11 @@ export const metadata: Metadata = {
 // dark-mode visitors never see a white flash. (ThemeToggle uses the same key.)
 const THEME_SCRIPT = `try{var t=localStorage.getItem("aventra.theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`;
 
+// Cloudflare Web Analytics (docs/decisions.md, 2026-11-13): page views with no cookies, read in the
+// Cloudflare dashboard. The token is public by design (it only names the site). Deferred, ~6 KB,
+// so it never holds up the job list's first paint.
+const CF_BEACON = JSON.stringify({ token: "25a4057f25164516be73808935e69fd5" });
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // suppressHydrationWarning: the script above sets data-theme before React loads.
@@ -31,7 +36,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={CF_BEACON} />
+      </body>
     </html>
   );
 }
