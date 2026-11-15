@@ -63,6 +63,9 @@ export const CATEGORY: Record<string, string> = {
   qa: "QA & testing", security: "Security", hardware: "Embedded & hardware", design: "Design", product: "Product",
   other: "Other",
 };
+/** "AI/ML & data science + Backend" for one or several comma-separated category keys. */
+export const categoryLabel = (keys: string) => keys.split(",").map((k) => CATEGORY[k] ?? k).join(" + ");
+
 export const ATS: Record<string, string> = { ashby: "Ashby", greenhouse: "Greenhouse", lever: "Lever", workday: "Workday", keka: "Keka",
   workable: "Workable", smartrecruiters: "SmartRecruiters", eightfold: "Eightfold", oracle: "Oracle Recruiting", careersite: "Careers site",
   gem: "Gem", rippling: "Rippling", teamtailor: "Teamtailor", jazzhr: "JazzHR", yc_jobs: "Y Combinator" };

@@ -150,7 +150,8 @@ def experience_role_filters(p: Params, experience: str, include_unstated: bool, 
         unstated = f" OR ({BAND_UNSTATED[band]})" if include_unstated else ""
         where.append(f"(({BANDS[band]}){unstated})")
     if category:
-        where.append(f"category = {p(category)}")
+        # One category, or several from a profile ("ai_ml,backend").
+        where.append(f"category = ANY({p(category.split(','))}::text[])")
     if experience == "fresher":
         where.append("level = 'fresher'")
     elif experience == "experienced":
@@ -196,8 +197,9 @@ def create_app() -> FastAPI:
         role: RoleName = "all",
         # Minimum years asked, in bands; include_unstated applies here too. Combines with experience.
         band: Band | None = None,
-        # A general category (config/role_families.yaml keys), for everyone's roles.
-        category: str | None = Query(None, max_length=20, pattern=r"^[a-z_]+$"),
+        # A general category (config/role_families.yaml keys), for everyone's roles; a profile's
+        # several come comma-separated (docs/decisions.md, 2026-11-15).
+        category: str | None = Query(None, max_length=200, pattern=r"^[a-z_]+(,[a-z_]+){0,13}$"),
         # "24h" is new to us (first seen); 7d/30d use the posting date where the source gives one.
         posted: Literal["any", "24h", "7d", "30d"] = "any",
         eligible_only: bool = False,

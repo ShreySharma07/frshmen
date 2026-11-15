@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { BAND_CHOICES, bandOf, DEFAULTS, isDefault, type Filters, type Posted, type Workplace } from "@/lib/filters";
 import type { Role } from "@/lib/api";
-import { CATEGORY } from "@/lib/describe";
+import { CATEGORY, categoryLabel } from "@/lib/describe";
 
 /**
  * Filter chips above the job list. Each is a real <select> dressed as a chip: no extra JavaScript, keyboard and
@@ -34,6 +34,12 @@ export function FilterBar({ filters, countries, onChange }: {
           <option value="backend">Backend</option>
           <option value="mobile">Mobile</option>
         </optgroup>
+        {/* A profile's several kinds of work (docs/decisions.md, 2026-11-15). */}
+        {filters.category.includes(",") && (
+          <optgroup label="Your profile">
+            <option value={`cat:${filters.category}`}>{categoryLabel(filters.category)}</option>
+          </optgroup>
+        )}
         <optgroup label="Every job in">
           {Object.entries(CATEGORY).map(([k, label]) => <option key={k} value={`cat:${k}`}>{label}</option>)}
           <option value="all">All roles</option>

@@ -10,7 +10,8 @@ export interface Filters {
   /** The person's years of experience; null = any. The list shows its band (bandOf). */
   years: number | null;
   role: Role;
-  /** A general category (CATEGORY key) for anyone's roles; "" = use `role`. */
+  /** General categories (CATEGORY keys, comma-separated: a profile can pick several) for anyone's
+   *  roles; "" = use `role`. */
   category: string;
   country: string; // "" = anywhere
   workplace: Workplace;
@@ -44,11 +45,12 @@ export function fromSearch(search: string): Filters {
   const p = new URLSearchParams(search);
   const y = p.get("yrs");
   const years = y !== null && /^\d{1,2}$/.test(y) ? Number(y) : null;
-  const cat = p.get("cat") ?? "";
+  // Known keys only, each once, in the order given ("ai_ml,backend").
+  const cat = [...new Set((p.get("cat") ?? "").split(",").filter((k) => k in CATEGORY))].join(",");
   return {
     years,
     role: pick(p.get("role"), ROLES, DEFAULTS.role),
-    category: cat in CATEGORY ? cat : "",
+    category: cat,
     country: (p.get("country") ?? "").slice(0, 60),
     workplace: pick(p.get("work"), WORKPLACES, "any"),
     posted: pick(p.get("posted"), POSTED, "any"),
@@ -84,11 +86,11 @@ export function toApiParams(f: Filters): Record<string, string> {
 
 export const isDefault = (f: Filters) => toSearch(f) === "";
 
-/** The job list a saved profile points to: the band of its years and, when
- *  exactly one role is picked, that role; otherwise all three target roles. */
+/** The job list a saved profile points to: the band of its years, in the kinds of work it picked
+ *  (docs/decisions.md, 2026-11-15); every kind when it picked none. */
 export function profileFilters(yoe: number, roles: string[]): Filters {
-  const role = roles.length === 1 && ROLES.includes(roles[0] as Role) ? (roles[0] as Role) : "target";
-  return { ...DEFAULTS, years: Math.max(Math.round(yoe), 0), role };
+  const category = [...new Set(roles.filter((k) => k in CATEGORY))].join(",");
+  return { ...DEFAULTS, years: Math.max(Math.round(yoe), 0), role: "all", category };
 }
 
 /** Set by /profile on save; the job list shows a one-time "Profile saved" note and clears it. */
