@@ -3,10 +3,11 @@
 // what the agent found as cards inside its answers. A draft opens beside the chat like a document
 // (a sheet on phones) to read, edit, copy or open in Gmail. The conversation is kept in this tab
 // only (sessionStorage); the server stores nothing but a count of messages.
-import { ArrowUp, Copy, ExternalLink, FileText, X } from "lucide-react";
+import { ArrowUp, Check, Copy, ExternalLink, FileText, Loader2, Send, X } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { connectGmail, gmailConnected, gmailSendOn, preloadGmail, sendGmail } from "@/lib/gmail";
 import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type AgentNote, type Turn } from "@/lib/agent";
 
 // What opens beside the chat: an email draft, or a LinkedIn message to one of the person's connections.
@@ -225,6 +226,25 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
   const [subject, setSubject] = useState(draft?.subject ?? "");
   const [body, setBody] = useState(doc.body);
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState<{ kind: "idle" | "asking" | "sending" | "sent" } | { kind: "error"; message: string }>({ kind: "idle" });
+  const canSend = gmailSendOn && Boolean(draft?.to);
+  useEffect(() => { if (canSend) preloadGmail().catch(() => {}); }, [canSend]);
+  // The person presses Send themselves, after reading; the first time, Google asks them to allow it.
+  const send = async () => {
+    if (!draft?.to) return;
+    try {
+      if (!gmailConnected()) {
+        setSending({ kind: "asking" });
+        await connectGmail(); // opens Google's window: must start inside this click
+      }
+      setSending({ kind: "sending" });
+      await sendGmail(draft.to, subject, body);
+      setSending({ kind: "sent" });
+    } catch (e) {
+      setSending({ kind: "error", message: (e as Error).message });
+    }
+  };
+  const sent = sending.kind === "sent";
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => { heading.current?.focus(); }, []);
   useEffect(() => {
@@ -278,12 +298,13 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
           <p className="text-meta"><span className="font-medium">To </span>
             {draft.to ?? <span className="text-muted">{draft.reveals_left === 0 ? "today's 5 email addresses are used; copy the text and find them on LinkedIn" : "no email on file for them"}</span>}
           </p>
-          <label className="text-meta font-medium">Subject<input value={subject} maxLength={200} onChange={(e) => setSubject(e.target.value)} className={field} /></label>
+          <label className="text-meta font-medium">Subject<input value={subject} maxLength={200} readOnly={sent} onChange={(e) => setSubject(e.target.value)} className={field} /></label>
         </>}
         <label className="text-meta font-medium">{draft ? "Email" : "Message"}
-          <textarea value={body} maxLength={4000} onChange={(e) => setBody(e.target.value)} rows={6} className={`${field} resize-none leading-relaxed [field-sizing:content]`} />
+          <textarea value={body} maxLength={4000} readOnly={sent} onChange={(e) => setBody(e.target.value)} rows={6} className={`${field} resize-none leading-relaxed [field-sizing:content]`} />
         </label>
-        <p className="text-caption text-muted">{draft ? "Read it, make it yours, then send it from your own Gmail." : "Read it, make it yours, then paste it into a message on LinkedIn."} Aventra never sends anything for you.</p>
+        <p className="text-caption text-muted">{draft ? `Read it, make it yours, then ${canSend ? "send it" : "send it from your own Gmail"}.` : "Read it, make it yours, then paste it into a message on LinkedIn."}{" "}
+          {canSend ? "It goes from your Gmail only when you press Send." : "Aventra never sends anything for you."}</p>
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         {!draft && person.linkedin && (
@@ -292,9 +313,18 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
             {copied ? "Copied, opening LinkedIn" : "Copy and open LinkedIn"}<ExternalLink aria-hidden className="size-4" />
           </button>
         )}
-        {draft?.to && (
+        {canSend && (
+          <button type="button" onClick={send} disabled={sent || sending.kind === "asking" || sending.kind === "sending" || !subject.trim() || !body.trim()}
+            className="inline-flex items-center gap-1.5 rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98] disabled:opacity-60">
+            {sending.kind === "asking" || sending.kind === "sending" ? <Loader2 aria-hidden className="size-4 animate-spin" />
+              : sent ? <Check aria-hidden className="size-4" /> : <Send aria-hidden className="size-4" />}
+            {sending.kind === "asking" ? "Waiting for Google…" : sending.kind === "sending" ? "Sending…" : sent ? "Sent from your Gmail" : "Send from Gmail"}
+          </button>
+        )}
+        {draft?.to && !sent && (
           <a href={gmailUrl(draft.to, subject, body)} target="_blank" rel="noopener"
-            className="inline-flex items-center gap-1.5 rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98]">
+            className={canSend ? "inline-flex items-center gap-1.5 rounded-md border border-ink px-4 py-2 text-body font-medium"
+              : "inline-flex items-center gap-1.5 rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98]"}>
             Open in Gmail<ExternalLink aria-hidden className="size-4" />
           </a>
         )}
@@ -307,6 +337,7 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
           </a>
         )}
       </div>
+      <p aria-live="polite" className="mt-2 text-meta empty:hidden">{sending.kind === "error" && <span role="alert" className="text-card-fail">Couldn&apos;t send: {sending.message}</span>}{sent && <span className="text-muted">Sent to {draft?.to}. It&apos;s in your Gmail&apos;s Sent folder.</span>}</p>
     </motion.aside>
   );
   return wide ? panel : createPortal(panel, document.body);
