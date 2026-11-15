@@ -17,7 +17,7 @@ export function AccountShell({ title = "Aventra", sub, actions, wide, children }
 export function NotSetUp() {
   return (
     <p className="text-body text-muted">
-      Sign-in isn&apos;t switched on yet. <Link href="/" className="font-medium text-accent-text underline">See open jobs</Link>
+      Sign-in isn&apos;t switched on yet. <Link href="/jobs" className="font-medium text-accent-text underline">See open jobs</Link>
     </p>
   );
 }

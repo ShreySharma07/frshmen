@@ -106,7 +106,7 @@ export function ProfileForm() {
     if (res.error) return setSave({ kind: "error", message: res.error.message });
     // Saved: on to the jobs this profile fits (docs/decisions.md, 2026-11-04).
     try { sessionStorage.setItem(SAVED_KEY, "1"); } catch {}
-    router.push("/" + toSearch(profileFilters(values.yoe, values.target_roles)));
+    router.push("/jobs" + toSearch(profileFilters(values.yoe, values.target_roles)));
   }
 
   async function openResume() {

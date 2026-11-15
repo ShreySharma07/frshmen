@@ -4,7 +4,7 @@
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 // supabase-js's default storage key: sb-<project ref>-auth-token.
-const STORAGE_KEY = (() => { try { return `sb-${new URL(URL_).hostname.split(".")[0]}-auth-token`; } catch { return ""; } })();
+export const STORAGE_KEY = (() => { try { return `sb-${new URL(URL_).hostname.split(".")[0]}-auth-token`; } catch { return ""; } })();
 const EVENT = "aventra:session";
 
 export interface Session {
