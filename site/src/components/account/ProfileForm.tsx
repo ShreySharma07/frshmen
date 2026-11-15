@@ -14,6 +14,7 @@ import {
   type Profile, type ProfileRole,
 } from "@/lib/supabase";
 import { AccountShell, NotSetUp } from "./AccountShell";
+import { LinkedInConnections } from "./LinkedInConnections";
 
 const YEARS = [{ v: 0, label: "0" }, { v: 1, label: "1" }, { v: 2, label: "2" }, { v: 3, label: "3+" }];
 const ROLES: { v: ProfileRole; label: string }[] = [{ v: "ai_ml", label: "AI/ML" }, { v: "backend", label: "Backend" }, { v: "mobile", label: "Mobile" }];
@@ -117,7 +118,7 @@ export function ProfileForm() {
   }
 
   async function deleteEverything() {
-    if (!confirm("Delete your profile and resume from Aventra? This can't be undone.")) return;
+    if (!confirm("Delete your profile, resume and LinkedIn connections from Aventra? This can't be undone.")) return;
     const sb = supabase();
     setSave({ kind: "saving" });
     const files = await sb.storage.from(RESUME_BUCKET).remove([resumePath(user.id)]);
@@ -220,6 +221,8 @@ export function ProfileForm() {
           </p>
         </div>
       </form>
+
+      {exists && <LinkedInConnections userId={user.id} />}
 
       {exists && (
         <button type="button" onClick={deleteEverything} disabled={busy}
