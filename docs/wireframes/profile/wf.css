@@ -31,3 +31,12 @@ table{width:100%;border-collapse:collapse;font-size:13px} td,th{border-bottom:1p
 .box2.on{background:#222;border-color:#222}
 .count{background:#f4f4f4;border:1px dashed #999;border-radius:6px;padding:8px 10px;font-size:13px;margin:10px 0}
 .sticky{position:sticky;bottom:0;background:#fff;border-top:1px solid #ddd;padding:10px 16px}
+/* Desktop: the app's sidebar, then the page. */
+.web{width:1280px;display:grid;grid-template-columns:200px 1fr;min-height:820px;background:#fff}
+.side{border-right:1px solid #ddd;padding:16px 12px;font-size:13px;color:#555}
+.side div{padding:6px 8px;border-radius:4px} .side .cur{background:#eee;color:#222;font-weight:600}
+.top{border-bottom:1px solid #ddd;padding:12px 24px;display:flex;justify-content:space-between}
+.main{padding:24px 32px}
+.cols{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:32px;align-items:start}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 24px}
+.preview{border:1.5px dashed #999;border-radius:6px;padding:12px;position:sticky;top:16px;background:#fafafa}
