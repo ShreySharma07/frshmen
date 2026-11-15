@@ -14,6 +14,8 @@ export interface AgentDraft {
   job_id: string | null;
   gmail_url: string | null;
   reveals_left?: number;
+  /** Set on drafts reopened from a saved chat: the address was shown then, and isn't stored. */
+  address_removed?: boolean;
 }
 export interface AgentConnection { id: number; name: string; company: string | null; position: string | null; linkedin: string | null }
 /** A LinkedIn message to one of the person's own connections: they copy it and send it themselves. */

@@ -1,26 +1,31 @@
 "use client";
 // The agent chat (concept A in docs/wireframes/agent/, decided 2026-11-14): one conversation, with
 // what the agent found as cards inside its answers. A draft opens beside the chat like a document
-// (a sheet on phones) to read, edit, copy or open in Gmail. The conversation is kept in this tab
-// only (sessionStorage); the server stores nothing but a count of messages.
-import { ArrowUp, Check, Copy, ExternalLink, FileText, Loader2, Send, X } from "lucide-react";
+// (a sheet on phones) to read, edit, copy or open in Gmail. Each chat is saved for the person after
+// every answer (lib/chats.ts, docs/decisions.md 2026-11-15) and reopened from the list (Chats.tsx).
+import { ArrowLeft, ArrowUp, Check, Copy, ExternalLink, FileText, Loader2, Send, X } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { saveChat } from "@/lib/chats";
 import { connectGmail, gmailConnected, gmailSendOn, preloadGmail, sendGmail } from "@/lib/gmail";
 import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type AgentNote, type Turn } from "@/lib/agent";
 
 // What opens beside the chat: an email draft, or a LinkedIn message to one of the person's connections.
 type Doc = AgentDraft | AgentNote;
 
-const STORE = "aventra:agent-chat";
 // Motion tokens (globals.css: --ease-out-soft; 300-500 ms for layout moves).
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 const MOVE = 0.34;
 const SUGGESTIONS = ["Which YC startups would suit me?", "Jobs I fit that were posted this week", "Who do I know at Razorpay?"];
 
-export function Chat({ name, initialRemaining }: { name: string; initialRemaining: number | null }) {
-  const [turns, setTurns] = useState<Turn[]>([]);
+export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, onSaved }: {
+  id: string; initialTurns: Turn[]; saved: boolean; name: string; initialRemaining: number | null;
+  onBack: (() => void) | null; onSaved: () => void;
+}) {
+  const [turns, setTurns] = useState<Turn[]>(initialTurns);
+  const isSaved = useRef(saved);
+  const [unsaved, setUnsaved] = useState(false);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,15 +36,6 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   const input = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem(STORE);
-      // Restored once from this tab's storage, which only exists in the browser.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (saved) setTurns(JSON.parse(saved));
-    } catch {}
-  }, []);
-  useEffect(() => {
-    try { sessionStorage.setItem(STORE, JSON.stringify(turns.slice(-40))); } catch {}
     // The newest message is at the bottom of the page.
     if (turns.length || busy) scrollTo({ top: document.documentElement.scrollHeight, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, [turns, busy]);
@@ -54,8 +50,13 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
     setError(null);
     try {
       const r = await sendMessage(next);
-      setTurns([...next, { role: "model", text: r.reply, cards: r.cards, sources: r.sources }]);
+      const answered: Turn[] = [...next, { role: "model", text: r.reply, cards: r.cards, sources: r.sources }];
+      setTurns(answered);
       setRemaining(r.remaining);
+      // Saved after every answer; a failed save leaves the chat usable and says so.
+      saveChat(id, answered, !isSaved.current)
+        .then(() => { isSaved.current = true; setUnsaved(false); onSaved(); })
+        .catch(() => setUnsaved(true));
       const made = r.cards.find((c): c is Doc => c.type === "draft" || c.type === "linkedin");
       if (made) setOpen(made);
     } catch (err) {
@@ -81,10 +82,15 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
       {/* When a draft opens, the conversation slides left to make room rather than jumping. */}
       <motion.section layout="position" transition={{ duration: still ? 0 : MOVE, ease: EASE }} aria-label="Conversation" className="mx-auto flex w-full max-w-[46rem] flex-col">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-meta text-muted">{remaining === null ? "" : `${remaining} of 20 messages left today`}</p>
-          {turns.length > 0 && (
-            <button type="button" onClick={() => { setTurns([]); setOpen(null); }} className="text-meta font-medium text-accent-text underline-offset-2 hover:underline">New chat</button>
-          )}
+          {onBack ? (
+            <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-meta font-medium text-accent-text underline-offset-2 hover:underline">
+              <ArrowLeft aria-hidden className="size-4" />All chats
+            </button>
+          ) : <span />}
+          <p className="text-meta text-muted">
+            {unsaved && <span className="mr-2 text-card-fail">Couldn&apos;t save this chat ·</span>}
+            {remaining === null ? "" : `${remaining} of 20 messages left today`}
+          </p>
         </div>
 
         <ol aria-live="polite" className="flex flex-col gap-4">
@@ -296,7 +302,8 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
       <div className="mt-4 grid min-h-0 flex-1 content-start gap-3 overflow-y-auto [scrollbar-width:thin]">
         {draft && <>
           <p className="text-meta"><span className="font-medium">To </span>
-            {draft.to ?? <span className="text-muted">{draft.reveals_left === 0 ? "today's 5 email addresses are used; copy the text and find them on LinkedIn" : "no email on file for them"}</span>}
+            {draft.to ?? <span className="text-muted">{draft.address_removed ? "not kept in saved chats; ask the agent to draft it again to see the address"
+              : draft.reveals_left === 0 ? "today's 5 email addresses are used; copy the text and find them on LinkedIn" : "no email on file for them"}</span>}
           </p>
           <label className="text-meta font-medium">Subject<input value={subject} maxLength={200} readOnly={sent} onChange={(e) => setSubject(e.target.value)} className={field} /></label>
         </>}

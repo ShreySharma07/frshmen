@@ -17,7 +17,7 @@ import { skillsIn } from "@/lib/skills";
 import { authConfigured, type Profile } from "@/lib/supabase";
 import { fitQuota, recentChecks, recentTailored, trackedJobs, type FitCheck, type Quota, type TailoredRow, type Tracked } from "@/lib/tracker";
 import { useProfile } from "@/lib/useProfile";
-import { Chat } from "./Chat";
+import { Chats } from "./Chats";
 
 // Reopening a tailored resume (and pdf-lib) loads only when asked.
 const TailorDialog = dynamic(() => import("@/components/TailorDialog").then((m) => m.TailorDialog), { ssr: false });
@@ -66,7 +66,7 @@ function Page({ user, profile }: { user: User; profile: Profile }) {
           </button>
         ))}
       </div>
-      {view === "chat" ? <Chat name={profile.name} initialRemaining={data?.quota?.agent?.remaining ?? null} /> : <>
+      {view === "chat" ? <Chats name={profile.name} initialRemaining={data?.quota?.agent?.remaining ?? null} /> : <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h2 className="max-w-[24ch] font-display text-headline lg:text-hero" aria-live="polite">{data ? brief(strong.length, followUps.length) : "Reading today's jobs…"}</h2>
         <Link href={"/jobs" + toSearch({ ...filters, posted: "24h" })}
