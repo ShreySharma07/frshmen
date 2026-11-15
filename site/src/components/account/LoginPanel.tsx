@@ -1,14 +1,18 @@
 "use client";
-// Sign-in: Google, or a one-time link by email (docs/decisions.md, 2026-10-30). Both land on
-// /profile, where supabase-js swaps the link's code for a session.
+// Sign-in: Google, LinkedIn (once switched on), or a one-time link by email (docs/decisions.md,
+// 2026-10-30 and 2026-11-15). All land on /profile, where supabase-js swaps the code for a session.
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { authConfigured, supabase } from "@/lib/supabase";
 import { AccountShell, NotSetUp } from "./AccountShell";
 
-type State = { kind: "idle" } | { kind: "busy"; via: "google" | "email" } | { kind: "sent"; email: string } | { kind: "error"; message: string };
+type State = { kind: "idle" } | { kind: "busy"; via: Provider | "email" } | { kind: "sent"; email: string } | { kind: "error"; message: string };
 
 const landing = () => `${location.origin}/profile`;
+// "Sign in with LinkedIn" gives only name, email and photo: no connections, no messaging.
+const LINKEDIN = process.env.NEXT_PUBLIC_LINKEDIN_SIGNIN === "on";
+type Provider = "google" | "linkedin_oidc";
+const PROVIDERS: { id: Provider; label: string }[] = [{ id: "google", label: "Google" }, ...(LINKEDIN ? [{ id: "linkedin_oidc" as const, label: "LinkedIn" }] : [])];
 
 export function LoginPanel() {
   const router = useRouter();
@@ -23,10 +27,10 @@ export function LoginPanel() {
 
   if (!authConfigured) return <AccountShell><NotSetUp /></AccountShell>;
 
-  async function google() {
-    setState({ kind: "busy", via: "google" });
-    const { error } = await supabase().auth.signInWithOAuth({ provider: "google", options: { redirectTo: landing() } });
-    // On success the browser is already leaving for Google.
+  async function oauth(provider: Provider) {
+    setState({ kind: "busy", via: provider });
+    const { error } = await supabase().auth.signInWithOAuth({ provider, options: { redirectTo: landing() } });
+    // On success the browser is already leaving for Google or LinkedIn.
     if (error) setState({ kind: "error", message: error.message });
   }
 
@@ -44,10 +48,14 @@ export function LoginPanel() {
       <h1 className="text-title font-medium">Sign in</h1>
       <p className="mt-2 text-body text-muted">Your profile keeps your years, roles and resume in one place, so Aventra can check each job against you.</p>
 
-      <button type="button" onClick={google} disabled={busy}
-        className="mt-8 flex h-11 w-full items-center justify-center rounded-md border border-line bg-canvas text-base font-medium shadow-raised transition-colors duration-quick hover:bg-surface disabled:opacity-60">
-        {state.kind === "busy" && state.via === "google" ? "Opening Google…" : "Continue with Google"}
-      </button>
+      <div className="mt-8 grid gap-3">
+        {PROVIDERS.map((p) => (
+          <button key={p.id} type="button" onClick={() => oauth(p.id)} disabled={busy}
+            className="flex h-11 w-full items-center justify-center rounded-md border border-line bg-canvas text-base font-medium shadow-raised transition-colors duration-quick hover:bg-surface disabled:opacity-60">
+            {state.kind === "busy" && state.via === p.id ? `Opening ${p.label}…` : `Continue with ${p.label}`}
+          </button>
+        ))}
+      </div>
 
       <div className="my-6 flex items-center gap-3 text-meta text-muted" aria-hidden>
         <span className="h-px flex-1 bg-line" />or<span className="h-px flex-1 bg-line" />
