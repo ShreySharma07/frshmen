@@ -10,7 +10,7 @@ import { readSession, signOut } from "@/lib/session";
 
 interface Command { id: string; label: string; group: string; run: () => void }
 
-const jobs = (patch: Partial<Filters>) => "/" + toSearch({ ...DEFAULTS, ...patch });
+const jobs = (patch: Partial<Filters>) => "/jobs" + toSearch({ ...DEFAULTS, ...patch });
 
 export function CommandPalette({ onClose }: { onClose: () => void }) {
   const router = useRouter();
@@ -23,7 +23,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
     const go = (href: string) => () => { onClose(); router.push(href); };
     const signedIn = Boolean(readSession());
     return [
-      { id: "jobs", label: "Jobs", group: "Go to", run: go("/") },
+      { id: "jobs", label: "Jobs", group: "Go to", run: go("/jobs") },
       ...(signedIn ? [
         { id: "applications", label: "Applications", group: "Go to", run: go("/applications") },
         { id: "insights", label: "Insights", group: "Go to", run: go("/insights") },

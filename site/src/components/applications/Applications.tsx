@@ -94,7 +94,7 @@ function Tracker() {
           : items === null ? <div aria-busy="true" className="h-72 animate-pulse rounded-lg bg-surface" />
           : all.length === 0 ? (
             <p className="text-body text-muted">
-              Nothing tracked yet. Open a job and press Save, and it starts here. <Link href="/" className="font-medium text-accent-text underline underline-offset-2">See open jobs</Link>
+              Nothing tracked yet. Open a job and press Save, and it starts here. <Link href="/jobs" className="font-medium text-accent-text underline underline-offset-2">See open jobs</Link>
             </p>
           ) : (
             <>

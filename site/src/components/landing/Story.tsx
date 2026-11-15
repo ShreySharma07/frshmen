@@ -115,7 +115,7 @@ export function FinalCall({ counts }: { counts: Counts }) {
           Your next job is in here.
         </h2>
         <div className="col-span-full flex flex-wrap items-center gap-x-8 gap-y-4">
-          <JobsLink href="/" className="btn-primary btn-tactile gap-2">
+          <JobsLink href="/jobs" className="btn-primary btn-tactile gap-2">
             Browse {fmt(counts.total)} open jobs <ArrowRight aria-hidden className="size-4" strokeWidth={2} />
           </JobsLink>
           <span className="text-[16px] text-lp-muted">From {counts.companies} companies, read every three hours.</span>

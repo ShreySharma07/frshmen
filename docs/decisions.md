@@ -4,6 +4,18 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-15 — Launch routes: the landing page at `/`, the job list at `/jobs`
+- **Context:** the 2026-10-19 decision kept the landing at `/preview` until everything it promises
+  works; with Gmail sending and LinkedIn connections working, Shrey asked for the move.
+- **Built:**
+  - `/` is the landing page (now indexable); `/jobs` is the job list; `/preview` is gone (404).
+  - Every link to the list (sidebar, command palette, profile save, agent, 404 page, landing
+    buttons and its hero) points at `/jobs`.
+  - Old links keep working: on a full page load, `/` with a query (`/?yrs=0`, shared before the
+    move) goes on to `/jobs` with the same query, before the landing paints.
+  - A signed-in person opening `/` goes straight to `/jobs`. The signed-in start screen of
+    2026-10-19 isn't built, and they are past the pitch. Signing out lands on the landing page.
+
 ## 2026-11-15 — LinkedIn connections, LinkedIn sign-in, and how Gmail sending will work
 - **Options (where connections live):** (a) a `connections` table, one person's rows readable only
   by them · (b) kept in the browser only (lost on another device; the agent can't search it).

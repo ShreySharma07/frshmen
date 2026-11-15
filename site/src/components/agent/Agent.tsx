@@ -69,7 +69,7 @@ function Page({ user, profile }: { user: User; profile: Profile }) {
       {view === "chat" ? <Chat name={profile.name} initialRemaining={data?.quota?.agent?.remaining ?? null} /> : <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h2 className="max-w-[24ch] font-display text-headline lg:text-hero" aria-live="polite">{data ? brief(strong.length, followUps.length) : "Reading today's jobs…"}</h2>
-        <Link href={"/" + toSearch({ ...filters, posted: "24h" })}
+        <Link href={"/jobs" + toSearch({ ...filters, posted: "24h" })}
           className="press inline-flex h-10 items-center rounded-md bg-accent px-4 text-meta font-medium text-on-accent duration-quick hover:bg-accent-hover">
           Review today&apos;s matches
         </Link>
