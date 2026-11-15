@@ -5,12 +5,13 @@ import { use } from "react";
 import { ProfileButton } from "@/components/ProfileButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoContext } from "./AppChrome";
+import { HomeLink } from "@/components/HomeLink";
 
 export function PageBar({ title, sub, children }: { title: string; sub?: React.ReactNode; children?: React.ReactNode }) {
   const logo = use(LogoContext);
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line bg-canvas/90 px-4 backdrop-blur-md lg:px-6">
-      <span className="shrink-0 lg:hidden">{logo}</span>
+      <HomeLink className="shrink-0 lg:hidden">{logo}</HomeLink>
       <h1 className="text-base font-semibold max-lg:sr-only">{title}</h1>
       {sub && <p className="min-w-0 truncate text-body text-muted max-lg:hidden" aria-live="polite">{sub}</p>}
       <div className="ml-auto flex min-w-0 items-center gap-2">

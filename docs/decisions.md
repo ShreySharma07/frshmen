@@ -15,6 +15,8 @@ Newest first. Each entry: date, options considered, choice, why.
     move) goes on to `/jobs` with the same query, before the landing paints.
   - A signed-in person opening `/` goes straight to `/jobs`. The signed-in start screen of
     2026-10-19 isn't built, and they are past the pitch. Signing out lands on the landing page.
+  - **Same day (Shrey):** the app's logo (sidebar, and the top bar on phones) opens the landing
+    page, signed in or not. It leaves a note in sessionStorage so `/` doesn't send them on.
 
 ## 2026-11-15 — LinkedIn connections, LinkedIn sign-in, and how Gmail sending will work
 - **Options (where connections live):** (a) a `connections` table, one person's rows readable only
