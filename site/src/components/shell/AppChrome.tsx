@@ -7,6 +7,7 @@ import { createContext, useCallback, useEffect, useState, useSyncExternalStore }
 import { IntentLink } from "@/components/IntentLink";
 import { readSession, subscribeSession } from "@/lib/session";
 import { SECTIONS, isCurrent } from "./sections";
+import { HomeLink } from "@/components/HomeLink";
 
 // The palette loads the first time someone opens it.
 const CommandPalette = dynamic(() => import("@/components/CommandPalette").then((m) => m.CommandPalette), { ssr: false });
@@ -50,7 +51,7 @@ export function AppChrome({ logo, children }: { logo: React.ReactNode; children:
     <LogoContext value={logo}>
       <div className="lg:grid lg:grid-cols-[212px_minmax(0,1fr)]">
         <aside className="sticky top-0 hidden h-dvh flex-col border-r border-line px-3 py-4 lg:flex">
-          <IntentLink href="/jobs" aria-label="Aventra, open jobs" className="mb-5 block px-2">{logo}</IntentLink>
+          <HomeLink className="mb-5 block px-2">{logo}</HomeLink>
           <nav aria-label="Sections" className="relative flex flex-col gap-0.5">
             {/* One marker that slides to the current section: where you are, and where you came from. */}
             {active >= 0 && (

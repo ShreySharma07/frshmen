@@ -2,7 +2,7 @@
 // feature it describes now works. The job list moved to /jobs.
 import type { Metadata } from "next";
 import { Landing } from "@/components/landing/Landing";
-import { STORAGE_KEY } from "@/lib/session";
+import { HOME_KEY, STORAGE_KEY } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Aventra: an agent that gets you your next job",
@@ -13,8 +13,10 @@ export const metadata: Metadata = {
 // - old links to the job list (/?level=fresher, shared before the move) go on to /jobs with
 //   their filters;
 // - a signed-in person goes straight to /jobs: the landing is the pitch, and they are past it
-//   (the signed-in start screen of 2026-10-19 is not built yet).
-const toJobs = `try{if(location.search||(${JSON.stringify(STORAGE_KEY)}&&localStorage.getItem(${JSON.stringify(STORAGE_KEY)})))location.replace("/jobs"+location.search+location.hash)}catch(e){}`;
+//   (the signed-in start screen of 2026-10-19 is not built yet). Unless they asked for it: the
+//   app's logo leaves HOME_KEY in sessionStorage (it runs on in-app navigation too, not only on
+//   a fresh load).
+const toJobs = `try{var h=sessionStorage.getItem(${JSON.stringify(HOME_KEY)});sessionStorage.removeItem(${JSON.stringify(HOME_KEY)});if(location.search||(!h&&${JSON.stringify(STORAGE_KEY)}&&localStorage.getItem(${JSON.stringify(STORAGE_KEY)})))location.replace("/jobs"+location.search+location.hash)}catch(e){}`;
 
 export default function Home() {
   return (

@@ -4,6 +4,10 @@
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 // supabase-js's default storage key: sb-<project ref>-auth-token.
+/** Set by the app's logo (components/HomeLink.tsx): the landing page was asked for, so a
+ *  signed-in person isn't sent on to /jobs (app/page.tsx). */
+export const HOME_KEY = "aventra:home";
+
 export const STORAGE_KEY = (() => { try { return `sb-${new URL(URL_).hostname.split(".")[0]}-auth-token`; } catch { return ""; } })();
 const EVENT = "aventra:session";
 

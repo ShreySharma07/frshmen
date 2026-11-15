@@ -1,12 +1,14 @@
 "use client";
-// The profile (docs/decisions.md, 2026-10-30): name, years, graduation year, target roles and a
-// resume. Reads and writes go straight to Supabase as the signed-in person; RLS limits them to
+// The profile (docs/decisions.md, 2026-10-30; layout A of 2026-11-15): name, experience band,
+// graduation year, the kinds of work wanted (any of the 14 job categories) and a resume. Wide
+// screens show the job list it will give beside the form (ProfilePreview). Reads and writes go straight to Supabase as the signed-in person; RLS limits them to
 // their own row and their own <id>/resume.pdf (db/postgres/0004_profiles.sql).
 import type { User } from "@supabase/supabase-js";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { profileFilters, SAVED_KEY, toSearch } from "@/lib/filters";
+import { CATEGORY } from "@/lib/describe";
+import { BAND_CHOICES, bandOf, profileFilters, SAVED_KEY, toSearch } from "@/lib/filters";
 import { resumeText } from "@/lib/resumeText";
 import { sessionChanged } from "@/lib/session";
 import {
@@ -14,10 +16,14 @@ import {
   type Profile, type ProfileRole,
 } from "@/lib/supabase";
 import { AccountShell, NotSetUp } from "./AccountShell";
+import { PreviewLine, PreviewPanel, useProfilePreview } from "./ProfilePreview";
 import { LinkedInConnections } from "./LinkedInConnections";
 
-const YEARS = [{ v: 0, label: "0" }, { v: 1, label: "1" }, { v: 2, label: "2" }, { v: 3, label: "3+" }];
-const ROLES: { v: ProfileRole; label: string }[] = [{ v: "ai_ml", label: "AI/ML" }, { v: "backend", label: "Backend" }, { v: "mobile", label: "Mobile" }];
+// The job list's "I have" bands; each is saved as its typical years (0, 2, 4, 6, 8).
+const YEARS = BAND_CHOICES.map((c) => ({ v: c.years, label: c.band.replace("-", "–") }));
+const ROLES: { v: ProfileRole; label: string }[] = Object.entries(CATEGORY).map(([v, label]) => ({ v, label }));
+/** A saved number of years shown as its band's choice (older profiles saved 0, 1, 2 or 3). */
+const asBand = (yoe: number) => BAND_CHOICES.find((c) => c.band === bandOf(Number(yoe)))!.years;
 const GRAD_YEARS = Array.from({ length: 13 }, (_, i) => 2018 + i);
 
 type Load = { kind: "loading" } | { kind: "error"; message: string } | { kind: "ready"; user: User; exists: boolean };
@@ -36,6 +42,7 @@ export function ProfileForm() {
   const [file, setFile] = useState<File | null>(null); // a new PDF, not uploaded yet
   const [save, setSave] = useState<Save>({ kind: "idle" });
   const fileInput = useRef<HTMLInputElement>(null);
+  const preview = useProfilePreview(form?.yoe ?? 0, form?.target_roles ?? []);
 
   useEffect(() => {
     if (!authConfigured) return;
@@ -52,7 +59,7 @@ export function ProfileForm() {
       const row = await sb.from("students").select(PROFILE_COLUMNS).eq("id", user.id).maybeSingle<Profile>();
       if (cancelled) return;
       if (row.error) return setLoad({ kind: "error", message: row.error.message });
-      setForm(row.data ? { ...row.data, yoe: Math.min(Number(row.data.yoe), 3) } : blank(user));
+      setForm(row.data ? { ...row.data, yoe: asBand(row.data.yoe), target_roles: row.data.target_roles.filter((k) => k in CATEGORY) } : blank(user));
       setLoad({ kind: "ready", user, exists: Boolean(row.data) });
     });
     const { data: sub } = sb.auth.onAuthStateChange((event) => { if (event === "SIGNED_OUT") router.replace("/"); });
@@ -131,7 +138,9 @@ export function ProfileForm() {
 
   const busy = save.kind === "saving" || save.kind === "reading";
   return (
-    <AccountShell>
+    <AccountShell wide>
+      <div className="mx-auto grid max-w-[1040px] gap-10 lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
+      <div className="min-w-0">
       <h1 className="text-title font-medium">Your details</h1>
       <p className="mt-2 text-body text-muted">Signed in as <span className="text-ink">{user.email}</span>. Only you can see this.</p>
 
@@ -143,7 +152,7 @@ export function ProfileForm() {
 
         <fieldset>
           <legend className="text-meta text-muted">Years of work experience</legend>
-          <div className="mt-1.5 grid grid-cols-4 gap-1 rounded-md border border-line p-1">
+          <div className="mt-1.5 grid grid-cols-5 gap-1 rounded-md border border-line p-1">
             {YEARS.map(({ v, label }) => (
               <label key={v} className={`flex h-9 cursor-pointer items-center justify-center rounded-sm font-mono text-body transition-colors duration-quick has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/40 ${form.yoe === v ? "bg-accent text-on-accent" : "hover:bg-surface"}`}>
                 <input type="radio" name="yoe" value={v} checked={form.yoe === v} onChange={() => set({ yoe: v })} className="sr-only" />
@@ -151,7 +160,7 @@ export function ProfileForm() {
               </label>
             ))}
           </div>
-          <p className="mt-1.5 text-meta text-muted">Internships don&apos;t count. Pick 0 if you&apos;re graduating or just graduated.</p>
+          <p className="mt-1.5 text-meta text-muted">Years after graduating. Internships don&apos;t count. Pick 0–1 if you&apos;re graduating or just graduated.</p>
         </fieldset>
 
         <Field label="Graduation year" htmlFor="grad">
@@ -163,7 +172,7 @@ export function ProfileForm() {
         </Field>
 
         <fieldset>
-          <legend className="text-meta text-muted">Roles you want</legend>
+          <legend className="text-meta text-muted">Work you want <span className="text-caption">· pick any</span></legend>
           <div className="mt-1.5 flex flex-wrap gap-2">
             {ROLES.map(({ v, label }) => {
               const on = form.target_roles.includes(v);
@@ -175,6 +184,8 @@ export function ProfileForm() {
               );
             })}
           </div>
+          {/* Phones: one line; wide screens get the panel beside the form. */}
+          <div className="mt-2.5 lg:hidden"><PreviewLine yoe={form.yoe} roles={form.target_roles} state={preview} /></div>
         </fieldset>
 
         <Field label="Applications a week (your goal)" htmlFor="goal" hint="The board and Insights measure your week against this.">
@@ -230,6 +241,9 @@ export function ProfileForm() {
           Delete my profile and resume
         </button>
       )}
+      </div>
+      <div className="max-lg:hidden"><PreviewPanel yoe={form.yoe} roles={form.target_roles} state={preview} /></div>
+      </div>
     </AccountShell>
   );
 }

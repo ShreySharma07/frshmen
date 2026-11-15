@@ -333,6 +333,9 @@ def test_category_filter_and_counts():
     meta = client.get("/api/meta").json()
     assert meta["categories"] == {"ai_ml": 1, "backend": 1, "devops": 1, "frontend": 1}
     assert client.get("/api/jobs?category=Robert'); DROP").status_code == 422
+    # A profile's several kinds of work come comma-separated (docs/decisions.md, 2026-11-15).
+    assert titles("frontend,backend") == {"Frontend Engineer", "Java Developer"}
+    assert client.get("/api/jobs?category=frontend,").status_code == 422
 
 
 def test_meta_counts_bands(by_yoe):
