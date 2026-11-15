@@ -394,3 +394,60 @@ def test_contact_lists_are_invisible_to_the_data_api(role, table):
     # Personal data: only the API reads it, one email at a time, never the browser directly.
     ctx = (lambda: as_alice()) if role == "authenticated" else (lambda: as_role("anon"))
     assert denied(ctx(), f"SELECT * FROM {table}")
+
+
+# --- LinkedIn connections (0015): the person's own export, written from the browser -----------
+
+def bob_connection():
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO connections (student_id, name, company) VALUES (%s, 'Bob friend', 'Acme')", (BOB,))
+
+
+def alice_profile():
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO students (id, name) VALUES (%s, 'Alice')", (ALICE,))
+
+
+def test_anon_cannot_touch_connections():
+    bob_connection()
+    assert denied(as_role("anon"), "SELECT * FROM connections")
+    assert denied(as_role("anon"), "INSERT INTO connections (name) VALUES ('x')")
+    assert denied(as_role("anon"), "DELETE FROM connections")
+
+
+def test_user_reads_adds_and_deletes_only_their_own_connections():
+    bob_connection()
+    alice_profile()
+    assert rows(as_alice(), "SELECT * FROM connections") == []  # Bob's are invisible
+    with as_alice() as conn:
+        # student_id isn't granted: it comes from the signed-in user.
+        conn.execute("INSERT INTO connections (name, company, linkedin) VALUES ('Kiran', 'Razorpay', 'https://www.linkedin.com/in/kiran')")
+        assert conn.execute("SELECT student_id FROM connections").fetchall() == [(ALICE,)]
+    assert rowcount(as_alice(), "DELETE FROM connections") == 0  # nothing of hers was committed, Bob's untouched
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM connections WHERE student_id = %s", (BOB,)).fetchone()[0] == 1
+
+
+def test_user_cannot_file_connections_under_someone_else_or_edit_them():
+    bob_connection()
+    alice_profile()
+    assert denied(as_alice(), "INSERT INTO connections (student_id, name) VALUES (%s, 'x')", (BOB,))
+    assert denied(as_alice(), "INSERT INTO connections (student_id, name) VALUES (%s, 'x')", (ALICE,))
+    assert denied(as_alice(), "UPDATE connections SET name = 'x'")
+
+
+def test_connections_need_a_linkedin_link_and_stop_at_5000():
+    alice_profile()
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("INSERT INTO connections (name, linkedin) VALUES ('x', 'https://evil.example/in/x')")
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("INSERT INTO connections (name) SELECT 'p' || n FROM generate_series(1, 5001) n")
+    with as_alice() as conn:
+        conn.execute("INSERT INTO connections (name) SELECT 'p' || n FROM generate_series(1, 5000) n")
+
+
+def test_deleting_a_profile_removes_its_connections():
+    bob_connection()
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("DELETE FROM students WHERE id = %s", (BOB,))
+        assert conn.execute("SELECT COUNT(*) FROM connections").fetchone()[0] == 0
