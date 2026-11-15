@@ -24,7 +24,6 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   const [counted, setRemaining] = useState<number | null>(null);
   const remaining = counted ?? initialRemaining;
   const [open, setOpen] = useState<AgentDraft | null>(null);
-  const list = useRef<HTMLOListElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -37,8 +36,8 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   }, []);
   useEffect(() => {
     try { sessionStorage.setItem(STORE, JSON.stringify(turns.slice(-40))); } catch {}
-    const el = list.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    // The newest message is at the bottom of the page.
+    if (turns.length || busy) scrollTo({ top: document.documentElement.scrollHeight, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, [turns, busy]);
 
   const send = async (text: string) => {
@@ -71,11 +70,12 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   return (
     <LayoutGroup>
     <div className={`grid gap-6 ${open ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]" : ""}`}>
-      {/* The conversation scrolls inside its own area and the box to write in stays under it. The
-          height leaves room for the page's header and tabs above, and the app's tab bar below on
-          phones (wide screens have no command bar on /agent). */}
+      {/* The conversation scrolls with the page, like any page of the site, not inside a box of its
+          own (Shrey, 2026-11-15: a scroll area here read as a window inside the browser). The box
+          to write in stays pinned to the bottom of the screen, above the app's tab bar on phones
+          (wide screens have no command bar on /agent). */}
       {/* When a draft opens, the conversation slides left to make room rather than jumping. */}
-      <motion.section layout="position" transition={{ duration: still ? 0 : MOVE, ease: EASE }} aria-label="Conversation" className="mx-auto flex h-[calc(100svh-15rem)] min-h-[24rem] w-full max-w-[46rem] flex-col lg:h-[calc(100svh-12rem)]">
+      <motion.section layout="position" transition={{ duration: still ? 0 : MOVE, ease: EASE }} aria-label="Conversation" className="mx-auto flex w-full max-w-[46rem] flex-col">
         <div className="mb-3 flex items-center justify-between gap-3">
           <p className="text-meta text-muted">{remaining === null ? "" : `${remaining} of 20 messages left today`}</p>
           {turns.length > 0 && (
@@ -83,7 +83,7 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
           )}
         </div>
 
-        <ol ref={list} aria-live="polite" className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pr-3">
+        <ol aria-live="polite" className="flex flex-col gap-4">
           {turns.length === 0 && (
             <li className="rounded-lg border border-card-line bg-card p-5">
               <p className="font-display text-headline leading-tight">Hi {name.split(" ")[0]}. Ask me about jobs, companies or people.</p>
@@ -116,8 +116,10 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
             ))}
           </div>
         )}
+        {/* The canvas fades in above the box so messages slide under it, not behind a hard edge. */}
+        <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 -mb-8 bg-gradient-to-t from-canvas from-75% pb-4 pt-6 lg:bottom-0 lg:-mb-10 lg:pb-6">
         <form onSubmit={(e) => { e.preventDefault(); send(draft); }}
-          className="mt-4 flex shrink-0 items-end gap-2 rounded-lg border border-ink bg-canvas p-2">
+          className="flex items-end gap-2 rounded-lg border border-ink bg-canvas p-2">
           <label htmlFor="agent-input" className="sr-only">Message the agent</label>
           <textarea id="agent-input" ref={input} rows={1} maxLength={2000} value={draft} onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
@@ -127,6 +129,7 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
             <ArrowUp aria-hidden className="size-5" />
           </button>
         </form>
+        </div>
       </motion.section>
 
       <AnimatePresence mode="wait">
@@ -225,7 +228,7 @@ function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void
     // Beside the chat on wide screens, like a document opened next to a conversation; a sheet on phones.
     // The wide panel stops above the app's command bar (about 6rem at the bottom of the column).
     <motion.aside {...motionProps} aria-labelledby="draft-title"
-      className={wide ? "sticky top-4 flex max-h-[calc(100svh-6rem)] flex-col self-start rounded-lg border border-card-line bg-card p-5"
+      className={wide ? "sticky top-[4.5rem] flex max-h-[calc(100svh-6rem)] flex-col self-start rounded-lg border border-card-line bg-card p-5"
         : "fixed inset-0 z-50 flex flex-col bg-card p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -236,7 +239,7 @@ function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void
           <X aria-hidden className="size-5" />
         </button>
       </div>
-      <div className="mt-4 grid min-h-0 flex-1 content-start gap-3 overflow-y-auto">
+      <div className="mt-4 grid min-h-0 flex-1 content-start gap-3 overflow-y-auto [scrollbar-width:thin]">
         <p className="text-meta"><span className="font-medium">To </span>
           {draft.to ?? <span className="text-muted">{draft.reveals_left === 0 ? "today's 5 email addresses are used; copy the text and find them on LinkedIn" : "no email on file for them"}</span>}
         </p>
