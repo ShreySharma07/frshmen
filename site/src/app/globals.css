@@ -263,6 +263,14 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Scroll bars: thin, no track, a thumb mixed from the ink so it follows light and dark. The
+   browser's default (a wide grey bar on a white track) read as a stray panel beside the chat and
+   the open job. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--ink) 22%, transparent) transparent;
+}
+
 /* Every animation has a no-motion version. */
 @media (prefers-reduced-motion: reduce) {
   *,
