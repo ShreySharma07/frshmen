@@ -83,7 +83,7 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
           )}
         </div>
 
-        <ol ref={list} aria-live="polite" className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pr-1">
+        <ol ref={list} aria-live="polite" className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pr-3">
           {turns.length === 0 && (
             <li className="rounded-lg border border-card-line bg-card p-5">
               <p className="font-display text-headline leading-tight">Hi {name.split(" ")[0]}. Ask me about jobs, companies or people.</p>
@@ -242,7 +242,7 @@ function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void
         </p>
         <label className="text-meta font-medium">Subject<input value={subject} maxLength={200} onChange={(e) => setSubject(e.target.value)} className={field} /></label>
         <label className="text-meta font-medium">Email
-          <textarea value={body} maxLength={4000} onChange={(e) => setBody(e.target.value)} rows={wide ? 11 : 14} className={`${field} resize-y leading-relaxed`} />
+          <textarea value={body} maxLength={4000} onChange={(e) => setBody(e.target.value)} rows={6} className={`${field} resize-none leading-relaxed [field-sizing:content]`} />
         </label>
         <p className="text-caption text-muted">Read it, make it yours, then send it from your own Gmail. Aventra never sends anything for you.</p>
       </div>
