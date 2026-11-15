@@ -25,6 +25,11 @@ Newest first. Each entry: date, options considered, choice, why.
     LinkedIn). Connections' names, companies and titles reach Gemini like the contact lists' do.
   - Sign-in: "Continue with LinkedIn" (OpenID Connect: name, email, photo only), shown when the
     repo variable `LINKEDIN_SIGNIN` is `on`, after the provider is set up in Supabase.
+- **Built (Gmail):** "Send from Gmail" in the draft panel (`site/src/lib/gmail.ts`). The first press
+  opens Google's window asking for `gmail.send` only; the browser keeps the token in memory (about
+  an hour) and calls Gmail itself, so Aventra's servers never hold it. Shown only when the repo
+  variable `GOOGLE_CLIENT_ID` is set; "Open in Gmail" stays as the other way. Until Google verifies
+  the app, only the test users listed on the consent screen (up to 100) can allow it.
 - **Same day (Shrey):** the agent chat scrolls with the page instead of inside its own box ("it
   looks like a window inside the browser"); the open job pane keeps scrolling without a second bar.
 
