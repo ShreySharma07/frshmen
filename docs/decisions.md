@@ -4,6 +4,20 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-15 — Premium: what's in it, and how people pay (plan: `docs/strategy/premium/plan.md`)
+- **What's premium (Shrey: "as suggested"):** the Agent (chat, people, drafts, Gmail, LinkedIn),
+  tailored resumes, and fit checks past 3 a day. Jobs, profile, Applications stay free; Insights is
+  an open question in the plan.
+- **How people pay, options:** (a) Shrey grants Premium by hand at launch · (b) Razorpay ·
+  (c) a free trial. **Choice (Shrey):** (b) Razorpay.
+- **Which Razorpay flow, options** (sketches in `docs/wireframes/premium/`): (A) a subscription that
+  renews until cancelled (UPI Autopay or card mandate) · (B) a one-time pass for 1 or 3 months.
+  B was recommended (simpler, more students finish paying). **Choice (Shrey):** A.
+- **Price (Shrey):** ₹99 every month, or ₹249 every 3 months; both renew until cancelled.
+- **Rules from the plan:** access is decided on the server (`is_premium`), never in the browser;
+  Gemini is called only after the check; webhooks are signed and stored once; nothing is gated
+  until the `PREMIUM` switch is on.
+
 ## 2026-11-15 — Profile form for everyone, and saved agent chats
 - **Profile layout options** (wireframes in `docs/wireframes/profile/`, phone and desktop): (A) one
   page, five experience steps, the 14 kinds of work as chips, with the job list it will show beside
