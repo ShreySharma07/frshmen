@@ -190,3 +190,27 @@ def test_linkedin_message_only_to_the_askers_own_connection(client):
     assert len(cards) == 1 and cards[0]["type"] == "linkedin"
     assert cards[0]["person"]["name"] == "Kiran Rao" and cards[0]["person"]["linkedin"].startswith("https://www.linkedin.com/")
     assert "error" in g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]
+
+
+class Overloaded(Gemini):
+    """The first model answers 503 (Google overloaded); the next one works."""
+
+    async def __call__(self, url, headers, body):
+        self.sent.append((url, json.loads(body)))
+        if len(self.sent) == 1:
+            return 503, {"error": {"message": "overloaded"}}
+        return 200, self.answers.pop(0)
+
+
+def test_an_overloaded_model_falls_back_to_the_next(client):
+    g = Overloaded(text("Hello."))
+    res = ask(client, g)
+    assert res.status_code == 200 and res.json()["reply"] == "Hello."
+    assert g.sent[0][0] != g.sent[1][0]  # a different model the second time
+
+
+def test_every_model_overloaded_says_busy_and_counts_nothing(client):
+    res = ask(client, Gemini(status=503))
+    assert res.status_code == 503 and "busy" in json.dumps(res.json())
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM agent_messages").fetchone() == (0,)

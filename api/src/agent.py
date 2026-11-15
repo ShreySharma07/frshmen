@@ -24,6 +24,7 @@ MAX_TOOL_ROUNDS = 4  # model → tool → model … then it must answer
 MAX_HISTORY_TURNS = 12
 MAX_TURN_CHARS = 2000
 MAX_RESUME_CHARS = 4000
+OVERLOADED = {500, 502, 503, 504}  # Google's side, not ours: worth one more model
 REVEALS_DAILY = 5  # emails a person can be shown in drafts per 24 hours
 JOBS_SHOWN = 6
 
@@ -255,11 +256,15 @@ async def chat(history: list[dict[str, str]], profile: dict[str, Any], tools: To
         data = None
         while models:
             status, data = await post(ENDPOINT.format(model=models[0]), headers, json.dumps(body))
-            if status == 404:
+            if status == 404 or (status in OVERLOADED and len(models) > 1):
+                # Not available to this key, or Google's servers for this model are overloaded:
+                # the next model usually answers.
                 models.pop(0)
                 continue
             if status != 200:
-                raise FitUnavailable("Gemini quota reached, try again later" if status == 429 else f"Gemini HTTP {status}")
+                raise FitUnavailable("Gemini quota reached, try again later" if status == 429
+                                     else "Gemini is busy right now, try again in a minute" if status in OVERLOADED
+                                     else f"Gemini HTTP {status}")
             break
         else:
             raise FitUnavailable("no Gemini model is available to this key")
