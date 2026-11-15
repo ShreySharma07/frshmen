@@ -62,7 +62,9 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
     } catch (err) {
       const e = err as Error & { status?: number };
       setError(e.status === 429 ? "You've used today's messages. They come back 24 hours after each was sent."
-        : e.status === 404 ? "The agent isn't switched on yet." : `Couldn't answer: ${e.message}`);
+        : e.status === 404 ? "The agent isn't switched on yet."
+        : /busy|quota/i.test(e.message) ? "Gemini is busy right now. Try again in a minute; this message wasn't counted."
+        : `Couldn't answer: ${e.message}`);
       setTurns(turns); // the message wasn't answered (or counted): give it back to edit
       setDraft(message);
     } finally {
@@ -72,6 +74,36 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
   };
 
   const still = useReducedMotion();
+  // A new chat starts with the box in the middle of the screen; the first message sends it down to
+  // the bottom, where it stays (Shrey, 2026-11-15). The same element moves (layoutId), so the eye
+  // follows it instead of one box vanishing and another appearing.
+  const empty = turns.length === 0 && !busy;
+  const composer = (
+    <motion.form layoutId="agent-composer" transition={{ duration: still ? 0 : 0.42, ease: EASE }}
+      onSubmit={(e) => { e.preventDefault(); send(draft); }}
+      className="rounded-2xl border border-line bg-card shadow-raised transition-[border-color,box-shadow] duration-quick focus-within:border-ink/30 focus-within:shadow-menu">
+      <label htmlFor="agent-input" className="sr-only">Message the agent</label>
+      <textarea id="agent-input" ref={input} rows={1} maxLength={2000} value={draft} onChange={(e) => setDraft(e.target.value)} autoFocus={empty}
+        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
+        placeholder={empty ? "Ask about jobs, companies or people…" : "Reply…"}
+        className={`block w-full resize-none bg-transparent px-4 pt-3.5 text-base outline-none placeholder:text-muted [field-sizing:content] ${empty ? "min-h-[4.5rem] max-h-60" : "min-h-11 max-h-40"}`} />
+      <div className="flex items-center justify-between gap-3 px-3 pb-3 pt-1">
+        <span className="pl-1 text-caption text-muted max-sm:hidden">Enter to send · Shift + Enter for a new line</span>
+        <button type="submit" disabled={busy || !draft.trim() || remaining === 0} aria-label="Send"
+          className="ml-auto grid size-9 shrink-0 place-items-center rounded-full bg-ink text-canvas transition-[transform,opacity] duration-quick active:scale-[0.94] disabled:opacity-30">
+          <ArrowUp aria-hidden className="size-[1.125rem]" />
+        </button>
+      </div>
+    </motion.form>
+  );
+  const suggestions = (
+    <div className="mt-4 flex flex-wrap justify-center gap-2">
+      {SUGGESTIONS.map((s) => (
+        <button key={s} type="button" onClick={() => send(s)}
+          className="rounded-full border border-line bg-canvas px-3.5 py-1.5 text-meta transition-colors duration-quick hover:border-ink/40 hover:bg-card">{s}</button>
+      ))}
+    </div>
+  );
   return (
     <LayoutGroup>
     <div className={`grid gap-6 ${open ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]" : ""}`}>
@@ -93,13 +125,16 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
           </p>
         </div>
 
+        {empty ? (
+          <div className="flex min-h-[calc(100svh-19rem)] flex-col justify-center pb-[6vh]">
+            <h2 className="text-center font-display text-[clamp(1.875rem,4vw,2.75rem)] leading-tight">Hi {name.split(" ")[0]}. What should we look for?</h2>
+            <p className="mx-auto mt-2 max-w-[34rem] text-center text-body text-muted">Jobs at your experience, people you know at a company, YC founders, and emails or LinkedIn messages you send yourself.</p>
+            <div className="mt-7">{composer}</div>
+            {error && <p role="alert" className="mt-3 text-center text-meta text-card-fail">{error}</p>}
+            {suggestions}
+          </div>
+        ) : <>
         <ol aria-live="polite" className="flex flex-col gap-4">
-          {turns.length === 0 && (
-            <li className="rounded-lg border border-card-line bg-card p-5">
-              <p className="font-display text-headline leading-tight">Hi {name.split(" ")[0]}. Ask me about jobs, companies or people.</p>
-              <p className="mt-2 text-body text-muted">I search the open jobs at your experience, find people you know or HR and founders at a company, suggest YC startups, and draft emails and LinkedIn messages you send yourself.</p>
-            </li>
-          )}
           {turns.map((t, i) => t.role === "user"
             ? <li key={i} className="msg-sent max-w-[85%] self-end whitespace-pre-wrap rounded-lg bg-ink px-4 py-2.5 text-body text-canvas">{t.text}</li>
             : <li key={i} className="detail-in max-w-full self-start rounded-lg border border-card-line bg-card px-4 py-3 text-body">
@@ -119,27 +154,11 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
         </ol>
 
         {error && <p role="alert" className="mt-3 text-meta text-card-fail">{error}</p>}
-        {turns.length === 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {SUGGESTIONS.map((s) => (
-              <button key={s} type="button" onClick={() => send(s)} className="rounded-full border border-line px-3 py-1 text-meta transition-colors duration-quick hover:border-ink">{s}</button>
-            ))}
-          </div>
-        )}
         {/* The canvas fades in above the box so messages slide under it, not behind a hard edge. */}
         <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 -mb-8 bg-gradient-to-t from-canvas from-75% pb-4 pt-6 lg:bottom-0 lg:-mb-10 lg:pb-6">
-        <form onSubmit={(e) => { e.preventDefault(); send(draft); }}
-          className="flex items-end gap-2 rounded-lg border border-ink bg-canvas p-2">
-          <label htmlFor="agent-input" className="sr-only">Message the agent</label>
-          <textarea id="agent-input" ref={input} rows={1} maxLength={2000} value={draft} onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
-            placeholder="Ask about jobs, companies or people…" className="max-h-40 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-body outline-none [field-sizing:content]" />
-          <button type="submit" disabled={busy || !draft.trim() || remaining === 0} aria-label="Send"
-            className="grid size-10 shrink-0 place-items-center rounded-md bg-ink text-canvas transition-transform duration-quick active:scale-[0.96] disabled:opacity-40">
-            <ArrowUp aria-hidden className="size-5" />
-          </button>
-        </form>
+        {composer}
         </div>
+        </>}
       </motion.section>
 
       <AnimatePresence mode="wait">
