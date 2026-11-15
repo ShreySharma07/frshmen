@@ -4,6 +4,23 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-15 — Profile form for everyone, and saved agent chats
+- **Profile layout options** (wireframes in `docs/wireframes/profile/`, phone and desktop): (A) one
+  page, five experience steps, the 14 kinds of work as chips, with the job list it will show beside
+  the form on wide screens · (B) the 14 kinds grouped under four headings with counts · (C) a
+  two-question first-time setup with a preview. **Choice (Shrey):** A.
+- **Experience:** (a) the five bands of the job list's "I have" filter · (b) exact years.
+  **Choice:** (a). A band is saved as its typical years (0, 2, 4, 6, 8), like the filter.
+- **Where the kinds of work are saved:** (a) widen `students.target_roles` to the 14 category keys
+  (the old three, ai_ml, backend and mobile, are among them, so every saved profile stays valid) ·
+  (b) a new column beside it. **Choice:** (a).
+- **Several kinds at once:** (a) the job list and `/api/jobs?category=` take a comma list · (b) one
+  main kind per person. **Choice:** (a).
+- **Agent chat history options:** (1) saved in the database, readable only by the person, with a
+  "Past chats" list (across devices) · (2) the browser's `localStorage` (this device only) ·
+  (3) as now, kept only while the tab is open. **Choice (Shrey):** 1. Limits: the last 30 chats per
+  person, each kept 90 days; email addresses revealed in drafts are not stored.
+
 ## 2026-11-15 — Launch routes: the landing page at `/`, the job list at `/jobs`
 - **Context:** the 2026-10-19 decision kept the landing at `/preview` until everything it promises
   works; with Gmail sending and LinkedIn connections working, Shrey asked for the move.
