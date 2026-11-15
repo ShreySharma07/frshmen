@@ -465,3 +465,53 @@ def test_profile_takes_any_job_category_and_nothing_else():
         assert conn.execute("SELECT cardinality(target_roles) FROM students WHERE id = %s", (ALICE,)).fetchone() == (14,)
     with as_alice() as conn, pytest.raises(errors.CheckViolation):
         conn.execute("INSERT INTO students (id, name, target_roles) VALUES (%s, 'Alice', '{frontend,astronaut}')", (ALICE,))
+
+
+# --- Saved agent chats (0017) -----------------------------------------------------------------
+
+def chat_rows(uid, n=1, days_old=0):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO agent_chats (student_id, title, turns, updated_at) "
+                     "SELECT %s, 'chat ' || g, '[]', now() - make_interval(days => %s) - make_interval(mins => g) "
+                     "FROM generate_series(1, %s) g", (uid, days_old, n))
+
+
+def test_anon_cannot_touch_chats():
+    chat_rows(BOB)
+    assert denied(as_role("anon"), "SELECT * FROM agent_chats")
+    assert denied(as_role("anon"), "INSERT INTO agent_chats (title, turns) VALUES ('x', '[]')")
+
+
+def test_user_sees_and_changes_only_their_own_chats():
+    chat_rows(BOB)
+    alice_profile()
+    assert rows(as_alice(), "SELECT * FROM agent_chats") == []
+    assert rowcount(as_alice(), "UPDATE agent_chats SET title = 'mine now'") == 0
+    assert rowcount(as_alice(), "DELETE FROM agent_chats") == 0
+    with as_alice() as conn:
+        conn.execute("INSERT INTO agent_chats (title, turns) VALUES ('Hi', '[{\"role\": \"user\", \"text\": \"hi\"}]')")
+        assert conn.execute("SELECT student_id FROM agent_chats").fetchall() == [(ALICE,)]
+    assert denied(as_alice(), "INSERT INTO agent_chats (student_id, title, turns) VALUES (%s, 'x', '[]')", (BOB,))
+    assert denied(as_alice(), "UPDATE agent_chats SET student_id = %s", (BOB,))
+
+
+def test_a_chat_cannot_keep_a_revealed_email():
+    alice_profile()
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("""INSERT INTO agent_chats (title, turns) VALUES ('x', '[{"role": "model", "text": "",
+                        "cards": [{"type": "draft", "to": "ana@pinecone.io"}]}]')""")
+    with as_alice() as conn:
+        conn.execute("""INSERT INTO agent_chats (title, turns) VALUES ('x', '[{"role": "model", "text": "",
+                        "cards": [{"type": "draft", "to": null}]}]')""")
+
+
+def test_chats_keep_the_last_30_and_15_days():
+    alice_profile()
+    chat_rows(ALICE, n=3, days_old=16)  # past 15 days
+    chat_rows(ALICE, n=30)
+    with as_alice() as conn:
+        conn.execute("INSERT INTO agent_chats (title, turns) VALUES ('newest', '[]')")
+        conn.commit()
+    with psycopg.connect(PG) as conn:
+        titles = [r[0] for r in conn.execute("SELECT title FROM agent_chats WHERE student_id = %s ORDER BY updated_at DESC", (ALICE,))]
+    assert len(titles) == 30 and titles[0] == "newest" and "chat 30" not in titles
