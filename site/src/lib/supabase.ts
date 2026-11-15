@@ -2,7 +2,6 @@
 // Supabase directly; RLS in db/postgres/0004_profiles.sql decides what it may touch.
 // Imported only by /login and /profile, so the job list's bundle never carries supabase-js.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Role } from "./api";
 
 // Both are public by design (the publishable key only reaches what RLS allows). Set at build
 // time from the repo's Actions variables in .github/workflows/deploy.yml.
@@ -23,7 +22,9 @@ export const RESUME_BUCKET = "resumes";
 export const RESUME_MAX_BYTES = 5 * 1024 * 1024; // the bucket's limit
 export const RESUME_TEXT_MAX = 60_000; // students.resume_text's limit
 
-export type ProfileRole = Exclude<Role, "all" | "target">;
+/** A kind of work the profile wants: one of the 14 job categories (lib/describe.ts CATEGORY,
+ *  config/role_families.yaml; db/postgres/0016_profile_categories.sql). */
+export type ProfileRole = string;
 
 /** A row of `students`, as this person may read and write it. */
 export interface Profile {
