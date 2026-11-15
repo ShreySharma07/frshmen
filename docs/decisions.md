@@ -19,7 +19,8 @@ Newest first. Each entry: date, options considered, choice, why.
 - **Agent chat history options:** (1) saved in the database, readable only by the person, with a
   "Past chats" list (across devices) · (2) the browser's `localStorage` (this device only) ·
   (3) as now, kept only while the tab is open. **Choice (Shrey):** 1. Limits: the last 30 chats per
-  person, each kept 90 days; email addresses revealed in drafts are not stored.
+  person, each kept 15 days since last used (Shrey, same day: "keep only last 15 days for now"; 90
+  was proposed); email addresses revealed in drafts are not stored.
 
 ## 2026-11-15 — Launch routes: the landing page at `/`, the job list at `/jobs`
 - **Context:** the 2026-10-19 decision kept the landing at `/preview` until everything it promises
