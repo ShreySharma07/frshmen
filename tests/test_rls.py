@@ -451,3 +451,17 @@ def test_deleting_a_profile_removes_its_connections():
     with psycopg.connect(PG, autocommit=True) as conn:
         conn.execute("DELETE FROM students WHERE id = %s", (BOB,))
         assert conn.execute("SELECT COUNT(*) FROM connections").fetchone()[0] == 0
+
+
+# --- Profile categories (0016): any of the 14 job categories -------------------------------------
+
+def test_profile_takes_any_job_category_and_nothing_else():
+    import yaml
+    keys = [c["key"] for c in yaml.safe_load(Path("config/role_families.yaml").read_text())["categories"]]
+    sql = Path("db/postgres/0016_profile_categories.sql").read_text()
+    assert all(f"'{k}'" in sql for k in keys), "the migration's list must match config/role_families.yaml"
+    with as_alice() as conn:
+        conn.execute("INSERT INTO students (id, name, target_roles) VALUES (%s, 'Alice', %s)", (ALICE, keys))
+        assert conn.execute("SELECT cardinality(target_roles) FROM students WHERE id = %s", (ALICE,)).fetchone() == (14,)
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("INSERT INTO students (id, name, target_roles) VALUES (%s, 'Alice', '{frontend,astronaut}')", (ALICE,))
