@@ -30,6 +30,8 @@ JOBS_SHOWN = 6
 SYSTEM = """You are Aventra's job-search agent for one person. Be brief, specific and honest.
 - Answer from the tools' results and the person's profile only. Never invent jobs, people, emails, numbers or facts about companies.
 - Find jobs with search_jobs, people at a company with find_people, YC startups with suggest_startups.
+- For a referral or an introduction, first look for people the person already knows there with find_connections (their own LinkedIn connections); a warm contact beats a cold one.
+- To message a connection, call prepare_linkedin_message with a short note in the person's voice. LinkedIn is never messaged for them: they copy the note and send it themselves.
 - To write an email to a person, first find them (their id comes from find_people or suggest_startups), then call prepare_draft with a short, specific subject and body in the person's voice: one concrete reason they fit, one ask. No flattery, no templates.
 - You never see email addresses; the draft card shows the address. Never ask for or guess one.
 - If nothing matches, say so plainly and suggest a different search.
@@ -55,6 +57,13 @@ TOOLS: list[dict[str, Any]] = [{"functionDeclarations": [
     {"name": "suggest_startups", "description": "YC startups with founders on Aventra's list and open jobs, ranked by how many open jobs fit the person's years.",
      "parameters": {"type": "OBJECT", "properties": {
          "category": {"type": "STRING", "description": "Optional job category to prefer, e.g. ai_ml or backend."}}}},
+    {"name": "find_connections", "description": "People the person already knows at one company, from the LinkedIn connections they uploaded.",
+     "parameters": {"type": "OBJECT", "properties": {"company": {"type": "STRING"}}, "required": ["company"]}},
+    {"name": "prepare_linkedin_message", "description": "Turn a LinkedIn message you wrote into a card the person copies and sends to a connection found by find_connections.",
+     "parameters": {"type": "OBJECT", "properties": {
+         "connection_id": {"type": "INTEGER"}, "body": {"type": "STRING"},
+         "job_id": {"type": "STRING", "description": "The job the message is about, if any."}},
+      "required": ["connection_id", "body"]}},
     {"name": "prepare_draft", "description": "Turn an email you wrote into a draft card addressed to a person found by find_people or suggest_startups.",
      "parameters": {"type": "OBJECT", "properties": {
          "contact_id": {"type": "INTEGER"}, "subject": {"type": "STRING"}, "body": {"type": "STRING"},
@@ -86,7 +95,9 @@ class Tools:
 
     async def call(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
         handler = {"search_jobs": self.search_jobs, "find_people": self.find_people,
-                   "suggest_startups": self.suggest_startups, "prepare_draft": self.prepare_draft}.get(name)
+                   "suggest_startups": self.suggest_startups, "prepare_draft": self.prepare_draft,
+                   "find_connections": self.find_connections,
+                   "prepare_linkedin_message": self.prepare_linkedin_message}.get(name)
         if handler is None:
             return {"error": f"no tool named {name}"}
         try:
@@ -139,6 +150,33 @@ class Tools:
             self.sources.add("Aventra's contact lists")
         return {"people": [{k: p[k] for k in ("id", "kind", "name", "company", "title", "location", "yc_batch", "notes", "has_email")}
                            for p in people]}
+
+    async def find_connections(self, company: str) -> dict[str, Any]:
+        # Only this person's rows: the API reads as the table owner, so the filter is ours to keep.
+        rows = await self.db.all(
+            "SELECT id, name, company, position, linkedin FROM connections WHERE student_id = $1 "
+            "AND (lower(company) = lower($2) OR company ILIKE $3) ORDER BY name LIMIT 8",
+            [self.uid, company.strip(), _like(company)])
+        if rows:
+            self.cards.append({"type": "connections", "people": rows})
+            self.sources.add("your LinkedIn connections")
+        else:
+            uploaded = (await self.db.all("SELECT EXISTS (SELECT 1 FROM connections WHERE student_id = $1) AS any",
+                                          [self.uid]))[0]["any"]
+            if not uploaded:
+                return {"connections": [], "note": "the person hasn't uploaded their LinkedIn connections; "
+                                                    "they can add Connections.csv on their profile"}
+        return {"connections": [{k: r[k] for k in ("id", "name", "company", "position")} for r in rows]}
+
+    async def prepare_linkedin_message(self, connection_id: int, body: str, job_id: str = "") -> dict[str, Any]:
+        rows = await self.db.all("SELECT id, name, company, position, linkedin FROM connections "
+                                 "WHERE id = $1 AND student_id = $2", [int(connection_id), self.uid])
+        if not rows:
+            return {"error": "no such connection; find them with find_connections first"}
+        person = rows[0]
+        self.cards.append({"type": "linkedin", "person": person, "body": body.strip()[:2000], "job_id": job_id or None})
+        self.sources.add("your LinkedIn connections")
+        return {"message": "ready to copy", "to_name": person["name"], "has_profile_link": bool(person["linkedin"])}
 
     async def suggest_startups(self, category: str = "") -> dict[str, Any]:
         band = _band_of(self.yoe)

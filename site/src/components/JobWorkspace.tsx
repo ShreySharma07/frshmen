@@ -165,7 +165,7 @@ function Results({ filters, fitCheck, onClear }: { filters: Filters; fitCheck: b
       </section>
 
       <aside aria-live="polite"
-        className={`${sheetOpen ? "sheet-in fixed inset-0 z-40 block overflow-y-auto bg-canvas p-5 max-lg:pb-24" : "hidden"} lg:sticky lg:inset-auto lg:top-14 lg:z-auto lg:block lg:h-[calc(100dvh-56px)] lg:animate-none lg:overflow-y-auto lg:border-l lg:border-line lg:bg-card lg:px-8 lg:pb-24 lg:pt-6`}>
+        className={`${sheetOpen ? "sheet-in fixed inset-0 z-40 block overflow-y-auto bg-canvas p-5 max-lg:pb-24" : "hidden"} lg:sticky lg:inset-auto lg:top-14 lg:z-auto lg:block lg:h-[calc(100dvh-56px)] lg:animate-none lg:overflow-y-auto lg:[scrollbar-width:none] lg:border-l lg:border-line lg:bg-card lg:px-8 lg:pb-24 lg:pt-6`}>
         {detail === "error" ? <p className="text-body text-muted">Couldn&apos;t load this job.</p>
           // A new key per job: the panel's short rise shows that its contents changed.
           : detail ? <div key={detail.id} className="detail-in"><JobDetailView job={detail} fitCheck={fitCheck} you={filters.years} onBack={closeSheet} /></div>

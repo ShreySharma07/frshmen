@@ -3,17 +3,21 @@
 // what the agent found as cards inside its answers. A draft opens beside the chat like a document
 // (a sheet on phones) to read, edit, copy or open in Gmail. The conversation is kept in this tab
 // only (sessionStorage); the server stores nothing but a count of messages.
-import { ArrowUp, Copy, ExternalLink, FileText, X } from "lucide-react";
+import { ArrowUp, Check, Copy, ExternalLink, FileText, Loader2, Send, X } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type Turn } from "@/lib/agent";
+import { connectGmail, gmailConnected, gmailSendOn, preloadGmail, sendGmail } from "@/lib/gmail";
+import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type AgentNote, type Turn } from "@/lib/agent";
+
+// What opens beside the chat: an email draft, or a LinkedIn message to one of the person's connections.
+type Doc = AgentDraft | AgentNote;
 
 const STORE = "aventra:agent-chat";
 // Motion tokens (globals.css: --ease-out-soft; 300-500 ms for layout moves).
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 const MOVE = 0.34;
-const SUGGESTIONS = ["Which YC startups would suit me?", "Jobs I fit that were posted this week", "Who could I ask for a referral at Razorpay?"];
+const SUGGESTIONS = ["Which YC startups would suit me?", "Jobs I fit that were posted this week", "Who do I know at Razorpay?"];
 
 export function Chat({ name, initialRemaining }: { name: string; initialRemaining: number | null }) {
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -23,8 +27,7 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   // The allowance loads after the page does: show it until a reply brings a newer count.
   const [counted, setRemaining] = useState<number | null>(null);
   const remaining = counted ?? initialRemaining;
-  const [open, setOpen] = useState<AgentDraft | null>(null);
-  const list = useRef<HTMLOListElement>(null);
+  const [open, setOpen] = useState<Doc | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -37,8 +40,8 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   }, []);
   useEffect(() => {
     try { sessionStorage.setItem(STORE, JSON.stringify(turns.slice(-40))); } catch {}
-    const el = list.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    // The newest message is at the bottom of the page.
+    if (turns.length || busy) scrollTo({ top: document.documentElement.scrollHeight, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, [turns, busy]);
 
   const send = async (text: string) => {
@@ -53,7 +56,7 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
       const r = await sendMessage(next);
       setTurns([...next, { role: "model", text: r.reply, cards: r.cards, sources: r.sources }]);
       setRemaining(r.remaining);
-      const made = r.cards.find((c): c is AgentDraft => c.type === "draft");
+      const made = r.cards.find((c): c is Doc => c.type === "draft" || c.type === "linkedin");
       if (made) setOpen(made);
     } catch (err) {
       const e = err as Error & { status?: number };
@@ -71,11 +74,12 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
   return (
     <LayoutGroup>
     <div className={`grid gap-6 ${open ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]" : ""}`}>
-      {/* The conversation scrolls inside its own area and the box to write in stays under it. The
-          height leaves room for the page's header and tabs above, and the app's tab bar below on
-          phones (wide screens have no command bar on /agent). */}
+      {/* The conversation scrolls with the page, like any page of the site, not inside a box of its
+          own (Shrey, 2026-11-15: a scroll area here read as a window inside the browser). The box
+          to write in stays pinned to the bottom of the screen, above the app's tab bar on phones
+          (wide screens have no command bar on /agent). */}
       {/* When a draft opens, the conversation slides left to make room rather than jumping. */}
-      <motion.section layout="position" transition={{ duration: still ? 0 : MOVE, ease: EASE }} aria-label="Conversation" className="mx-auto flex h-[calc(100svh-15rem)] min-h-[24rem] w-full max-w-[46rem] flex-col lg:h-[calc(100svh-12rem)]">
+      <motion.section layout="position" transition={{ duration: still ? 0 : MOVE, ease: EASE }} aria-label="Conversation" className="mx-auto flex w-full max-w-[46rem] flex-col">
         <div className="mb-3 flex items-center justify-between gap-3">
           <p className="text-meta text-muted">{remaining === null ? "" : `${remaining} of 20 messages left today`}</p>
           {turns.length > 0 && (
@@ -83,11 +87,11 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
           )}
         </div>
 
-        <ol ref={list} aria-live="polite" className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pr-3">
+        <ol aria-live="polite" className="flex flex-col gap-4">
           {turns.length === 0 && (
             <li className="rounded-lg border border-card-line bg-card p-5">
               <p className="font-display text-headline leading-tight">Hi {name.split(" ")[0]}. Ask me about jobs, companies or people.</p>
-              <p className="mt-2 text-body text-muted">I search the open jobs at your experience, find HR and founders at a company, suggest YC startups, and draft emails you send yourself.</p>
+              <p className="mt-2 text-body text-muted">I search the open jobs at your experience, find people you know or HR and founders at a company, suggest YC startups, and draft emails and LinkedIn messages you send yourself.</p>
             </li>
           )}
           {turns.map((t, i) => t.role === "user"
@@ -116,8 +120,10 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
             ))}
           </div>
         )}
+        {/* The canvas fades in above the box so messages slide under it, not behind a hard edge. */}
+        <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 -mb-8 bg-gradient-to-t from-canvas from-75% pb-4 pt-6 lg:bottom-0 lg:-mb-10 lg:pb-6">
         <form onSubmit={(e) => { e.preventDefault(); send(draft); }}
-          className="mt-4 flex shrink-0 items-end gap-2 rounded-lg border border-ink bg-canvas p-2">
+          className="flex items-end gap-2 rounded-lg border border-ink bg-canvas p-2">
           <label htmlFor="agent-input" className="sr-only">Message the agent</label>
           <textarea id="agent-input" ref={input} rows={1} maxLength={2000} value={draft} onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
@@ -127,17 +133,18 @@ export function Chat({ name, initialRemaining }: { name: string; initialRemainin
             <ArrowUp aria-hidden className="size-5" />
           </button>
         </form>
+        </div>
       </motion.section>
 
       <AnimatePresence mode="wait">
-        {open && <DraftPanel key={`${open.contact.id}:${open.subject}`} draft={open} onClose={() => setOpen(null)} />}
+        {open && <DraftPanel key={open.type === "draft" ? `${open.contact.id}:${open.subject}` : `li:${open.person.id}:${open.body.slice(0, 40)}`} doc={open} onClose={() => setOpen(null)} />}
       </AnimatePresence>
     </div>
     </LayoutGroup>
   );
 }
 
-function Card({ card, onOpen }: { card: AgentCard; onOpen: (d: AgentDraft) => void }) {
+function Card({ card, onOpen }: { card: AgentCard; onOpen: (d: Doc) => void }) {
   const box = "mt-3 rounded-md border border-line bg-canvas px-3 py-2";
   if (card.type === "jobs") return (
     <ul className={`${box} grid gap-1.5`}>
@@ -159,6 +166,27 @@ function Card({ card, onOpen }: { card: AgentCard; onOpen: (d: AgentDraft) => vo
         </li>
       ))}
     </ul>
+  );
+  if (card.type === "connections") return (
+    <ul className={`${box} grid gap-1.5`}>
+      {card.people.map((p) => (
+        <li key={p.id} className="text-meta">
+          <span className="font-medium">{p.name}</span>
+          <span className="text-muted"> · {[p.position, p.company].filter(Boolean).join(", ")} · you&apos;re connected</span>
+          {p.linkedin && <a href={p.linkedin} target="_blank" rel="noopener" className="ml-1 inline-flex items-center gap-0.5 text-accent-text hover:underline">LinkedIn<ExternalLink aria-hidden className="size-3" /></a>}
+        </li>
+      ))}
+    </ul>
+  );
+  if (card.type === "linkedin") return (
+    <div className={box}>
+      <p className="text-meta text-muted">LinkedIn message to {card.person.name}{card.person.company ? `, ${card.person.company}` : ""}</p>
+      <p className="mt-1 line-clamp-2 text-meta text-muted">{card.body}</p>
+      <button type="button" onClick={() => onOpen(card)}
+        className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-ink px-3 py-1.5 text-meta font-medium transition-transform duration-quick active:scale-[0.98]">
+        <FileText aria-hidden className="size-4" />Open message
+      </button>
+    </div>
   );
   if (card.type === "startups") return (
     <ul className={`${box} grid gap-2`}>
@@ -191,10 +219,32 @@ const WIDE = "(min-width: 64rem)";
 const subscribeWide = (cb: () => void) => { const m = matchMedia(WIDE); m.addEventListener("change", cb); return () => m.removeEventListener("change", cb); };
 const useWide = () => useSyncExternalStore(subscribeWide, () => matchMedia(WIDE).matches, () => true);
 
-function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void }) {
-  const [subject, setSubject] = useState(draft.subject);
-  const [body, setBody] = useState(draft.body);
+function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
+  const draft = doc.type === "draft" ? doc : null;
+  const person = doc.type === "draft" ? doc.contact : doc.person;
+  const role = doc.type === "draft" ? doc.contact.title : doc.person.position;
+  const [subject, setSubject] = useState(draft?.subject ?? "");
+  const [body, setBody] = useState(doc.body);
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState<{ kind: "idle" | "asking" | "sending" | "sent" } | { kind: "error"; message: string }>({ kind: "idle" });
+  const canSend = gmailSendOn && Boolean(draft?.to);
+  useEffect(() => { if (canSend) preloadGmail().catch(() => {}); }, [canSend]);
+  // The person presses Send themselves, after reading; the first time, Google asks them to allow it.
+  const send = async () => {
+    if (!draft?.to) return;
+    try {
+      if (!gmailConnected()) {
+        setSending({ kind: "asking" });
+        await connectGmail(); // opens Google's window: must start inside this click
+      }
+      setSending({ kind: "sending" });
+      await sendGmail(draft.to, subject, body);
+      setSending({ kind: "sent" });
+    } catch (e) {
+      setSending({ kind: "error", message: (e as Error).message });
+    }
+  };
+  const sent = sending.kind === "sent";
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => { heading.current?.focus(); }, []);
   useEffect(() => {
@@ -204,10 +254,17 @@ function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void
   }, [onClose]);
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(`${draft.to ? `To: ${draft.to}\n` : ""}Subject: ${subject}\n\n${body}`);
+      await navigator.clipboard.writeText(draft ? `${draft.to ? `To: ${draft.to}\n` : ""}Subject: ${subject}\n\n${body}` : body);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    } catch {}
+      return true;
+    } catch { return false; }
+  };
+  // LinkedIn has no way to fill a message in from a link: copy it, then open their profile to paste.
+  const copyAndOpen = async () => {
+    // Copy first: the clipboard needs this page to have focus, which the new tab would take.
+    await copy();
+    window.open(person.linkedin ?? "", "_blank", "noopener");
   };
   const wide = useWide();
   const still = useReducedMotion();
@@ -225,43 +282,62 @@ function DraftPanel({ draft, onClose }: { draft: AgentDraft; onClose: () => void
     // Beside the chat on wide screens, like a document opened next to a conversation; a sheet on phones.
     // The wide panel stops above the app's command bar (about 6rem at the bottom of the column).
     <motion.aside {...motionProps} aria-labelledby="draft-title"
-      className={wide ? "sticky top-4 flex max-h-[calc(100svh-6rem)] flex-col self-start rounded-lg border border-card-line bg-card p-5"
+      className={wide ? "sticky top-[4.5rem] flex max-h-[calc(100svh-6rem)] flex-col self-start rounded-lg border border-card-line bg-card p-5"
         : "fixed inset-0 z-50 flex flex-col bg-card p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 id="draft-title" ref={heading} tabIndex={-1} className="font-display text-[1.375rem] leading-tight outline-none">Draft to {draft.contact.name}</h2>
-          <p className="text-meta text-muted">{[draft.contact.title, draft.contact.company].filter(Boolean).join(", ")}</p>
+          <h2 id="draft-title" ref={heading} tabIndex={-1} className="font-display text-[1.375rem] leading-tight outline-none">{draft ? "Draft to" : "Message to"} {person.name}</h2>
+          <p className="text-meta text-muted">{[role, person.company].filter(Boolean).join(", ")}{draft ? "" : " · on LinkedIn"}</p>
         </div>
         <button type="button" onClick={onClose} aria-label="Close draft" className="grid size-9 shrink-0 place-items-center rounded-md hover:bg-surface">
           <X aria-hidden className="size-5" />
         </button>
       </div>
-      <div className="mt-4 grid min-h-0 flex-1 content-start gap-3 overflow-y-auto">
-        <p className="text-meta"><span className="font-medium">To </span>
-          {draft.to ?? <span className="text-muted">{draft.reveals_left === 0 ? "today's 5 email addresses are used; copy the text and find them on LinkedIn" : "no email on file for them"}</span>}
-        </p>
-        <label className="text-meta font-medium">Subject<input value={subject} maxLength={200} onChange={(e) => setSubject(e.target.value)} className={field} /></label>
-        <label className="text-meta font-medium">Email
-          <textarea value={body} maxLength={4000} onChange={(e) => setBody(e.target.value)} rows={6} className={`${field} resize-none leading-relaxed [field-sizing:content]`} />
+      <div className="mt-4 grid min-h-0 flex-1 content-start gap-3 overflow-y-auto [scrollbar-width:thin]">
+        {draft && <>
+          <p className="text-meta"><span className="font-medium">To </span>
+            {draft.to ?? <span className="text-muted">{draft.reveals_left === 0 ? "today's 5 email addresses are used; copy the text and find them on LinkedIn" : "no email on file for them"}</span>}
+          </p>
+          <label className="text-meta font-medium">Subject<input value={subject} maxLength={200} readOnly={sent} onChange={(e) => setSubject(e.target.value)} className={field} /></label>
+        </>}
+        <label className="text-meta font-medium">{draft ? "Email" : "Message"}
+          <textarea value={body} maxLength={4000} readOnly={sent} onChange={(e) => setBody(e.target.value)} rows={6} className={`${field} resize-none leading-relaxed [field-sizing:content]`} />
         </label>
-        <p className="text-caption text-muted">Read it, make it yours, then send it from your own Gmail. Aventra never sends anything for you.</p>
+        <p className="text-caption text-muted">{draft ? `Read it, make it yours, then ${canSend ? "send it" : "send it from your own Gmail"}.` : "Read it, make it yours, then paste it into a message on LinkedIn."}{" "}
+          {canSend ? "It goes from your Gmail only when you press Send." : "Aventra never sends anything for you."}</p>
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
-        {draft.to && (
-          <a href={gmailUrl(draft.to, subject, body)} target="_blank" rel="noopener"
+        {!draft && person.linkedin && (
+          <button type="button" onClick={copyAndOpen}
             className="inline-flex items-center gap-1.5 rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98]">
+            {copied ? "Copied, opening LinkedIn" : "Copy and open LinkedIn"}<ExternalLink aria-hidden className="size-4" />
+          </button>
+        )}
+        {canSend && (
+          <button type="button" onClick={send} disabled={sent || sending.kind === "asking" || sending.kind === "sending" || !subject.trim() || !body.trim()}
+            className="inline-flex items-center gap-1.5 rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98] disabled:opacity-60">
+            {sending.kind === "asking" || sending.kind === "sending" ? <Loader2 aria-hidden className="size-4 animate-spin" />
+              : sent ? <Check aria-hidden className="size-4" /> : <Send aria-hidden className="size-4" />}
+            {sending.kind === "asking" ? "Waiting for Google…" : sending.kind === "sending" ? "Sending…" : sent ? "Sent from your Gmail" : "Send from Gmail"}
+          </button>
+        )}
+        {draft?.to && !sent && (
+          <a href={gmailUrl(draft.to, subject, body)} target="_blank" rel="noopener"
+            className={canSend ? "inline-flex items-center gap-1.5 rounded-md border border-ink px-4 py-2 text-body font-medium"
+              : "inline-flex items-center gap-1.5 rounded-md bg-ink px-4 py-2 text-body font-medium text-canvas transition-transform duration-quick active:scale-[0.98]"}>
             Open in Gmail<ExternalLink aria-hidden className="size-4" />
           </a>
         )}
         <button type="button" onClick={copy} className="inline-flex items-center gap-1.5 rounded-md border border-ink px-4 py-2 text-body font-medium">
           <Copy aria-hidden className="size-4" />{copied ? "Copied" : "Copy"}
         </button>
-        {draft.contact.linkedin && (
-          <a href={draft.contact.linkedin} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-body text-accent-text hover:underline">
+        {draft && person.linkedin && (
+          <a href={person.linkedin} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-body text-accent-text hover:underline">
             LinkedIn<ExternalLink aria-hidden className="size-4" />
           </a>
         )}
       </div>
+      <p aria-live="polite" className="mt-2 text-meta empty:hidden">{sending.kind === "error" && <span role="alert" className="text-card-fail">Couldn&apos;t send: {sending.message}</span>}{sent && <span className="text-muted">Sent to {draft?.to}. It&apos;s in your Gmail&apos;s Sent folder.</span>}</p>
     </motion.aside>
   );
   return wide ? panel : createPortal(panel, document.body);

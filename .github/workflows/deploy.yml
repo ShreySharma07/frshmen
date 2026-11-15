@@ -43,6 +43,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
           # Cloudflare Web Analytics (site/src/app/layout.tsx). Unset, the site ships without the beacon.
           NEXT_PUBLIC_CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN || secrets.CF_BEACON_TOKEN }}
+          NEXT_PUBLIC_LINKEDIN_SIGNIN: ${{ vars.LINKEDIN_SIGNIN }}
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
         # Fail loudly instead of shipping a site whose sign-in is silently off.
         # (Remove this guard if sign-in should ever be deliberately off.)
         run: |

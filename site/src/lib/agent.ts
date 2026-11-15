@@ -15,8 +15,13 @@ export interface AgentDraft {
   gmail_url: string | null;
   reveals_left?: number;
 }
+export interface AgentConnection { id: number; name: string; company: string | null; position: string | null; linkedin: string | null }
+/** A LinkedIn message to one of the person's own connections: they copy it and send it themselves. */
+export interface AgentNote { type: "linkedin"; person: AgentConnection; body: string; job_id: string | null }
 export type AgentCard =
   | { type: "jobs"; jobs: AgentJob[] }
+  | { type: "connections"; people: AgentConnection[] }
+  | AgentNote
   | { type: "people"; people: AgentPerson[] }
   | { type: "startups"; startups: AgentStartup[] }
   | AgentDraft;

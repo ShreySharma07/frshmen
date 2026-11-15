@@ -146,3 +146,47 @@ def test_needs_sign_in_switch_and_a_last_user_turn(client):
     client.app.state.fit = ("key", Gemini(text("x")))
     assert client.post("/api/agent/chat", json={"messages": [{"role": "user", "text": "hi"}]}).status_code == 401
     assert client.post("/api/agent/chat", headers=TOKEN, json={"messages": [{"role": "model", "text": "hi"}]}).status_code == 422
+
+
+OTHER = "00000000-0000-4000-8000-0000000000b0"
+
+
+def connections(*rows):
+    """(student, name, company) rows; returns their ids in order."""
+    with psycopg.connect(PG, autocommit=True) as conn:
+        return [conn.execute("INSERT INTO connections (student_id, name, company, position, linkedin) "
+                             "VALUES (%s, %s, %s, 'Engineer', 'https://www.linkedin.com/in/x') RETURNING id", r).fetchone()[0]
+                for r in rows]
+
+
+def test_find_connections_sees_only_the_askers_own(client):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO auth.users (id) VALUES (%s)", (OTHER,))
+        conn.execute("INSERT INTO students (id, name) VALUES (%s, 'Other')", (OTHER,))
+    connections((ASHA, "Kiran Rao", "Razorpay"), (OTHER, "Someone Else", "Razorpay"), (ASHA, "Meena", "Zomato"))
+    g = Gemini(call("find_connections", company="razorpay"), text("You know Kiran."))
+    body = ask(client, g, "Who do I know at Razorpay?").json()
+    card = body["cards"][0]
+    assert card["type"] == "connections" and [p["name"] for p in card["people"]] == ["Kiran Rao"]
+    assert "Someone Else" not in json.dumps(g.sent)
+    assert body["sources"] == ["your LinkedIn connections"]
+
+
+def test_find_connections_says_when_nothing_was_uploaded(client):
+    g = Gemini(call("find_connections", company="razorpay"), text("Upload your connections."))
+    assert ask(client, g).json()["cards"] == []
+    assert "hasn't uploaded" in g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]["note"]
+
+
+def test_linkedin_message_only_to_the_askers_own_connection(client):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO auth.users (id) VALUES (%s)", (OTHER,))
+        conn.execute("INSERT INTO students (id, name) VALUES (%s, 'Other')", (OTHER,))
+    mine, theirs = connections((ASHA, "Kiran Rao", "Razorpay"), (OTHER, "Someone Else", "Razorpay"))
+    g = Gemini(call("prepare_linkedin_message", connection_id=theirs, body="Hi"),
+               call("prepare_linkedin_message", connection_id=mine, body="Hi Kiran, could you refer me?"),
+               text("Ready."))
+    cards = ask(client, g).json()["cards"]
+    assert len(cards) == 1 and cards[0]["type"] == "linkedin"
+    assert cards[0]["person"]["name"] == "Kiran Rao" and cards[0]["person"]["linkedin"].startswith("https://www.linkedin.com/")
+    assert "error" in g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]

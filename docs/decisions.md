@@ -4,6 +4,35 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-15 — LinkedIn connections, LinkedIn sign-in, and how Gmail sending will work
+- **Options (where connections live):** (a) a `connections` table, one person's rows readable only
+  by them · (b) kept in the browser only (lost on another device; the agent can't search it).
+- **Options (Gmail send permission):** (a) in the browser only: Google's sign-in asks for
+  `gmail.send`, the browser sends, nothing stored, about an hour before one click renews it ·
+  (b) a long-lived token stored, encrypted, on our server (more to secure and to explain to
+  Google's review).
+- **Order:** LinkedIn first (works for everyone now), Gmail after (Google's verification needs the
+  privacy policy and our own domain, both on the launch list).
+- **Choice (Shrey: "go with your recommendations"):** connections (a), Gmail (a), LinkedIn first.
+- **Built (LinkedIn):**
+  - `db/postgres/0015_connections.sql`: name, company, position, profile link, date connected.
+    Email addresses in the export are dropped in the browser and have no column. At most 5,000 per
+    person (~1 MB). RLS: read, add and delete only your own; no edits; tested in `tests/test_rls.py`.
+  - Profile: upload `Connections.csv` (parsed in the browser), replace it, or delete it.
+  - Agent: `find_connections` ("who do I know at X", the asker's rows only) and
+    `prepare_linkedin_message`, a card with "Copy and open LinkedIn". LinkedIn has no link that fills
+    a message in, so the person pastes it; nothing is sent for them (CLAUDE.md: never automate
+    LinkedIn). Connections' names, companies and titles reach Gemini like the contact lists' do.
+  - Sign-in: "Continue with LinkedIn" (OpenID Connect: name, email, photo only), shown when the
+    repo variable `LINKEDIN_SIGNIN` is `on`, after the provider is set up in Supabase.
+- **Built (Gmail):** "Send from Gmail" in the draft panel (`site/src/lib/gmail.ts`). The first press
+  opens Google's window asking for `gmail.send` only; the browser keeps the token in memory (about
+  an hour) and calls Gmail itself, so Aventra's servers never hold it. Shown only when the repo
+  variable `GOOGLE_CLIENT_ID` is set; "Open in Gmail" stays as the other way. Until Google verifies
+  the app, only the test users listed on the consent screen (up to 100) can allow it.
+- **Same day (Shrey):** the agent chat scrolls with the page instead of inside its own box ("it
+  looks like a window inside the browser"); the open job pane keeps scrolling without a second bar.
+
 ## 2026-11-14 — Agent chat layout: one conversation, drafts open beside it (concept A)
 - **Options:** (A) one conversation with results as cards · (B) chat plus a workspace for drafts,
   people and jobs · (C) the agent in the command bar on every page. Wireframes in
