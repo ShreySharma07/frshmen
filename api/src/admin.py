@@ -59,11 +59,12 @@ class ContactDelete(BaseModel):
 
 
 CONTACT_COLUMNS = ("kind", *ALIASES)
+_N = len(CONTACT_COLUMNS)  # source is the parameter after the columns
 # One statement per upload (the Worker has 10 ms of CPU per request): rows with an email are
 # matched on it, case-insensitive; a later file fills in what it has and keeps what it lacks.
 UPSERT_CONTACTS = f"""
 INSERT INTO contacts ({", ".join(CONTACT_COLUMNS)}, source)
-SELECT u.*, $12 FROM unnest({", ".join(f"${i}::text[]" for i in range(1, 12))}) AS u({", ".join(CONTACT_COLUMNS)})
+SELECT u.*, ${_N + 1} FROM unnest({", ".join(f"${i}::text[]" for i in range(1, _N + 1))}) AS u({", ".join(CONTACT_COLUMNS)})
 ON CONFLICT (lower(email)) WHERE email IS NOT NULL DO UPDATE SET
   kind = EXCLUDED.kind, name = EXCLUDED.name, company = EXCLUDED.company, source = EXCLUDED.source,
   {", ".join(f"{c} = COALESCE(EXCLUDED.{c}, contacts.{c})" for c in ALIASES if c not in ("name", "company", "email"))}
@@ -72,7 +73,7 @@ RETURNING (xmax = 0) AS inserted
 # Rows without an email can't be matched on it: skip a name already listed at the same company.
 INSERT_NO_EMAIL = f"""
 INSERT INTO contacts ({", ".join(CONTACT_COLUMNS)}, source)
-SELECT u.*, $12 FROM unnest({", ".join(f"${i}::text[]" for i in range(1, 12))}) AS u({", ".join(CONTACT_COLUMNS)})
+SELECT u.*, ${_N + 1} FROM unnest({", ".join(f"${i}::text[]" for i in range(1, _N + 1))}) AS u({", ".join(CONTACT_COLUMNS)})
 WHERE NOT EXISTS (SELECT 1 FROM contacts c WHERE c.email IS NULL AND c.kind = u.kind
                   AND lower(c.name) = lower(u.name) AND lower(c.company) = lower(u.company))
 RETURNING true AS inserted

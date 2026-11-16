@@ -1,0 +1,39 @@
+# What kinds of work a startup likely hires for, from what it builds (docs/decisions.md, 2026-11-16).
+# Used by extract/startup.py for the agent's suggest_startups; keys are config/role_families.yaml
+# categories, so they compare with the kinds of work saved on a person's profile.
+#
+# tags: YC tags and industries (yc-oss), compared whole and case-insensitively.
+# words: whole words or phrases looked for in the one-liner and description.
+# A startup gets every category with a hit; "software" and "backend" are what nearly every
+# software startup hires, so they only come from a hit too, never by default.
+categories:
+  ai_ml:
+    tags: [Artificial Intelligence, AI, Generative AI, Machine Learning, Computer Vision, Deep Learning, NLP,
+           Natural Language Processing, AI Assistant, Conversational AI, LLM, Speech Recognition, MLOps, AIOps,
+           Robotics, AI-Enhanced Learning, Voice AI]
+    words: [ai, artificial intelligence, machine learning, ml, llm, llms, large language model, generative ai, genai,
+            ai agent, ai agents, computer vision, deep learning, nlp, voice ai, speech, foundation model,
+            foundation models, copilot, mlops, inference, fine-tuning, embeddings, rag]
+  data:
+    tags: [Analytics, Data Engineering, Big Data, Data Science, Data Visualization, Business Intelligence, Databases]
+    words: [analytics, data pipeline, data pipelines, data warehouse, etl, business intelligence, dashboards, data platform]
+  backend:
+    tags: [Developer Tools, Infrastructure, Cloud Computing, API, DevSecOps, Open Source, B2B, SaaS, Fintech, Payments,
+           Banking as a Service, Enterprise Software]
+    words: [api, apis, developer tools, infrastructure, backend, platform for developers, developers, sdk, database,
+            payments, open source, cloud]
+  devops:
+    tags: [DevOps, Kubernetes, Cloud Computing, Infrastructure, Monitoring, Observability]
+    words: [devops, kubernetes, observability, monitoring, ci/cd, deployment, infrastructure as code]
+  security:
+    tags: [Security, Cybersecurity, Identity, Fraud Detection, Compliance]
+    words: [security, cybersecurity, fraud, compliance, identity, authentication]
+  mobile:
+    tags: [Consumer, Mobile, iOS, Android, Social Media, Social Network, Consumer Apps, Messaging]
+    words: [mobile app, android, consumer app, ios app]
+  frontend:
+    tags: [Design Tools, Web Development, No-code, Low-code]
+    words: [frontend, web app, browser, no-code, low-code, design tool, website builder]
+  hardware:
+    tags: [Hardware, Robotics, Semiconductors, IoT, Drones, Aerospace, Automotive, Climate, Energy, Manufacturing]
+    words: [hardware, robots, robotics, chips, semiconductor, iot, drones, sensors, satellites, firmware, embedded]

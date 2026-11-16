@@ -72,7 +72,7 @@ export function Contacts({ Card }: { Card: React.ComponentType<{ title: string; 
     <Card title="Contact lists" className="mt-4">
       <p className="mb-4 max-w-[70ch] text-meta text-muted">
         For the agent only. Users never see phone numbers, and see an email only inside a draft the agent writes, a few a day, each one logged.
-        A CSV needs a name and a company column; email, title, phone, LinkedIn, city, YC batch, website and notes are read when present.
+        A CSV needs a name and a company column; email, title, phone, LinkedIn, city, YC batch, website, a description of what the startup builds, tags and notes are read when present.
       </p>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="grid content-start gap-3">

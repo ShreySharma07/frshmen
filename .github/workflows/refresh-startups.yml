@@ -1,0 +1,33 @@
+name: Refresh startups
+
+# What each startup on the YC founders list builds, for the agent's suggest_startups
+# (docs/decisions.md, 2026-11-16): the CSV's description, then yc-oss, then the startup's own
+# homepage meta description (robots.txt respected, once per 30 days). Weekly, and by hand right
+# after uploading a founders list in /admin.
+on:
+  schedule:
+    # Tuesday 04:41 UTC: off the hour, away from the pipeline's :17 runs.
+    - cron: "41 4 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Refresh
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: python -u scripts/refresh_startups.py
