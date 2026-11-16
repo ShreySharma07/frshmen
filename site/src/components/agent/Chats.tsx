@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Turn } from "@/lib/agent";
 import { deleteChat, listChats, loadChat, type ChatSummary } from "@/lib/chats";
 import { shortDate } from "@/lib/format";
+import type { ResumeSource } from "./ResumePanel";
 import { Chat } from "./Chat";
 
 // The chat open in this tab, so a reload comes back to it.
@@ -17,7 +18,9 @@ type List = { kind: "loading" } | { kind: "ready"; chats: ChatSummary[] } | { ki
 
 const fresh = (): Open => ({ id: crypto.randomUUID(), turns: [], saved: false });
 
-export function Chats({ name, initialRemaining }: { name: string; initialRemaining: number | null }) {
+export function Chats({ name, initialRemaining, resume: initialResume }: { name: string; initialRemaining: number | null; resume: ResumeSource }) {
+  // Kept here so an edit saved in one chat is what the next chat's editor opens.
+  const [resume, setResume] = useState(initialResume);
   const [list, setList] = useState<List>({ kind: "loading" });
   const [open, setOpen] = useState<Open | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
@@ -56,7 +59,8 @@ export function Chats({ name, initialRemaining }: { name: string; initialRemaini
     return (
       <Chat key={open.id} id={open.id} initialTurns={open.turns} saved={open.saved} name={name} initialRemaining={initialRemaining}
         onBack={hasList || open.turns.length ? () => { setOpen(null); refresh().catch(() => {}); } : null}
-        onSaved={() => { setOpen((o) => (o && !o.saved ? { ...o, saved: true } : o)); refresh().catch(() => {}); }} />
+        onSaved={() => { setOpen((o) => (o && !o.saved ? { ...o, saved: true } : o)); refresh().catch(() => {}); }}
+        resume={resume} onResumeSaved={(text, fileName) => setResume((r) => ({ ...r, text, fileName }))} />
     );
   }
 
