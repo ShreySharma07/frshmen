@@ -30,7 +30,12 @@ Newest first. Each entry: date, options considered, choice, why.
 - **Resume editing, options:** (A) the agent rewrites it, changes marked · (B) a plain editor ·
   (C) the editor, with "Ask agent to improve" inside it. **Choice (Shrey):** C. It opens the
   resume saved at sign-up (text from the uploaded PDF), or a new PDF. The improve pass counts as
-  an agent message and is Premium like the rest of the agent. Layout: wireframes first.
+  an agent message and is Premium like the rest of the agent.
+- **Resume editor layout** (sketches in `docs/wireframes/resume/`): (A) beside the chat like a draft,
+  changes inline to accept or undo · (B) a Resume tab, section by section · (C) suggestions as a list
+  in the chat. **Choice (Shrey):** A, plus **Export PDF** of the editor's text (the tailored resume's
+  one-page template, built in the browser). Saving updates `students.resume_text`; the uploaded PDF
+  is replaced only when a new PDF is uploaded in the editor.
 
 ## 2026-11-15 — Premium: what's in it, and how people pay (plan: `docs/strategy/premium/plan.md`)
 - **What's premium (Shrey: "as suggested"):** the Agent (chat, people, drafts, Gmail, LinkedIn),
