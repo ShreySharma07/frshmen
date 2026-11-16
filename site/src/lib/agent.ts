@@ -4,7 +4,11 @@ import { api } from "./tracker";
 
 export interface AgentJob { id: string; title: string; company: string; location: string | null; asks_years: string | null; url: string }
 export interface AgentPerson { id: number; kind: "hr" | "founder"; name: string; company: string; title: string | null; linkedin: string | null; has_email: boolean }
-export interface AgentStartup { company: string; yc_batch: string | null; notes: string | null; company_url: string | null; founder_id: number; founder: string; open_jobs: number; sample_titles: string[] }
+// Chats saved before 2026-11-16 hold startups without builds/described/matched_*, and with sample_titles.
+export interface AgentStartup {
+  company: string; yc_batch: string | null; company_url: string | null; founder_id: number; founder: string; open_jobs: number;
+  builds?: string | null; described?: boolean; matched_kinds?: string[]; matched_skills?: string[]; sample_titles?: string[];
+}
 export interface AgentDraft {
   type: "draft";
   contact: { id: number; name: string; company: string; title: string | null; linkedin: string | null };
@@ -25,7 +29,7 @@ export type AgentCard =
   | { type: "connections"; people: AgentConnection[] }
   | AgentNote
   | { type: "people"; people: AgentPerson[] }
-  | { type: "startups"; startups: AgentStartup[] }
+  | { type: "startups"; startups: AgentStartup[]; offset?: number; has_more?: boolean }
   | AgentDraft;
 
 export interface Turn { role: "user" | "model"; text: string; cards?: AgentCard[]; sources?: string[] }
