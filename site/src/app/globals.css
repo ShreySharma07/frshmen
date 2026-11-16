@@ -263,6 +263,15 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Native dropdown lists (the filter chips, stage pickers) take the theme's colours. Windows draws
+   the open list itself and only follows colours set on each option, including options inside an
+   <optgroup>; without this, dark mode showed light text on Windows' white list. */
+select option,
+select optgroup {
+  background-color: var(--canvas);
+  color: var(--ink);
+}
+
 /* Every animation has a no-motion version. */
 @media (prefers-reduced-motion: reduce) {
   *,
