@@ -78,7 +78,7 @@ function Chip({ label, on, strong, value, onChange, children }: {
     <label className={`relative inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border pl-2.5 transition-colors duration-quick focus-within:ring-2 focus-within:ring-accent/40 ${on ? (strong ? "border-accent bg-accent" : "border-ink bg-selected") : "border-line hover:bg-surface"}`}>
       <span className={`text-meta ${on && strong ? "text-on-accent/70" : "text-muted"}`}>{label}</span>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className={`h-full cursor-pointer appearance-none bg-transparent pr-7 text-meta font-medium outline-none [field-sizing:content] [&>option]:bg-canvas [&>option]:text-ink ${on && strong ? "text-on-accent" : "text-ink"}`}>
+        className={`h-full cursor-pointer appearance-none bg-transparent pr-7 text-meta font-medium outline-none [field-sizing:content] ${on && strong ? "text-on-accent" : "text-ink"}`}>
         {children}
       </select>
       <ChevronDown aria-hidden className={`pointer-events-none absolute right-2 size-3.5 ${on && strong ? "text-on-accent" : on ? "text-ink" : "text-muted"}`} />

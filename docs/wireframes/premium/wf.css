@@ -1,0 +1,52 @@
+/* Low fidelity on purpose: layout and content only, no styling decisions. */
+body{font:14px/1.45 system-ui,sans-serif;margin:0;background:#f4f4f4;color:#222}
+h1{font-size:20px;margin:0} h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;color:#555}
+.box{background:#fff;border:1.5px dashed #999;border-radius:6px;padding:12px}
+.big{font-size:26px;font-weight:600} .note{color:#777;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px} td,th{border-bottom:1px solid #ddd;padding:5px 4px;text-align:left}
+.bar{height:10px;background:#bbb;display:inline-block;vertical-align:middle}
+.field{border:1px solid #999;background:#fafafa;border-radius:4px;padding:6px;margin:4px 0 8px;color:#888}
+.btn{display:inline-block;border:1.5px solid #222;border-radius:4px;padding:6px 12px;font-weight:600;background:#fff}
+.btn.dark{background:#222;color:#fff}
+.pill{display:inline-block;border:1px solid #999;border-radius:99px;padding:1px 8px;font-size:12px}
+.tag{font-size:11px;border:1px solid #999;border-radius:3px;padding:0 5px;color:#555}
+.concept{background:#222;color:#fff;padding:8px 16px;font-size:13px}
+.msg{max-width:72%;padding:10px 12px;border-radius:10px;margin:8px 0}
+.me{margin-left:auto;background:#222;color:#fff}
+.ai{background:#fff;border:1.5px dashed #999}
+.card{background:#fafafa;border:1px solid #bbb;border-radius:6px;padding:8px 10px;margin:6px 0;font-size:13px}
+.cite{font-size:11px;color:#666;border-top:1px solid #ddd;margin-top:6px;padding-top:4px}
+.composer{border:1.5px solid #222;border-radius:10px;padding:10px 12px;background:#fff;display:flex;justify-content:space-between;align-items:center}
+.chips span{margin:0 6px 6px 0}
+.phone{width:390px;margin:0 auto;background:#fff;min-height:760px;border-left:1px solid #ddd;border-right:1px solid #ddd}
+.pad{padding:14px 16px}
+.seg{display:flex;border:1px solid #999;border-radius:6px;overflow:hidden;margin:6px 0}
+.seg span{flex:1;text-align:center;padding:8px 0;font-size:13px;border-left:1px solid #ccc}
+.seg span:first-child{border-left:0} .seg .on{background:#222;color:#fff}
+.chip{display:inline-block;border:1px solid #999;border-radius:6px;padding:5px 9px;margin:0 6px 6px 0;font-size:13px}
+.chip.on{background:#222;color:#fff;border-color:#222}
+.grp{font-size:12px;color:#555;margin:10px 0 4px;font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #eee;font-size:13px}
+.box2{width:14px;height:14px;border:1.5px solid #555;border-radius:3px;display:inline-block;vertical-align:-2px;margin-right:8px}
+.box2.on{background:#222;border-color:#222}
+.count{background:#f4f4f4;border:1px dashed #999;border-radius:6px;padding:8px 10px;font-size:13px;margin:10px 0}
+.sticky{position:sticky;bottom:0;background:#fff;border-top:1px solid #ddd;padding:10px 16px}
+/* Desktop: the app's sidebar, then the page. */
+.web{width:1280px;display:grid;grid-template-columns:200px 1fr;min-height:820px;background:#fff}
+.side{border-right:1px solid #ddd;padding:16px 12px;font-size:13px;color:#555}
+.side div{padding:6px 8px;border-radius:4px} .side .cur{background:#eee;color:#222;font-weight:600}
+.top{border-bottom:1px solid #ddd;padding:12px 24px;display:flex;justify-content:space-between}
+.main{padding:24px 32px}
+.cols{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:32px;align-items:start}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 24px}
+.preview{border:1.5px dashed #999;border-radius:6px;padding:12px;position:sticky;top:16px;background:#fafafa}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:16px}
+.step{background:#fff;border:1.5px dashed #999;border-radius:6px;padding:10px;font-size:13px;min-height:250px}
+.step h3{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#555}
+.flow{display:flex;align-items:center;gap:8px;padding:6px 16px 0;font-size:12.5px;flex-wrap:wrap}
+.flow .n{border:1.5px solid #222;border-radius:5px;padding:5px 9px;background:#fff}
+.flow .a{color:#777}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:10px 16px 18px;font-size:13px}
+.pc ul{margin:4px 0 0;padding-left:18px} .pc li{margin:3px 0}
+.lock{font-size:22px} .price{font-size:22px;font-weight:700}
+.rzp{border:1.5px solid #3b5bdb;border-radius:6px;padding:8px;background:#f5f7ff}
