@@ -5,24 +5,30 @@
 // every answer (lib/chats.ts, docs/decisions.md 2026-11-15) and reopened from the list (Chats.tsx).
 import { ArrowLeft, ArrowUp, Check, Copy, ExternalLink, FileText, Loader2, Send, X } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { createPortal } from "react-dom";
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
 import { saveChat } from "@/lib/chats";
 import { connectGmail, gmailConnected, gmailSendOn, preloadGmail, sendGmail } from "@/lib/gmail";
 import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type AgentNote, type AgentStartup, type Turn } from "@/lib/agent";
 import { CATEGORY } from "@/lib/describe";
+import type { ResumeSource } from "./ResumePanel";
+import { EASE, SidePanel } from "./SidePanel";
 
-// What opens beside the chat: an email draft, or a LinkedIn message to one of the person's connections.
+// What opens beside the chat: an email draft, a LinkedIn message to one of the person's connections,
+// or the resume editor (docs/decisions.md, 2026-11-16).
 type Doc = AgentDraft | AgentNote;
+type Open = Doc | { type: "resume" };
 
-// Motion tokens (globals.css: --ease-out-soft; 300-500 ms for layout moves).
-const EASE = [0.2, 0.8, 0.2, 1] as const;
+// The editor, pdf.js and pdf-lib load only when someone opens their resume.
+const ResumePanel = dynamic(() => import("./ResumePanel").then((m) => m.ResumePanel), { ssr: false });
+const EDIT_RESUME = "Edit my resume";
+
 const MOVE = 0.34;
-const SUGGESTIONS = ["Which YC startups would suit me?", "Jobs I fit that were posted this week", "Who do I know at Razorpay?"];
+const SUGGESTIONS = [EDIT_RESUME, "Which YC startups would suit me?", "Jobs I fit that were posted this week", "Who do I know at Razorpay?"];
 
-export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, onSaved }: {
+export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, onSaved, resume, onResumeSaved }: {
   id: string; initialTurns: Turn[]; saved: boolean; name: string; initialRemaining: number | null;
-  onBack: (() => void) | null; onSaved: () => void;
+  onBack: (() => void) | null; onSaved: () => void; resume: ResumeSource; onResumeSaved: (text: string, fileName: string | null) => void;
 }) {
   const [turns, setTurns] = useState<Turn[]>(initialTurns);
   const isSaved = useRef(saved);
@@ -33,7 +39,7 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
   // The allowance loads after the page does: show it until a reply brings a newer count.
   const [counted, setRemaining] = useState<number | null>(null);
   const remaining = counted ?? initialRemaining;
-  const [open, setOpen] = useState<Doc | null>(null);
+  const [open, setOpen] = useState<Open | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -100,7 +106,8 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
   const suggestions = (
     <div className="mt-4 flex flex-wrap justify-center gap-2">
       {SUGGESTIONS.map((s) => (
-        <button key={s} type="button" onClick={() => send(s)}
+        // Opening the editor is free: no message is sent until they ask the agent to improve it.
+        <button key={s} type="button" onClick={() => (s === EDIT_RESUME ? setOpen({ type: "resume" }) : send(s))}
           className="rounded-full border border-line bg-canvas px-3.5 py-1.5 text-meta transition-colors duration-quick hover:border-ink/40 hover:bg-card">{s}</button>
       ))}
     </div>
@@ -123,6 +130,7 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
           <p className="text-meta text-muted">
             {unsaved && <span className="mr-2 text-card-fail">Couldn&apos;t save this chat ·</span>}
             {remaining === null ? "" : `${remaining} of 20 messages left today`}
+            {!empty && <> · <button type="button" onClick={() => setOpen({ type: "resume" })} className="font-medium text-accent-text underline-offset-2 hover:underline">Your resume</button></>}
           </p>
         </div>
 
@@ -163,7 +171,8 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
       </motion.section>
 
       <AnimatePresence mode="wait">
-        {open && <DraftPanel key={open.type === "draft" ? `${open.contact.id}:${open.subject}` : `li:${open.person.id}:${open.body.slice(0, 40)}`} doc={open} onClose={() => setOpen(null)} />}
+        {open?.type === "resume" ? <ResumePanel key="resume" source={resume} onClose={() => setOpen(null)} onSaved={onResumeSaved} onRemaining={setRemaining} />
+          : open && <DraftPanel key={open.type === "draft" ? `${open.contact.id}:${open.subject}` : `li:${open.person.id}:${open.body.slice(0, 40)}`} doc={open} onClose={() => setOpen(null)} />}
       </AnimatePresence>
     </div>
     </LayoutGroup>
@@ -247,10 +256,6 @@ function Card({ card, onOpen }: { card: AgentCard; onOpen: (d: Doc) => void }) {
 // Wide screens show the draft beside the chat; phones cover the page with it. On phones it is
 // rendered into <body>: inside the page's animated column a fixed sheet can't rise above the app's
 // header and tab bar.
-const WIDE = "(min-width: 64rem)";
-const subscribeWide = (cb: () => void) => { const m = matchMedia(WIDE); m.addEventListener("change", cb); return () => m.removeEventListener("change", cb); };
-const useWide = () => useSyncExternalStore(subscribeWide, () => matchMedia(WIDE).matches, () => true);
-
 function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
   const draft = doc.type === "draft" ? doc : null;
   const person = doc.type === "draft" ? doc.contact : doc.person;
@@ -279,11 +284,6 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
   const sent = sending.kind === "sent";
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => { heading.current?.focus(); }, []);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    addEventListener("keydown", onKey);
-    return () => removeEventListener("keydown", onKey);
-  }, [onClose]);
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(draft ? `${draft.to ? `To: ${draft.to}\n` : ""}Subject: ${subject}\n\n${body}` : body);
@@ -298,24 +298,10 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
     await copy();
     window.open(person.linkedin ?? "", "_blank", "noopener");
   };
-  const wide = useWide();
-  const still = useReducedMotion();
-  // Wide: slides in from the right edge and back out, like a document opening beside the chat.
-  // Phones: rises as a sheet and drops away. A plain fade when motion is reduced.
-  const motionProps = {
-    initial: still ? { opacity: 0 } : wide ? { opacity: 0, x: 32 } : { opacity: 0, y: 40 },
-    animate: { opacity: 1, x: 0, y: 0 },
-    exit: still ? { opacity: 0 } : wide ? { opacity: 0, x: 32 } : { opacity: 0, y: 40 },
-    transition: { duration: still ? 0.12 : 0.3, ease: EASE },
-  };
   const field = "mt-1 w-full rounded-md border border-line bg-canvas px-3 py-2 text-body outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-accent/40";
 
-  const panel = (
-    // Beside the chat on wide screens, like a document opened next to a conversation; a sheet on phones.
-    // The wide panel stops above the app's command bar (about 6rem at the bottom of the column).
-    <motion.aside {...motionProps} aria-labelledby="draft-title"
-      className={wide ? "sticky top-[4.5rem] flex max-h-[calc(100svh-6rem)] flex-col self-start rounded-lg border border-card-line bg-card p-5"
-        : "fixed inset-0 z-50 flex flex-col bg-card p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]"}>
+  return (
+    <SidePanel labelledBy="draft-title" onClose={onClose}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 id="draft-title" ref={heading} tabIndex={-1} className="font-display text-[1.375rem] leading-tight outline-none">{draft ? "Draft to" : "Message to"} {person.name}</h2>
@@ -371,9 +357,8 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
         )}
       </div>
       <p aria-live="polite" className="mt-2 text-meta empty:hidden">{sending.kind === "error" && <span role="alert" className="text-card-fail">Couldn&apos;t send: {sending.message}</span>}{sent && <span className="text-muted">Sent to {draft?.to}. It&apos;s in your Gmail&apos;s Sent folder.</span>}</p>
-    </motion.aside>
+    </SidePanel>
   );
-  return wide ? panel : createPortal(panel, document.body);
 }
 
 function StartupRow({ s }: { s: AgentStartup }) {
