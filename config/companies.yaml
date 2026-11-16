@@ -222,7 +222,7 @@ companies:
   - {name: Fractal Analytics, category: india, hq: in, website: fractal.ai, ats: workday, slug: fractal/wd1/Careers, verified: true, jobs: 100, ai_jobs: 24, checked: '2026-10-06'}
   - {name: Tredence, category: india, hq: in, website: tredence.com, ats: workable, slug: tredence, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Sigmoid, category: india, hq: in, ats: greenhouse, slug: sigmoid, verified: true, jobs: 36, ai_jobs: 4}
-  - {name: Gramener, category: india, hq: in, website: gramener.com, ats: darwinbox, slug: straive.darwinbox.com, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
+  - {name: Gramener, category: india, hq: in, website: gramener.com, ats: darwinbox, slug: straive.darwinbox.com, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Ema, category: india, hq: us, ats: ashby, slug: ema, verified: true, jobs: 41, ai_jobs: 10}
   - {name: Lyzr AI, category: india, hq: in, ats: ashby, slug: lyzr, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-12'}
   - {name: Smallest.ai, category: india, hq: in, website: smallest.ai, ats: ashby, slug: smallest, verified: true, jobs: 2, ai_jobs: 0}
@@ -387,7 +387,7 @@ companies:
   - {name: Moody's, category: mnc, hq: us, website: moodys.com, ats: careersite, slug: careers.moodys.com, india_only: true, verified: true, jobs: 334, ai_jobs: 22, checked: '2026-10-19', careers: 'careersite: https://careers.moodys.com/en'}
   - {name: MSCI, category: mnc, hq: us, website: msci.com, ats: careersite, slug: careers.msci.com, india_only: true, verified: true, jobs: 110, ai_jobs: 5, checked: '2026-10-19', careers: 'careersite: https://careers.msci.com/'}
   - {name: Intuit, category: mnc, hq: us, website: intuit.com, ats: careersite, slug: jobs.intuit.com, india_only: true, verified: true, jobs: 612, ai_jobs: 93, checked: '2026-11-12', careers: 'careersite: https://jobs.intuit.com/sitemap.xml (found by hand)'}
-  - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (6 pages read)}
+  - {name: MetLife, category: mnc, hq: us, website: metlife.com, india_only: true, careers: not found (1 pages read)}
   - {name: Barclays, category: mnc, hq: uk, website: barclays.com, india_only: true, careers: not found (6 pages read)}
   - {name: HSBC, category: mnc, hq: uk, website: hsbc.com, india_only: true, careers: not found (6 pages read)}
   - {name: Standard Chartered, category: mnc, hq: uk, website: sc.com, india_only: true, careers: not found (6 pages read)}
@@ -413,7 +413,7 @@ companies:
   - {name: Palo Alto Networks, category: mnc, hq: us, website: paloaltonetworks.com, ats: workday, slug: paloaltonetworks/wd5/panwexternalcareers, india_only: true, verified: true, jobs: 100, ai_jobs: 10, checked: '2026-10-18', careers: 'workday: https://jobs.paloaltonetworks.com/en/'}
   - {name: Atlassian, category: mnc, hq: global, website: atlassian.com, ats: careersite, slug: careers-apac-atlassian.icims.com, india_only: true, verified: true, jobs: 51, ai_jobs: 7, checked: '2026-11-12', careers: 'careersite: https://careers-apac-atlassian.icims.com/sitemap.xml (found by hand)'}
   - {name: Agoda, category: mnc, hq: global, website: agoda.com, india_only: true, careers: not found (6 pages read)}
-  - {name: Booking.com, category: mnc, hq: eu, website: booking.com, india_only: true, careers: 'icims (no adapter yet): https://careers.booking.com/'}
+  - {name: Booking.com, category: mnc, hq: eu, website: booking.com, india_only: true, careers: not found (6 pages read)}
   - {name: SAP, category: mnc, hq: eu, website: sap.com, ats: careersite, slug: jobs.sap.com/en/jobs/sitemap.xml, india_only: true, verified: true, jobs: 467, ai_jobs: 58, checked: '2026-11-12', careers: 'careersite: https://jobs.sap.com/sitemap.xml (found by hand)'}
   - {name: Arm, category: mnc, hq: uk, website: arm.com, ats: careersite, slug: careers.arm.com, india_only: true, verified: true, jobs: 416, ai_jobs: 72, checked: '2026-10-19', careers: 'careersite: https://careers.arm.com/'}
   - {name: Infineon, category: mnc, hq: eu, website: infineon.com, india_only: true, careers: 'not found (6 pages read, 1 disallowed)'}
@@ -464,7 +464,7 @@ companies:
 
   # --- Indian fintech, e-commerce and consultancies (careers systems surveyed 2026-10-07; see docs/decisions.md) ---
   - {name: BharatPe, category: india, hq: in, website: bharatpe.com, ats: darwinbox, slug: bharatpe, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
-  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
+  - {name: Pine Labs, category: india, hq: in, website: pinelabs.com, ats: darwinbox, slug: pinelabs, verified: false, checked: '2026-11-12', careers: not found (3 pages read)}
   - {name: MobiKwik, category: india, hq: in, website: mobikwik.com, ats: darwinbox, slug: mobikwik, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: Go Digit, category: india, hq: in, website: godigit.com, ats: darwinbox, slug: godigit, verified: false, checked: '2026-11-12', careers: 'darwinbox: https://www.godigit.com/careers'}
   - {name: smallcase, category: india, hq: in, website: smallcase.com, ats: darwinbox, slug: smallcase, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
@@ -783,7 +783,7 @@ companies:
   - {name: SALT, category: yc, hq: in, website: salt.pe, ats: ashby, slug: salt, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: SaveIN, category: yc, hq: in, website: savein.money, ats: ashby, slug: savein, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: SpadeWorks, category: yc, hq: in, website: spadeworks.co, ats: ashby, slug: spadeworks, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
-  - {name: Advantage Club, category: yc, hq: in, website: advantageclub.co, ats: ashby, slug: advantage-club, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
+  - {name: Advantage Club, category: yc, hq: in, website: advantageclub.co, ats: ashby, slug: advantage-club, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: AlgoUniversity, category: yc, hq: in, website: algouniversity.com, ats: ashby, slug: algouniversity, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: AppX, category: yc, hq: in, website: appx.co.in, ats: ashby, slug: appx, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Betterhalf, category: yc, hq: in, website: betterhalf.ai, ats: ashby, slug: betterhalf, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
@@ -793,7 +793,7 @@ companies:
   - {name: GimBooks, category: yc, hq: in, website: gimbooks.com, ats: ashby, slug: gimbooks, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: GroMo, category: yc, hq: in, website: gromo.in, ats: zoho_recruit, slug: gromo.zohorecruit.com, verified: false, checked: '2026-11-13', careers: 'zoho_recruit: https://gromo.in/careers'}
   - {name: Ivy Homes, category: yc, hq: in, website: ivy.homes, ats: ashby, slug: ivy-homes, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
-  - {name: Karbon Card, category: yc, hq: in, website: karboncard.com, ats: ashby, slug: karbon-card, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
+  - {name: Karbon Card, category: yc, hq: in, website: karboncard.com, ats: ashby, slug: karbon-card, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
   - {name: Kodo, category: yc, hq: in, website: kodo.com, ats: smartrecruiters, slug: kodo, verified: true, jobs: 1, ai_jobs: 0, checked: '2026-11-12'}
   - {name: Koshex, category: yc, hq: in, website: koshex.com, ats: yc_jobs, slug: koshex, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-13', careers: 'yc_jobs: https://koshex.com'}
   - {name: marketfeed, category: yc, hq: in, website: marketfeed.com, ats: careersite, slug: www.marketfeed.com, verified: false, checked: '2026-11-13', careers: 'careersite: https://www.marketfeed.com/careers/senior-youtube-video-creative'}
@@ -801,7 +801,7 @@ companies:
   - {name: ODWEN, category: yc, hq: in, website: odwen.co.in, ats: ashby, slug: odwen, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Pragmatic Leaders (Ankai Inc), category: yc, hq: in, website: pragmaticleaders.io, ats: ashby, slug: pragmatic-leaders-ankai-inc, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Reclaim Protocol, category: yc, hq: in, website: reclaimprotocol.org, ats: yc_jobs, slug: reclaim-protocol, verified: true, jobs: 0, ai_jobs: 0, checked: '2026-11-13', careers: 'yc_jobs: https://www.reclaimprotocol.org/'}
-  - {name: Redcliffe Lifetech, category: yc, hq: in, website: redcliffelabs.com, ats: ashby, slug: redcliffe-lifetech, verified: false, checked: '2026-11-12', careers: not found (0 pages read)}
+  - {name: Redcliffe Lifetech, category: yc, hq: in, website: redcliffelabs.com, ats: ashby, slug: redcliffe-lifetech, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Spark Studio, category: yc, hq: in, website: sparkstudio.co, ats: ashby, slug: spark-studio, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Stownest, category: yc, hq: in, website: stownest.com, ats: ashby, slug: stownest, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
   - {name: Swipe, category: yc, hq: in, website: getswipe.in, ats: ashby, slug: swipe-2, verified: false, checked: '2026-11-12', careers: not found (6 pages read)}
@@ -889,7 +889,7 @@ companies:
   - {name: Ultraviolette, category: india, hq: in, website: ultraviolette.com, verified: false, careers: not found (6 pages read)}
   - {name: Exponent Energy, category: india, hq: in, website: exponent.energy, ats: keka, slug: exponentenergy, verified: false, checked: '2026-11-13', careers: 'keka: https://www.exponent.energy/careers'}
   - {name: Navi, category: india, hq: in, website: navi.com, verified: false, careers: not found (0 pages read)}
-  - {name: INDmoney, category: india, hq: in, website: indmoney.com, verified: false, careers: not found (0 pages read)}
+  - {name: INDmoney, category: india, hq: in, website: indmoney.com, verified: false, careers: not found (6 pages read)}
   - {name: CoinDCX, category: india, hq: in, website: coindcx.com, verified: false, careers: not found (0 pages read)}
   - {name: CoinSwitch, category: india, hq: in, website: coinswitch.co, verified: false, careers: not found (6 pages read)}
   - {name: Acko, category: india, hq: in, website: acko.com, verified: false, careers: not found (6 pages read)}
@@ -910,7 +910,7 @@ companies:
   - {name: Icertis, category: india, hq: in, website: icertis.com, ats: oracle, slug: iaaviz.fa.ocs.oraclecloud.com/Jobs-at-Icertis, verified: true, jobs: 43, ai_jobs: 2, checked: '2026-11-13', careers: 'oracle: https://www.icertis.com/company/careers/'}
   - {name: CleverTap, category: india, hq: in, website: clevertap.com, ats: darwinbox, slug: clevertap, verified: false, checked: '2026-11-13', careers: 'darwinbox: https://clevertap.com/careers/'}
   - {name: MoEngage, category: india, hq: in, website: moengage.com, verified: false, careers: not found (6 pages read)}
-  - {name: WebEngage, category: india, hq: in, website: webengage.com, verified: false, careers: not found (0 pages read)}
+  - {name: WebEngage, category: india, hq: in, website: webengage.com, ats: keka, slug: webklipper, verified: false, checked: '2026-11-16', careers: 'keka: https://webengage.com/current-openings/'}
   - {name: LeadSquared, category: india, hq: in, website: leadsquared.com, ats: darwinbox, slug: leadsquaredhrms, verified: false, checked: '2026-11-13', careers: 'darwinbox: https://www.leadsquared.com/careers/'}
   - {name: Zenoti, category: india, hq: in, website: zenoti.com, ats: greenhouse, slug: zenoti, verified: true, jobs: 56, ai_jobs: 8, checked: '2026-11-13', careers: 'greenhouse: https://www.zenoti.com/company/careers'}
   - {name: HighRadius, category: india, hq: in, website: highradius.com, ats: greenhouse, slug: highradius, verified: true, jobs: 71, ai_jobs: 0, checked: '2026-11-13', careers: 'greenhouse: https://www.highradius.com/about/career/'}
