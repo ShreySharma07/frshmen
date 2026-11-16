@@ -4,6 +4,34 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-16 — Agent: startups that fit (with or without openings), sharper email drafts, resume editor
+- **Startups, problem:** `suggest_startups` joined founders to open jobs, so a YC startup on the
+  list with no opening on Aventra never showed, however well it fit. The founders list says
+  nothing about what a startup builds, so there was nothing else to match on.
+- **Where descriptions come from, options:** (A) the yc-oss dataset (one-liner, description,
+  tags, industries) · (B) a description column in the uploaded CSV · (C) both.
+  **Choice (Shrey):** C.
+- **Neither has one, options:** (a) read the startup's own homepage `<meta name="description">`
+  once, in a weekly job (robots.txt, User-Agent, ETag, one try per 30 days) · (b) list it under
+  "couldn't tell what they build", never guessed from its name. **Choice (Shrey):** (a), then (b).
+- **How it ranks:** each startup's kinds of work (from YC tags and description words,
+  `config/startup_tags.yaml`) against the person's saved kinds of work, plus catalogued skills
+  shared with their resume. Open jobs on Aventra are a bonus and a badge, not a filter. Inactive
+  startups are left out. Stored in `startup_profiles` (API-only, like `contacts`), refreshed by
+  `scripts/refresh_startups.py` weekly.
+- **How many:** as many as the person asks; 12 by default, at most 50 per answer, "show more"
+  continues (Shrey).
+- **Email drafts (Shrey: "generic, poor formatting, weak project descriptions"):** the prompt now
+  asks for a fixed shape (subject under 8 words, greeting, one line on who they are, the 1–2
+  resume projects most relevant to what the startup builds with tech and result, one ask, name;
+  under ~120 words). The agent is told what the startup builds. The server refuses a draft over
+  150 words, one with stock filler, or one naming none of the resume's skills, and the model
+  rewrites it.
+- **Resume editing, options:** (A) the agent rewrites it, changes marked · (B) a plain editor ·
+  (C) the editor, with "Ask agent to improve" inside it. **Choice (Shrey):** C. It opens the
+  resume saved at sign-up (text from the uploaded PDF), or a new PDF. The improve pass counts as
+  an agent message and is Premium like the rest of the agent. Layout: wireframes first.
+
 ## 2026-11-15 — Premium: what's in it, and how people pay (plan: `docs/strategy/premium/plan.md`)
 - **What's premium (Shrey: "as suggested"):** the Agent (chat, people, drafts, Gmail, LinkedIn),
   tailored resumes, and fit checks past 3 a day. Jobs, profile, Applications stay free; Insights is

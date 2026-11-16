@@ -27,7 +27,7 @@ def test_reads_common_header_names_and_normalises_values():
     assert priya == {"kind": "hr", "name": "Priya Sharma", "company": "Razorpay", "title": "Talent Acquisition Lead",
                      "email": "priya.sharma@razorpay.com", "phone": "+91 98765 43210",
                      "linkedin": "https://linkedin.com/in/priyas", "location": "Bengaluru", "yc_batch": None,
-                     "company_url": None, "notes": None}
+                     "company_url": None, "notes": None, "description": None}
     assert rows[1]["email"] is None  # a contact without an email is still a name to ask for
 
 
@@ -74,3 +74,11 @@ def test_reads_a_yc_founders_export():
 def test_missing_column_error_lists_the_columns_found():
     _, errors = parse("first,last\nA,B\n", "hr")
     assert "found: first, last" in errors[0]["reason"]
+
+
+def test_founder_description_and_tags_are_kept():
+    rows, errors = parse("Founder Name,Company,One-liner,Tags,Industry\n"
+                         "Ana Diaz,Pinecone,Vector database for AI apps,\"AI, Databases\",B2B\n", "founder")
+    assert not errors
+    assert rows[0]["description"] == "Vector database for AI apps"
+    assert rows[0]["notes"] == "Tags: AI, Databases; Industry: B2B"

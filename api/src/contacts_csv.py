@@ -24,11 +24,15 @@ ALIASES: dict[str, tuple[str, ...]] = {
     "yc_batch": ("yc batch", "batch"),
     "company_url": ("company url", "website", "url", "company website"),
     "notes": ("notes", "note", "comments", "remarks"),
+    # What the startup builds, for the agent's suggest_startups (docs/decisions.md, 2026-11-16).
+    "description": ("description", "one liner", "one-liner", "oneliner", "company description", "short description",
+                    "about", "what they do"),
 }
 # Read into notes with a label, since the agent should know it ("Company status: Inactive").
-LABELLED_NOTES = {"company status": "Company status", "status": "Company status"}
+LABELLED_NOTES = {"company status": "Company status", "status": "Company status", "tags": "Tags",
+                  "industry": "Industry", "industries": "Industries", "sector": "Industry"}
 LIMITS = {"name": 120, "company": 120, "title": 160, "email": 254, "phone": 40, "linkedin": 300, "location": 120,
-          "yc_batch": 12, "company_url": 300, "notes": 1000}
+          "yc_batch": 12, "company_url": 300, "notes": 1000, "description": 1000}
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 MAX_ROWS = 5000
 

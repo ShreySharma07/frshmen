@@ -9,7 +9,8 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { saveChat } from "@/lib/chats";
 import { connectGmail, gmailConnected, gmailSendOn, preloadGmail, sendGmail } from "@/lib/gmail";
-import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type AgentNote, type Turn } from "@/lib/agent";
+import { gmailUrl, sendMessage, type AgentCard, type AgentDraft, type AgentNote, type AgentStartup, type Turn } from "@/lib/agent";
+import { CATEGORY } from "@/lib/describe";
 
 // What opens beside the chat: an email draft, or a LinkedIn message to one of the person's connections.
 type Doc = AgentDraft | AgentNote;
@@ -213,17 +214,23 @@ function Card({ card, onOpen }: { card: AgentCard; onOpen: (d: Doc) => void }) {
       </button>
     </div>
   );
-  if (card.type === "startups") return (
-    <ul className={`${box} grid gap-2`}>
-      {card.startups.map((s) => (
-        <li key={s.company} className="text-meta">
-          <span className="font-medium">{s.company}</span>{s.yc_batch && <span className="text-muted"> ({s.yc_batch})</span>}
-          <span className="text-muted"> · founder {s.founder} · {s.open_jobs} open {s.open_jobs === 1 ? "job" : "jobs"} at your experience</span>
-          {s.sample_titles?.length > 0 && <span className="block text-muted">{s.sample_titles.join(" · ")}</span>}
-        </li>
-      ))}
-    </ul>
-  );
+  if (card.type === "startups") {
+    // Startups whose work is known come first; the rest are listed, never guessed (decisions.md, 2026-11-16).
+    const known = card.startups.filter((s) => s.described !== false);
+    const unknown = card.startups.filter((s) => s.described === false);
+    return (
+      <div className={`${box} grid gap-3`}>
+        {known.length > 0 && <ul className="grid gap-2">{known.map((s) => <StartupRow key={s.company} s={s} />)}</ul>}
+        {unknown.length > 0 && (
+          <div>
+            <p className="text-meta text-muted">Couldn&rsquo;t tell what these build</p>
+            <ul className="mt-1 grid gap-1">{unknown.map((s) => <StartupRow key={s.company} s={s} />)}</ul>
+          </div>
+        )}
+        {card.has_more && <p className="text-meta text-muted">More fit. Ask &ldquo;show more&rdquo; to see the next ones.</p>}
+      </div>
+    );
+  }
   return (
     <div className={box}>
       <p className="text-meta text-muted">Draft to {card.contact.name}, {card.contact.company}</p>
@@ -367,4 +374,18 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
     </motion.aside>
   );
   return wide ? panel : createPortal(panel, document.body);
+}
+
+function StartupRow({ s }: { s: AgentStartup }) {
+  const fits = [...(s.matched_kinds ?? []).map((k) => CATEGORY[k] ?? k), ...(s.matched_skills ?? [])];
+  return (
+    <li className="text-meta">
+      <span className="font-medium">{s.company}</span>{s.yc_batch && <span className="text-muted"> ({s.yc_batch})</span>}
+      <span className="text-muted"> · founder {s.founder}</span>
+      {s.open_jobs > 0 && <span className="ml-1.5 rounded-sm border border-line px-1.5 py-px text-muted">{s.open_jobs} open {s.open_jobs === 1 ? "role" : "roles"}</span>}
+      {s.builds && <span className="block">{s.builds}</span>}
+      {fits.length > 0 && <span className="block text-muted">Fits: {fits.join(" · ")}</span>}
+      {!s.builds && (s.sample_titles?.length ?? 0) > 0 && <span className="block text-muted">{s.sample_titles!.join(" · ")}</span>}
+    </li>
+  );
 }

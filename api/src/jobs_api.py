@@ -281,7 +281,7 @@ def create_app() -> FastAPI:
                                                              "frees_at": frees.isoformat() if frees else None})
             held = (await db.all("INSERT INTO agent_messages (student_id) VALUES ($1) RETURNING id", [uid]))[0]["id"]
         profile = rows[0]
-        tools = agent.Tools(db, uid, float(profile["yoe"] or 0))
+        tools = agent.Tools(db, uid, float(profile["yoe"] or 0), profile)
         try:
             answer = await agent.chat([t.model_dump() for t in body.messages], profile, tools, *config)
         except fit.FitUnavailable as e:

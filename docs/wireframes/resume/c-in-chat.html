@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C: suggestions in the chat</title><link rel="stylesheet" href="wf.css">
+<style>.wrap{max-width:820px;margin:0 auto;padding:16px}</style></head><body>
+<div class="concept">Concept C · "In the conversation": the agent reviews the resume in chat as a list of changes; "Open editor" for free typing</div>
+<div class="wrap">
+<h1>Agent</h1>
+<div class="msg me">Edit my resume</div>
+<div class="msg ai">I read your resume from sign-up. Three changes would make it stronger:
+  <div class="card"><b>1. Projects</b>, line 1<br><span class="del">Worked on a project for speculative decoding using various techniques.</span><br>Built speculative decoding for a 7B LLM in PyTorch: 2.1× faster generation at the same quality.<br><span class="btn dark">Apply</span> <span class="btn">Skip</span></div>
+  <div class="card"><b>2. Order</b>: move Projects above Education (you're a fresher; projects are your experience). <span class="btn dark">Apply</span> <span class="btn">Skip</span></div>
+  <div class="card"><b>3. Skills</b>: "CUDA" is listed but no project uses it. Add where you used it, or drop it. <span class="note">(you decide; I won't invent a project)</span></div>
+  <span class="btn">Open editor</span> <span class="btn dark">Save applied changes</span>
+  <div class="cite">From: your resume · 17 of 20 messages left</div></div>
+<div class="composer"><span class="note">Ask for more, e.g. "make it one page"…</span><span class="btn dark">Send</span></div>
+</div></body></html>

@@ -13,6 +13,9 @@ pytestmark = pytest.mark.skipif(not PG, reason="set PG_TEST_URL to a throwaway P
 
 FOUNDER_EMAIL = "ana@pinecone.io"
 FOUNDER_PHONE = "+1 555 0100"
+DRAFT = ("Hi Ana,\n\nI'm a 2026 CS graduate; Pinecone's vector search is what I build on.\n\n"
+         "I built a RAG search over 10k papers in Python and PyTorch, cutting lookup time by 60%.\n\n"
+         "Could we talk for 15 minutes about new-grad roles?\n\nThanks,\nAsha")
 
 
 def text(t):
@@ -93,7 +96,7 @@ def test_search_jobs_tool_returns_cards_and_feeds_the_answer(client):
 
 def test_people_and_draft_never_show_the_model_an_email_or_phone(client):
     g = Gemini(call("find_people", company="pinecone"),
-               call("prepare_draft", contact_id=ana_id(), subject="PyTorch new grad", body="Hi Ana, ..."),
+               call("prepare_draft", contact_id=ana_id(), subject="PyTorch new grad", body=DRAFT),
                text("Draft ready."))
     body = ask(client, g, "Write to Pinecone's founder").json()
     people, draft = body["cards"]
@@ -112,7 +115,7 @@ def test_email_reveals_stop_at_five_a_day(client):
     with psycopg.connect(PG, autocommit=True) as conn:
         for _ in range(5):
             conn.execute("INSERT INTO contact_reveals (student_id, contact_id) VALUES (%s, %s)", (ASHA, ana_id()))
-    g = Gemini(call("prepare_draft", contact_id=ana_id(), subject="s", body="b"), text("ok"))
+    g = Gemini(call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
     draft = ask(client, g).json()["cards"][0]
     assert (draft["to"], draft["gmail_url"], draft["reveals_left"]) == (None, None, 0)
     assert g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]["draft"] == "daily email limit reached"
@@ -214,3 +217,78 @@ def test_every_model_overloaded_says_busy_and_counts_nothing(client):
     assert res.status_code == 503 and "busy" in json.dumps(res.json())
     with psycopg.connect(PG) as conn:
         assert conn.execute("SELECT COUNT(*) FROM agent_messages").fetchone() == (0,)
+
+
+# --- Startups that fit, with or without openings (docs/decisions.md, 2026-11-16) ----------------
+
+def add_startups(rows):
+    """rows: (company, founder, one_liner or None, categories, skills, status)."""
+    with psycopg.connect(PG, autocommit=True) as conn:
+        for company, founder, builds, cats, skills, status in rows:
+            conn.execute("INSERT INTO contacts (kind, name, company, source) VALUES ('founder', %s, %s, 'test')", (founder, company))
+            conn.execute("INSERT INTO startup_profiles (key, name, one_liner, categories, skills, status, source) "
+                         "VALUES (lower(%s), %s, %s, %s, %s, %s, %s)",
+                         (company, company, builds, cats, skills, status, "yc-oss" if builds else None))
+        conn.execute("UPDATE students SET target_roles = '{ai_ml}' WHERE id = %s", (ASHA,))
+
+
+def startups_card(client, **args):
+    g = Gemini(call("suggest_startups", **args), text("Here they are."))
+    res = ask(client, g).json()
+    return next(c for c in res["cards"] if c["type"] == "startups"), g
+
+
+def test_startups_fit_without_openings_and_unknowns_come_last(client):
+    add_startups([("Vectorly", "Mo Lee", "LLM evals for AI teams", ["ai_ml"], ["LLMs"], "Active"),
+                  ("Bakeshop", "Jo Kim", "Software for bakeries", ["frontend"], [], "Active"),
+                  ("Mystery Labs", "Al Roy", None, [], [], None),
+                  ("Gone AI", "Ed Fox", "AI for lawyers", ["ai_ml"], [], "Inactive")])
+    card, g = startups_card(client)
+    names = [s["company"] for s in card["startups"]]
+    # Pinecone (open jobs, no description yet) and Vectorly (no openings) fit; the bakery shares
+    # nothing with an ai_ml profile; an inactive startup never shows; unknowns sort last.
+    assert "Vectorly" in names and "Bakeshop" not in names and "Gone AI" not in names
+    assert names.index("Vectorly") < names.index("Mystery Labs")
+    vectorly = next(s for s in card["startups"] if s["company"] == "Vectorly")
+    assert vectorly["open_jobs"] == 0 and vectorly["matched_kinds"] == ["ai_ml"] and vectorly["described"]
+    assert not next(s for s in card["startups"] if s["company"] == "Mystery Labs")["described"]
+    told = g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]
+    assert told["matched_against"]["kinds_of_work"] == ["ai_ml"] and "PyTorch" in told["matched_against"]["resume_skills"]
+
+
+def test_startups_default_to_twelve_and_page_on(client):
+    add_startups([(f"Agent{i:02d}", f"F{i}", "AI agents for support", ["ai_ml"], [], "Active") for i in range(30)])
+    card, _ = startups_card(client)
+    assert len(card["startups"]) == 12 and card["has_more"]
+    more, g = startups_card(client, limit=100, offset=12)
+    assert len(more["startups"]) <= 50 and more["offset"] == 12
+    assert not {s["company"] for s in card["startups"]} & {s["company"] for s in more["startups"]}
+
+
+def test_generic_draft_is_sent_back_for_a_rewrite(client):
+    generic = "Dear Sir,\n\nI hope this finds you well. I am passionate about AI.\n\nRegards"
+    g = Gemini(call("find_people", company="Pinecone"),
+               call("prepare_draft", contact_id=ana_id(), subject="Opportunity", body=generic),
+               call("prepare_draft", contact_id=ana_id(), subject="RAG grad for Pinecone", body=DRAFT),
+               text("Draft ready."))
+    res = ask(client, g).json()
+    refused = g.sent[2]["contents"][-1]["parts"][0]["functionResponse"]["response"]
+    assert "draft not shown" in refused["error"]
+    assert [c["type"] for c in res["cards"]] == ["people", "draft"]
+
+
+def test_long_or_projectless_drafts_are_refused():
+    from agent import draft_problem
+    assert "words" in draft_problem("word " * 151, ["Python"])
+    assert "projects" in draft_problem("Hi Ana, could we talk about roles at Pinecone? Thanks, Asha", ["Python"])
+    assert draft_problem(DRAFT, ["Python", "PyTorch", "RAG"]) is None
+    assert draft_problem("Hi Ana, could we talk? Thanks, Asha", []) is None  # no resume skills to name
+
+
+def test_people_carry_what_the_company_builds(client):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO startup_profiles (key, name, one_liner, source) VALUES ('pinecone', 'Pinecone', 'Vector database', 'yc-oss')")
+    g = Gemini(call("find_people", company="Pinecone"), text("ok"))
+    ask(client, g)
+    people = g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]["people"]
+    assert people[0]["company_builds"] == "Vector database"
