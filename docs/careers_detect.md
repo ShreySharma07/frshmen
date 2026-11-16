@@ -1,6 +1,6 @@
 # Careers-system detection
 
-550 companies read; 125 now have a readable board. Systems found: not found 354, yc_jobs 39, careersite 33, darwinbox 23, ashby 20, workday 15, keka 11, oracle 8, gem 7, linkedin_only 5, greenhouse 5, zoho_recruit 5, on another company's site 3, workable 3, jazzhr 2, taleo 2, icims 2, rippling 2, dover 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, blocked 1, teamtailor 1, lever 1, job listing on weekday.works 1, same board as Fi Money 1, successfactors 1.
+550 companies read; 125 now have a readable board. Systems found: not found 354, yc_jobs 39, careersite 33, darwinbox 23, ashby 20, workday 15, keka 12, oracle 8, gem 7, linkedin_only 5, greenhouse 5, zoho_recruit 5, on another company's site 3, workable 3, jazzhr 2, taleo 2, rippling 2, dover 2, same board as ServiceNow 1, same board as Workday 1, same board as Cognition 1, blocked 1, icims 1, teamtailor 1, lever 1, job listing on weekday.works 1, same board as Fi Money 1, successfactors 1.
 
 | Company | Website | Careers system | Board readable |
 |---|---|---|---|
@@ -59,7 +59,7 @@
 | Neysa | neysa.ai | not found (6 pages read) |  |
 | Setu | setu.co | not found (6 pages read) |  |
 | Tredence | tredence.com | not found (6 pages read) |  |
-| Gramener | gramener.com | not found (0 pages read) |  |
+| Gramener | gramener.com | not found (6 pages read) |  |
 | Gnani.ai | gnani.ai | not found (6 pages read) |  |
 | Nference | nference.com | keka: https://nference.com/careers |  |
 | Flipkart | flipkartcareers.com | not found (0 pages read) |  |
@@ -104,7 +104,7 @@
 | Moody's | moodys.com | careersite: https://careers.moodys.com/en | yes |
 | MSCI | msci.com | careersite: https://careers.msci.com/ | yes |
 | Intuit | intuit.com | careersite: https://jobs.intuit.com/sitemap.xml (found by hand) | yes |
-| MetLife | metlife.com | not found (6 pages read) |  |
+| MetLife | metlife.com | not found (1 pages read) |  |
 | Barclays | barclays.com | not found (6 pages read) |  |
 | HSBC | hsbc.com | not found (6 pages read) |  |
 | Standard Chartered | sc.com | not found (6 pages read) |  |
@@ -130,7 +130,7 @@
 | Palo Alto Networks | paloaltonetworks.com | workday: https://jobs.paloaltonetworks.com/en/ | yes |
 | Atlassian | atlassian.com | careersite: https://careers-apac-atlassian.icims.com/sitemap.xml (found by hand) | yes |
 | Agoda | agoda.com | not found (6 pages read) |  |
-| Booking.com | booking.com | icims (no adapter yet): https://careers.booking.com/ |  |
+| Booking.com | booking.com | not found (6 pages read) |  |
 | SAP | sap.com | careersite: https://jobs.sap.com/sitemap.xml (found by hand) | yes |
 | Arm | arm.com | careersite: https://careers.arm.com/ | yes |
 | Infineon | infineon.com | not found (6 pages read, 1 disallowed) |  |
@@ -179,7 +179,7 @@
 | Bain & Company | bain.com | not found (6 pages read) |  |
 | Deloitte | deloitte.com | not found (6 pages read) |  |
 | BharatPe | bharatpe.com | not found (6 pages read) |  |
-| Pine Labs | pinelabs.com | not found (0 pages read) |  |
+| Pine Labs | pinelabs.com | not found (3 pages read) |  |
 | MobiKwik | mobikwik.com | not found (0 pages read) |  |
 | Go Digit | godigit.com | darwinbox: https://www.godigit.com/careers |  |
 | smallcase | smallcase.com | not found (6 pages read) |  |
@@ -351,7 +351,7 @@
 | SALT | salt.pe | not found (6 pages read) |  |
 | SaveIN | savein.money | not found (0 pages read) |  |
 | SpadeWorks | spadeworks.co | not found (0 pages read) |  |
-| Advantage Club | advantageclub.co | not found (6 pages read) |  |
+| Advantage Club | advantageclub.co | not found (0 pages read) |  |
 | AlgoUniversity | algouniversity.com | not found (6 pages read) |  |
 | AppX | appx.co.in | not found (6 pages read) |  |
 | Betterhalf | betterhalf.ai | not found (6 pages read) |  |
@@ -361,14 +361,14 @@
 | GimBooks | gimbooks.com | not found (6 pages read) |  |
 | GroMo | gromo.in | zoho_recruit: https://gromo.in/careers |  |
 | Ivy Homes | ivy.homes | not found (6 pages read) |  |
-| Karbon Card | karboncard.com | not found (6 pages read) |  |
+| Karbon Card | karboncard.com | not found (0 pages read) |  |
 | Koshex | koshex.com | yc_jobs: https://koshex.com | yes |
 | marketfeed | marketfeed.com | careersite: https://www.marketfeed.com/careers/senior-youtube-video-creative |  |
 | Novatr | novatr.com | not found (6 pages read) |  |
 | ODWEN | odwen.co.in | not found (6 pages read) |  |
 | Pragmatic Leaders (Ankai Inc) | pragmaticleaders.io | not found (6 pages read) |  |
 | Reclaim Protocol | reclaimprotocol.org | yc_jobs: https://www.reclaimprotocol.org/ | yes |
-| Redcliffe Lifetech | redcliffelabs.com | not found (0 pages read) |  |
+| Redcliffe Lifetech | redcliffelabs.com | not found (6 pages read) |  |
 | Spark Studio | sparkstudio.co | not found (6 pages read) |  |
 | Stownest | stownest.com | not found (6 pages read) |  |
 | Swipe | getswipe.in | not found (6 pages read) |  |
@@ -447,7 +447,7 @@
 | Ultraviolette | ultraviolette.com | not found (6 pages read) |  |
 | Exponent Energy | exponent.energy | keka: https://www.exponent.energy/careers |  |
 | Navi | navi.com | not found (0 pages read) |  |
-| INDmoney | indmoney.com | not found (0 pages read) |  |
+| INDmoney | indmoney.com | not found (6 pages read) |  |
 | CoinDCX | coindcx.com | not found (0 pages read) |  |
 | CoinSwitch | coinswitch.co | not found (6 pages read) |  |
 | Acko | acko.com | not found (6 pages read) |  |
@@ -468,7 +468,7 @@
 | Icertis | icertis.com | oracle: https://www.icertis.com/company/careers/ | yes |
 | CleverTap | clevertap.com | darwinbox: https://clevertap.com/careers/ |  |
 | MoEngage | moengage.com | not found (6 pages read) |  |
-| WebEngage | webengage.com | not found (0 pages read) |  |
+| WebEngage | webengage.com | keka: https://webengage.com/current-openings/ |  |
 | LeadSquared | leadsquared.com | darwinbox: https://www.leadsquared.com/careers/ |  |
 | Zenoti | zenoti.com | greenhouse: https://www.zenoti.com/company/careers | yes |
 | HighRadius | highradius.com | greenhouse: https://www.highradius.com/about/career/ | yes |
