@@ -17,6 +17,12 @@ Newest first. Each entry: date, options considered, choice, why.
 - **Rules from the plan:** access is decided on the server (`is_premium`), never in the browser;
   Gemini is called only after the check; webhooks are signed and stored once; nothing is gated
   until the `PREMIUM` switch is on.
+- **Answers (Shrey, 2026-11-16):** Insights stays free; no grace days after a failed renewal;
+  when Premium lapses, saved chats and connections stay readable but can't be continued until
+  renewal; no refunds (cancelling before the period ends stops the next charge); switching plans
+  later; Razorpay's receipts as invoices. 25 edge cases listed in the plan (section 7), four of
+  them required before launch: no double charges, `/verify` only for your own subscription,
+  cancel on Razorpay before an account is deleted, refunds and disputes end Premium.
 
 ## 2026-11-15 — Profile form for everyone, and saved agent chats
 - **Profile layout options** (wireframes in `docs/wireframes/profile/`, phone and desktop): (A) one

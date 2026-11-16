@@ -14,7 +14,7 @@ The gym never takes the member's word for it, and the turnstile isn't a sign on 
 | Jobs: list, filters, labels, evidence | Agent: chat, people to ask, email drafts, Send from Gmail, LinkedIn messages |
 | Profile, resume, LinkedIn connections upload | Tailored resumes |
 | Applications tracker | More fit checks (still a daily cap, for the free Gemini quota) |
-| Insights (open question 1) | |
+| Insights | |
 | 3 fit checks a day | |
 
 Both plans renew until cancelled. Cancelling keeps Premium to the end of the period paid for.
@@ -48,7 +48,7 @@ Both plans renew until cancelled. Cancelling keeps Premium to the end of the per
 | Subscription state | Premium? |
 |---|---|
 | `authenticated`, `active` | Yes |
-| `pending` (a renewal failed; Razorpay is retrying) | Yes, until `current_end` + 3 days (open question 2) |
+| `pending` (a renewal failed; Razorpay is retrying) | Yes, until `current_end`; no grace days (Shrey) |
 | `cancelled` by the person | Yes, until `current_end` |
 | `halted` (retries used up), `completed`, `expired` | No |
 | A `premium_grants` row that hasn't ended (you, beta users, set in `/admin`) | Yes |
@@ -119,12 +119,74 @@ Both plans renew until cancelled. Cancelling keeps Premium to the end of the per
 5. **Put the secrets in the Worker:** the key id and secret, and the webhook secret. Test mode first,
    then the live keys.
 
-## 6. Open questions (my default in brackets)
+## 6. Answers (Shrey, 2026-11-16)
 
-1. Insights: free or premium? [free: it brings people back]
-2. Grace days after a failed renewal? [3]
-3. When Premium lapses, saved chats and LinkedIn connections stay but are read-only? [yes, kept
-   15 days as now]
-4. Refunds? [no partial refunds; cancel stops the next charge. Say so on the Refunds page]
-5. Switching monthly ↔ 3 months? [later; at launch, cancel and subscribe again]
-6. GST invoices? [Razorpay's receipts until you register for GST]
+1. **Insights** stays free.
+2. **No grace days.** A failed renewal keeps Premium only until the end of the period already paid
+   for.
+3. **When Premium lapses**, saved chats and LinkedIn connections stay readable but can't be
+   continued. The agent stays locked until the person renews.
+4. **No refunds.** Cancelling before the period ends stops the next charge. The Refunds page says
+   so.
+5. **Switching between monthly and 3 months** comes later. At launch: cancel, then subscribe again.
+6. **Invoices:** Razorpay's receipts.
+
+## 7. Edge cases and how each is handled
+
+✅ = covered by the design above. ➕ = added because of this list. ★ = must work before launch.
+
+**Paying**
+1. ✅ Pays, then closes the tab before we hear back: the webhook switches Premium on anyway.
+2. ✅ The webhook and the verify call arrive in either order: both write from Razorpay's own data.
+3. ➕★ Double-clicks Subscribe, or opens two tabs: an unfinished (`created`) subscription is reused,
+   so nobody is charged twice.
+4. ➕ Abandons the checkout: `created` never counts as premium; such rows are deleted after a day.
+5. ➕ Already premium and opens `/premium`: show "You're on Premium until …", not the checkout.
+6. ➕ The UPI app or bank declines the mandate: no charge, no access, and the message "Try a card or
+   another UPI app".
+7. ✅➕ Paid while our API was down: Razorpay retries webhooks and the browser can retry verify.
+   Also a nightly job re-reads every open subscription from Razorpay and fixes any row that
+   disagrees.
+
+**Renewing and ending**
+
+8. ✅ A renewal fails: `pending` while Razorpay retries (Premium only until `current_end`), then
+   `halted` and locked.
+9. ➕ The mandate is revoked in the UPI app: the next charge fails (case 8), and a banner says
+   "Your autopay was stopped; renew to keep Premium".
+10. ➕ Cancels, then changes their mind before the period ends: "Resume" if Razorpay allows it,
+    otherwise a new subscription.
+11. ✅ Switches plans: later (answer 5).
+12. ✅ Clocks disagree: Razorpay's `current_end` is the only end time used.
+
+**Security and trust**
+
+13. ✅★ Fake or replayed webhook: a bad signature is refused, and each event id is stored once.
+14. ✅ The page is edited to look premium: the server checks on every premium request.
+15. ➕★ `/verify` is called with someone else's subscription: it must carry the caller's
+    `student_id` in its notes (set when we created it), or it is refused.
+16. ➕ A secret leaks: a written "rotate the keys" step (new keys in Razorpay, `wrangler secret
+    put`, redeploy).
+
+**Accounts**
+
+17. ➕★ Deletes their Aventra account while subscribed: the subscription is cancelled on Razorpay
+    first (immediately, not at period end), then the account is deleted. Otherwise they keep being
+    charged for an account that's gone.
+18. ✅ Signs up again with another email: a new free account; the Billing page says Premium belongs
+    to the account that paid.
+19. ➕ Has two accounts (Google one day, LinkedIn the next): Premium stays on one; "Contact us" to
+    move it, by hand in `/admin`.
+
+**Money and support**
+
+20. ➕★ Refund or chargeback: a `refund` or `dispute` webhook ends Premium at once, and the Refunds
+    page states the policy (answer 4).
+21. ✅ A price changes: existing subscribers keep their plan; a new price is a new plan.
+22. ✅ The free fit-check count: "3 a day" means the last 24 hours, like the other limits.
+
+**Product**
+
+23. ✅ Premium lapses with saved chats and connections: readable, not continuable (answer 3).
+24. ✅ You and beta testers: `premium_grants` with an end date, set in `/admin`.
+25. ✅ The code ships before Razorpay approves the account: nothing is locked until `PREMIUM=on`.
