@@ -292,3 +292,45 @@ def test_people_carry_what_the_company_builds(client):
     ask(client, g)
     people = g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]["people"]
     assert people[0]["company_builds"] == "Vector database"
+
+
+# --- The resume editor's "Ask agent to improve" (docs/decisions.md, 2026-11-16) ------------------
+
+RESUME = "Asha Rao\nPROJECTS\nWorked on a RAG search in Python.\nEDUCATION\nB.Tech CS, 2026"
+
+
+def improve(client, answer, text=RESUME):
+    from test_api import gemini_reply
+
+    g = Gemini(gemini_reply(answer))
+    client.app.state.fit = ("key", g)
+    return client.post("/api/agent/resume/improve", headers=TOKEN, json={"text": text}), g
+
+
+def test_improve_rewords_within_the_resume_and_counts_one_message(client):
+    res, g = improve(client, {"name": "Asha Rao", "note": "Stronger project line.", "sections": [
+        {"heading": "PROJECTS", "lines": [{"text": "Built a RAG search in Python", "sources": [3]},
+                                          {"text": "Served it on Kubernetes to 500 users", "sources": [3]}]},
+        {"heading": "EDUCATION", "lines": [{"text": "B.Tech CS, 2026", "sources": [5]}]}]})
+    assert res.status_code == 200
+    body = res.json()
+    lines = body["sections"][0]["lines"]
+    assert lines[0]["text"] == "Built a RAG search in Python" and not lines[0]["kept_original"]
+    assert lines[1]["kept_original"] and "Kubernetes" in lines[1]["reason"]  # an invented skill goes back
+    assert "Asha Rao" in body["left_out"]  # the editor keeps lines the rewrite didn't use
+    assert body["remaining"] == 19
+    assert "Worked on a RAG search" in json.dumps(g.sent[0])  # the editor's text, not the saved resume
+
+
+def test_improve_failure_is_not_counted(client):
+    client.app.state.fit = ("key", Gemini(status=503))
+    res = client.post("/api/agent/resume/improve", headers=TOKEN, json={"text": RESUME})
+    assert res.status_code == 503
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM agent_messages").fetchone()[0] == 0
+
+
+def test_improve_needs_text_and_sign_in(client):
+    client.app.state.fit = ("key", Gemini())
+    assert client.post("/api/agent/resume/improve", headers=TOKEN, json={"text": ""}).status_code == 422
+    assert client.post("/api/agent/resume/improve", json={"text": RESUME}).status_code == 401

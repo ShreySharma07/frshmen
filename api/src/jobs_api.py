@@ -142,6 +142,11 @@ class ChatRequest(BaseModel):
     messages: list[ChatTurn] = Field(min_length=1, max_length=40)
 
 
+class ImproveRequest(BaseModel):
+    # The text in the agent's resume editor, unsaved edits included (docs/decisions.md, 2026-11-16).
+    text: str = Field(min_length=1, max_length=20_000)
+
+
 def experience_role_filters(p: Params, experience: str, include_unstated: bool, role: str,
                             band: str | None = None, category: str | None = None) -> list[str]:
     """The Asks and Role filters, shared by the job list and the dashboard's skill counts."""
@@ -262,14 +267,12 @@ def create_app() -> FastAPI:
                             "GROUP BY s ORDER BY n DESC, s", p)
         return {"total": total, "skills": rows}
 
-    @app.post("/api/agent/chat")
-    async def agent_chat(body: ChatRequest, request: Request, uid: str = Depends(current_user),
-                         db: Database = Depends(get_db)) -> dict[str, Any]:
+    async def hold_agent_message(request: Request, db: Database, uid: str) -> tuple[tuple[Any, ...], dict[str, Any], int, int]:
+        """Count one agent message before Gemini is called: (Gemini config, profile, held row, used before).
+        The caller deletes the held row when Gemini fails, so a failed message isn't counted."""
         config = fit_config(request)
         if config is None:
             raise HTTPException(status_code=404, detail="the agent is turned off")
-        if body.messages[-1].role != "user" or not body.messages[-1].text.strip():
-            raise HTTPException(status_code=422, detail="the last message must be yours")
         rows = await db.all("SELECT name, yoe, grad_year, target_roles, resume_text FROM students WHERE id = $1", [uid])
         if not rows:
             raise HTTPException(status_code=409, detail="save your profile first")
@@ -280,7 +283,14 @@ def create_app() -> FastAPI:
                 raise HTTPException(status_code=429, detail={"message": f"all {AGENT_DAILY} messages used for now",
                                                              "frees_at": frees.isoformat() if frees else None})
             held = (await db.all("INSERT INTO agent_messages (student_id) VALUES ($1) RETURNING id", [uid]))[0]["id"]
-        profile = rows[0]
+        return config, rows[0], held, used
+
+    @app.post("/api/agent/chat")
+    async def agent_chat(body: ChatRequest, request: Request, uid: str = Depends(current_user),
+                         db: Database = Depends(get_db)) -> dict[str, Any]:
+        if fit_config(request) is not None and (body.messages[-1].role != "user" or not body.messages[-1].text.strip()):
+            raise HTTPException(status_code=422, detail="the last message must be yours")
+        config, profile, held, used = await hold_agent_message(request, db, uid)
         tools = agent.Tools(db, uid, float(profile["yoe"] or 0), profile)
         try:
             answer = await agent.chat([t.model_dump() for t in body.messages], profile, tools, *config)
@@ -289,6 +299,22 @@ def create_app() -> FastAPI:
             await db.all("DELETE FROM agent_messages WHERE id = $1", [held])
             raise HTTPException(status_code=503, detail=str(e)) from None
         return {**answer, "remaining": AGENT_DAILY - used - 1}
+
+    @app.post("/api/agent/resume/improve")
+    async def improve_resume(body: ImproveRequest, request: Request, uid: str = Depends(current_user),
+                             db: Database = Depends(get_db)) -> dict[str, Any]:
+        """The resume editor's "Ask agent to improve" (docs/decisions.md, 2026-11-16): Gemini rewords the
+        text in the editor, tailor.guard reverts any line that adds a skill or a number. Counts as one
+        agent message. Nothing is saved here: the person accepts changes and saves in the browser."""
+        if not body.text.strip():
+            raise HTTPException(status_code=422, detail="the resume is empty")
+        config, profile, held, used = await hold_agent_message(request, db, uid)
+        try:
+            result = await tailor.improve(body.text, profile["name"] or "", *config)
+        except fit.FitUnavailable as e:
+            await db.all("DELETE FROM agent_messages WHERE id = $1", [held])
+            raise HTTPException(status_code=503, detail=str(e)) from None
+        return {**result, "remaining": AGENT_DAILY - used - 1}
 
     async def used_in_window(db: Database, table: str, uid: str) -> tuple[int, datetime | None]:
         """(uses in the last 24 hours, when the oldest of them stops counting). `table` is one of LIMITS."""
