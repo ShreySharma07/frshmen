@@ -1,0 +1,30 @@
+/* Low fidelity on purpose: layout and content only, no styling decisions. */
+body{font:14px/1.45 system-ui,sans-serif;margin:0;background:#f4f4f4;color:#222}
+h1{font-size:20px;margin:0} h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;color:#555}
+.box{background:#fff;border:1.5px dashed #999;border-radius:6px;padding:12px}
+.big{font-size:26px;font-weight:600} .note{color:#777;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px} td,th{border-bottom:1px solid #ddd;padding:5px 4px;text-align:left}
+.bar{height:10px;background:#bbb;display:inline-block;vertical-align:middle}
+.field{border:1px solid #999;background:#fafafa;border-radius:4px;padding:6px;margin:4px 0 8px;color:#888}
+.btn{display:inline-block;border:1.5px solid #222;border-radius:4px;padding:6px 12px;font-weight:600;background:#fff}
+.btn.dark{background:#222;color:#fff}
+.pill{display:inline-block;border:1px solid #999;border-radius:99px;padding:1px 8px;font-size:12px}
+.tag{font-size:11px;border:1px solid #999;border-radius:3px;padding:0 5px;color:#555}
+.concept{background:#222;color:#fff;padding:8px 16px;font-size:13px}
+.msg{max-width:72%;padding:10px 12px;border-radius:10px;margin:8px 0}
+.me{margin-left:auto;background:#222;color:#fff}
+.ai{background:#fff;border:1.5px dashed #999}
+.card{background:#fafafa;border:1px solid #bbb;border-radius:6px;padding:8px 10px;margin:6px 0;font-size:13px}
+.cite{font-size:11px;color:#666;border-top:1px solid #ddd;margin-top:6px;padding-top:4px}
+.composer{border:1.5px solid #222;border-radius:10px;padding:10px 12px;background:#fff;display:flex;justify-content:space-between;align-items:center}
+.chips span{margin:0 6px 6px 0}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1240px;margin:0 auto;padding:16px}
+.ins{background:#e6e6e6;text-decoration:underline} .del{color:#999;text-decoration:line-through}
+.sec{border-top:1px solid #ddd;padding-top:8px;margin-top:10px}
+@media (max-width:600px){.split{grid-template-columns:1fr}.msg{max-width:90%}}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}.thumb{width:84px;height:110px;border:1.5px solid #999;border-radius:4px;background:#fff;font-size:9px;padding:6px;box-sizing:border-box;color:#777}
+.thumb.on{border:2.5px solid #222;color:#222}
+.page{background:#fff;border:1px solid #bbb;aspect-ratio:1/1.414;padding:18px;font-size:10px;box-sizing:border-box}
+.ent{border:1px solid #ccc;border-radius:5px;padding:6px 8px;margin:6px 0;background:#fafafa;font-size:12.5px}
+.row{display:flex;justify-content:space-between;gap:8px}
+.grip{color:#aaa;margin-right:6px}
