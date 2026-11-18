@@ -23,7 +23,8 @@ import agent
 import fit
 import job_text
 import tailor
-from auth import auth_config, current_user
+import usage
+from auth import auth_config, current_user, person
 
 from pg_queries import BAND_UNSTATED, BANDS, FAMILIES, INTERN, META_SELECT, OPEN, ORDER_BY, ORDER_KEY
 from storage import Database, connect
@@ -121,7 +122,9 @@ def fit_check_enabled(request: Request) -> bool:
 FIT_DAILY = 5
 TAILOR_DAILY = 2
 AGENT_DAILY = 20  # agent chat messages (docs/decisions.md, 2026-11-13, A1)
-LIMITS = {"fit_checks": FIT_DAILY, "tailored_resumes": TAILOR_DAILY, "agent_messages": AGENT_DAILY}
+LIMITS = {"fit_check": FIT_DAILY, "tailor": TAILOR_DAILY, "agent_message": AGENT_DAILY}
+# The table that keeps each Gemini job's result, by the kind of use it is counted as.
+RESULTS = {"fit_check": "fit_checks", "tailor": "tailored_resumes"}
 FIT_WINDOW = "interval '24 hours'"
 # A check holds its place while Gemini answers; one that fails is removed and doesn't count.
 PENDING = '{"pending": true}'
@@ -268,21 +271,22 @@ def create_app() -> FastAPI:
         return {"total": total, "skills": rows}
 
     async def hold_agent_message(request: Request, db: Database, uid: str) -> tuple[tuple[Any, ...], dict[str, Any], int, int]:
-        """Count one agent message before Gemini is called: (Gemini config, profile, held row, used before).
-        The caller deletes the held row when Gemini fails, so a failed message isn't counted."""
+        """Count one agent message before Gemini is called: (Gemini config, profile, held use, used before).
+        The caller forgets the held use when Gemini fails, so a failed message isn't counted."""
         config = fit_config(request)
         if config is None:
             raise HTTPException(status_code=404, detail="the agent is turned off")
         rows = await db.all("SELECT name, yoe, grad_year, target_roles, resume_text FROM students WHERE id = $1", [uid])
         if not rows:
             raise HTTPException(status_code=409, detail="save your profile first")
+        who = person(request, uid)
         async with db.transaction():
-            await db.all("SELECT 1 FROM students WHERE id = $1 FOR UPDATE", [uid])
-            used, frees = await used_in_window(db, "agent_messages", uid)
+            await usage.lock(db, who)
+            used, frees = await usage.used(db, who, "agent_message")
             if used >= AGENT_DAILY:
                 raise HTTPException(status_code=429, detail={"message": f"all {AGENT_DAILY} messages used for now",
                                                              "frees_at": frees.isoformat() if frees else None})
-            held = (await db.all("INSERT INTO agent_messages (student_id) VALUES ($1) RETURNING id", [uid]))[0]["id"]
+            held = await usage.record(db, who, "agent_message")
         return config, rows[0], held, used
 
     @app.post("/api/agent/chat")
@@ -291,12 +295,12 @@ def create_app() -> FastAPI:
         if fit_config(request) is not None and (body.messages[-1].role != "user" or not body.messages[-1].text.strip()):
             raise HTTPException(status_code=422, detail="the last message must be yours")
         config, profile, held, used = await hold_agent_message(request, db, uid)
-        tools = agent.Tools(db, uid, float(profile["yoe"] or 0), profile)
+        tools = agent.Tools(db, uid, float(profile["yoe"] or 0), profile, who=person(request, uid))
         try:
             answer = await agent.chat([t.model_dump() for t in body.messages], profile, tools, *config)
         except fit.FitUnavailable as e:
             # A failed message doesn't count against the allowance.
-            await db.all("DELETE FROM agent_messages WHERE id = $1", [held])
+            await usage.forget(db, held)
             raise HTTPException(status_code=503, detail=str(e)) from None
         return {**answer, "remaining": AGENT_DAILY - used - 1}
 
@@ -312,29 +316,24 @@ def create_app() -> FastAPI:
         try:
             result = await tailor.improve(body.text, profile["name"] or "", *config)
         except fit.FitUnavailable as e:
-            await db.all("DELETE FROM agent_messages WHERE id = $1", [held])
+            await usage.forget(db, held)
             raise HTTPException(status_code=503, detail=str(e)) from None
         return {**result, "remaining": AGENT_DAILY - used - 1}
 
-    async def used_in_window(db: Database, table: str, uid: str) -> tuple[int, datetime | None]:
-        """(uses in the last 24 hours, when the oldest of them stops counting). `table` is one of LIMITS."""
-        row = (await db.all(f"SELECT COUNT(*) AS used, MIN(created_at) + {FIT_WINDOW} AS frees FROM {table} "
-                            f"WHERE student_id = $1 AND created_at > now() - {FIT_WINDOW}", [uid]))[0]
-        return int(row["used"]), row["frees"]
-
-    async def allowance(db: Database, table: str, uid: str) -> dict[str, Any]:
-        used, frees = await used_in_window(db, table, uid)
-        limit = LIMITS[table]
+    async def allowance(db: Database, who: str, kind: str) -> dict[str, Any]:
+        used, frees = await usage.used(db, who, kind)
+        limit = LIMITS[kind]
         return {"limit": limit, "used": used, "remaining": max(0, limit - used), "frees_at": frees if used >= limit else None}
 
     @app.get("/api/fit/quota")
     async def quota(request: Request, uid: str = Depends(current_user), db: Database = Depends(get_db)) -> dict[str, Any]:
-        return {**await allowance(db, "fit_checks", uid), "enabled": fit_check_enabled(request),
-                "tailor": await allowance(db, "tailored_resumes", uid), "agent": await allowance(db, "agent_messages", uid)}
+        who = person(request, uid)
+        return {**await allowance(db, who, "fit_check"), "enabled": fit_check_enabled(request),
+                "tailor": await allowance(db, who, "tailor"), "agent": await allowance(db, who, "agent_message")}
 
-    async def gemini_job(request: Request, db: Database, uid: str, job_id: str, table: str):
+    async def gemini_job(request: Request, db: Database, uid: str, job_id: str, kind: str):
         """The shared start of a Gemini run for one job: config, job, saved resume, and a held place
-        within the person's daily limit. Returns (config, job, profile, held id)."""
+        within the person's daily limit. Returns (config, job, profile, (result row id, use id), remaining)."""
         config = fit_config(request)
         if config is None:
             raise HTTPException(status_code=404, detail="fit check is turned off")
@@ -348,28 +347,30 @@ def create_app() -> FastAPI:
         resume = (profile[0]["resume_text"] or "").strip() if profile else ""
         if len(resume) < 50:
             raise HTTPException(status_code=409, detail="add your resume to your profile first")
-        limit = LIMITS[table]
-        # Locking the person's row makes two requests sent at once count one after the other.
+        limit, table, who = LIMITS[kind], RESULTS[kind], person(request, uid)
+        # The person's lock makes two requests sent at once count one after the other.
         async with db.transaction():
-            await db.all("SELECT 1 FROM students WHERE id = $1 FOR UPDATE", [uid])
-            used, frees = await used_in_window(db, table, uid)
+            await usage.lock(db, who)
+            used, frees = await usage.used(db, who, kind)
             if used >= limit:
                 raise HTTPException(status_code=429, detail={"message": f"all {limit} used for now",
                                                              "frees_at": frees.isoformat() if frees else None})
-            held = (await db.all(f"INSERT INTO {table} (student_id, job_id, result) VALUES ($1, $2, $3::jsonb) "
-                                 "RETURNING id", [uid, jobs[0]["id"], PENDING]))[0]["id"]
-        return config, jobs[0], {"name": profile[0]["name"], "resume": resume}, held, limit - used - 1
+            row = (await db.all(f"INSERT INTO {table} (student_id, job_id, result) VALUES ($1, $2, $3::jsonb) "
+                                "RETURNING id", [uid, jobs[0]["id"], PENDING]))[0]["id"]
+            use = await usage.record(db, who, kind)
+        return config, jobs[0], {"name": profile[0]["name"], "resume": resume}, (row, use), limit - used - 1
 
     @app.post("/api/jobs/{job_id:path}/fit")
     async def check_fit(job_id: str, request: Request, uid: str = Depends(current_user),
                         db: Database = Depends(get_db)) -> dict[str, Any]:
         """Gemini compares the job with the signed-in person's saved resume. At most FIT_DAILY a day;
         each verdict is kept in fit_checks for the dashboard."""
-        config, job, profile, held, remaining = await gemini_job(request, db, uid, job_id, "fit_checks")
+        config, job, profile, (held, use), remaining = await gemini_job(request, db, uid, job_id, "fit_check")
         try:
             result = await fit.check(job, profile["resume"], *config)
         except fit.FitUnavailable as e:
             await db.all("DELETE FROM fit_checks WHERE id = $1", [held])
+            await usage.forget(db, use)
             raise HTTPException(status_code=503, detail=str(e)) from None
         verdict = {k: v for k, v in result.items() if k != "model"}
         await db.all("UPDATE fit_checks SET result = $2::jsonb, model = $3 WHERE id = $1",
@@ -381,11 +382,12 @@ def create_app() -> FastAPI:
                             db: Database = Depends(get_db)) -> dict[str, Any]:
         """Gemini rewords and reorders the saved resume toward this job; tailor.guard reverts any
         line that adds a skill or a number. At most TAILOR_DAILY a day; each result is kept."""
-        config, job, profile, held, remaining = await gemini_job(request, db, uid, job_id, "tailored_resumes")
+        config, job, profile, (held, use), remaining = await gemini_job(request, db, uid, job_id, "tailor")
         try:
             result = await tailor.tailor(job, profile["resume"], profile["name"], *config)
         except fit.FitUnavailable as e:
             await db.all("DELETE FROM tailored_resumes WHERE id = $1", [held])
+            await usage.forget(db, use)
             raise HTTPException(status_code=503, detail=str(e)) from None
         stored = {k: v for k, v in result.items() if k != "model"}
         await db.all("UPDATE tailored_resumes SET result = $2::jsonb, model = $3 WHERE id = $1",

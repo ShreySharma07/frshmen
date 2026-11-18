@@ -6,13 +6,13 @@ from datetime import datetime, timezone
 
 import psycopg
 import pytest
-
-from test_api import ASHA, PG, TOKEN, app_client, publish, records, reset
+from test_api import ASHA, PG, TOKEN, app_client, publish, records, reset, usage_who
 
 pytestmark = pytest.mark.skipif(not PG, reason="set PG_TEST_URL to a throwaway Postgres database")
 
 FOUNDER_EMAIL = "ana@pinecone.io"
 FOUNDER_PHONE = "+1 555 0100"
+WHO = usage_who(ASHA, None)  # the test sign-in has no email: limits count against the user id
 DRAFT = ("Hi Ana,\n\nI'm a 2026 CS graduate; Pinecone's vector search is what I build on.\n\n"
          "I built a RAG search over 10k papers in Python and PyTorch, cutting lookup time by 60%.\n\n"
          "Could we talk for 15 minutes about new-grad roles?\n\nThanks,\nAsha")
@@ -114,7 +114,7 @@ def test_people_and_draft_never_show_the_model_an_email_or_phone(client):
 def test_email_reveals_stop_at_five_a_day(client):
     with psycopg.connect(PG, autocommit=True) as conn:
         for _ in range(5):
-            conn.execute("INSERT INTO contact_reveals (student_id, contact_id) VALUES (%s, %s)", (ASHA, ana_id()))
+            conn.execute("INSERT INTO usage_events (who, kind) VALUES (%s, 'contact_reveal')", (WHO,))
     g = Gemini(call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
     draft = ask(client, g).json()["cards"][0]
     assert (draft["to"], draft["gmail_url"], draft["reveals_left"]) == (None, None, 0)
@@ -137,9 +137,9 @@ def test_unknown_tool_is_reported_to_the_model_not_crashed(client):
 def test_twenty_messages_a_day_and_failures_do_not_count(client):
     assert ask(client, Gemini(status=429)).status_code == 503
     with psycopg.connect(PG, autocommit=True) as conn:
-        assert conn.execute("SELECT COUNT(*) FROM agent_messages").fetchone() == (0,)
+        assert conn.execute("SELECT COUNT(*) FROM usage_events").fetchone() == (0,)
         for _ in range(20):
-            conn.execute("INSERT INTO agent_messages (student_id) VALUES (%s)", (ASHA,))
+            conn.execute("INSERT INTO usage_events (who, kind) VALUES (%s, 'agent_message')", (WHO,))
     res = ask(client, Gemini(text("x")))
     assert res.status_code == 429 and "20" in res.json()["detail"]["message"]
 
@@ -216,7 +216,7 @@ def test_every_model_overloaded_says_busy_and_counts_nothing(client):
     res = ask(client, Gemini(status=503))
     assert res.status_code == 503 and "busy" in json.dumps(res.json())
     with psycopg.connect(PG) as conn:
-        assert conn.execute("SELECT COUNT(*) FROM agent_messages").fetchone() == (0,)
+        assert conn.execute("SELECT COUNT(*) FROM usage_events").fetchone() == (0,)
 
 
 # --- Startups that fit, with or without openings (docs/decisions.md, 2026-11-16) ----------------
@@ -327,10 +327,83 @@ def test_improve_failure_is_not_counted(client):
     res = client.post("/api/agent/resume/improve", headers=TOKEN, json={"text": RESUME})
     assert res.status_code == 503
     with psycopg.connect(PG) as conn:
-        assert conn.execute("SELECT COUNT(*) FROM agent_messages").fetchone()[0] == 0
+        assert conn.execute("SELECT COUNT(*) FROM usage_events").fetchone()[0] == 0
 
 
 def test_improve_needs_text_and_sign_in(client):
     client.app.state.fit = ("key", Gemini())
     assert client.post("/api/agent/resume/improve", headers=TOKEN, json={"text": ""}).status_code == 422
     assert client.post("/api/agent/resume/improve", json={"text": RESUME}).status_code == 401
+
+
+# --- Daily limits count the person, not the profile row (docs/decisions.md, 2026-11-18, H1) -------
+
+def test_deleting_and_recreating_the_profile_keeps_the_limits(client):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        for _ in range(20):
+            conn.execute("INSERT INTO usage_events (who, kind) VALUES (%s, 'agent_message')", (WHO,))
+        # What the Data API lets a person do with their own row (0004): delete it and insert it again.
+        conn.execute("DELETE FROM students WHERE id = %s", (ASHA,))
+        conn.execute("INSERT INTO students (id, name, yoe, resume_text) VALUES (%s, 'Asha', 0, 'Python')", (ASHA,))
+    assert ask(client, Gemini(text("x"))).status_code == 429
+
+
+def test_a_new_account_with_the_same_email_shares_the_limits(client):
+    other = "00000000-0000-4000-8000-0000000000b2"
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO auth.users (id) VALUES (%s)", (other,))
+        conn.execute("INSERT INTO students (id, name, yoe) VALUES (%s, 'Asha again', 0)", (other,))
+    accounts = {"first": (ASHA, "Asha.Rao@gmail.com"), "second": (other, "asharao+jobs@googlemail.com")}
+
+    async def verify(token):
+        uid, email = accounts[token]
+        return {"id": uid, "email": email}
+
+    client.app.state.auth = verify
+    client.app.state.fit = ("key", Gemini(*[text("x")] * 20))
+    for _ in range(20):
+        assert client.post("/api/agent/chat", headers={"Authorization": "Bearer first"}, json={"messages": [{"role": "user", "text": "hi"}]}).status_code == 200
+    res = client.post("/api/agent/chat", headers={"Authorization": "Bearer second"}, json={"messages": [{"role": "user", "text": "hi"}]})
+    assert res.status_code == 429  # dots and +tags are the same Gmail inbox, so the same person
+
+
+def test_the_reveal_log_outlives_the_account(client):
+    g = Gemini(call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
+    assert ask(client, g).json()["cards"][0]["to"] == FOUNDER_EMAIL
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("DELETE FROM students WHERE id = %s", (ASHA,))
+        assert conn.execute("SELECT student_id, contact_id IS NOT NULL FROM contact_reveals").fetchall() == [(None, True)]
+        assert conn.execute("SELECT COUNT(*) FROM usage_events WHERE kind = 'contact_reveal'").fetchone() == (1,)
+
+
+def test_parallel_reveals_cannot_pass_the_limit(client):
+    import asyncio
+
+    import agent
+    import asyncpg
+
+    async def run():
+        reset_reveals = "INSERT INTO usage_events (who, kind) SELECT $1, 'contact_reveal' FROM generate_series(1, 4)"
+        conns = [await asyncpg.connect(PG) for _ in range(4)]
+        try:
+            await conns[0].execute(reset_reveals, WHO)
+            from storage import PostgresDatabase
+
+            tools = [agent.Tools(PostgresDatabase(c), ASHA, 0, {"resume_text": "Python, PyTorch, RAG."}, who=WHO) for c in conns]
+            results = await asyncio.gather(*(t.prepare_draft(ana_id(), "s", DRAFT) for t in tools))
+            return [t.cards[0]["to"] for t in tools], results
+        finally:
+            for c in conns:
+                await c.close()
+
+    to, _ = asyncio.run(run())
+    assert sum(1 for x in to if x) == 1  # four at once, one reveal left: exactly one gets it
+
+
+def test_emails_normalise_to_one_person():
+    from usage import normalise, who
+
+    assert normalise(" A.Sha+x@GoogleMail.com ") == normalise("asha@gmail.com") == "asha@gmail.com"
+    assert normalise("Ravi.K+jobs@outlook.com") == "ravi.k@outlook.com"  # dots matter outside Gmail
+    assert who("u1", "asha@gmail.com") == who("u2", "a.sha@gmail.com") != who("u1", None)
+    assert who("u1", "asha@gmail.com", "k") != who("u1", "asha@gmail.com")  # keyed
