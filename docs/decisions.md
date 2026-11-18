@@ -4,6 +4,25 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-18 — Cache for public data, rate limits per visitor (security review M2)
+- **Problem:** the public routes (`/api/jobs`, `/api/meta`, `/api/evidence`, `/api/skill-demand`) ran
+  SQL on every request with no cache and no rate limit; one script could use up the free Workers and
+  Hyperdrive allowances (100k a day each) and take the site down until the daily reset.
+- **Caching, options:** (a) the Worker keeps each anonymous answer in Cloudflare's cache (Workers
+  Cache API) for 5 minutes · (b) the pipeline writes snapshot JSON files. **Choice (Shrey):** (a).
+- **Rate limit, options:** (a) a Cloudflare dashboard rule · (b) the Workers rate-limiting binding in
+  code · (c) both. **Choice (Shrey):** (c).
+- **Built:** `api/src/edge.py`, a middleware in front of every `/api/` route:
+  - per visitor (IP, per Cloudflare location): `API_LIMITER` 120 requests a minute, `AI_LIMITER`
+    10 a minute on the Gemini routes (agent, fit, tailor), on top of each person's daily limits;
+    429 with `Retry-After: 60`;
+  - anonymous GETs of the four public routes come from the cache for 5 minutes (browser 1 minute);
+    anything with an Authorization header, any error, any other route is never cached;
+  - `/api/jobs` pages stop at 2,000 rows deep (422 "narrow the filters").
+- **Dashboard rule:** steps in `docs/setup-rate-limit.md`; it needs our own domain (a zone), so it
+  waits for the domain on the launch list.
+- **Needs:** Wrangler 4.36 or later for `ratelimits` (deploy uses the latest).
+
 ## 2026-11-18 — Contact emails can't be harvested (security review M1, part 1)
 - **Problem:** `prepare_draft` took any contact id, and ids are sequential, so a script with many
   free accounts could collect 5 addresses per account per day (without limit before H1).
