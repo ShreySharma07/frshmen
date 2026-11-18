@@ -1,0 +1,7 @@
+# Cloudflare static asset headers (served by the API Worker's assets, api/wrangler.jsonc).
+# The Typst compiler's file name carries its content hash (scripts/typst-assets.mjs): cache it for good,
+# so a person downloads the 11 MB once (docs/decisions.md, 2026-11-17).
+/resume/typst/compiler-*
+  Cache-Control: public, max-age=31536000, immutable
+/resume/fonts/*
+  Cache-Control: public, max-age=2592000
