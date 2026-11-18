@@ -4,6 +4,22 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-18 — A check on email sign-in links (security review M1, part 2)
+- **Options:** (a) Cloudflare Turnstile + email confirmation · (b) hCaptcha + email confirmation ·
+  (c) email confirmation only. **Choice (Shrey):** (a).
+- **Found while building:** email sign-in already sends a one-time link, so a person proves they own
+  the inbox before they get a session, and Google and LinkedIn verify emails themselves. So
+  "email confirmation" is already in place for every way in. The open door was asking for links in
+  bulk, one throwaway inbox each. Turnstile now sits on the "Email me a sign-in link" button.
+- **How:** `site/src/components/account/Turnstile.tsx` loads Cloudflare's script only on `/login`
+  and only when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (repo variable `TURNSTILE_SITE_KEY`) is set. The
+  token goes to Supabase with `signInWithOtp` (`captchaToken`), and Supabase checks it with the
+  secret key (Attack Protection). No API change. It is usually invisible (`interaction-only`), and
+  each token is used once, then a fresh one is fetched.
+- **Order:** site key and deploy first, then CAPTCHA on in Supabase (`docs/setup-auth.md`, step 7).
+- **Not covered:** someone with many real inboxes. The per-person limits (H1), the same-reply rule,
+  and the daily caps per contact and per site (M1 part 1) bound what each account can take.
+
 ## 2026-11-18 — Cache for public data, rate limits per visitor (security review M2)
 - **Problem:** the public routes (`/api/jobs`, `/api/meta`, `/api/evidence`, `/api/skill-demand`) ran
   SQL on every request with no cache and no rate limit; one script could use up the free Workers and

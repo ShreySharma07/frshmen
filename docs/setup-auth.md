@@ -54,3 +54,27 @@ workflow.
 3. Supabase → **Authentication → Emails → SMTP Settings**: host `smtp.resend.com`, port `465`,
    username `resend`, password = a Resend API key, sender like `signin@<domain>`.
    Resend's free tier allows 3,000 emails a month and 100 a day.
+
+## 7. Before launch: a check on email sign-in links (decided 2026-11-18, security review M1)
+Without it, a script can ask for thousands of sign-in links, one per throwaway inbox, and each new
+inbox is a new account. Google and LinkedIn sign-ins aren't affected: they verify the email
+themselves. Email links already prove the inbox belongs to the person (they must click the link),
+so "email confirmation" is already in place for every way in.
+
+Do these **in this order**. Turning CAPTCHA on in Supabase before the site sends tokens would
+break email sign-in until the next deploy.
+
+1. Cloudflare dashboard → **Turnstile** → **Add widget**. Name `Aventra sign-in`, hostnames
+   `aventra.getaventra.workers.dev` (later also your own domain) and `localhost`. Widget mode
+   **Managed**. Copy the **site key** and the **secret key**.
+2. GitHub → **Settings → Secrets and variables → Actions → Variables**:
+   `TURNSTILE_SITE_KEY` = the site key (public by design). Re-run **Deploy site**, then open
+   `/login` and check that the email button works.
+3. Supabase → **Authentication → Attack Protection** → turn on **Enable CAPTCHA protection**,
+   provider **Turnstile**, and paste the **secret key**. The secret stays in Supabase; never put it
+   in the repo.
+4. Check: sign out, then send yourself a link from `/login`. It should arrive as before. A request
+   without a token (e.g. a script) now gets "captcha verification process failed".
+
+While you're on Attack Protection: also check **Authentication → Sign In / Providers → Email** has
+"Confirm email" on (the default), and **Authentication → Rate Limits** keeps "Emails sent" low.
