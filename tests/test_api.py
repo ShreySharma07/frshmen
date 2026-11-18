@@ -16,6 +16,7 @@ from extract.profile import load_profile
 from extract.stored_text import compact
 from extract.role import match_role
 from jobs_api import create_app
+from usage import who as usage_who
 from sources import ashby, greenhouse, lever
 from sources.models import Company
 import supabase_stub
@@ -443,7 +444,7 @@ def test_five_checks_a_day_then_429(client):
     assert (quota["used"], quota["remaining"], quota["limit"]) == (5, 0, 5) and quota["frees_at"]
     # Checks older than 24 hours stop counting.
     with psycopg.connect(PG, autocommit=True) as conn:
-        conn.execute("UPDATE fit_checks SET created_at = now() - interval '25 hours' WHERE student_id = %s", (ASHA,))
+        conn.execute("UPDATE usage_events SET created_at = now() - interval '25 hours' WHERE kind = 'fit_check'")
     assert client.get("/api/fit/quota", headers=TOKEN).json()["remaining"] == 5
 
 

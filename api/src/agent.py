@@ -16,6 +16,7 @@ import json
 from typing import Any
 from urllib.parse import quote
 
+import usage
 from fit import ENDPOINT, MODELS, FitUnavailable, Post
 from pg_queries import BANDS, OPEN
 from storage import Database
@@ -107,8 +108,10 @@ def gmail_url(to: str, subject: str, body: str) -> str:
 class Tools:
     """One person's tools for one message. `cards` collects what the page shows under the answer."""
 
-    def __init__(self, db: Database, uid: str, yoe: float, profile: dict[str, Any] | None = None):
+    def __init__(self, db: Database, uid: str, yoe: float, profile: dict[str, Any] | None = None, who: str = ""):
         self.db, self.uid, self.yoe = db, uid, yoe
+        # Who the daily email-reveal limit counts against (usage.who: the person, not the profile row).
+        self.who = who or usage.who(uid, None)
         profile = profile or {}
         self.kinds: list[str] = list(profile.get("target_roles") or [])
         self.resume_skills: list[str] = sorted(skills_in(profile.get("resume_text") or ""))
@@ -238,13 +241,15 @@ class Tools:
         to = None
         if person["has_email"]:
             async with self.db.transaction():
-                used = (await self.db.all(
-                    "SELECT COUNT(*) AS n FROM contact_reveals WHERE student_id = $1 "
-                    "AND created_at > now() - interval '24 hours'", [self.uid]))[0]["n"]
+                # The person's lock: two messages sent at once can't both take the last reveal.
+                await usage.lock(self.db, self.who)
+                used, _ = await usage.used(self.db, self.who, "contact_reveal")
                 if used < REVEALS_DAILY:
                     to = (await self.db.all("SELECT email FROM contacts WHERE id = $1", [person["id"]]))[0]["email"]
+                    # The audit log of whose address was shown to whom (kept after the account goes).
                     await self.db.all("INSERT INTO contact_reveals (student_id, contact_id) VALUES ($1, $2)",
                                       [self.uid, person["id"]])
+                    await usage.record(self.db, self.who, "contact_reveal")
                     used += 1
             card["reveals_left"] = max(0, REVEALS_DAILY - int(used))
         card["to"] = to

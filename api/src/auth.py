@@ -12,16 +12,17 @@ from typing import Any, Awaitable, Callable
 
 from fastapi import HTTPException, Request
 
-# token -> the user's id, or None when Supabase doesn't accept it.
-Verify = Callable[[str], Awaitable[str | None]]
+# token -> the user's id (or {"id", "email"}), or None when Supabase doesn't accept it.
+Verify = Callable[[str], Awaitable[str | dict[str, Any] | None]]
 Get = Callable[[str, dict[str, str]], Awaitable[tuple[int, Any]]]
 
 
 def verifier(url: str, key: str, get: Get) -> Verify:
-    async def verify(token: str) -> str | None:
+    async def verify(token: str) -> dict[str, Any] | None:
         status, data = await get(f"{url.rstrip('/')}/auth/v1/user", {"apikey": key, "Authorization": f"Bearer {token}"})
         uid = data.get("id") if status == 200 and isinstance(data, dict) else None
-        return str(uid) if uid else None
+        # The email names the person for daily limits (usage.py), whatever their account id.
+        return {"id": str(uid), "email": data.get("email")} if uid else None
     return verify
 
 
@@ -41,10 +42,21 @@ async def current_user(request: Request) -> str:
         raise HTTPException(status_code=503, detail="sign-in is not set up on the server")
     header = request.headers.get("authorization", "")
     token = header[7:].strip() if header.lower().startswith("bearer ") else ""
-    uid = await verify(token) if token else None
+    found = await verify(token) if token else None
+    uid = found.get("id") if isinstance(found, dict) else found
     if not uid:
         raise HTTPException(status_code=401, detail="sign in again")
-    return uid
+    request.state.email = found.get("email") if isinstance(found, dict) else None
+    return str(uid)
+
+
+def person(request: Request, uid: str) -> str:
+    """Who a daily limit counts against (usage.who): by email, keyed with the Worker secret USAGE_HASH_KEY."""
+    from usage import who
+
+    env = request.scope.get("env")
+    key = str(getattr(env, "USAGE_HASH_KEY", "") or "") if env is not None else ""
+    return who(uid, getattr(request.state, "email", None), getattr(request.app.state, "usage_key", "") or key)
 
 
 async def worker_get(url: str, headers: dict[str, str]) -> tuple[int, Any]:

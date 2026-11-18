@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The Typst compiler's files, copied from node_modules before each build (scripts/typst-assets.mjs).
+    "public/resume/typst/**",
   ]),
 ]);
 
