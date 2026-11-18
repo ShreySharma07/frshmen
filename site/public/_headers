@@ -3,5 +3,9 @@
 # so a person downloads the 11 MB once (docs/decisions.md, 2026-11-17).
 /resume/typst/compiler-*
   Cache-Control: public, max-age=31536000, immutable
+/resume/typst/typst-*
+  Cache-Control: public, max-age=31536000, immutable
+/resume/typst/worker-*
+  Cache-Control: public, max-age=31536000, immutable
 /resume/fonts/*
   Cache-Control: public, max-age=2592000
