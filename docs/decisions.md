@@ -4,6 +4,24 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-18 — What reaches Gemini, and deleting an account for good (security review M4)
+- **Contact details never reach Gemini (Shrey: "yes"):** `api/src/privacy.py` replaces email
+  addresses and phone numbers (10–15 digits, so years, dates and scores stay) with `[email]` and
+  `[phone]` in every resume sent to Gemini: fit checks, tailored resumes, "Ask agent to improve" and
+  the agent's own prompt. A tailored or improved line that still shows a placeholder goes back to
+  the person's own words, so their PDF keeps their real details. Why: Gemini's free tier may use
+  what it is sent, and judging fit or rewording never needs them.
+- **Deleting an account, options:** (a) a database function the signed-in person calls, deleting
+  their own login · (b) the API deletes it with Supabase's admin key (a powerful secret in the
+  Worker). **Choice (Shrey):** (a).
+- **How:** `delete_my_account()` (migration `0021`): SECURITY DEFINER, no arguments, acts on
+  `auth.uid()` only, fixed `search_path`, callable by `authenticated` only. Deleting the login
+  cascades to the profile, chats, connections, fit checks and tailored resumes. The email-reveal log
+  (id cleared) and the 48-hour usage counts stay, as decided. "Delete everything" removes the PDF
+  through the Storage API first (Supabase refuses SQL deletes there), then calls it and signs out.
+  The RLS guard test now allows exactly this one definer function.
+- **Still to do:** the privacy notice, with the legal pages.
+
 ## 2026-11-18 — Filling the database: an alarm, not smaller chats (security review M3)
 - **Problem:** one account can store about 9 MB (30 saved chats of up to 256 KB, 5,000 LinkedIn
   connections, the resume), so ~55 throwaway accounts could fill the free 500 MB and stop writes.

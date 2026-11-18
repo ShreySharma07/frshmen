@@ -132,12 +132,15 @@ export function ProfileForm() {
   }
 
   async function deleteEverything() {
-    if (!confirm("Delete your profile, resume and LinkedIn connections from Aventra? This can't be undone.")) return;
+    if (!confirm("Delete your Aventra account: your sign-in, profile, resume, saved chats and LinkedIn connections? This can't be undone.")) return;
     const sb = supabase();
     setSave({ kind: "saving" });
+    // The PDF first (storage only takes deletes through its own API), then the account itself:
+    // delete_my_account removes the sign-in, and with it everything else that is yours
+    // (db/postgres/0021_delete_my_account.sql; docs/decisions.md, 2026-11-18).
     const files = await sb.storage.from(RESUME_BUCKET).remove([resumePath(user.id)]);
-    const row = await sb.from("students").delete().eq("id", user.id);
-    if (files.error || row.error) return setSave({ kind: "error", message: (files.error ?? row.error)!.message });
+    const account = await sb.rpc("delete_my_account");
+    if (files.error || account.error) return setSave({ kind: "error", message: (files.error ?? account.error)!.message });
     await sb.auth.signOut();
     sessionChanged();
     router.replace("/");

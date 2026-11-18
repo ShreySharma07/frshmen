@@ -11,6 +11,8 @@ from __future__ import annotations
 import json
 from typing import Any, Awaitable, Callable
 
+from privacy import redact
+
 # Newest stable Flash-Lite first; a 404 (model not served to this key) moves to the next.
 MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
 ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
@@ -59,7 +61,7 @@ class FitUnavailable(RuntimeError):
 def build_prompt(job: dict[str, Any], resume: str) -> str:
     return PROMPT.format(title=job.get("title") or "", company=job.get("company") or "",
                          description=(job.get("description_text") or "")[:MAX_DESCRIPTION_CHARS],
-                         resume=resume[:MAX_RESUME_CHARS])
+                         resume=redact(resume)[:MAX_RESUME_CHARS])
 
 
 def parse(answer: Any) -> dict[str, Any] | None:

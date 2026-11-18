@@ -15,6 +15,7 @@ import re
 from typing import Any
 
 from fit import FitUnavailable, Post, generate
+from privacy import redact, redacted
 from skills_catalogue import SKILLS
 
 MAX_LINES = 150
@@ -163,22 +164,39 @@ def guard(answer: Any, lines: list[str], profile_name: str) -> dict[str, Any] | 
     }
 
 
+def restore(result: dict[str, Any], raw: list[str]) -> dict[str, Any]:
+    """Gemini saw the resume with emails and phones replaced (privacy.redact). A line that still
+    shows a placeholder goes back to its own words, so the person's PDF keeps their real details."""
+    for sec in result["sections"]:
+        for item in sec["lines"]:
+            if redacted(item["text"]) or redacted(item["original"]):
+                item["text"] = item["original"] = " ".join(raw[n - 1] for n in item["sources"])
+    result["left_out"] = [raw[i] for i, line in enumerate(redact_all(raw)) if line in result["left_out"]]
+    return result
+
+
+def redact_all(lines: list[str]) -> list[str]:
+    return [redact(line) for line in lines]
+
+
 async def tailor(job: dict[str, Any], resume: str, profile_name: str, api_key: str, post: Post) -> dict[str, Any]:
-    lines = resume_lines(resume)
+    raw = resume_lines(resume)
+    lines = redact_all(raw)
     answer, model = await generate(build_prompt(job, lines), SCHEMA, api_key, post)
     result = guard(answer, lines, profile_name)
     if result is None:
         raise FitUnavailable("Gemini gave no usable answer")
-    return {**result, "model": model}
+    return {**restore(result, raw), "model": model}
 
 
 async def improve(resume: str, profile_name: str, api_key: str, post: Post) -> dict[str, Any]:
     """The agent's resume editor (docs/decisions.md, 2026-11-16): the same rewrite and guard as a
     tailored resume, with no job. Lines the rewrite left out are listed so the editor keeps them."""
-    lines = resume_lines(resume)
+    raw = resume_lines(resume)
+    lines = redact_all(raw)
     numbered = "\n".join(f"{i}: {line}" for i, line in enumerate(lines, 1))
     answer, model = await generate(IMPROVE_PROMPT.format(resume=numbered), SCHEMA, api_key, post)
     result = guard(answer, lines, profile_name)
     if result is None:
         raise FitUnavailable("Gemini gave no usable answer")
-    return {**result, "model": model}
+    return {**restore(result, raw), "model": model}

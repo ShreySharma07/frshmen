@@ -117,12 +117,21 @@ def test_every_public_view_runs_as_the_caller():
     assert all("security_invoker=true" in (opts or []) for _, opts in views), views
 
 
+# Reviewed exceptions, each acting on the caller's own id only (auth.uid()), with no arguments:
+# delete_my_account (0021) deletes the caller's login, and their profile cascades with it.
+DEFINER_ALLOWED = {"delete_my_account"}
+
+
 def test_no_public_function_bypasses_rls():
     # SECURITY DEFINER functions run as their owner, and public functions are callable over RPC.
+    # Only the reviewed exceptions above may exist, without arguments and with a fixed search_path.
     with psycopg.connect(PG) as conn:
-        definers = conn.execute("SELECT p.proname FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace "
+        definers = conn.execute("SELECT p.proname, p.pronargs, p.proconfig FROM pg_proc p "
+                                "JOIN pg_namespace n ON n.oid = p.pronamespace "
                                 "WHERE n.nspname = 'public' AND p.prosecdef").fetchall()
-    assert definers == []
+    assert {name for name, _, _ in definers} <= DEFINER_ALLOWED
+    for name, nargs, config in definers:
+        assert nargs == 0 and any(c.startswith("search_path=") for c in config or []), name
 
 
 # --- Profiles ---------------------------------------------------------------------------------
@@ -528,3 +537,22 @@ def test_resume_doc_is_the_users_own_and_bounded():
         conn.execute("""UPDATE students SET resume_doc = '[]'""")
     with as_alice() as conn, pytest.raises(errors.CheckViolation):
         conn.execute("UPDATE students SET resume_doc = jsonb_build_object('x', repeat(md5(random()::text), 8000))")
+
+
+def test_delete_my_account_removes_only_the_callers_login_and_profile():
+    alice_with_profile()
+    with as_alice() as conn:
+        conn.execute("SELECT delete_my_account()")
+        conn.commit()
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT count(*) FROM auth.users WHERE id = %s", (ALICE,)).fetchone() == (0,)
+        assert conn.execute("SELECT count(*) FROM students WHERE id = %s", (ALICE,)).fetchone() == (0,)
+        # Bob, and everything of his, is untouched.
+        assert conn.execute("SELECT count(*) FROM auth.users WHERE id = %s", (BOB,)).fetchone() == (1,)
+        assert conn.execute("SELECT count(*) FROM tailored_resumes WHERE student_id = %s", (BOB,)).fetchone() == (1,)
+
+
+def test_delete_my_account_needs_a_signed_in_caller():
+    assert denied(as_role("anon"), "SELECT delete_my_account()")
+    with as_role("authenticated") as conn, pytest.raises(errors.InsufficientPrivilege):
+        conn.execute("SELECT delete_my_account()")  # no user id in the token

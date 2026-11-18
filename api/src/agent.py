@@ -19,6 +19,7 @@ from urllib.parse import quote
 import usage
 from fit import ENDPOINT, MODELS, FitUnavailable, Post
 from pg_queries import BANDS, OPEN
+from privacy import redact
 from storage import Database
 from tailor import skills_in
 
@@ -339,7 +340,7 @@ async def chat(history: list[dict[str, str]], profile: dict[str, Any], tools: To
     system = SYSTEM.format(name=profile.get("name") or "the person", yoe=profile.get("yoe") or 0,
                            grad_year=profile.get("grad_year") or "unknown",
                            roles=", ".join(profile.get("target_roles") or []) or "any",
-                           resume=(profile.get("resume_text") or "not added yet")[:MAX_RESUME_CHARS])
+                           resume=redact(profile.get("resume_text") or "not added yet")[:MAX_RESUME_CHARS])
     contents = history_contents(history)
     headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
     models = list(MODELS)
