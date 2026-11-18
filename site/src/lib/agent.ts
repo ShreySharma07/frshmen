@@ -31,7 +31,8 @@ export type AgentCard =
   | AgentNote
   | { type: "people"; people: AgentPerson[] }
   | { type: "startups"; startups: AgentStartup[]; offset?: number; has_more?: boolean }
-  | AgentDraft;
+  | AgentDraft
+  | { type: "resume_editor" }; // the agent opened the resume editor beside the chat
 
 export interface Turn { role: "user" | "model"; text: string; cards?: AgentCard[]; sources?: string[] }
 export interface Reply { reply: string; cards: AgentCard[]; sources: string[]; remaining: number }
