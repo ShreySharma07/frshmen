@@ -42,7 +42,7 @@ export const closeJob = (id: number): Promise<ManualJob> => api(`/api/admin/jobs
 
 export type ContactKind = "hr" | "founder";
 export interface ContactList { kind: ContactKind; source: string; n: number; with_email: number; with_phone: number }
-export interface ContactsSummary { total: number; reveals_7d: number; lists: ContactList[] }
+export interface ContactsSummary { total: number; reveals_7d: number; reveals_24h: number; reveals_cap: number; lists: ContactList[] }
 export interface ImportReport {
   valid: number;
   added: number;

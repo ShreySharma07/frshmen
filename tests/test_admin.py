@@ -141,6 +141,7 @@ def test_contacts_import_adds_then_updates_by_email(admin_client):
             ("Priya S.", "Head of TA", "+91 98765 43210")  # a later file without phones keeps the earlier one
     summary = admin_client.get("/api/admin/contacts", headers=admin).json()
     assert summary["total"] == 2
+    assert (summary["reveals_24h"], summary["reveals_cap"]) == (0, 300)  # today's reveals against the site cap
     assert summary["lists"] == [{"kind": "hr", "source": "Shrey's HR list, Nov 2026", "n": 2, "with_email": 1, "with_phone": 1}]
 
 

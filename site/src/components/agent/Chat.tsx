@@ -315,6 +315,7 @@ function DraftPanel({ doc, onClose }: { doc: Doc; onClose: () => void }) {
         {draft && <>
           <p className="text-meta"><span className="font-medium">To </span>
             {draft.to ?? <span className="text-muted">{draft.address_removed ? "not kept in saved chats; ask the agent to draft it again to see the address"
+              : draft.held_back ? "they've had enough emails from Aventra today; copy the text and reach them on LinkedIn"
               : draft.reveals_left === 0 ? "today's 5 email addresses are used; copy the text and find them on LinkedIn" : "no email on file for them"}</span>}
           </p>
           <label className="text-meta font-medium">Subject<input value={subject} maxLength={200} readOnly={sent} onChange={(e) => setSubject(e.target.value)} className={field} /></label>
