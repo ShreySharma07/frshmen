@@ -65,6 +65,9 @@ jobs:
           SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
           SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Keys the hash that daily limits count people by (api/src/usage.py). Optional; set it once
+          # and keep it: a new key starts everyone's counts afresh.
+          USAGE_HASH_KEY: ${{ secrets.USAGE_HASH_KEY }}
           # "on" once the job-text bucket is filled (docs/setup-job-text.md): the API then reads
           # descriptions from Supabase Storage first. Anything else keeps it on the jobs table.
           JOB_TEXT: ${{ vars.JOB_TEXT || 'off' }}
@@ -74,4 +77,7 @@ jobs:
           # (like the rename to aventra) gets it without a manual step.
           if [ -n "$GEMINI_API_KEY" ]; then
             printf '%s' "$GEMINI_API_KEY" | npx --yes wrangler secret put GEMINI_API_KEY
+          fi
+          if [ -n "$USAGE_HASH_KEY" ]; then
+            printf '%s' "$USAGE_HASH_KEY" | npx --yes wrangler secret put USAGE_HASH_KEY
           fi
