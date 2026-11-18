@@ -228,7 +228,7 @@ export function ProfileForm() {
           hint={save.kind === "reading" ? "Reading your PDF…" : "Fix anything the PDF garbled. Aventra checks jobs against this text, never adds to it."}>
           <textarea id="resume-text" rows={10} maxLength={RESUME_TEXT_MAX} value={form.resume_text ?? ""} onChange={(e) => { setResumeTouched(true); set({ resume_text: e.target.value, resume_doc: null }); }}
             aria-busy={save.kind === "reading"} placeholder="Upload a PDF, or paste your resume's text here."
-            className="w-full rounded-md border border-line bg-canvas px-3 py-2.5 font-mono text-meta leading-5 outline-none transition-colors duration-quick placeholder:font-sans placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/30" />
+            className="min-h-[13rem] w-full resize-none rounded-md border border-line bg-canvas px-3 py-2.5 font-mono text-meta leading-5 outline-none transition-colors duration-quick [field-sizing:content] placeholder:font-sans placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/30" />
         </Field>
 
         <div className="flex items-center gap-4 border-t border-line pt-6">

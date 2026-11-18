@@ -49,7 +49,8 @@ export function PreviewPanel({ yoe, roles, state }: { yoe: number; roles: string
     <aside aria-label="Your job list" className="sticky top-[4.5rem] rounded-lg border border-card-line bg-card p-5">
       <h2 className="text-meta font-medium uppercase tracking-wide text-muted">Your job list will show</h2>
       <div className="mt-2"><PreviewLine yoe={yoe} roles={roles} state={state} /></div>
-      <ul className={`mt-4 grid gap-2 transition-opacity duration-quick ${state.kind === "loading" ? "opacity-50" : ""}`}>
+      {/* grid-cols-1 is minmax(0, 1fr): a long "company · place" line truncates instead of widening every card past the panel. */}
+      <ul className={`mt-4 grid grid-cols-1 gap-2 transition-opacity duration-quick ${state.kind === "loading" ? "opacity-50" : ""}`}>
         {state.kind === "ready" && state.jobs.map((j) => {
           const y = years(j);
           return (
