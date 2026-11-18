@@ -14,9 +14,10 @@ Newest first. Each entry: date, options considered, choice, why.
   (10.8 MB gzip), loaded only when someone exports, then cached. Start-up 0.8 s (0.9 s at 4× CPU
   throttle); a one-page resume compiles in 0.17 s (0.5 s at 4×), a recompile in under 10 ms; ~10 MB
   of JS heap. Variable fonts render at their lightest weight, so templates ship static TTFs (OFL).
-- **Hosting the compiler:** Cloudflare Workers serve static files up to 25 MiB, so it is split into
-  two parts served by our own Worker and joined in the browser (typst.ts accepts the bytes). No
-  third-party CDN at run time.
+- **Hosting the compiler:** Cloudflare Workers serve static files up to 25 MiB. It is gzipped at
+  build time into one 10.8 MB file (`site/scripts/typst-assets.mjs`, named by its content hash and
+  cached for a year) and unpacked in the browser with `DecompressionStream`; typst.ts accepts the
+  bytes. No third-party CDN at run time.
 - **Where the structure lives, options:** (a) a `students.resume_doc` JSON column, read from the
   uploaded PDF (pdf.js gives each piece of text with its position, size and weight: headings,
   right-aligned dates, bold entry titles, bullets), edited as fields; `resume_text` is generated from
