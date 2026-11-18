@@ -4,6 +4,19 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-18 — Contact emails can't be harvested (security review M1, part 1)
+- **Problem:** `prepare_draft` took any contact id, and ids are sequential, so a script with many
+  free accounts could collect 5 addresses per account per day (without limit before H1).
+- **Built (code only, Shrey: "fix … in milestones one thing at a time"):**
+  - A draft may only address a contact that `find_people` or `suggest_startups` returned in the
+    same reply; the agent is told to look the person up again. Walking ids gets nothing.
+  - Limits across everyone, from the reveal log: one contact's address is shown at most 3 times in
+    24 hours (no HR inbox flooded by cold emails) and the site at most 300 a day. When held back,
+    the draft says to reach them on LinkedIn, and it doesn't count against the person's own 5.
+  - `/admin` → Contact lists shows today's reveals against the 300 cap, in red past 80%.
+- **Part 2, needs Shrey's choice:** sign-up hardening (a CAPTCHA, email confirmation), so one person
+  can't make many accounts cheaply.
+
 ## 2026-11-18 — Daily limits count the person, not the profile (security review H1)
 - **Problem (security review, `docs/strategy/system-design-review.md`):** every usage counter
   (agent messages, email reveals, fit checks, tailored resumes) referenced `students ON DELETE
