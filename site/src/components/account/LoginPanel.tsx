@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { authConfigured, supabase } from "@/lib/supabase";
 import { AccountShell, NotSetUp } from "./AccountShell";
+import { Turnstile, TURNSTILE_KEY } from "./Turnstile";
 
 type State = { kind: "idle" } | { kind: "busy"; via: Provider | "email" } | { kind: "sent"; email: string } | { kind: "error"; message: string };
 
@@ -18,6 +19,9 @@ export function LoginPanel() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
+  // The Turnstile token for the email link (only when the site key is set); each works once.
+  const [captcha, setCaptcha] = useState<string | null>(null);
+  const [captchaRound, setCaptchaRound] = useState(0);
 
   // Already signed in: nothing to do here.
   useEffect(() => {
@@ -38,7 +42,10 @@ export function LoginPanel() {
     e.preventDefault();
     const address = email.trim();
     setState({ kind: "busy", via: "email" });
-    const { error } = await supabase().auth.signInWithOtp({ email: address, options: { emailRedirectTo: landing() } });
+    const { error } = await supabase().auth.signInWithOtp({
+      email: address, options: { emailRedirectTo: landing(), ...(captcha ? { captchaToken: captcha } : {}) },
+    });
+    if (TURNSTILE_KEY) setCaptchaRound((n) => n + 1); // used: get a fresh one for a retry
     setState(error ? { kind: "error", message: error.message } : { kind: "sent", email: address });
   }
 
@@ -75,7 +82,8 @@ export function LoginPanel() {
               placeholder="you@example.com"
               className="mt-1 h-11 w-full rounded-md border border-line bg-canvas px-3 text-base outline-none transition-colors duration-quick placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/30" />
           </label>
-          <button type="submit" disabled={busy}
+          {TURNSTILE_KEY && <Turnstile onToken={setCaptcha} resetKey={captchaRound} onError={(message) => setState({ kind: "error", message })} />}
+          <button type="submit" disabled={busy || (Boolean(TURNSTILE_KEY) && !captcha)}
             className="h-11 w-full rounded-md bg-accent text-base font-medium text-on-accent transition-colors duration-quick hover:bg-accent-hover disabled:opacity-60">
             {state.kind === "busy" && state.via === "email" ? "Sending…" : "Email me a sign-in link"}
           </button>
