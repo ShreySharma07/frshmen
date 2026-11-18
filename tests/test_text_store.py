@@ -170,3 +170,12 @@ def test_measure_report_counts_jobs_and_text(pg):
     text = measure_storage.report(pg)
     assert "Jobs stored: **2** (2 open, 0 closed), 2 with text" in text
     assert "| ashby | 2 | 2 |" in text and "bytes** a job" in text
+
+
+@needs_pg
+def test_the_daily_storage_check_fails_past_its_share(pg, monkeypatch):
+    # Real size is tiny; shrink the free tier so the same database is "past 80%".
+    assert measure_storage.over_limit(pg) is None
+    monkeypatch.setattr(measure_storage, "FREE_BYTES", 1024)
+    assert "past 80%" in measure_storage.over_limit(pg)
+    assert "the five who store the most use" in measure_storage.report(pg)

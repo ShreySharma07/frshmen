@@ -4,6 +4,18 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-18 — Filling the database: an alarm, not smaller chats (security review M3)
+- **Problem:** one account can store about 9 MB (30 saved chats of up to 256 KB, 5,000 LinkedIn
+  connections, the resume), so ~55 throwaway accounts could fill the free 500 MB and stop writes.
+- **Options:** (a) shrink the limits (e.g. 10 chats of 64 KB, ~1.5 MB an account) · (b) keep them
+  and watch the size. **Choice (Shrey):** (b), "to give users more room". Turnstile on email
+  sign-in (2026-11-18, M1 part 2) is what makes many throwaway accounts expensive.
+- **Built:** `scripts/measure_storage.py --alert` runs daily (`measure-storage.yml`, 05:23 UTC) and
+  fails past 80% of the free tier, so GitHub emails the repo owner. The report also lists the five
+  largest per-person footprints (sizes only, never who).
+- **Same PR:** the four public routes answer HEAD too (uptime monitors), from the same cached copy.
+  Found when a `curl -I` check of the cache got 405.
+
 ## 2026-11-18 — A check on email sign-in links (security review M1, part 2)
 - **Options:** (a) Cloudflare Turnstile + email confirmation · (b) hCaptcha + email confirmation ·
   (c) email confirmation only. **Choice (Shrey):** (a).
