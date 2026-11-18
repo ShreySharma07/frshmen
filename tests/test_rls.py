@@ -515,3 +515,16 @@ def test_chats_keep_the_last_30_and_15_days():
     with psycopg.connect(PG) as conn:
         titles = [r[0] for r in conn.execute("SELECT title FROM agent_chats WHERE student_id = %s ORDER BY updated_at DESC", (ALICE,))]
     assert len(titles) == 30 and titles[0] == "newest" and "chat 30" not in titles
+
+
+def test_resume_doc_is_the_users_own_and_bounded():
+    alice_with_profile()
+    with as_alice() as conn:
+        conn.execute("""UPDATE students SET resume_doc = '{"name": "Alice", "sections": []}'""")
+        assert conn.execute("SELECT resume_doc->>'name' FROM students").fetchone() == ("Alice",)
+        conn.commit()
+    assert rowcount(as_alice(), """UPDATE students SET resume_doc = '{}' WHERE id = %s""", (BOB,)) == 0
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("""UPDATE students SET resume_doc = '[]'""")
+    with as_alice() as conn, pytest.raises(errors.CheckViolation):
+        conn.execute("UPDATE students SET resume_doc = jsonb_build_object('x', repeat(md5(random()::text), 8000))")

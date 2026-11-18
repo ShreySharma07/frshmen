@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Typst compiler, rebuilt from node_modules by scripts/typst-assets.mjs
+/public/resume/typst/

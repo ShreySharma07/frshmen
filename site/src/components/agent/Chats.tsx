@@ -60,7 +60,7 @@ export function Chats({ name, initialRemaining, resume: initialResume }: { name:
       <Chat key={open.id} id={open.id} initialTurns={open.turns} saved={open.saved} name={name} initialRemaining={initialRemaining}
         onBack={hasList || open.turns.length ? () => { setOpen(null); refresh().catch(() => {}); } : null}
         onSaved={() => { setOpen((o) => (o && !o.saved ? { ...o, saved: true } : o)); refresh().catch(() => {}); }}
-        resume={resume} onResumeSaved={(text, fileName) => setResume((r) => ({ ...r, text, fileName }))} />
+        resume={resume} onResumeSaved={(saved) => setResume((r) => ({ ...r, ...saved }))} />
     );
   }
 

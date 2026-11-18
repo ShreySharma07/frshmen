@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A: Content and Design tabs</title><link rel="stylesheet" href="wf.css"></head><body>
+<div class="concept">Concept A · "Two tabs in the panel": Content (fields read from your PDF) · Design (4 templates, live preview, Download)</div>
+<div class="split">
+<div class="box">
+  <div class="row"><b>Your resume</b><span><span class="pill"><b>Content</b></span> <span class="pill">Design</span></span></div>
+  <div class="note">Read from Shrey_Resume.pdf · 3 sections, 5 entries · <u>check what we read</u></div>
+  <div class="sec"><div class="row"><b>Shrey Sharma</b><span class="note">name</span></div><div class="field">shrey@example.com · github.com/shrey · Bengaluru</div></div>
+  <div class="sec"><div class="row"><h2>Projects</h2><span class="note"><u>+ entry</u></span></div>
+    <div class="ent"><div class="row"><span><span class="grip">⋮⋮</span><b>Speculative decoding for a 7B LLM</b> · Personal</span><span>2025</span></div>
+      • Built draft-and-verify decoding in PyTorch: 2.1× faster generation.<br>• Wrote CUDA kernels for the verification step. <span class="note"><u>+ bullet</u></span></div>
+    <div class="ent"><div class="row"><span><span class="grip">⋮⋮</span><b>Distilled BERT classifier</b> · Internship, Acme</span><span>May – Jul 2025</span></div>• Cut model size to 40%; FastAPI at 12 ms p95.</div></div>
+  <div class="sec"><h2>Skills</h2><div class="field">Python, PyTorch, FastAPI, CUDA, LLMs</div></div>
+  <div style="margin-top:10px"><span class="btn">Ask agent to improve</span> <span class="btn dark">Save to profile</span></div>
+</div>
+<div class="box">
+  <div class="row"><b>Design</b><span class="note">same content, 4 layouts</span></div>
+  <div class="thumbs" style="margin:8px 0"><div class="thumb on">Classic<br>serif, centred</div><div class="thumb">Modern<br>sans, accent</div><div class="thumb">Compact<br>fits more</div><div class="thumb">Sidebar labels<br>headings left</div></div>
+  <div class="page"><div style="text-align:center"><b style="font-size:14px">Shrey Sharma</b><br>shrey@example.com · github.com/shrey</div><br><b>PROJECTS</b><hr>Speculative decoding for a 7B LLM <span style="float:right">2025</span><br>• Built draft-and-verify decoding…<br><br><b>SKILLS</b><hr>Python, PyTorch…</div>
+  <div style="margin-top:10px"><span class="btn dark">Download PDF</span> <span class="note">1 page · text a hiring system can read</span></div>
+  <div class="note">First download fetches the layout engine once (~11 MB); a progress bar shows it.</div>
+</div></div></body></html>

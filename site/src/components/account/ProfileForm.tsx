@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CATEGORY } from "@/lib/describe";
 import { BAND_CHOICES, bandOf, profileFilters, SAVED_KEY, toSearch } from "@/lib/filters";
-import { resumeText } from "@/lib/resumeText";
+import { docFromText } from "@/lib/resumeDoc";
+import { readResume } from "@/lib/resumeRead";
 import { sessionChanged } from "@/lib/session";
 import {
   authConfigured, PROFILE_COLUMNS, RESUME_BUCKET, RESUME_MAX_BYTES, RESUME_TEXT_MAX, resumePath, supabase,
@@ -32,7 +33,7 @@ type Save = { kind: "idle" } | { kind: "reading" } | { kind: "saving" } | { kind
 const blank = (user: User): Profile => ({
   // Google sign-ins carry the person's name; email sign-ins start empty.
   name: String(user.user_metadata?.full_name ?? user.user_metadata?.name ?? ""),
-  yoe: 0, grad_year: null, target_roles: [], resume_path: null, resume_name: null, resume_text: null, weekly_goal: 5,
+  yoe: 0, grad_year: null, target_roles: [], resume_path: null, resume_name: null, resume_text: null, resume_doc: null, weekly_goal: 5,
 });
 
 export function ProfileForm() {
@@ -40,6 +41,9 @@ export function ProfileForm() {
   const [load, setLoad] = useState<Load>({ kind: "loading" });
   const [form, setForm] = useState<Profile | null>(null);
   const [file, setFile] = useState<File | null>(null); // a new PDF, not uploaded yet
+  // The resume's structure is rewritten only when the resume changed here (a new PDF, or the text
+  // edited); otherwise the agent's editor can still read it from the stored PDF.
+  const [resumeTouched, setResumeTouched] = useState(false);
   const [save, setSave] = useState<Save>({ kind: "idle" });
   const fileInput = useRef<HTMLInputElement>(null);
   const preview = useProfilePreview(form?.yoe ?? 0, form?.target_roles ?? []);
@@ -81,9 +85,11 @@ export function ProfileForm() {
     if (f.size > RESUME_MAX_BYTES) return setSave({ kind: "error", message: "That PDF is over 5 MB." });
     setSave({ kind: "reading" });
     try {
-      const text = await resumeText(f);
+      // Structure from the PDF's layout (docs/decisions.md, 2026-11-17), and its text from that.
+      const { doc, text } = await readResume(f);
       setFile(f);
-      setForm((prev) => prev && { ...prev, resume_name: f.name.slice(0, 200), resume_text: text });
+      setResumeTouched(true);
+      setForm((prev) => prev && { ...prev, resume_name: f.name.slice(0, 200), resume_text: text, resume_doc: doc });
       setSave(text ? { kind: "idle" } : { kind: "error", message: "No text found in that PDF (is it a scan?). Paste your resume's text below instead." });
     } catch {
       setSave({ kind: "error", message: "Couldn't read that PDF. Try exporting it again." });
@@ -104,6 +110,7 @@ export function ProfileForm() {
       name: form.name.trim(), yoe: form.yoe, grad_year: form.grad_year, target_roles: form.target_roles,
       resume_path: file ? path : form.resume_path, resume_name: form.resume_name,
       resume_text: form.resume_text?.trim() ? form.resume_text.slice(0, RESUME_TEXT_MAX) : null,
+      ...(resumeTouched ? { resume_doc: form.resume_doc ?? (form.resume_text?.trim() ? docFromText(form.resume_text) : null) } : {}),
       weekly_goal: Math.min(50, Math.max(1, Math.round(form.weekly_goal || 5))),
     };
     // Insert once, then update: an upsert would also try to write `id`, which only INSERT may set.
@@ -216,7 +223,7 @@ export function ProfileForm() {
 
         <Field label="What Aventra reads from your resume" htmlFor="resume-text"
           hint={save.kind === "reading" ? "Reading your PDF…" : "Fix anything the PDF garbled. Aventra checks jobs against this text, never adds to it."}>
-          <textarea id="resume-text" rows={10} maxLength={RESUME_TEXT_MAX} value={form.resume_text ?? ""} onChange={(e) => set({ resume_text: e.target.value })}
+          <textarea id="resume-text" rows={10} maxLength={RESUME_TEXT_MAX} value={form.resume_text ?? ""} onChange={(e) => { setResumeTouched(true); set({ resume_text: e.target.value, resume_doc: null }); }}
             aria-busy={save.kind === "reading"} placeholder="Upload a PDF, or paste your resume's text here."
             className="w-full rounded-md border border-line bg-canvas px-3 py-2.5 font-mono text-meta leading-5 outline-none transition-colors duration-quick placeholder:font-sans placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/30" />
         </Field>

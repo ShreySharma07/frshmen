@@ -28,7 +28,7 @@ const SUGGESTIONS = [EDIT_RESUME, "Which YC startups would suit me?", "Jobs I fi
 
 export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, onSaved, resume, onResumeSaved }: {
   id: string; initialTurns: Turn[]; saved: boolean; name: string; initialRemaining: number | null;
-  onBack: (() => void) | null; onSaved: () => void; resume: ResumeSource; onResumeSaved: (text: string, fileName: string | null) => void;
+  onBack: (() => void) | null; onSaved: () => void; resume: ResumeSource; onResumeSaved: (saved: Pick<ResumeSource, "text" | "fileName" | "doc">) => void;
 }) {
   const [turns, setTurns] = useState<Turn[]>(initialTurns);
   const isSaved = useRef(saved);
@@ -114,7 +114,7 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
   );
   return (
     <LayoutGroup>
-    <div className={`grid gap-6 ${open ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]" : ""}`}>
+    <div className={`grid gap-6 ${open ? (open.type === "resume" ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]" : "lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]") : ""}`}>
       {/* The conversation scrolls with the page, like any page of the site, not inside a box of its
           own (Shrey, 2026-11-15: a scroll area here read as a window inside the browser). The box
           to write in stays pinned to the bottom of the screen, above the app's tab bar on phones

@@ -67,7 +67,7 @@ function Page({ user, profile }: { user: User; profile: Profile }) {
         ))}
       </div>
       {view === "chat" ? <Chats name={profile.name} initialRemaining={data?.quota?.agent?.remaining ?? null}
-        resume={{ userId: user.id, name: profile.name, text: profile.resume_text ?? "", fileName: profile.resume_name }} /> : <>
+        resume={{ userId: user.id, name: profile.name, text: profile.resume_text ?? "", fileName: profile.resume_name, path: profile.resume_path, doc: profile.resume_doc }} /> : <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h2 className="max-w-[24ch] font-display text-headline lg:text-hero" aria-live="polite">{data ? brief(strong.length, followUps.length) : "Reading today's jobs…"}</h2>
         <Link href={"/jobs" + toSearch({ ...filters, posted: "24h" })}

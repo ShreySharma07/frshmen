@@ -4,6 +4,28 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-17 — Resume templates: Typst in the browser, structure read from the uploaded PDF
+- **Options (how a resume is laid out in a template):** (A) more pdf-lib layouts · (B) LaTeX compiled
+  for the person (in-browser TeX is 15–30 MB; a compile service would receive their resume) ·
+  (C) `.tex` download + "Open in Overleaf" · (D) Typst compiled in the browser (WASM) ·
+  (E) HTML/CSS and the browser's print dialog. **Choice (Shrey):** D ("as long as it works well in
+  the browser"), with A (today's pdf-lib export) kept as the fallback. 4 templates to start.
+- **Spike (headless Chromium, typst.ts 0.7.0, the stable release):** the compiler is 28.3 MB
+  (10.8 MB gzip), loaded only when someone exports, then cached. Start-up 0.8 s (0.9 s at 4× CPU
+  throttle); a one-page resume compiles in 0.17 s (0.5 s at 4×), a recompile in under 10 ms; ~10 MB
+  of JS heap. Variable fonts render at their lightest weight, so templates ship static TTFs (OFL).
+- **Hosting the compiler:** Cloudflare Workers serve static files up to 25 MiB. It is gzipped at
+  build time into one 10.8 MB file (`site/scripts/typst-assets.mjs`, named by its content hash and
+  cached for a year) and unpacked in the browser with `DecompressionStream`; typst.ts accepts the
+  bytes. No third-party CDN at run time.
+- **Where the structure lives, options:** (a) a `students.resume_doc` JSON column, read from the
+  uploaded PDF (pdf.js gives each piece of text with its position, size and weight: headings,
+  right-aligned dates, bold entry titles, bullets), edited as fields; `resume_text` is generated from
+  it so the agent and fit checks are unchanged · (b) re-read the PDF at export only and match it to
+  the edited text. **Choice (Shrey):** (a). People who signed up earlier get it built from their
+  stored PDF the first time they open the editor.
+- **Layout of the template picker and the field editor:** wireframes first.
+
 ## 2026-11-16 — Agent: startups that fit (with or without openings), sharper email drafts, resume editor
 - **Startups, problem:** `suggest_startups` joined founders to open jobs, so a YC startup on the
   list with no opening on Aventra never showed, however well it fit. The founders list says
