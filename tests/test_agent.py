@@ -454,3 +454,10 @@ def test_the_agent_never_sees_the_persons_email_or_phone(client):
     ask(client, g)
     system = g.sent[0]["systemInstruction"]["parts"][0]["text"]
     assert "asha@example.com" not in system and "98765" not in system and "Python, PyTorch" in system
+
+
+def test_asking_in_words_opens_the_resume_editor(client):
+    g = Gemini(call("open_resume_editor"), call("open_resume_editor"), text("Your resume is open beside the chat."))
+    res = ask(client, g, "Customise my resume").json()
+    assert res["cards"] == [{"type": "resume_editor"}]  # once, however often the model calls it
+    assert "open_resume_editor" in json.dumps(g.sent[0]["tools"])

@@ -66,6 +66,8 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
         .catch(() => setUnsaved(true));
       const made = r.cards.find((c): c is Doc => c.type === "draft" || c.type === "linkedin");
       if (made) setOpen(made);
+      // Asked in words ("customise my resume"): the agent opened the editor, so it opens here too.
+      else if (r.cards.some((c) => c.type === "resume_editor")) setOpen({ type: "resume" });
     } catch (err) {
       const e = err as Error & { status?: number };
       setError(e.status === 429 ? "You've used today's messages. They come back 24 hours after each was sent."
@@ -179,8 +181,14 @@ export function Chat({ id, initialTurns, saved, name, initialRemaining, onBack, 
   );
 }
 
-function Card({ card, onOpen }: { card: AgentCard; onOpen: (d: Doc) => void }) {
+function Card({ card, onOpen }: { card: AgentCard; onOpen: (d: Open) => void }) {
   const box = "mt-3 rounded-md border border-line bg-canvas px-3 py-2";
+  if (card.type === "resume_editor") return (
+    <button type="button" onClick={() => onOpen({ type: "resume" })}
+      className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-ink px-3 py-1.5 text-meta font-medium transition-transform duration-quick active:scale-[0.98]">
+      <FileText aria-hidden className="size-4" />Open your resume
+    </button>
+  );
   if (card.type === "jobs") return (
     <ul className={`${box} grid gap-1.5`}>
       {card.jobs.map((j) => (
