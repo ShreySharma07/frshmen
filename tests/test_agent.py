@@ -445,3 +445,12 @@ def test_the_site_stops_revealing_at_its_daily_cap(client, monkeypatch):
             conn.execute("INSERT INTO contact_reveals (student_id, contact_id) VALUES (NULL, %s)", (zed,))
     g = Gemini(call("find_people", company="Pinecone"), call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
     assert ask(client, g).json()["cards"][1]["held_back"]
+
+
+def test_the_agent_never_sees_the_persons_email_or_phone(client):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("UPDATE students SET resume_text = 'Asha Rao, asha@example.com, +91 98765 43210. Python, PyTorch.' WHERE id = %s", (ASHA,))
+    g = Gemini(text("ok"))
+    ask(client, g)
+    system = g.sent[0]["systemInstruction"]["parts"][0]["text"]
+    assert "asha@example.com" not in system and "98765" not in system and "Python, PyTorch" in system
