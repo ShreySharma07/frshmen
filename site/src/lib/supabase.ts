@@ -2,6 +2,7 @@
 // Supabase directly; RLS in db/postgres/0004_profiles.sql decides what it may touch.
 // Imported only by /login and /profile, so the job list's bundle never carries supabase-js.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { ResumeDoc } from "./resumeDoc";
 
 // Both are public by design (the publishable key only reaches what RLS allows). Set at build
 // time from the repo's Actions variables in .github/workflows/deploy.yml.
@@ -35,7 +36,8 @@ export interface Profile {
   resume_path: string | null;
   resume_name: string | null;
   resume_text: string | null;
+  resume_doc: ResumeDoc | null; // the resume's structure (docs/decisions.md, 2026-11-17)
   weekly_goal: number; // applications a week the dashboard measures against (default 5)
 }
 
-export const PROFILE_COLUMNS = "name, yoe, grad_year, target_roles, resume_path, resume_name, resume_text, weekly_goal";
+export const PROFILE_COLUMNS = "name, yoe, grad_year, target_roles, resume_path, resume_name, resume_text, resume_doc, weekly_goal";
