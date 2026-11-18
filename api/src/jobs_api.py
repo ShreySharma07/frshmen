@@ -20,6 +20,7 @@ from pydantic import BaseModel, Field
 
 import admin
 import agent
+import edge
 import fit
 import job_text
 import tailor
@@ -127,6 +128,7 @@ LIMITS = {"fit_check": FIT_DAILY, "tailor": TAILOR_DAILY, "agent_message": AGENT
 RESULTS = {"fit_check": "fit_checks", "tailor": "tailored_resumes"}
 FIT_WINDOW = "interval '24 hours'"
 # A check holds its place while Gemini answers; one that fails is removed and doesn't count.
+MAX_OFFSET = 2000  # jobs reachable by paging (100 pages of 20); filters reach the rest
 PENDING = '{"pending": true}'
 
 
@@ -185,6 +187,7 @@ def _since(hours: int) -> datetime:
 def create_app() -> FastAPI:
     app = FastAPI(title="Aventra", docs_url="/api/docs", openapi_url="/api/openapi.json")
     app.include_router(admin.router(get_db))
+    edge.install(app)  # rate limits per visitor, then the cache for public data (edge.py)
 
     @app.exception_handler(Exception)
     async def report_errors(request: Request, exc: Exception) -> JSONResponse:
@@ -245,6 +248,9 @@ def create_app() -> FastAPI:
         cond = " AND ".join(where)
         filters = list(p)
         offset = (page - 1) * per_page
+        # Deep pages make Postgres read and skip every row before them (security review M2).
+        if offset >= MAX_OFFSET:
+            raise HTTPException(status_code=422, detail=f"only the first {MAX_OFFSET} jobs page by page; narrow the filters")
         rows = await db.all(f"SELECT {LIST_COLUMNS} FROM job_cards WHERE {cond} {ORDER_BY} "
                             f"LIMIT {p(per_page + 1)} OFFSET {p(offset)}", p)
         body: dict[str, Any] = {
