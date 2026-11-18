@@ -90,3 +90,10 @@ def test_paging_stops_at_two_thousand_jobs(client):
     assert client.get("/api/jobs?page=100").status_code == 200
     res = client.get("/api/jobs?page=101")
     assert res.status_code == 422 and "narrow the filters" in res.json()["detail"]
+
+
+def test_head_answers_on_public_routes_for_uptime_monitors(client):
+    client.app.state.cache = Memory()
+    assert client.head("/api/meta").status_code == 200
+    assert client.head("/api/meta").headers["x-aventra-cache"] == "hit"
+    assert client.get("/api/meta").headers["x-aventra-cache"] == "hit"  # one copy for both

@@ -118,7 +118,8 @@ def install(app: FastAPI) -> None:
 
         # 2. The stack of papers: only anonymous GETs of public routes.
         cache = _cache(request)
-        public = (cache is not None and request.method == "GET" and path in CACHEABLE
+        # HEAD shares GET's cached copy (the server sends only the headers).
+        public = (cache is not None and request.method in ("GET", "HEAD") and path in CACHEABLE
                   and "authorization" not in request.headers)
         if not public:
             return await call_next(request)

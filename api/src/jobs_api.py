@@ -196,7 +196,7 @@ def create_app() -> FastAPI:
         traceback.print_exc()
         return JSONResponse({"error": f"{type(exc).__name__}: {str(exc)[:300]}"}, status_code=500)
 
-    @app.get("/api/jobs")
+    @app.api_route("/api/jobs", methods=["GET", "HEAD"])  # HEAD: uptime monitors
     async def list_jobs(
         # "0-N": fresher roles plus any whose stated minimum is within N years. "unstated": no number
         # in the posting. "internship": intern/trainee/apprentice titles, whatever their label.
@@ -264,7 +264,7 @@ def create_app() -> FastAPI:
             body.update(total=total, pages=max(1, -(-total // per_page)))
         return body
 
-    @app.get("/api/skill-demand")
+    @app.api_route("/api/skill-demand", methods=["GET", "HEAD"])  # HEAD: uptime monitors
     async def skill_demand(experience: Experience = "all", include_unstated: bool = False, role: RoleName = "all",
                            db: Database = Depends(get_db)) -> dict[str, Any]:
         """How many of the matching open jobs name each skill (job_labels.skills, extract/skills.py):
@@ -400,7 +400,7 @@ def create_app() -> FastAPI:
                      [held, json.dumps(stored), result.get("model")])
         return {**result, "id": held, "remaining": max(0, remaining)}
 
-    @app.get("/api/evidence")
+    @app.api_route("/api/evidence", methods=["GET", "HEAD"])  # HEAD: uptime monitors
     async def evidence(limit: int = Query(120, ge=1, le=300), db: Database = Depends(get_db)) -> dict[str, Any]:
         """A random sample of open jobs with the line that decided each label: the landing page's
         wall of real requirements. Only jobs whose label rests on a stated line are drawn. Each line
@@ -430,7 +430,7 @@ def create_app() -> FastAPI:
             rows[0]["description_text"] = stored
         return _decode(rows[0])
 
-    @app.get("/api/meta")
+    @app.api_route("/api/meta", methods=["GET", "HEAD"])  # HEAD: uptime monitors
     async def meta(request: Request, db: Database = Depends(get_db)) -> dict[str, Any]:
         snap = await db.all("SELECT value::text AS value, updated_at FROM meta WHERE key = 'filters'")
         # Before the pipeline's first Supabase run there may be no snapshot; compute it live.
