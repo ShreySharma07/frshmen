@@ -4,6 +4,26 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-18 — Daily limits count the person, not the profile (security review H1)
+- **Problem (security review, `docs/strategy/system-design-review.md`):** every usage counter
+  (agent messages, email reveals, fit checks, tailored resumes) referenced `students ON DELETE
+  CASCADE`, and a person may delete and re-create their own profile through the Data API, which
+  reset all of them: unlimited Gemini use on the shared free quota, unlimited email reveals.
+- **Options:** (a) stop self-deletion through the Data API and delete accounts on the server ·
+  (b) keep counts somewhere deleting a profile can't reach. **Choice (Shrey):** (b), counted by an
+  identity that survives a new account: "(a) alone couldn't close the gap", since deleting the
+  account and signing up again with the same email would reset the counts too.
+- **How:** `usage_events (who, kind, created_at)` (migration `0020`, API-only). `who` is a keyed
+  hash (HMAC-SHA256, Worker secret `USAGE_HASH_KEY`, optional) of the normalised email: lower case,
+  `+tag` dropped, and for Gmail the dots too. No link to the profile or the login. Rows are kept
+  48 hours (a limit looks back 24) and deleted by the API. Counting and recording run under a
+  per-person advisory lock, which also closes the race on email reveals (review L1).
+  `agent_messages` is dropped; `fit_checks` and `tailored_resumes` keep the results only.
+- **Email-reveal log (Shrey: "go with your recommendation"):** kept after the account is deleted, as
+  the audit trail for the people whose addresses were shown, with the account's id removed.
+- **Still open:** a new email address is still a new person; sign-up hardening (CAPTCHA, email
+  confirmation) is the M1 milestone.
+
 ## 2026-11-17 — Resume templates: Typst in the browser, structure read from the uploaded PDF
 - **Options (how a resume is laid out in a template):** (A) more pdf-lib layouts · (B) LaTeX compiled
   for the person (in-browser TeX is 15–30 MB; a compile service would receive their resume) ·
