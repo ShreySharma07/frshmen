@@ -3,7 +3,7 @@
 What Aventra uses today, what it is missing, and what is worth adding before launch (~2026-11-27).
 Scale assumed: hundreds to a few thousand people, on free tiers (Cloudflare Workers 100k requests
 and 100k Hyperdrive queries a day, 10 ms CPU per request; Supabase 500 MB, pauses after a week idle;
-Gemini free tier). Security has its own section, written by a separate review.
+Gemini free tier). Security has its own section at the end, from a separate read-only review.
 
 ## The shape, in one picture
 
@@ -59,3 +59,32 @@ Most design choices below follow from "one writer, many readers, content changes
 
 Each of these is small (hours, not days). 1, 2 and 5 touch infrastructure, so they go through
 `docs/decisions.md` with options first.
+
+## Security review (2026-11-18, read-only)
+
+Overall: **medium risk**. Authentication is checked by Supabase on every request, all SQL is
+parameterised, RLS is on for every table with column-level grants, admin routes are gated in one
+place, the agent's tools are bound to the server-side user, Gemini never sees emails or phones,
+there are no XSS sinks for untrusted text, and no secrets are committed. The weak spot is abuse.
+
+| ID | Severity | Issue | Fix |
+|---|---|---|---|
+| H1 | **High** (confirmed) | A user can delete and re-create their own `students` row through the Data API (`0004`: DELETE and INSERT granted). The usage tables (`agent_messages`, `contact_reveals`, `fit_checks`, `tailored_resumes`) reference `students ON DELETE CASCADE`, so this resets every daily limit and erases the reveal log. Unlimited Gemini use (the shared free quota) and unlimited email reveals. | Usage rows reference `auth.users`, or a separate usage ledger that outlives the profile; keep `contact_reveals` (audit log) from cascading; RLS test: delete + re-insert the profile, the counters survive. |
+| M1 | Medium | `prepare_draft` accepts any `contact_id` (sequential), so a script with many free accounts can harvest 5 emails per account per day; with H1, unlimited. | H1; CAPTCHA (Cloudflare Turnstile, free) and email confirmation at sign-up; reveal only contacts the same request found; a global per-day cap and an admin alert; agent behind Premium as planned. |
+| M2 | Medium | Public endpoints (`/api/skill-demand`, `/api/evidence` with `ORDER BY random()`, deep `/api/jobs` pages) run full scans with no cache or rate limit. | The edge cache and rate-limit rule above; cap `page × per_page`. |
+| M3 | Medium | One account can store about 9 MB (chats 30 × 256 KB, 5,000 connections, resume_doc 128 KB): ~55 throwaway accounts fill the 500 MB database and block writes for everyone. | Lower the chat size and count; CAPTCHA; a size alert from `measure-storage`. |
+| M4 | Medium | Resumes (with the person's email and phone) and connection names go to Gemini's free tier, which Google may use to improve products; no privacy notice yet; "Delete everything" leaves the `auth.users` row. | Strip email and phone before Gemini; the privacy policy (next); a server-side account delete that removes the Auth user. |
+| L1 | Low (confirmed) | The email-reveal count isn't under the row lock the other quotas use: parallel messages can pass 5. | Lock the person's row first in that transaction. |
+| L2 | Low | No security headers: CSP, `frame-ancestors`, `nosniff`, `Referrer-Policy`. | Add them in `_headers` and an API middleware. |
+| L3 | Low | Deploy workflow exposes `CLOUDFLARE_API_TOKEN` to every step (incl. `npm ci` scripts and an unpinned `npx wrangler`); no `permissions:` on some workflows; actions pinned by tag. | Token on the deploy step only; pin wrangler; `permissions: contents: read`; pin actions by SHA. |
+| L4 | Low | `detect-careers.yml` puts `${{ inputs.only }}` straight into a shell command. | Pass it through `env:`. |
+| L5 | Low | Error handler returns exception text; `/api/meta` returns pipeline errors; `/api/docs` is public. | Generic 500 with a request id; explicit columns; docs off in production. |
+| L6 | Low | Python dependencies unpinned (no lock file). | Pin and lock. |
+| L7 | Low | The pipeline's HTTP client accepts `file://`/`ftp://` URLs from third-party sitemaps. | Allow only http(s). |
+| L8 | Low | No `https?://` check on `jobs.url`; the job pane opens it with `window.open`. | Drop non-http(s) URLs at publish; add a CHECK. |
+| L9 | Low | `%` and `_` in the job search aren't escaped. | Reuse the agent's `_like`. |
+| I1–I4 | Info | Prompt injection stays inside the victim's own session (no outbound tool); the Hyperdrive id is in the source (against the 2026-11-14 rule); npm: 0 in production; premium tables must not repeat H1, and `/verify` must check the subscription is the caller's. | — |
+
+Not checked (needs live access): Supabase Auth settings (email confirmation, CAPTCHA, redirect
+allow-list), drift between the migrations and the live database, Cloudflare zone and WAF settings,
+production response headers, Gemini's current data terms, `pip-audit`, repository settings.
