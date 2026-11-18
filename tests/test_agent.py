@@ -115,10 +115,10 @@ def test_email_reveals_stop_at_five_a_day(client):
     with psycopg.connect(PG, autocommit=True) as conn:
         for _ in range(5):
             conn.execute("INSERT INTO usage_events (who, kind) VALUES (%s, 'contact_reveal')", (WHO,))
-    g = Gemini(call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
-    draft = ask(client, g).json()["cards"][0]
+    g = Gemini(call("find_people", company="Pinecone"), call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
+    draft = ask(client, g).json()["cards"][1]
     assert (draft["to"], draft["gmail_url"], draft["reveals_left"]) == (None, None, 0)
-    assert g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]["draft"] == "daily email limit reached"
+    assert g.sent[2]["contents"][-1]["parts"][0]["functionResponse"]["response"]["draft"] == "daily email limit reached"
 
 
 def test_suggest_startups_joins_founders_with_open_jobs(client):
@@ -368,8 +368,8 @@ def test_a_new_account_with_the_same_email_shares_the_limits(client):
 
 
 def test_the_reveal_log_outlives_the_account(client):
-    g = Gemini(call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
-    assert ask(client, g).json()["cards"][0]["to"] == FOUNDER_EMAIL
+    g = Gemini(call("find_people", company="Pinecone"), call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
+    assert ask(client, g).json()["cards"][1]["to"] == FOUNDER_EMAIL
     with psycopg.connect(PG, autocommit=True) as conn:
         conn.execute("DELETE FROM students WHERE id = %s", (ASHA,))
         assert conn.execute("SELECT student_id, contact_id IS NOT NULL FROM contact_reveals").fetchall() == [(None, True)]
@@ -390,6 +390,8 @@ def test_parallel_reveals_cannot_pass_the_limit(client):
             from storage import PostgresDatabase
 
             tools = [agent.Tools(PostgresDatabase(c), ASHA, 0, {"resume_text": "Python, PyTorch, RAG."}, who=WHO) for c in conns]
+            for t in tools:
+                t.found.add(ana_id())  # as if find_people had listed her in each reply
             results = await asyncio.gather(*(t.prepare_draft(ana_id(), "s", DRAFT) for t in tools))
             return [t.cards[0]["to"] for t in tools], results
         finally:
@@ -407,3 +409,39 @@ def test_emails_normalise_to_one_person():
     assert normalise("Ravi.K+jobs@outlook.com") == "ravi.k@outlook.com"  # dots matter outside Gmail
     assert who("u1", "asha@gmail.com") == who("u2", "a.sha@gmail.com") != who("u1", None)
     assert who("u1", "asha@gmail.com", "k") != who("u1", "asha@gmail.com")  # keyed
+
+
+
+# --- Harvesting contacts (docs/decisions.md, 2026-11-18, security M1) -----------------------------
+
+def test_a_draft_only_reaches_someone_found_in_the_same_reply(client):
+    # Asking for a contact id straight away (walking ids) gets no address and no reveal.
+    g = Gemini(call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
+    res = ask(client, g).json()
+    assert res["cards"] == []
+    assert "find this person" in g.sent[1]["contents"][-1]["parts"][0]["functionResponse"]["response"]["error"]
+    with psycopg.connect(PG) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM contact_reveals").fetchone() == (0,)
+
+
+def test_one_contact_is_shown_at_most_three_times_a_day_across_everyone(client):
+    with psycopg.connect(PG, autocommit=True) as conn:
+        for _ in range(3):  # three other people already emailed her today
+            conn.execute("INSERT INTO contact_reveals (student_id, contact_id) VALUES (NULL, %s)", (ana_id(),))
+    g = Gemini(call("find_people", company="Pinecone"), call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
+    draft = ask(client, g).json()["cards"][1]
+    assert draft["to"] is None and draft["held_back"] and draft["reveals_left"] == 5  # not counted against Asha
+    assert "held back" in g.sent[2]["contents"][-1]["parts"][0]["functionResponse"]["response"]["draft"]
+
+
+def test_the_site_stops_revealing_at_its_daily_cap(client, monkeypatch):
+    import agent
+
+    monkeypatch.setattr(agent, "SITE_DAILY", 2)
+    with psycopg.connect(PG, autocommit=True) as conn:
+        conn.execute("INSERT INTO contacts (kind, name, company, email, source) VALUES ('hr', 'Zed', 'Other', 'zed@other.io', 't')")
+        zed = conn.execute("SELECT id FROM contacts WHERE name = 'Zed'").fetchone()[0]
+        for _ in range(2):
+            conn.execute("INSERT INTO contact_reveals (student_id, contact_id) VALUES (NULL, %s)", (zed,))
+    g = Gemini(call("find_people", company="Pinecone"), call("prepare_draft", contact_id=ana_id(), subject="s", body=DRAFT), text("ok"))
+    assert ask(client, g).json()["cards"][1]["held_back"]

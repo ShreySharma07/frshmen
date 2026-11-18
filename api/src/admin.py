@@ -13,6 +13,7 @@ from typing import Any, Callable, Literal
 from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+import agent
 from auth import current_user
 from contacts_csv import ALIASES, parse
 from pg_queries import BANDS, OPEN
@@ -171,8 +172,11 @@ def router(get_db: Callable[..., Any]) -> APIRouter:
         response.headers["Cache-Control"] = "no-store"
         lists = await db.all("SELECT kind, source, COUNT(*) AS n, COUNT(email) AS with_email, COUNT(phone) AS with_phone "
                              "FROM contacts GROUP BY 1, 2 ORDER BY 1, 2")
-        reveals = await db.all("SELECT COUNT(*) AS n FROM contact_reveals WHERE created_at > now() - interval '7 days'")
+        reveals = await db.all("SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created_at > now() - interval '24 hours') AS day "
+                               "FROM contact_reveals WHERE created_at > now() - interval '7 days'")
         return {"total": sum(int(x["n"]) for x in lists), "reveals_7d": int(reveals[0]["n"]),
+                # Today's reveals against the site-wide cap (agent.SITE_DAILY): a jump is the sign of harvesting.
+                "reveals_24h": int(reveals[0]["day"]), "reveals_cap": agent.SITE_DAILY,
                 "lists": [{k: (int(v) if k in ("n", "with_email", "with_phone") else v) for k, v in x.items()} for x in lists]}
 
     @r.post("/contacts/import")

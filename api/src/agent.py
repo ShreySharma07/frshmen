@@ -28,6 +28,10 @@ MAX_TURN_CHARS = 2000
 MAX_RESUME_CHARS = 4000
 OVERLOADED = {500, 502, 503, 504}  # Google's side, not ours: worth one more model
 REVEALS_DAILY = 5  # emails a person can be shown in drafts per 24 hours
+# Limits across everyone (docs/decisions.md, 2026-11-18, security M1): one contact's address is shown
+# at most this many times a day, so no HR inbox gets flooded, and the whole site at most this many.
+CONTACT_DAILY = 3
+SITE_DAILY = 300
 JOBS_SHOWN = 6
 STARTUPS_DEFAULT = 12  # Shrey, 2026-11-16: as many as the person asks, 12 when they don't say
 STARTUPS_MAX = 50  # per answer: the Worker's CPU and Gemini's input stay small
@@ -42,7 +46,7 @@ SYSTEM = """You are Aventra's job-search agent for one person. Be brief, specifi
 - suggest_startups ranks startups by how well what they build fits the person, whether or not they have an opening. Pass limit when the person asks for a number; when has_more is true, offer to show more and pass offset to continue. Say which ones have open jobs, and list startups marked described=false separately as ones whose work you couldn't tell; never guess what a company does from its name.
 - For a referral or an introduction, first look for people the person already knows there with find_connections (their own LinkedIn connections); a warm contact beats a cold one.
 - To message a connection, call prepare_linkedin_message with a short note in the person's voice. LinkedIn is never messaged for them: they copy the note and send it themselves.
-- To write an email to a person, first find them (their id comes from find_people or suggest_startups), then call prepare_draft. The email, in the person's voice:
+- To write an email to a person, first find them in this same reply (their id comes from find_people or suggest_startups; call it again even if they were found earlier in the chat), then call prepare_draft. The email, in the person's voice:
   Subject: under 8 words, specific to the company or the role. No "Opportunity" or "Introduction".
   Body, short paragraphs separated by a blank line:
   1. "Hi <first name>,"
@@ -116,6 +120,9 @@ class Tools:
         self.kinds: list[str] = list(profile.get("target_roles") or [])
         self.resume_skills: list[str] = sorted(skills_in(profile.get("resume_text") or ""))
         self.cards: list[dict[str, Any]] = []
+        # Contacts this reply found with find_people or suggest_startups: the only ones a draft may
+        # address, so ids can't be walked one by one to collect emails (security M1).
+        self.found: set[int] = set()
         self.sources: set[str] = set()
 
     async def call(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -171,6 +178,7 @@ class Tools:
     async def find_people(self, company: str) -> dict[str, Any]:
         people = await self._people("lower(company) = lower($1) OR company ILIKE $2 ORDER BY kind, name LIMIT 8",
                                     [company.strip(), _like(company)])
+        self.found.update(int(p["id"]) for p in people)
         if people:
             self.cards.append({"type": "people", "people": [
                 {k: p[k] for k in ("id", "kind", "name", "company", "title", "linkedin", "has_email")} for p in people]})
@@ -218,6 +226,7 @@ class Tools:
                                  [kinds, self.resume_skills, limit + 1, offset])
         has_more = len(rows) > limit
         startups = [{**r, "open_jobs": int(r["open_jobs"]), "score": int(r["score"])} for r in rows[:limit]]
+        self.found.update(int(s["founder_id"]) for s in startups)
         if startups:
             self.cards.append({"type": "startups", "startups": startups, "offset": offset, "has_more": has_more})
             self.sources.add("YC founders list")
@@ -229,6 +238,8 @@ class Tools:
                 "matched_against": {"kinds_of_work": kinds, "resume_skills": self.resume_skills}, "band_used": band}
 
     async def prepare_draft(self, contact_id: int, subject: str, body: str, job_id: str = "") -> dict[str, Any]:
+        if int(contact_id) not in self.found:
+            return {"error": "find this person with find_people (or suggest_startups) in this reply first, then draft"}
         rows = await self._people("id = $1", [int(contact_id)])
         if not rows:
             return {"error": "no such contact; find them with find_people first"}
@@ -238,13 +249,20 @@ class Tools:
             return {"error": f"draft not shown: {problem}. Rewrite it following the email rules and call prepare_draft again."}
         card: dict[str, Any] = {"type": "draft", "contact": {k: person[k] for k in ("id", "name", "company", "title", "linkedin")},
                                 "subject": subject.strip()[:200], "body": body.strip()[:4000], "job_id": job_id or None}
-        to = None
+        to, busy = None, False
         if person["has_email"]:
             async with self.db.transaction():
                 # The person's lock: two messages sent at once can't both take the last reveal.
                 await usage.lock(self.db, self.who)
                 used, _ = await usage.used(self.db, self.who, "contact_reveal")
-                if used < REVEALS_DAILY:
+                # Everyone's reveals of this contact, and of all contacts, in the last 24 hours. One
+                # lock for all reveals keeps the site-wide count exact; reveals are few and quick.
+                await self.db.all("SELECT pg_advisory_xact_lock(hashtextextended('contact_reveals', 0))")
+                shown = (await self.db.all(
+                    "SELECT COUNT(*) FILTER (WHERE contact_id = $1) AS contact, COUNT(*) AS site FROM contact_reveals "
+                    "WHERE created_at > now() - interval '24 hours'", [person["id"]]))[0]
+                busy = int(shown["contact"]) >= CONTACT_DAILY or int(shown["site"]) >= SITE_DAILY
+                if used < REVEALS_DAILY and not busy:
                     to = (await self.db.all("SELECT email FROM contacts WHERE id = $1", [person["id"]]))[0]["email"]
                     # The audit log of whose address was shown to whom (kept after the account goes).
                     await self.db.all("INSERT INTO contact_reveals (student_id, contact_id) VALUES ($1, $2)",
@@ -252,12 +270,15 @@ class Tools:
                     await usage.record(self.db, self.who, "contact_reveal")
                     used += 1
             card["reveals_left"] = max(0, REVEALS_DAILY - int(used))
+            if busy and not to:
+                card["held_back"] = True  # the person had enough emails today, or the site reached its cap
         card["to"] = to
         card["gmail_url"] = gmail_url(to, card["subject"], card["body"]) if to else None
         self.cards.append(card)
         self.sources.add("Aventra's contact lists")
         # The model is told only whether an address went on the card, never the address.
-        status = "addressed" if to else ("no email on file" if not person["has_email"] else "daily email limit reached")
+        status = ("addressed" if to else "no email on file" if not person["has_email"]
+                  else "held back: this person has had enough emails today; suggest LinkedIn" if busy else "daily email limit reached")
         return {"draft": status, "to_name": person["name"]}
 
 

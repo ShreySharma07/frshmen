@@ -128,7 +128,8 @@ export function Contacts({ Card }: { Card: React.ComponentType<{ title: string; 
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-meta text-muted">{n(summary.total)} contacts · {n(summary.reveals_7d)} emails shown to users in the last 7 days</p>
+          <p className="mt-2 text-meta text-muted">{n(summary.total)} contacts · {n(summary.reveals_7d)} emails shown to users in the last 7 days ·{" "}
+            <span className={summary.reveals_24h >= summary.reveals_cap * 0.8 ? "font-medium text-card-fail" : ""}>{n(summary.reveals_24h)} of {n(summary.reveals_cap)} today</span></p>
         </>
       )}
       <form onSubmit={(e) => { e.preventDefault(); remove({ email: removeEmail.trim() }, removeEmail.trim()); }} className="mt-4 flex flex-wrap items-end gap-2">

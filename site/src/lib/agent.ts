@@ -18,6 +18,7 @@ export interface AgentDraft {
   job_id: string | null;
   gmail_url: string | null;
   reveals_left?: number;
+  held_back?: boolean; // this person had enough emails today across everyone, or the site hit its cap
   /** Set on drafts reopened from a saved chat: the address was shown then, and isn't stored. */
   address_removed?: boolean;
 }
