@@ -20,7 +20,7 @@ Steps:
 4. Add polite fetching: User-Agent, per-host rate limit, ETag/If-Modified-Since, retry with backoff.
 5. Save 3 real sample responses to `tests/fixtures/` and write a test that parses them.
 6. Log a decision entry if the source needed a tradeoff (e.g. HTML parsing).
-7. A job board (many companies' jobs, e.g. Himalayas) sets `BOARD = True` so its jobs give way to companies we read directly, keeps its search words in `config/boards.yaml`, and follows the board's attribution terms (name it on the job and its Apply button: `BOARDS` in `site/src/lib/describe.ts`).
+7. A job board (many companies' jobs, e.g. Himalayas) sets `BOARD = True` so its jobs give way to companies we read directly, keeps its search words in `config/boards.yaml`, and follows the board's attribution terms (name it on the job and its Apply button: `BOARDS` in `site/src/lib/describe.ts`). A board whose feed is a time window (Jobicy: 7 days) also offers `still_open(http, ids)` so older jobs aren't closed for being missing.
 
 Done when: adapter returns normalized jobs, tests pass, and a second run only reports truly new postings.
 
