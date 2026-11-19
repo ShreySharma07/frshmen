@@ -19,7 +19,13 @@ export function shortDate(iso: string | null, now = new Date()): string {
 
 /** "Bengaluru · Onsite", "Remote", or the raw location. */
 export function place(j: JobSummary): string {
-  const where = j.cities[0] ?? j.location_raw ?? j.countries[0] ?? "";
-  const mode = j.location_type ? j.location_type[0].toUpperCase() + j.location_type.slice(1) : "";
-  return [where, mode].filter(Boolean).join(" · ");
+  return withMode(j.cities[0] ?? j.location_raw ?? j.countries[0] ?? "", j.location_type);
+}
+
+/** "Bengaluru · Hybrid". The mode is left off when the place already says it: "Remote, Worldwide",
+ *  not "Remote, Worldwide · Remote". */
+export function withMode(where: string | null, type: JobSummary["location_type"]): string {
+  const mode = type ? type[0].toUpperCase() + type.slice(1) : "";
+  const said = mode && new RegExp(`\\b${mode}\\b`, "i").test(where ?? "");
+  return [where, said ? "" : mode].filter(Boolean).join(" · ");
 }

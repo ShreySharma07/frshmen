@@ -1,7 +1,7 @@
 import { Check, Minus, X } from "lucide-react";
 import type { JobDetail } from "@/lib/api";
 import { FAMILY, earlyCareer, techMentioned } from "@/lib/describe";
-import { years } from "@/lib/format";
+import { withMode, years } from "@/lib/format";
 import { Ruler, RulerScale, asks } from "./Ruler";
 
 type State = "match" | "unknown" | "mismatch";
@@ -45,7 +45,7 @@ export function FitCard({ job, you = null }: { job: JobDetail; you?: number | nu
   const quote = job.yoe_evidence ?? (job.batch_years.length ? `For the ${job.batch_years.join(", ")} batch` : null);
   const tech = techMentioned(job.description_text);
   const early = earlyCareer(job.description_text);
-  const where = [job.location_raw, job.location_type && job.location_type[0].toUpperCase() + job.location_type.slice(1)].filter(Boolean).join(" · ");
+  const where = withMode(job.location_raw, job.location_type);
   // Each fact is a match (the posting states it, in your favour), unknown (it doesn't say) or a
   // mismatch (it states something against you). Colour and icon both carry the state.
   const visa: Row = job.visa_sponsorship === "yes" ? ["match", "Visa sponsorship offered"]
