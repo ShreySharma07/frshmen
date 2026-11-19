@@ -1,6 +1,6 @@
 import { ArrowUpRight, Banknote, Briefcase, ChevronLeft, Clock, MapPin } from "lucide-react";
 import type { JobDetail } from "@/lib/api";
-import { ATS, blocks, bodyText, highlightParts, techMentioned } from "@/lib/describe";
+import { ATS, BOARDS, blocks, bodyText, highlightParts, techMentioned } from "@/lib/describe";
 import { shortDate } from "@/lib/format";
 import { CompanyMark } from "./CompanyMark";
 import { FitCard } from "./FitCard";
@@ -42,7 +42,7 @@ export function JobDetailView({ job, fitCheck, you, onBack }: { job: JobDetail; 
           doesn't show through the gap above the bar. */}
       <div className="sticky -top-5 z-10 -mx-1 mt-4 flex flex-wrap items-center gap-2 border-b border-line bg-canvas px-1 py-3 lg:-top-6 lg:bg-card">
         <a href={job.url} target="_blank" rel="noopener" className="press inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 text-meta font-medium text-on-accent duration-quick hover:bg-accent-hover">
-          Apply on {job.company} <ArrowUpRight className="size-3.5" />
+          Apply on {BOARDS.has(job.source) ? ATS[job.source] : job.company} <ArrowUpRight className="size-3.5" />
           <kbd className="ml-1 hidden rounded-sm border border-on-accent/30 px-1 font-mono text-caption leading-4 opacity-70 lg:inline">A</kbd>
         </a>
         {/* A new key per job: its saved state and fit verdict start fresh. */}
