@@ -495,6 +495,7 @@ companies:
   # --- Community hiring threads (one entry covers every company posting there) ---
   - {name: HN Who is hiring, category: community, hq: global, ats: hn, slug: whoishiring, verified: true, jobs: 211, ai_jobs: 41, checked: '2026-10-07'}
   - {name: Himalayas, category: board, hq: global, ats: himalayas, slug: remote, verified: true, jobs: 20, ai_jobs: 14, checked: '2026-11-19', careers: 'board: https://himalayas.app/api (config/boards.yaml)'}
+  - {name: Jobicy, category: board, hq: global, ats: jobicy, slug: remote, verified: true, jobs: 59, ai_jobs: 30, checked: '2026-11-19', careers: 'board: https://jobicy.com/jobs-rss-feed (config/boards.yaml)'}
 
   # --- YC AI startups imported from yc-oss on 2026-10-06 (scripts/import_yc.py) ---
   - {name: Hub, category: yc, hq: us, website: hub.xyz, ats: ashby, slug: hub, verified: false, checked: '2026-11-19', careers: not found (6 pages read)}

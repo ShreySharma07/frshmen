@@ -25,3 +25,15 @@ himalayas:
   seniority: [Entry-level, Mid-level]
   # 20 jobs a page. A cap so one broad query can't eat the daily allowance.
   max_pages: 10
+
+jobicy:
+  # https://jobicy.com/jobs-rss-feed (the API docs). Free public API, no key: the paid key only
+  # swaps in direct ATS links, so it isn't used. Terms: credit Jobicy, Apply goes to the Jobicy
+  # listing (`url`), and a job is closed only once Jobicy's status check says so. The feed holds
+  # the last 7 days only, so older open jobs are checked with /api/jobs/status (sources/jobicy.py).
+  # Jobicy categories (?get=industries): data science, software engineering, DevOps.
+  industries: [data-science, engineering, admin]
+  # 100 jobs a page; a 7-day category is a few pages at most.
+  max_pages: 10
+  # Levels a fresher can't hold: these jobs are skipped before classifying (precision first).
+  skip_levels: [Senior, Lead, Director, Manager, Executive]
