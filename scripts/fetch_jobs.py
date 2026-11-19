@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from collections import Counter
@@ -70,8 +71,44 @@ def pick(companies: list[Company], names: list[str] | None = None, limit: int | 
     if names:
         companies = [c for c in companies if c.name in set(names)]
     if skip_global:
-        companies = [c for c in companies if not c.india_only]
+        # Job boards refresh daily too (sources/himalayas.py), so they ride the same daily run.
+        companies = [c for c in companies if not c.india_only and not is_daily(c)]
     return companies[:limit] if limit else companies
+
+
+def is_board(source: str) -> bool:
+    """A job board lists many companies' jobs (config/boards.yaml), unlike a company's own ATS."""
+    return getattr(ADAPTERS.get(source), "BOARD", False)
+
+
+def is_daily(company: Company) -> bool:
+    return getattr(ADAPTERS.get(company.ats), "DAILY", False)
+
+
+# Legal-form words that differ between a board's spelling and ours ("Acme, Inc." vs "Acme").
+_LEGAL_FORM = re.compile(r"\b(?:inc|llc|ltd|limited|gmbh|corp|corporation|co|plc|pvt|private|sa|sarl|bv|ag)\b")
+
+
+def company_key(name: str) -> str:
+    """A company name reduced for matching across sources: "Acme AI, Inc." -> "acmeai"."""
+    return re.sub(r"[^a-z0-9]", "", _LEGAL_FORM.sub("", name.lower()))
+
+
+def drop_covered(jobs: list[Job], companies: list[Company]) -> tuple[list[Job], int]:
+    """Board jobs from companies we already read directly are dropped: their own board is the
+    better copy (fresher, complete, closes on time). Decision 2026-11-19, option C."""
+    direct = {company_key(c.name) for c in companies if not is_board(c.ats)}
+    kept = [j for j in jobs if not (is_board(j.source) and company_key(j.company) in direct)]
+    return kept, len(jobs) - len(kept)
+
+
+def board_leads(records: list[dict], path: Path = COMPANIES) -> list[dict]:
+    """Companies seen on a job board with a target-role job, and not in our list at all: leads to
+    add and read directly (the discovery half of option C)."""
+    listed = {company_key(c["name"]) for c in yaml.safe_load(path.read_text())["companies"]}
+    counts = Counter((r["source"], r["company"]) for r in records
+                     if r["role_match"] and is_board(r["source"]) and company_key(r["company"]) not in listed)
+    return [{"source": s, "company": c, "target_jobs": n} for (s, c), n in counts.most_common()]
 
 
 def in_india_or_remote(job: Job) -> bool:
@@ -151,6 +188,9 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001 - the boards' jobs still publish
             errors["manual jobs"] = f"{type(e).__name__}: {e}"[:300]
 
+    # Every listed company counts as covered, even if its board failed this run: a board copy shown
+    # for one run would only be closed again on the next.
+    jobs, covered = drop_covered(jobs, load_companies())
     unique = dedupe(jobs)
     profile = load_profile()
     records = []
@@ -174,13 +214,16 @@ def main() -> int:
         "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company]
                      + manual_boards,
         "errors": errors,
+        "board_leads": board_leads(records),
         "jobs": records,
     }
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
 
     # Run summary (skills.md §7): fetched, kept, per-source errors.
     print(f"\nCompanies: {len(companies)} ok={len(per_company)} failed={len(errors)}")
-    print(f"Jobs: fetched={len(jobs)} after_dedupe={len(unique)} -> {args.out}")
+    print(f"Jobs: fetched={len(jobs) + covered} after_dedupe={len(unique)} -> {args.out}")
+    print(f"Job boards: dropped {covered} jobs from companies read directly; "
+          f"{len(payload['board_leads'])} new companies with target-role jobs (board_leads)")
     # How much the India screen hides today: the size of "every country" for these boards
     # (docs/strategy/worldwide-coverage.md, phase 0).
     print(f"India screen: dropped {sum(screened)} jobs on {len(screened)} india_only boards")

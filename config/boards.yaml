@@ -1,0 +1,27 @@
+# Job boards: sites that list many companies' jobs (docs/decisions.md, 2026-11-19).
+# A board's job is shown only when its company isn't already fetched from its own board
+# (scripts/fetch_jobs.py, drop_covered). Each board is read once a day, in the run that reads
+# the big global boards.
+
+himalayas:
+  # https://himalayas.app/api. Terms: Apply goes to `applicationLink` unchanged, the job page
+  # shows a visible link back to Himalayas, jobs are removed once they expire, and nothing is
+  # passed on to other boards or Google Jobs.
+  # One search per query, newest first. Words close to config/profile.yaml target roles; the
+  # role rules (extract/role.py) still decide what matches.
+  queries:
+    - machine learning
+    - AI engineer
+    - LLM
+    - generative AI
+    - data scientist
+    - applied scientist
+    - research engineer
+    - MLOps
+    - python backend
+    - android developer
+    - react native
+  # Both levels: Himalayas' own label misses some juniors; our classifier decides the level.
+  seniority: [Entry-level, Mid-level]
+  # 20 jobs a page. A cap so one broad query can't eat the daily allowance.
+  max_pages: 10
