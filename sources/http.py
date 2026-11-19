@@ -45,13 +45,15 @@ class HttpClient:
     # Boards are fetched from several threads; pacing must still hold per host across all of them.
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
-    def get_json(self, url: str, fresh_days: float | None = None) -> Any | None:
+    def get_json(self, url: str, fresh_days: float | None = None,
+                 headers: dict[str, str] | None = None) -> Any | None:
         """Parsed JSON, or None if the resource doesn't exist. Raises FetchError otherwise.
 
         `fresh_days`: reuse a stored copy younger than this without asking the host at all.
         For per-job detail calls, whose text rarely changes, so only new jobs cost a request.
+        `headers`: extra request headers, e.g. a free API key some boards give higher limits for.
         """
-        return self._get(url, "application/json", json.loads, fresh_days)
+        return self._get(url, "application/json", json.loads, fresh_days, extra_headers=headers)
 
     def get_text(self, url: str, accept: str = "text/html,application/xml;q=0.9,*/*;q=0.8",
                  fresh_days: float | None = None) -> str | None:
@@ -74,12 +76,14 @@ class HttpClient:
         return self._get(url, "application/json", json.loads, data=json.dumps(body).encode())
 
     def _get(self, url: str, accept: str, decode: Callable[[str], Any], fresh_days: float | None = None,
-             data: bytes | None = None, with_url: bool = False) -> Any | None:
+             data: bytes | None = None, with_url: bool = False,
+             extra_headers: dict[str, str] | None = None) -> Any | None:
         host = urlparse(url).netloc
         cached = self._cache_read(url) if data is None and not with_url else None
         if fresh_days and cached and time.time() - cached.get("stored_at", 0) < fresh_days * 86400:
             return cached["body"]
-        headers = {"User-Agent": USER_AGENT, "Accept": accept, "Accept-Language": "en-US,en;q=0.8"}
+        headers = {"User-Agent": USER_AGENT, "Accept": accept, "Accept-Language": "en-US,en;q=0.8",
+                   **(extra_headers or {})}
         if data is not None:
             headers["Content-Type"] = "application/json"
         if cached:

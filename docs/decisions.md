@@ -4,6 +4,56 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-19 — Jobicy, and keeping a board's older jobs open
+- **Jobicy (jobicy.com), built:** free JSON API, no key, `robots.txt` allows `/api/jobs`, and the
+  fair-use terms allow showing its jobs: credit Jobicy, Apply on the Jobicy listing, don't present
+  them as our own. The paid key (direct ATS links, $0.01 a job) isn't used: free tiers only.
+  Read daily by category: data science, software engineering, DevOps (`config/boards.yaml`).
+  Listings marked Senior, Lead, Director, Manager or Executive are skipped in the adapter, a
+  structured screen like `india_only` (precision first). Thin for this profile: 59 data-science jobs
+  in its 7-day feed on 2026-11-18, mostly US/UK, many from companies we already read directly.
+- **The 7-day window:** Jobicy's feed lists only the last 7 days and says a job leaving it may still
+  be open; close only on an explicit `closed`. So an adapter can offer `still_open(http, ids)`:
+  `scripts/fetch_jobs.py` asks it about stored open jobs missing from today's feed (Jobicy's free
+  batch status endpoint, 100 ids a request) and writes the active ones to `keep_open`;
+  `publish_pg.py` leaves those out of the missed-run count. "closed" and "unknown" follow the normal
+  rule. Without a database, or if the check fails, that board is left out of `boards_ok`, so it
+  closes nothing that run. Generic: no source names in the publisher.
+- **Found on the way, fixed for every source:** "Remote, LATAM" or "Remote - EMEA" read as remote
+  anywhere, so a LATAM-only job looked open to India. `config/locations.yaml` now has `regions`
+  (Latin America, North America, EMEA, Europe) that expand to their countries; APAC is left
+  unspecified on purpose because it often includes India. Portugal added as a country.
+
+## 2026-11-19 — Job boards as a source, and Himalayas first
+- **Ask (Shrey):** add every source we can fetch jobs from. Chosen order: free job-board APIs first,
+  then more ATS adapters (Recruitee, Personio, Breezy, BambooHR, Pinpoint, Freshteam), each only once
+  3+ real companies on it are found. One source per PR.
+- **How board jobs enter the pipeline, options:** (A) each board is a source like any other, deduped
+  by company + title + place · (B) boards only reveal companies, which join the curated list · (C) a
+  mix: a board job is shown only when its company isn't read directly; otherwise the board is a lead.
+  **Choice (Shrey):** C.
+- **How:** an adapter marks itself `BOARD = True`. `scripts/fetch_jobs.py` drops board jobs whose
+  company (name reduced by `company_key`: lower case, no punctuation or legal form) is any listed
+  company read directly, even if that board failed this run. Target-role jobs from companies not in
+  `config/companies.yaml` at all are written to `board_leads` in `data/jobs.json` and counted in the run
+  log, to add by hand or through discovery. Search words per board live in `config/boards.yaml`.
+- **Remotive, left out:** `robots.txt` disallows `/api/*`, and its public RSS feeds now hold about 5
+  jobs per category (1 in AI on 2026-11-18); the rest are for paying members.
+- **Himalayas (himalayas.app), built:** free JSON API, `robots.txt` allows it, and the terms allow
+  showing its jobs on our own site. Terms kept: Apply opens `applicationLink` unchanged (the job's page
+  on himalayas.app), the site names Himalayas on the job and its Apply button, a job missing from a
+  day's results is closed, and nothing is passed on to other boards or Google Jobs (we publish no
+  JobPosting data). Searched with 11 role words, **Entry- and Mid-level** (Shrey: Himalayas' own label
+  misses some juniors; our classifier decides the level), newest first, up to 10 pages of 20 each.
+- **Schedule and key (Shrey):** daily, in the 03:17 UTC run that reads the global boards (`DAILY =
+  True`; its data refreshes daily), with a **free API key**, `HIMALAYAS_API_KEY` (Actions secret,
+  `.env.example`). Free-key limits: 60 requests/minute, 10,000/day; a run makes at most ~110.
+  Without the key it still works, at lower keyless limits.
+- **Known gap:** Himalayas strips line breaks from descriptions, so the YoE rules can't use headings
+  there; the explicit "N+ years" phrases are still found.
+- **List cards (Shrey approved the sketch):** board jobs read "micro1 via Himalayas" on the list row, by
+  the company rather than at the end, where the truncated line hid it on phones.
+
 ## 2026-11-18 — What reaches Gemini, and deleting an account for good (security review M4)
 - **Contact details never reach Gemini (Shrey: "yes"):** `api/src/privacy.py` replaces email
   addresses and phone numbers (10–15 digits, so years, dates and scores stay) with `[email]` and

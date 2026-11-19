@@ -24,6 +24,7 @@ countries:
   Ireland: [ireland, dublin]
   Switzerland: [switzerland, zurich, zürich, geneva, lausanne]
   Spain: [spain, madrid, barcelona]
+  Portugal: [portugal, lisbon, porto]
   Poland: [poland, warsaw, krakow, kraków]
   Sweden: [sweden, stockholm]
   Israel: [israel, tel aviv]
@@ -40,6 +41,25 @@ countries:
   Uruguay: [uruguay, montevideo]
   Colombia: [colombia, bogotá, bogota, medellín, medellin]
   Chile: [chile, santiago de chile]
+
+# Regions a remote job is limited to. A region is a restriction, not "remote anywhere": its jobs
+# get these countries, so a LATAM-only role doesn't read as open to India (Jobicy, 2026-11-19).
+# Countries must be names from `countries` above. APAC/Asia are left out on purpose: they often
+# include India, and reading them as a list without India would hide jobs that are open to it.
+regions:
+  Latin America:
+    aliases: [latam, latin america, south america]
+    countries: [Brazil, Mexico, Argentina, Colombia, Chile, Uruguay]
+  North America:
+    aliases: [north america]
+    countries: [United States, Canada]
+  EMEA:
+    aliases: [emea]
+    countries: [United Kingdom, Germany, France, Netherlands, Ireland, Switzerland, Spain, Portugal, Poland, Sweden,
+                Israel, United Arab Emirates, Saudi Arabia, Qatar]
+  Europe:
+    aliases: [europe, european union]
+    countries: [United Kingdom, Germany, France, Netherlands, Ireland, Switzerland, Spain, Portugal, Poland, Sweden]
 
 # Indian cities: canonical name (shown in the City filter) -> spellings seen in postings.
 # Satellite towns fold into their metro where job seekers treat them as one (Thane -> Mumbai).

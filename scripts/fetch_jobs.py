@@ -11,12 +11,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
@@ -70,8 +72,80 @@ def pick(companies: list[Company], names: list[str] | None = None, limit: int | 
     if names:
         companies = [c for c in companies if c.name in set(names)]
     if skip_global:
-        companies = [c for c in companies if not c.india_only]
+        # Job boards refresh daily too (sources/himalayas.py), so they ride the same daily run.
+        companies = [c for c in companies if not c.india_only and not is_daily(c)]
     return companies[:limit] if limit else companies
+
+
+def is_board(source: str) -> bool:
+    """A job board lists many companies' jobs (config/boards.yaml), unlike a company's own ATS."""
+    return getattr(ADAPTERS.get(source), "BOARD", False)
+
+
+def is_daily(company: Company) -> bool:
+    return getattr(ADAPTERS.get(company.ats), "DAILY", False)
+
+
+# Legal-form words that differ between a board's spelling and ours ("Acme, Inc." vs "Acme").
+_LEGAL_FORM = re.compile(r"\b(?:inc|llc|ltd|limited|gmbh|corp|corporation|co|plc|pvt|private|sa|sarl|bv|ag)\b")
+
+
+def company_key(name: str) -> str:
+    """A company name reduced for matching across sources: "Acme AI, Inc." -> "acmeai"."""
+    return re.sub(r"[^a-z0-9]", "", _LEGAL_FORM.sub("", name.lower()))
+
+
+def drop_covered(jobs: list[Job], companies: list[Company]) -> tuple[list[Job], int]:
+    """Board jobs from companies we already read directly are dropped: their own board is the
+    better copy (fresher, complete, closes on time). Decision 2026-11-19, option C."""
+    direct = {company_key(c.name) for c in companies if not is_board(c.ats)}
+    kept = [j for j in jobs if not (is_board(j.source) and company_key(j.company) in direct)]
+    return kept, len(jobs) - len(kept)
+
+
+def open_jobs(dsn: str, prefix: str) -> list[tuple[str, str]]:
+    """(id, company) of the jobs stored open under one board."""
+    import psycopg  # only the full run with a database needs it
+
+    with psycopg.connect(dsn) as conn:
+        return conn.execute("SELECT id, company FROM jobs WHERE status = 'open' AND starts_with(id, %s)",
+                            (prefix,)).fetchall()
+
+
+def keep_still_open(http: HttpClient, boards: list[Company], fetched: set[str], covered: set[str], dsn: str | None,
+                    stored: Callable[[str, str], list[tuple[str, str]]] = open_jobs) -> tuple[list[str], set[str]]:
+    """For boards whose feed is a window, not the full list (Jobicy: last 7 days): stored open jobs
+    missing from today's feed that the board confirms are still active. Returns (ids to keep open,
+    boards that couldn't be checked). An unchecked board must not close anything: leave it out of
+    boards_ok. `covered`: company keys read directly; their board copies are let go."""
+    keep: list[str] = []
+    unchecked: set[str] = set()
+    for board in boards:
+        adapter = ADAPTERS[board.ats]
+        if not hasattr(adapter, "still_open"):
+            continue
+        if not dsn:
+            unchecked.add(board.name)
+            continue
+        prefix = f"{board.ats}:{board.slug}:"
+        missing = [jid for jid, company in stored(dsn, prefix)
+                   if jid not in fetched and company_key(company) not in covered]
+        try:
+            active = adapter.still_open(http, [jid[len(prefix):] for jid in missing])
+        except FetchError:
+            unchecked.add(board.name)
+            continue
+        keep += [prefix + ext for ext in sorted(active)]
+    return keep, unchecked
+
+
+def board_leads(records: list[dict], path: Path = COMPANIES) -> list[dict]:
+    """Companies seen on a job board with a target-role job, and not in our list at all: leads to
+    add and read directly (the discovery half of option C)."""
+    listed = {company_key(c["name"]) for c in yaml.safe_load(path.read_text())["companies"]}
+    counts = Counter((r["source"], r["company"]) for r in records
+                     if r["role_match"] and is_board(r["source"]) and company_key(r["company"]) not in listed)
+    return [{"source": s, "company": c, "target_jobs": n} for (s, c), n in counts.most_common()]
 
 
 def in_india_or_remote(job: Job) -> bool:
@@ -151,6 +225,16 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001 - the boards' jobs still publish
             errors["manual jobs"] = f"{type(e).__name__}: {e}"[:300]
 
+    # Every listed company counts as covered, even if its board failed this run: a board copy shown
+    # for one run would only be closed again on the next.
+    listed = load_companies()
+    fetched_ids = {j.id for j in jobs}
+    jobs, covered = drop_covered(jobs, listed)
+    keep_open, unchecked = keep_still_open(
+        http, [c for c in companies if c.name in per_company], fetched_ids,
+        {company_key(c.name) for c in listed if not is_board(c.ats)}, os.environ.get("SUPABASE_DB_URL"))
+    for name in unchecked:
+        errors[name] = "open jobs not checked against the board (no database or status check failed); none closed"
     unique = dedupe(jobs)
     profile = load_profile()
     records = []
@@ -171,16 +255,21 @@ def main() -> int:
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
         # Boards that answered: publish_pg.py only closes missing jobs from these.
-        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company]
-                     + manual_boards,
+        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies
+                      if c.name in per_company and c.name not in unchecked] + manual_boards,
+        # Open jobs a board's window no longer lists but the board says are active (sources/jobicy.py).
+        "keep_open": keep_open,
         "errors": errors,
+        "board_leads": board_leads(records),
         "jobs": records,
     }
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
 
     # Run summary (skills.md §7): fetched, kept, per-source errors.
     print(f"\nCompanies: {len(companies)} ok={len(per_company)} failed={len(errors)}")
-    print(f"Jobs: fetched={len(jobs)} after_dedupe={len(unique)} -> {args.out}")
+    print(f"Jobs: fetched={len(jobs) + covered} after_dedupe={len(unique)} -> {args.out}")
+    print(f"Job boards: dropped {covered} jobs from companies read directly; "
+          f"{len(payload['board_leads'])} new companies with target-role jobs (board_leads)")
     # How much the India screen hides today: the size of "every country" for these boards
     # (docs/strategy/worldwide-coverage.md, phase 0).
     print(f"India screen: dropped {sum(screened)} jobs on {len(screened)} india_only boards")

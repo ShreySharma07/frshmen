@@ -1,0 +1,39 @@
+# Job boards: sites that list many companies' jobs (docs/decisions.md, 2026-11-19).
+# A board's job is shown only when its company isn't already fetched from its own board
+# (scripts/fetch_jobs.py, drop_covered). Each board is read once a day, in the run that reads
+# the big global boards.
+
+himalayas:
+  # https://himalayas.app/api. Terms: Apply goes to `applicationLink` unchanged, the job page
+  # shows a visible link back to Himalayas, jobs are removed once they expire, and nothing is
+  # passed on to other boards or Google Jobs.
+  # One search per query, newest first. Words close to config/profile.yaml target roles; the
+  # role rules (extract/role.py) still decide what matches.
+  queries:
+    - machine learning
+    - AI engineer
+    - LLM
+    - generative AI
+    - data scientist
+    - applied scientist
+    - research engineer
+    - MLOps
+    - python backend
+    - android developer
+    - react native
+  # Both levels: Himalayas' own label misses some juniors; our classifier decides the level.
+  seniority: [Entry-level, Mid-level]
+  # 20 jobs a page. A cap so one broad query can't eat the daily allowance.
+  max_pages: 10
+
+jobicy:
+  # https://jobicy.com/jobs-rss-feed (the API docs). Free public API, no key: the paid key only
+  # swaps in direct ATS links, so it isn't used. Terms: credit Jobicy, Apply goes to the Jobicy
+  # listing (`url`), and a job is closed only once Jobicy's status check says so. The feed holds
+  # the last 7 days only, so older open jobs are checked with /api/jobs/status (sources/jobicy.py).
+  # Jobicy categories (?get=industries): data science, software engineering, DevOps.
+  industries: [data-science, engineering, admin]
+  # 100 jobs a page; a 7-day category is a few pages at most.
+  max_pages: 10
+  # Levels a fresher can't hold: these jobs are skipped before classifying (precision first).
+  skip_levels: [Senior, Lead, Director, Manager, Executive]

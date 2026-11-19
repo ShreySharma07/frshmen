@@ -7,7 +7,8 @@ Rules (skills.md §4), on the multi-user schema (db/postgres/):
                        previous label per job are kept, older ones dropped
 - closed but back   -> reopen
 - open but missing from a board that fetched OK -> missed_runs + 1; closed after
-  CLOSE_AFTER_MISSES runs in a row
+  CLOSE_AFTER_MISSES runs in a row (unless listed in keep_open: a board whose feed is a time
+  window confirmed the job is still active)
 - closed for KEEP_CLOSED_DAYS -> deleted, with its labels and stored text, unless someone
   saved it, applied to it, checked their fit or tailored a resume for it
 
@@ -214,8 +215,11 @@ def publish(pg: psycopg.Connection, payload: dict[str, Any], now: datetime | Non
 
         # Only jobs from boards fetched OK this run: a failed board says nothing about its jobs.
         prefixes = board_prefixes(payload.get("boards_ok", []))
+        # Jobs a board's feed only shows for a while (Jobicy: 7 days) but the board says are active.
+        keep = set(payload.get("keep_open", []))
         missing = [(jid, old[2]) for jid, old in existing.items()
-                   if old[1] == "open" and jid not in targets and jid.startswith(prefixes)] if prefixes else []
+                   if old[1] == "open" and jid not in targets and jid not in keep
+                   and jid.startswith(prefixes)] if prefixes else []
         close = [jid for jid, missed in missing if missed + 1 >= CLOSE_AFTER_MISSES]
         miss = [jid for jid, missed in missing if missed + 1 < CLOSE_AFTER_MISSES]
         cur.execute("UPDATE jobs SET status = 'closed', closed_at = %s, missed_runs = missed_runs + 1 WHERE id = ANY(%s)",

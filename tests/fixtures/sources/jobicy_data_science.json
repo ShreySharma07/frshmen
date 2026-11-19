@@ -1,0 +1,120 @@
+{
+ "apiVersion": "2.2.19",
+ "documentationUrl": "https://jobi.cy/apidocs",
+ "friendlyNotice": "Thanks for using Jobicy API! Please ensure Jobicy is clearly credited with a direct link to the source, and all application buttons redirect to the original job URL provided in this feed. That’s all! You might be building something amazing, we wish you the best of luck!",
+ "jobCount": 5,
+ "lastUpdate": "2026-11-18T14:49:51+00:00",
+ "nextCursor": null,
+ "hasMore": false,
+ "appliedFilters": {
+  "count": 100,
+  "industry": "data-science"
+ },
+ "statusCode": 200,
+ "success": true,
+ "jobs": [
+  {
+   "id": 163134,
+   "url": "https://jobicy.com/jobs/163134-ai-researcher-3",
+   "jobSlug": "163134-ai-researcher-3",
+   "jobTitle": "AI Researcher",
+   "companyName": "Hume AI",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2026/11/02257db181a2-221.webp",
+   "jobIndustry": [
+    "Data Science & Analytics"
+   ],
+   "jobType": [
+    "Full-Time"
+   ],
+   "jobGeo": "USA",
+   "jobLevel": "Any",
+   "jobExcerpt": "Hume AI is seeking talented AI researchers interested in working with our team to build state-of-the-art speech-language models (SLMs). Our new SLM training method—reinforcement learning from human expression (RLHE)—learns human preferences from behavior in millions of audio and video recordings, making SLMs superhumanly helpful, interesting, funny, eloquent, honest, and altruistic. Join us in the heart…",
+   "jobDescription": "Hume AI</a> is seeking talented AI researchers interested in working with our team to build state-of-the-art speech-language models (SLMs). Our new SLM training method—reinforcement learning from human expression (RLHE)—learns human preferences from behavior in millions of audio and video recordings, making SLMs superhumanly helpful, interesting, funny, eloquent, honest, and altruistic. Join us in the heart of New York City and contribute to our endeavor to ensure that AI is guided by human values, the most pivotal challenge (and opportunity) of the 21st century.</p>\nAbout Us</strong></p>\nHume AI is a Series B startup dedicated to building artificial intelligence that is directly optimized for human well-being. As the first company to release speech language models, we’re focused on expanding our research to encompass audio understanding models and evaluation platforms for enterprises.</p>\nOur goal is to enable a future in which technology draws on an understanding of human emotional expression to better serve human goals. As part of our mission, we also conduct groundbreaking scientific research, publish in leading scientific journals like Nature</a>, and support a non-profit, The Hume Initiative, that has released the first concrete ethical guidelines for empathic AI (www.thehumeinitiative.org</a>). You can learn more about us on our website (https://hume.ai/</a>) and read about us in WIRED</a>, Forbes</a>, and Venturebeat</a>.</p>\nAbout the Role</strong></p>\nWe are looking for talented researchers with relevant publications, 2+ years of experience in a research role in industry, and/or a proven track record of contributions to open source language, audio, or video models. (A PhD is neither necessary nor sufficient.) We're looking for someone excited to work with our team to build state-of-the-art audio models and evaluation tools. In this role, you will build out software systems that support distributed model training, inference, and benchmarking as well as massive-scale data collection, storage, preprocessing, and analysis. You will be working to solve some of today’s most exciting AI research problems at industry scale.</p>\n\nRequirements</strong></p>\n\n\nExpertise in the Python ecosystem and popular ML libraries and tools (e.g. PyTorch)</p>\n</li>\n\nExperience writing robust and maintainable production-ready code</p>\n</li>\n\nComfort iterating quickly on new and uncertain research directions</p>\n</li>\n2+ years of experience contributing to the training and",
+   "pubDate": "2026-11-18T13:57:24+00:00",
+   "salaryMin": 180000,
+   "salaryMax": 350000,
+   "salaryCurrency": "USD",
+   "salaryPeriod": "yearly"
+  },
+  {
+   "id": 162673,
+   "url": "https://jobicy.com/jobs/162673-applied-ai-data-scientist-brazil",
+   "jobSlug": "162673-applied-ai-data-scientist-brazil",
+   "jobTitle": "Applied AI Data Scientist (Brazil)",
+   "companyName": "AE Studio",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2026/11/e1c9fcedebff-221.webp",
+   "jobIndustry": [
+    "Data Science & Analytics"
+   ],
+   "jobType": [
+    "Full-Time"
+   ],
+   "jobGeo": "Brazil",
+   "jobLevel": "Any",
+   "jobExcerpt": "AE Studio builds products, platforms, and internal ventures that increase agency for all conscious beings. We combine world-class software engineering, AI expertise, and product design to ship ambitious projects that matter. ABOUT THE ROLE As a Data Scientist at AE Studio, you’ll work on a mix of client projects and internal research initiatives. You’ll solve…",
+   "jobDescription": "AE Studio</a> builds products, platforms, and internal ventures that increase agency for all conscious beings. We combine world-class software engineering, AI expertise, and product design to ship ambitious projects that matter.</p>\nABOUT THE ROLE</strong></h3>\nAs a Data Scientist at AE Studio, you’ll work on a mix of client projects and internal research initiatives. You’ll solve real-world problems, help build meaningful products, and contribute to groundbreaking AI alignment research. Your work will involve building data-driven solutions, leveraging machine learning models, and using your creativity to deliver results that matter.</p>\nIn addition to client projects, you’ll have the opportunity to propose and pursue high-impact research projects</strong>, especially those aligned with our mission of increasing agency. Promising projects could even become prioritized skunkworks initiatives.</p>\nWe want problem-solvers who are adaptable, collaborative, and excited to push boundaries. If this sounds like you, let’s talk.</p>\nABOUT YOU</strong></h3>\nYou thrive on solving challenging problems and bring a mix of technical expertise, creativity, and humor to your work. You enjoy working independently but also love collaborating with a team that shares your passion for making a difference.</p>\nRequired Skills and Experience</strong></h3>\n\nFluency in Python</strong>..</li>\nExperience with LLM lifecycle:</strong> prompt design/engineering, prompting techniques (RAG, few-shot, CoT, etc.), vector databases, multimodality, fine-tuning, and evaluation.</li>\nProven data science experience</strong>: You’ve been a key contributor to impactful projects and know how to deliver results with real-life outcomes.</li>\nStatistical & causal ML fundamentals:</strong> expertise in experimental design, uncertainty quantification, and rigorous model evaluation across tabular, time-series, and foundation-model fine-tuning tasks.</li>\nDeep learning experience</strong>: Expertise in building/training NLP or computer vision models with PyTorch, TensorFlow, or JAX.</li>\nAgile & AI-powered development: </strong>You run lean Kanban/Scrum cycles and leverage AI-powered tools like Cursor to prototype quickly and ship high-impact solutions.</li>\nGrowth mindset</strong>: You embrace challenges, value progress over perfection, and constantly seek to improve.</li>\nSelf-management</strong>: You can work independently, take ownership of projects, and deliver without constant oversight.</li>\nProduc",
+   "pubDate": "2026-11-16T15:45:11+00:00"
+  },
+  {
+   "id": 149160,
+   "url": "https://jobicy.com/jobs/149160-video-collection-latam-freelance-ai-trainer-project",
+   "jobSlug": "149160-video-collection-latam-freelance-ai-trainer-project",
+   "jobTitle": "Video Collection (LATAM) - Freelance AI Trainer Project",
+   "companyName": "Invisible Technologies",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2025/06/5d284c35-221.jpeg",
+   "jobIndustry": [
+    "Data Science & Analytics"
+   ],
+   "jobType": [
+    "Full-Time"
+   ],
+   "jobGeo": "LATAM",
+   "jobLevel": "Entry-Level, Junior",
+   "jobExcerpt": "We’re looking for experts in LATAM to record short, first-person videos of everyday manual tasks using a head-mounted smartphone. Tasks include household activities such as cleaning, organizing, and laundry, as well as commercial work if applicable.Main Requirements Based in LATAM. Own a compatible smartphone: iPhone 12 or newer Google Pixel 6 or newer Samsung Galaxy…",
+   "jobDescription": "We’re looking for experts in LATAM to record short, first-person videos of everyday manual tasks using a head-mounted smartphone. Tasks include household activities such as cleaning, organizing, and laundry, as well as commercial work if applicable.</p>Main Requirements</p>\nBased in LATAM.</li>\nOwn a compatible smartphone:\n\niPhone 12 or newer</li>\nGoogle Pixel 6 or newer</li>\nSamsung Galaxy S21 or newer</li>\n</ul>\n</li>\nProvide your own compatible head-mounted phone strap for recording.</li>\nRecord real-world tasks while standing or walking (no staged activities or seated recordings).</li>\nRecord in good lighting with hands visible throughout the task.</li>\n</ul>Note: 1 unit = 1 hour of video. Compensation is only available for units that are accepted by the client according to the guidelines that will be provided.</p>",
+   "pubDate": "2026-11-16T03:05:34+00:00"
+  },
+  {
+   "id": 161693,
+   "url": "https://jobicy.com/jobs/161693-finops-data-engineer",
+   "jobSlug": "161693-finops-data-engineer",
+   "jobTitle": "FinOps Data Engineer",
+   "companyName": "Supabase",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2026/06/611d3bfa-221.png",
+   "jobIndustry": [
+    "Data Science & Analytics"
+   ],
+   "jobType": [
+    "Full-Time"
+   ],
+   "jobGeo": "Anywhere",
+   "jobLevel": "Any",
+   "jobExcerpt": "About the Role We're looking for a FinOps Data Engineer to help drive cost optimization and cloud financial governance across our AWS infrastructure and GCP footprint. You'll work cross-functionally with Engineering, Finance, and Product to find and ship savings, build the tooling necessary to maximize efficiency of every dollar spent in the cloud, and cultivate…",
+   "jobDescription": "About the Role</strong></p>\nWe're looking for a FinOps Data Engineer to help drive cost optimization and cloud financial governance across our AWS infrastructure and GCP footprint. You'll work cross-functionally with Engineering, Finance, and Product to find and ship savings, build the tooling necessary to maximize efficiency of every dollar spent in the cloud, and cultivate a culture of cost awareness across engineering teams. This role owns the data side of that mission: the models, pipelines, and analysis that make cost, usage, and margin numbers trustworthy across the company.</p>\nThis is a hands-on engineering role, not an analyst seat. You'll do the schlep work other teams don't have time for, digging into a bucket's access pattern, writing the dbt model or Python pipeline that ships the fix, building the cost-vs-revenue mart that answers a margin question once instead of every time, and chasing a number until it reconciles. Strong communication matters as much as technical depth, you'll regularly explain a savings case or a data model's implications to an engineering team, a finance stakeholder, and a leadership audience in the same week.</p>\nWhat You'll Be Responsible For</strong></p>\nIn this role, you'll:</p>\n\n\nFind and ship savings across AWS and GCP: </strong>Analyze billing, usage, and cost trends to identify opportunities, rightsizing, storage lifecycle policies, data transfer, and spot/auto-scaling. Take ideas from identification through to a realized dollar figure, not just a recommendation.</p>\n</li>\n\nBuild and maintain the FinOps data pipeline: </strong>Design and run the BigQuery/dbt models that turn raw billing and usage data (CUR, Storage Lens) into reconciled, trustworthy mart tables, the foundation everything else in FinOps is built on.</p>\n</li>\n\nBuild cost-vs-revenue and customer segmentation models: </strong>Model unit economics and margin by product line and customer segment, and extend coverage as new products and segments come online.</p>\n</li>\n\nApply data science to cost and usage data: </strong>Build forecasting models, detect anomalies statistically rather than by threshold alone, and quantify savings opportunities (e.g. storage lifecycle, request-cost patterns) with rigor a spreadsheet can't match.</p>\n</li>\n\nBuild and maintain cost attribution: </strong>Tagging policies, cost allocation, and chargeback/showback so engineering teams can see and own their own spend. This is foundational work other savings work depends on.</p>",
+   "pubDate": "2026-11-12T17:01:11+00:00"
+  },
+  {
+   "id": 163126,
+   "url": "https://jobicy.com/jobs/163126-lead-machine-learning-scientist-business-banking-2",
+   "jobSlug": "163126-lead-machine-learning-scientist-business-banking-2",
+   "jobTitle": "Lead Machine Learning Scientist, Business Banking",
+   "companyName": "Monzo",
+   "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2025/06/5b4c0ec3-221.jpg",
+   "jobIndustry": [
+    "Data Science & Analytics"
+   ],
+   "jobType": [
+    "Part-Time"
+   ],
+   "jobGeo": "UK",
+   "jobLevel": "Senior",
+   "jobExcerpt": "We’re on a mission to make money work for everyone. We’re waving goodbye to the complicated and confusing ways of traditional banking. After starting as a prepaid card, our product offering has grown a lot in the last 10 years in the UK. As well as personal and business bank accounts, we offer joint…",
+   "jobDescription": "🚀 We’re on a mission to make money work for everyone.</em></strong></p>\nWe’re waving goodbye to the complicated and confusing ways of traditional banking.</p>\nAfter starting as a prepaid card, our product offering has grown a lot in the last 10 years in the UK. As well as personal</a> and business</a> bank accounts, we offer joint accounts</a>, accounts for 16-17 year olds</a>, a free kids account</a> and credit cards</a> in the UK, with more exciting things to come beyond. Our UK customers can also save</a>, invest </a>and combine their pensions</a> with us. </p>\nWith our hot coral cards and get-paid-early feature, combined with financial education on social media and our award winning customer service, we have a long history of creating magical moments for our customers!</p>\nWe’re not about selling products - we want to solve problems and change lives through Monzo</a> ❤️</p>\n\n📍London/Cardiff/UK Remote | 💰 £115,000 - £150,000 + Incentive Awards tied to your performance + Benefits</a> ✨</p>\nAbout our Machine Learning Business Banking team</h3>\nOur mission in Business Banking is to simplify banking for small businesses; making business banking fairer, simpler and more transparent. Monzo Business Banking is fast-growing, is the UK’s most recommended business account for overall service quality. We recently hit 1 million customers and are used by 1 in 6 UK SMEs.</p>\nWe want to help businesses spend less time on financial admin and more time focused on running and growing their business. We’re building intelligent, data-driven and AI/ML-enabled product experiences that help small businesses feel more in control, make better decisions, and get more value from Monzo.</p>\nML is at the core of how we build and scale our products, enabling Monzo to make better decisions, faster, and helping us serve businesses more effectively.</p>\nAs a Lead Machine Learning Scientist in Business Banking, you’ll help build and ship models that power the next generation of Business Banking experiences. You’ll work closely with Product, Engineering, Design, Research, Data Science and Analytics Engineering to bring ML-enabled product capability into the heart of how we build for businesses.</p>\nWhether it’s helping businesses understand their cash flow, reducing manual admin, surfacing the right insight at the right moment, or helping teams build intelligent product experiences responsibly, our work makes business banking smarter, simpler and more useful for SMEs.</p>\n\nWhat you'll be",
+   "pubDate": "2026-11-18T12:44:20+00:00",
+   "salaryMin": 115000,
+   "salaryMax": 150000,
+   "salaryCurrency": "GBP",
+   "salaryPeriod": "yearly"
+  }
+ ]
+}

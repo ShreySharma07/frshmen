@@ -38,6 +38,8 @@ class _Aliases:
     city_patterns: tuple[tuple[re.Pattern[str], str], ...]
     us_states: frozenset[str]
     iso: dict[str, str]
+    # "LATAM" -> its countries: a region limits a remote job, it doesn't open it to everyone.
+    regions: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = ()
 
 
 @lru_cache(maxsize=2)
@@ -46,8 +48,11 @@ def _load(path: Path = CONFIG) -> _Aliases:
     cities = [(alias.lower(), city) for city, aliases in raw.get("india_cities", {}).items() for alias in aliases]
     pairs = [(alias.lower(), country) for country, aliases in raw["countries"].items() for alias in aliases]
     pairs += [(alias, "India") for alias, _ in cities]
+    regions = tuple((pattern, tuple(raw["regions"][name]["countries"]))
+                    for pattern, name in _compile([(alias.lower(), name) for name, region in raw.get("regions", {}).items()
+                                                   for alias in region["aliases"]]))
     return _Aliases(_compile(pairs), _compile(cities), frozenset(raw["us_states"]),
-                    {k.upper(): v for k, v in raw["iso_codes"].items()})
+                    {k.upper(): v for k, v in raw["iso_codes"].items()}, regions)
 
 
 def _compile(pairs: list[tuple[str, str]]) -> tuple[tuple[re.Pattern[str], str], ...]:
@@ -84,6 +89,12 @@ def extract_location(location_raw: str | None, ats_countries: list[str] | None =
         m = pattern.search(text)
         if m:
             add(country, m.start())
+
+    for pattern, countries in aliases.regions:
+        m = pattern.search(text)
+        if m:
+            for i, country in enumerate(countries):
+                add(country, m.start() + i / 100)  # the region's own order, at the region's place
 
     found = sorted(hits, key=hits.__getitem__)
     city_hits: dict[str, int] = {}

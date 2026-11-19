@@ -87,8 +87,9 @@ def pg():
         yield conn
 
 
-def run(pg, jobs, hours, boards=(("ashby", "acme"),)):
-    payload = {"jobs": jobs, "boards_ok": [{"source": s, "company_slug": c} for s, c in boards], "errors": {}}
+def run(pg, jobs, hours, boards=(("ashby", "acme"),), keep_open=()):
+    payload = {"jobs": jobs, "boards_ok": [{"source": s, "company_slug": c} for s, c in boards], "errors": {},
+               "keep_open": list(keep_open)}
     return p.publish(pg, payload, now=T0 + timedelta(hours=hours))
 
 
@@ -121,6 +122,17 @@ def test_missing_job_closes_after_two_misses_and_reopens_when_back(pg):
     assert one(pg, "SELECT status FROM jobs WHERE id = 'ashby:acme:2'") == ("closed",)
     assert run(pg, [job("1"), job("2")], 9)["reopened"] == 1
     assert one(pg, "SELECT status, missed_runs FROM jobs WHERE id = 'ashby:acme:2'") == ("open", 0)
+
+
+@needs_pg
+def test_job_a_board_says_is_still_open_is_not_closed_for_being_missing(pg):
+    # Jobicy's feed only lists 7 days; its status check keeps an older, active job open.
+    run(pg, [job("1"), job("2")], 0)
+    for h in (3, 6, 9):
+        run(pg, [job("1")], h, keep_open=["ashby:acme:2"])
+    assert one(pg, "SELECT status, missed_runs FROM jobs WHERE id = 'ashby:acme:2'") == ("open", 0)
+    run(pg, [job("1")], 12)
+    assert run(pg, [job("1")], 15)["closed"] == 1  # once the board stops vouching for it, it closes
 
 
 @needs_pg
