@@ -187,8 +187,11 @@ def test_unexpected_errors_hide_the_cause_from_the_client(capsys):
     async def boom():
         raise ValueError("row ('alice@example.com', 'resume.pdf')")
 
-    res = TestClient(app, raise_server_exceptions=False).get("/api/boom")
+    http = TestClient(app, raise_server_exceptions=False)
+    res = http.get("/api/boom")
     assert_generic_500(res, capsys, "ValueError", "alice@example.com")
+    # Random per failure, not a counter: the id says nothing about traffic and can't be guessed.
+    assert http.get("/api/boom").json()["id"] != res.json()["id"]
 
 
 def test_database_errors_hide_table_names_from_the_client(capsys):
