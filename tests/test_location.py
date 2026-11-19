@@ -23,6 +23,15 @@ from extract.location import REMOTE_UNSPECIFIED, extract_location
     ("Tokyo, Japan", [], ["Japan"], False),
     ("Remote", [], [REMOTE_UNSPECIFIED], True),
     ("", [], [], False),
+    # Jobicy places (2026-11-18). A region is a restriction, not "remote anywhere": a LATAM-only
+    # job must not read as open to India.
+    ("Remote, Ireland,  Portugal,  UK", [], ["Ireland", "Portugal", "United Kingdom"], True),
+    ("Remote, LATAM", [], ["Brazil", "Mexico", "Argentina", "Colombia", "Chile", "Uruguay"], True),
+    ("Remote, North America", [], ["United States", "Canada"], True),
+    ("Remote - EMEA", [], ["United Kingdom", "Germany", "France", "Netherlands", "Ireland", "Switzerland", "Spain",
+                          "Portugal", "Poland", "Sweden", "Israel", "United Arab Emirates", "Saudi Arabia", "Qatar"], True),
+    # APAC is left as unspecified on purpose: it often includes India, and guessing it out would hide jobs.
+    ("Remote, APAC", [], [REMOTE_UNSPECIFIED], True),
 ])
 def test_countries(raw, ats, countries, remote):
     loc = extract_location(raw, ats)
