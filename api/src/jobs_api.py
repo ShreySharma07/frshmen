@@ -1,4 +1,5 @@
-"""FastAPI app serving the job board's data. Read-only: the pipeline is the only writer.
+"""FastAPI app serving the job board, plus signed-in features (resumes, contacts, agent chats) and
+admin routes. Job data is read-only here: the pipeline is the only writer of jobs.
 
 The page lists every open job, newest first, 20 per page; the reader narrows it with filters
 (docs/decisions.md, 2026-10-08). Reads come from Supabase Postgres through Hyperdrive
@@ -10,6 +11,7 @@ once per run. Hyperdrive's free tier allows 100k queries/day; a page view costs 
 from __future__ import annotations
 
 import json
+import secrets
 import traceback
 from datetime import datetime, timedelta, timezone
 from typing import Any, AsyncIterator, Literal
@@ -191,10 +193,13 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(Exception)
     async def report_errors(request: Request, exc: Exception) -> JSONResponse:
-        # Printed tracebacks land in Workers Logs; the short type/message makes a failure
-        # diagnosable from the browser. Nothing secret flows through this read-only API.
-        traceback.print_exc()
-        return JSONResponse({"error": f"{type(exc).__name__}: {str(exc)[:300]}"}, status_code=500)
+        # The API serves resumes, contacts and agent chats, and asyncpg errors can quote table,
+        # column and row values, so the client gets only a generic message and an id. The full
+        # traceback goes to Workers Logs under the same id: search the logs for it to debug.
+        error_id = secrets.token_hex(4)
+        print(f"error {error_id}: {request.method} {request.url.path}")
+        traceback.print_exception(exc)
+        return JSONResponse({"error": "Something went wrong", "id": error_id}, status_code=500)
 
     @app.api_route("/api/jobs", methods=["GET", "HEAD"])  # HEAD: uptime monitors
     async def list_jobs(

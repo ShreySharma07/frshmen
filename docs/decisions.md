@@ -4,6 +4,22 @@ Newest first. Each entry: date, options considered, choice, why.
 
 ---
 
+## 2026-11-19 — Unexpected API errors no longer show their cause
+- **Before:** any unhandled error returned `{"error": "<ExceptionType>: <first 300 chars>"}` with a
+  500, so a failure was diagnosable from the browser. That assumed a read-only API with nothing
+  secret in it; it now serves resumes, contacts, agent chats and admin routes, and asyncpg errors
+  can quote table and column names and row values.
+- **Now:** the client gets `{"error": "Something went wrong", "id": "<8 hex chars>"}`. The same id,
+  the method and path, and the full traceback are printed to Workers Logs; search the logs for the
+  id to debug. `HTTPException` replies (`detail`) are unchanged.
+- **Users see:** "Something went wrong (ref a1b2c3d4)" where the site showed the raw error (e.g.
+  the admin page's "Couldn't load the numbers: …"), so a screenshot leads to the log entry. No site
+  code matched on exception names.
+- **Why the id is safe to show:** it is 32 random bits from `secrets` per failure, not a counter, so
+  it reveals nothing about traffic or the database. No route accepts it or looks anything up by it;
+  only Workers Logs (dashboard access) maps it to a traceback. The site shows it only if it is
+  exactly 8 lowercase hex characters (`site/src/lib/apiError.ts`), and React renders it as text.
+
 ## 2026-11-19 — Jobicy, and keeping a board's older jobs open
 - **Jobicy (jobicy.com), built:** free JSON API, no key, `robots.txt` allows `/api/jobs`, and the
   fair-use terms allow showing its jobs: credit Jobicy, Apply on the Jobicy listing, don't present

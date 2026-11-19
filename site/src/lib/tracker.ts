@@ -1,6 +1,7 @@
 // The tracker (applications) and fit checks, read and written through Supabase's Data API as the
 // signed-in person (lib/session.ts). RLS limits every call to their own rows
 // (db/postgres/0005_tracker_fit_checks.sql).
+import { apiErrorMessage } from "./apiError";
 import { freshToken, rest } from "./session";
 
 export type Stage = "saved" | "applied" | "interview" | "offer" | "rejected";
@@ -85,9 +86,8 @@ export async function api(path: string, init: RequestInit = {}) {
   const res = await fetch(path, { ...init, headers });
   const body = await res.json().catch(() => null);
   if (!res.ok) {
-    const detail = body?.detail;
-    throw Object.assign(new Error(typeof detail === "string" ? detail : detail?.message ?? `${res.status}`),
-      { status: res.status, freesAt: detail?.frees_at as string | undefined });
+    throw Object.assign(new Error(apiErrorMessage(body, res.status)),
+      { status: res.status, freesAt: body?.detail?.frees_at as string | undefined });
   }
   return body;
 }

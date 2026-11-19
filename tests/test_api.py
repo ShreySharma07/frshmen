@@ -3,6 +3,7 @@ from fixture postings. Needs PG_TEST_URL (CI starts a Postgres service); skipped
 
 import json
 import os
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -167,12 +168,38 @@ def test_list_carries_one_highlight_not_full_evidence(client):
                                      "text": "This is intended to be an entry level role for new grads/early career professionals."}
 
 
-def test_unexpected_errors_return_json_with_cause():
+def assert_generic_500(res, capsys, *leaks):
+    """The client sees only a generic message and an id; the logs carry the cause under that id."""
+    body = res.json()
+    assert res.status_code == 500 and set(body) == {"error", "id"}
+    assert body["error"] == "Something went wrong" and re.fullmatch(r"[0-9a-f]{8}", body["id"])
+    for leak in leaks:
+        assert leak not in res.text
+    logs = capsys.readouterr()
+    logged = logs.out + logs.err
+    assert f"error {body['id']}" in logged and all(leak in logged for leak in leaks)
+
+
+def test_unexpected_errors_hide_the_cause_from_the_client(capsys):
+    app = create_app()
+
+    @app.get("/api/boom")
+    async def boom():
+        raise ValueError("row ('alice@example.com', 'resume.pdf')")
+
+    http = TestClient(app, raise_server_exceptions=False)
+    res = http.get("/api/boom")
+    assert_generic_500(res, capsys, "ValueError", "alice@example.com")
+    # Random per failure, not a counter: the id says nothing about traffic and can't be guessed.
+    assert http.get("/api/boom").json()["id"] != res.json()["id"]
+
+
+def test_database_errors_hide_table_names_from_the_client(capsys):
     reset(migrate=False)  # no tables: every query fails
     app = create_app()
     app.state.dsn = PG
-    body = TestClient(app, raise_server_exceptions=False).get("/api/meta")
-    assert body.status_code == 500 and body.json()["error"].startswith("UndefinedTableError")
+    res = TestClient(app, raise_server_exceptions=False).get("/api/meta")
+    assert_generic_500(res, capsys, "UndefinedTableError")
 
 
 def test_reposted_listing_link_opens_the_original_job(client):
