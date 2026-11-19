@@ -1,5 +1,6 @@
 // Typed client for the FastAPI backend (api/src/jobs_api.py). Same origin in production; in
 // development next.config.ts forwards /api to the local API.
+import { apiErrorMessage } from "./apiError";
 
 export type Level = "fresher" | "maybe" | "experienced";
 export type Experience = "all" | "fresher" | "internship" | "0-1" | "0-2" | "0-3" | "0-5" | "unstated" | "experienced";
@@ -79,9 +80,8 @@ export const PER_PAGE = 20;
 async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
   const res = await fetch(path, { signal, headers: { Accept: "application/json" } });
   if (!res.ok) {
-    // FastAPI puts the reason in `detail` (or `error` from our handler); fall back to the status line.
     const body = await res.json().catch(() => null);
-    throw new Error(body?.detail ?? body?.error ?? `${res.status} ${res.statusText}`.trim());
+    throw new Error(apiErrorMessage(body, res.status, res.statusText));
   }
   return res.json();
 }
