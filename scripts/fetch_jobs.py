@@ -18,6 +18,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # so `sources` imports when run as a plain script
@@ -100,6 +101,42 @@ def drop_covered(jobs: list[Job], companies: list[Company]) -> tuple[list[Job], 
     direct = {company_key(c.name) for c in companies if not is_board(c.ats)}
     kept = [j for j in jobs if not (is_board(j.source) and company_key(j.company) in direct)]
     return kept, len(jobs) - len(kept)
+
+
+def open_jobs(dsn: str, prefix: str) -> list[tuple[str, str]]:
+    """(id, company) of the jobs stored open under one board."""
+    import psycopg  # only the full run with a database needs it
+
+    with psycopg.connect(dsn) as conn:
+        return conn.execute("SELECT id, company FROM jobs WHERE status = 'open' AND starts_with(id, %s)",
+                            (prefix,)).fetchall()
+
+
+def keep_still_open(http: HttpClient, boards: list[Company], fetched: set[str], covered: set[str], dsn: str | None,
+                    stored: Callable[[str, str], list[tuple[str, str]]] = open_jobs) -> tuple[list[str], set[str]]:
+    """For boards whose feed is a window, not the full list (Jobicy: last 7 days): stored open jobs
+    missing from today's feed that the board confirms are still active. Returns (ids to keep open,
+    boards that couldn't be checked). An unchecked board must not close anything: leave it out of
+    boards_ok. `covered`: company keys read directly; their board copies are let go."""
+    keep: list[str] = []
+    unchecked: set[str] = set()
+    for board in boards:
+        adapter = ADAPTERS[board.ats]
+        if not hasattr(adapter, "still_open"):
+            continue
+        if not dsn:
+            unchecked.add(board.name)
+            continue
+        prefix = f"{board.ats}:{board.slug}:"
+        missing = [jid for jid, company in stored(dsn, prefix)
+                   if jid not in fetched and company_key(company) not in covered]
+        try:
+            active = adapter.still_open(http, [jid[len(prefix):] for jid in missing])
+        except FetchError:
+            unchecked.add(board.name)
+            continue
+        keep += [prefix + ext for ext in sorted(active)]
+    return keep, unchecked
 
 
 def board_leads(records: list[dict], path: Path = COMPANIES) -> list[dict]:
@@ -190,7 +227,14 @@ def main() -> int:
 
     # Every listed company counts as covered, even if its board failed this run: a board copy shown
     # for one run would only be closed again on the next.
-    jobs, covered = drop_covered(jobs, load_companies())
+    listed = load_companies()
+    fetched_ids = {j.id for j in jobs}
+    jobs, covered = drop_covered(jobs, listed)
+    keep_open, unchecked = keep_still_open(
+        http, [c for c in companies if c.name in per_company], fetched_ids,
+        {company_key(c.name) for c in listed if not is_board(c.ats)}, os.environ.get("SUPABASE_DB_URL"))
+    for name in unchecked:
+        errors[name] = "open jobs not checked against the board (no database or status check failed); none closed"
     unique = dedupe(jobs)
     profile = load_profile()
     records = []
@@ -211,8 +255,10 @@ def main() -> int:
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
         # Boards that answered: publish_pg.py only closes missing jobs from these.
-        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies if c.name in per_company]
-                     + manual_boards,
+        "boards_ok": [{"source": c.ats, "company_slug": c.slug} for c in companies
+                      if c.name in per_company and c.name not in unchecked] + manual_boards,
+        # Open jobs a board's window no longer lists but the board says are active (sources/jobicy.py).
+        "keep_open": keep_open,
         "errors": errors,
         "board_leads": board_leads(records),
         "jobs": records,
