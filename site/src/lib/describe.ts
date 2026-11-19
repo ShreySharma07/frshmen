@@ -75,4 +75,11 @@ export const ATS: Record<string, string> = { ashby: "Ashby", greenhouse: "Greenh
  * (and Himalayas' terms ask for a visible link back to it). Mirrors BOARD in sources/. */
 export const BOARDS = new Set(["himalayas"]);
 
+/** "via Himalayas" for a job from a board, else null. Read from the id ("<source>:<board>:<job>"),
+ *  so list rows need no extra field from the API. */
+export const viaBoard = (id: string): string | null => {
+  const source = id.split(":", 1)[0];
+  return BOARDS.has(source) ? `via ${ATS[source] ?? source}` : null;
+};
+
 export const isDetail = (j: unknown): j is JobDetail => typeof j === "object" && j !== null && "description_text" in j;

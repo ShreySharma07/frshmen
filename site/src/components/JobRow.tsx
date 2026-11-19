@@ -1,4 +1,5 @@
 import type { JobSummary } from "@/lib/api";
+import { viaBoard } from "@/lib/describe";
 import { place, shortDate, years } from "@/lib/format";
 import { CompanyMark } from "./CompanyMark";
 import { Ruler } from "./Ruler";
@@ -22,7 +23,8 @@ export function JobRow({ job, selected, isNew, you, onSelect }: { job: JobSummar
             {job.title}
           </span>
           <span className="mt-0.5 block truncate text-meta text-muted">
-            {[job.company, place(job), shortDate(job.posted_at ?? job.first_seen_at)].filter(Boolean).join(" · ")}
+            {/* The board's name sits by the company, where the truncated line still shows it. */}
+            {[[job.company, viaBoard(job.id)].filter(Boolean).join(" "), place(job), shortDate(job.posted_at ?? job.first_seen_at)].filter(Boolean).join(" · ")}
           </span>
           {job.salary && <span className="mt-0.5 block truncate text-meta text-ink/80">{job.salary}</span>}
         </span>
