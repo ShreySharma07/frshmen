@@ -111,3 +111,13 @@ def test_board_without_a_check_closes_nothing(monkeypatch):
 
 def test_boards_without_a_status_check_are_left_alone():
     assert fj.keep_still_open(None, [Company("Glean", "greenhouse", "gleanwork")], set(), set(), dsn=None) == ([], set())
+
+
+def test_a_database_error_leaves_the_board_unchecked_instead_of_failing_the_run(monkeypatch):
+    monkeypatch.setitem(fj.ADAPTERS, "windowed", Adapter(active={"1"}))
+
+    def broken(dsn, prefix):
+        raise RuntimeError('column "company" does not exist')
+
+    board = Company("Windowed", "windowed", "remote")
+    assert fj.keep_still_open(None, [board], set(), set(), "postgresql://x", broken) == ([], {"Windowed"})
