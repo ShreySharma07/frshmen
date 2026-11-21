@@ -239,3 +239,15 @@ def test_purged_jobs_text_is_removed_from_storage_and_a_failure_there_does_not_f
     ok = Store()
     assert p.publish(pg, {**payload, "jobs": []}, now=T0 + timedelta(days=40), store=ok)["purged"] == 1
     assert ok.deleted == ["ashby:acme:1"]
+
+
+@needs_pg
+def test_open_jobs_reads_a_boards_open_jobs_with_their_company(pg):
+    # fetch_jobs.open_jobs runs only in the daily run (boards with a status check, e.g. Jobicy);
+    # it once asked for a jobs.company column that doesn't exist (the name lives in companies).
+    import fetch_jobs
+
+    run(pg, [job("1"), job("2"), job("3", slug="other")], 0, boards=(("ashby", "acme"), ("ashby", "other")))
+    run(pg, [job("1"), job("3", slug="other")], 3, boards=(("ashby", "acme"), ("ashby", "other")))
+    run(pg, [job("1"), job("3", slug="other")], 6, boards=(("ashby", "acme"), ("ashby", "other")))  # 2 closes
+    assert sorted(fetch_jobs.open_jobs(PG, "ashby:acme:")) == [("ashby:acme:1", "Acme")]

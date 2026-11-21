@@ -107,9 +107,10 @@ def open_jobs(dsn: str, prefix: str) -> list[tuple[str, str]]:
     """(id, company) of the jobs stored open under one board."""
     import psycopg  # only the full run with a database needs it
 
+    # The name lives in companies (db/postgres/0001_schema.sql); jobs only has company_id.
     with psycopg.connect(dsn) as conn:
-        return conn.execute("SELECT id, company FROM jobs WHERE status = 'open' AND starts_with(id, %s)",
-                            (prefix,)).fetchall()
+        return conn.execute("SELECT j.id, c.name FROM jobs j JOIN companies c ON c.id = j.company_id "
+                            "WHERE j.status = 'open' AND starts_with(j.id, %s)", (prefix,)).fetchall()
 
 
 def keep_still_open(http: HttpClient, boards: list[Company], fetched: set[str], covered: set[str], dsn: str | None,
@@ -128,11 +129,13 @@ def keep_still_open(http: HttpClient, boards: list[Company], fetched: set[str], 
             unchecked.add(board.name)
             continue
         prefix = f"{board.ats}:{board.slug}:"
-        missing = [jid for jid, company in stored(dsn, prefix)
-                   if jid not in fetched and company_key(company) not in covered]
         try:
+            missing = [jid for jid, company in stored(dsn, prefix)
+                       if jid not in fetched and company_key(company) not in covered]
             active = adapter.still_open(http, [jid[len(prefix):] for jid in missing])
-        except FetchError:
+        except Exception as e:  # noqa: BLE001 - the database or the board: this board closes nothing,
+            # the other boards still publish (a crash here once stopped every daily run)
+            print(f"{board.name}: open jobs not checked ({type(e).__name__}: {e})"[:300], flush=True)
             unchecked.add(board.name)
             continue
         keep += [prefix + ext for ext in sorted(active)]
