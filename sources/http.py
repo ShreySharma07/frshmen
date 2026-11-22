@@ -18,7 +18,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse, urlsplit, urlunsplit
 
 USER_AGENT = "aventra-jobboard/0.1 (Aventra job board; +https://github.com/ShreySharma07/frshmen)"
 MIN_SECONDS_PER_HOST = 2.0
@@ -27,10 +27,38 @@ HOST_INTERVAL = {"apply.workable.com": 5.0, "jobs.zs.com": 5.0}  # ZS: robots.tx
 MAX_RETRIES = 4
 RETRY_STATUSES = (429, 500, 502, 503, 504)
 NOT_FOUND_STATUSES = (400, 404, 410)
+# Characters left as they are when percent-encoding a URL: RFC 3986 reserved and unreserved ones,
+# plus "%" so an address that is already encoded isn't encoded twice.
+_PATH_SAFE = "/%:@!$&'()*+,;=-._~"
+_QUERY_SAFE = _PATH_SAFE + "?"
 
 
 class FetchError(RuntimeError):
     """A host never gave a usable answer after retries."""
+
+
+def ascii_url(url: str) -> str:
+    """The URL as http.client can send it: non-ASCII path/query percent-encoded, host IDNA-encoded.
+
+    Sitemaps list job pages under their raw titles (Chinese text, a stray zero-width space), and
+    http.client only sends ASCII. Characters are encoded as UTF-8 rather than dropped: the sites
+    serve the page at the encoded form (BCG's own og:url keeps the zero-width space), so stripping
+    would point at a different address. ASCII URLs come back unchanged, so their cache keys stay put.
+    """
+    if url.isascii():
+        return url
+    parts = urlsplit(url)
+    netloc = parts.netloc
+    if not netloc.isascii():
+        userinfo, at, hostport = netloc.rpartition("@")
+        host, colon, port = hostport.partition(":") if not hostport.startswith("[") else (hostport, "", "")
+        try:
+            host = host.encode("idna").decode("ascii")
+        except UnicodeError as e:
+            raise FetchError(f"{netloc}: host name can't be encoded ({e})") from e
+        netloc = f"{quote(userinfo, safe=_PATH_SAFE)}{at}{host}{colon}{port}"
+    return urlunsplit((parts.scheme, netloc, quote(parts.path, safe=_PATH_SAFE),
+                       quote(parts.query, safe=_QUERY_SAFE), quote(parts.fragment, safe=_QUERY_SAFE)))
 
 
 @dataclass
@@ -78,6 +106,8 @@ class HttpClient:
     def _get(self, url: str, accept: str, decode: Callable[[str], Any], fresh_days: float | None = None,
              data: bytes | None = None, with_url: bool = False,
              extra_headers: dict[str, str] | None = None) -> Any | None:
+        # Encode once here so no adapter has to remember; the cache, pacing and request all use it.
+        url = ascii_url(url)
         host = urlparse(url).netloc
         cached = self._cache_read(url) if data is None and not with_url else None
         if fresh_days and cached and time.time() - cached.get("stored_at", 0) < fresh_days * 86400:

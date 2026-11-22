@@ -123,3 +123,54 @@ def test_dropped_connection_is_retried_then_a_fetch_error(monkeypatch, no_sleep)
     _serve(monkeypatch, [ConnectionResetError("reset")] * 5)
     with pytest.raises(FetchError, match="www.firstcry.com"):
         HttpClient().get_text("https://www.firstcry.com/careers")
+
+
+# --- non-ASCII URLs from sitemaps (Philips, BCG) -------------------------------------
+
+
+def test_cjk_path_is_percent_encoded_before_sending(monkeypatch, no_sleep):
+    seen = []
+    _serve(monkeypatch, [_Resp(b"<html></html>")], seen)
+    HttpClient().get_text("https://www.careers.philips.com/global/en/job/592260/抖音营销经理")
+    assert seen[0].full_url == ("https://www.careers.philips.com/global/en/job/592260/"
+                                "%E6%8A%96%E9%9F%B3%E8%90%A5%E9%94%80%E7%BB%8F%E7%90%86")
+    seen[0].selector.encode("ascii")  # what http.client does with the request line
+
+
+def test_zero_width_space_is_encoded_not_stripped(monkeypatch, no_sleep):
+    # BCG serves the page at the %E2%80%8B form; the stripped URL only redirects back to it.
+    seen = []
+    _serve(monkeypatch, [_Resp(b"<html></html>")], seen)
+    HttpClient().get_text("https://careers.bcg.com/global/en/job/59322/"
+                          "Delivery-AI-Software-Engineer​ing-Senior-Manager")
+    assert seen[0].full_url == ("https://careers.bcg.com/global/en/job/59322/"
+                                "Delivery-AI-Software-Engineer%E2%80%8Bing-Senior-Manager")
+
+
+def test_already_encoded_url_is_not_encoded_twice():
+    url = "https://careers.bcg.com/job/59322/Engineer%E2%80%8Bing?q=ml%20engineer&loc=Pune"
+    assert http_mod.ascii_url(url) == url
+    # Mixed: a raw character next to an encoded one; only the raw one changes.
+    assert http_mod.ascii_url("https://x.com/a%20b/é?q=c%2Fd&r=ü") == "https://x.com/a%20b/%C3%A9?q=c%2Fd&r=%C3%BC"
+
+
+def test_non_ascii_host_is_idna_encoded():
+    assert http_mod.ascii_url("https://bücher.example:8443/jobs/1") == "https://xn--bcher-kva.example:8443/jobs/1"
+
+
+def test_ascii_url_keeps_its_cache_key(tmp_path, monkeypatch, no_sleep):
+    url = "https://boards-api.greenhouse.io/v1/boards/acme/jobs?content=true"
+    assert http_mod.ascii_url(url) is url
+    _serve(monkeypatch, [_Resp(b'{"jobs": []}', {"ETag": '"v1"'})])
+    client = HttpClient(cache_dir=tmp_path)
+    client.get_json(url)
+    assert client._cache_path(url).exists()
+
+
+def test_raw_and_encoded_forms_share_one_cache_entry(tmp_path, monkeypatch, no_sleep):
+    seen = []
+    _serve(monkeypatch, [_Resp(b"page", {"ETag": '"v1"'}), _http_error(304)], seen)
+    client = HttpClient(cache_dir=tmp_path)
+    client.get_text("https://x.com/job/é")
+    assert client.get_text("https://x.com/job/%C3%A9") == "page"
+    assert seen[1].get_header("If-none-match") == '"v1"'
